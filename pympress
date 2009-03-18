@@ -69,6 +69,9 @@ class Document:
 		self.presenter.set_page(current, next, page)
 		self.current = page
 
+	def fullscreen(self):
+		self.content.switch_fullscreen()
+
 	def event_callback(self, widget, event):
 		if event.type == gtk.gdk.KEY_PRESS:
 			name = gtk.gdk.keyval_name(event.keyval)
@@ -77,6 +80,10 @@ class Document:
 				self.next()
 			elif name in ["Left", "Up", "Page_Up", "BackSpace"]:
 				self.prev()
+			elif (name.upper() in ["F", "F11"]) \
+				or (name == "Return" and event.state & gtk.gdk.MOD1_MASK) \
+				or (name.upper() == "L" and event.state & gtk.gdk.CONTROL_MASK):
+				self.fullscreen()
 
 		elif event.type == gtk.gdk.BUTTON_PRESS:
 			if event.button == 1:
@@ -98,11 +105,11 @@ class Content:
 		black = gtk.gdk.Color(0, 0, 0)
 
 		# Main window
-		win = gtk.Window(gtk.WINDOW_TOPLEVEL)
-		win.set_title("pympress content")
-		win.set_default_size(800, 600)
-		win.modify_bg(gtk.STATE_NORMAL, black)
-		win.connect("delete-event", gtk.main_quit)
+		self.win = gtk.Window(gtk.WINDOW_TOPLEVEL)
+		self.win.set_title("pympress content")
+		self.win.set_default_size(800, 600)
+		self.win.modify_bg(gtk.STATE_NORMAL, black)
+		self.win.connect("delete-event", gtk.main_quit)
 
 		# Aspect frame
 		self.frame = gtk.AspectFrame(ratio=4./3., obey_child=False)
@@ -115,16 +122,19 @@ class Content:
 
 		# Prepare the window
 		self.frame.add(self.da)
-		win.add(self.frame)
-		win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.SCROLL_MASK)
-		win.connect("key-press-event", event_callback)
-		win.connect("button-press-event", event_callback)
-		win.connect("scroll-event", event_callback)
+		self.win.add(self.frame)
+		self.win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.SCROLL_MASK)
+		self.win.connect("key-press-event", event_callback)
+		self.win.connect("button-press-event", event_callback)
+		self.win.connect("scroll-event", event_callback)
+
+		# Don't start in fullscreen mode
+		self.fullscreen = False
 
 		# Add the page
 		self.set_page(page)
 
-		win.show_all()
+		self.win.show_all()
 
 	def set_page(self, page):
 		self.page = page
@@ -138,6 +148,14 @@ class Content:
 
 		# Don't queue draw event but draw directly (faster)
 		self.on_expose(self.da)
+
+	def switch_fullscreen(self):
+		if self.fullscreen:
+			self.win.unfullscreen()
+			self.fullscreen = False
+		else:
+			self.win.fullscreen()
+			self.fullscreen = True
 
 	def on_expose(self, widget, event=None):
 		# Make sure the object is initialized
