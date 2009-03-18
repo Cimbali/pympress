@@ -46,6 +46,8 @@ class Document:
 	def get_current_and_next(self, page):
 		if page >= self.nb_pages:
 			page = self.nb_pages-1
+		elif page < 0:
+			page = 0
 		current = self.doc.get_page(page)
 
 		next = None
@@ -325,11 +327,10 @@ if __name__ == '__main__':
 		name = os.path.abspath(sys.argv[1])
 	else:
 		# Use a GTK file dialog to choose file
-		dialog = gtk.FileChooserDialog("Open...",
-		                               None,
-									   gtk.FILE_CHOOSER_ACTION_OPEN,
-									   (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-									    gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+		dialog = gtk.FileChooserDialog("Open...", None,
+		                               gtk.FILE_CHOOSER_ACTION_OPEN,
+		                               (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+		                                gtk.STOCK_OPEN, gtk.RESPONSE_OK))
 		dialog.set_default_response(gtk.RESPONSE_OK)
 
 		filter = gtk.FileFilter()
