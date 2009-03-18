@@ -136,14 +136,23 @@ class Content:
 		pr = self.pw / self.ph
 		self.frame.set_property("ratio", pr)
 
-		self.da.queue_draw()
+		# Don't queue draw event but draw directly (faster)
+		self.on_expose(self.da)
 
-	def on_expose(self, widget, event):
-		cr = widget.window.cairo_create()
-		cr.set_source_rgb(1, 1, 1)
+	def on_expose(self, widget, event=None):
+		# Make sure the object is initialized
+		if widget.window is None:
+			return
 
 		# Widget size
 		ww, wh = widget.window.get_size()
+
+		# Manual double buffering (since we use direct drawing instead of
+		# calling self.da.queue_draw())
+		widget.window.begin_paint_rect(gtk.gdk.Rectangle(0, 0, ww, wh))
+
+		cr = widget.window.cairo_create()
+		cr.set_source_rgb(1, 1, 1)
 
 		# Scale
 		scale = min(ww/self.pw, wh/self.ph)
@@ -152,6 +161,9 @@ class Content:
 		cr.rectangle(0, 0, ww, wh)
 		cr.fill()
 		self.page.render(cr)
+
+		# Blit off-screen buffer to screen
+		widget.window.end_paint()
 
 class Presenter:
 	def __init__(self, current, next, number, total, event_callback):
