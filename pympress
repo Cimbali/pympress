@@ -23,14 +23,14 @@ import cairo
 import gobject
 import gtk
 import pango
+import os.path
 import poppler
 import sys
 import time
 
 class Document:
-	def __init__(self, name, page=0):
+	def __init__(self, uri, page=0):
 		# Open PDF file
-		uri = "file://" + name
 		self.doc = poppler.document_new_from_file(uri, None)
 
 		# Pages number
@@ -319,6 +319,44 @@ class Presenter:
 		return True
 
 if __name__ == '__main__':
-	doc = Document(sys.argv[1])
+	# PDF file to open
+	name = None
+	if len(sys.argv) > 1:
+		name = os.path.abspath(sys.argv[1])
+	else:
+		# Use a GTK file dialog to choose file
+		dialog = gtk.FileChooserDialog("Open...",
+		                               None,
+									   gtk.FILE_CHOOSER_ACTION_OPEN,
+									   (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+									    gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+		dialog.set_default_response(gtk.RESPONSE_OK)
 
-	doc.run()
+		filter = gtk.FileFilter()
+		filter.set_name("PDF files")
+		filter.add_mime_type("application/pdf")
+		filter.add_pattern("*.pdf")
+		dialog.add_filter(filter)
+
+		filter = gtk.FileFilter()
+		filter.set_name("All files")
+		filter.add_pattern("*")
+		dialog.add_filter(filter)
+
+		response = dialog.run()
+		if response == gtk.RESPONSE_OK:
+			name =  dialog.get_filename()
+		elif response != gtk.RESPONSE_CANCEL:
+			raise ValueError("Invalid response")
+
+		dialog.destroy()
+
+	if name is None:
+		# Use a GTK dialog to tell we need a file
+		msg="""No file selected!\n\nYou can specify the PDF file to open on the command line if you don't want to use the "Open File" dialog."""
+		dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK, message_format=msg)
+		dialog.run()
+		sys.exit(1)
+	else:
+		doc = Document("file://" + name)
+		doc.run()
