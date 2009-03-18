@@ -84,6 +84,8 @@ class Document:
 				or (name == "Return" and event.state & gtk.gdk.MOD1_MASK) \
 				or (name.upper() == "L" and event.state & gtk.gdk.CONTROL_MASK):
 				self.fullscreen()
+			elif name.upper() == "Q":
+				gtk.main_quit()
 
 		elif event.type == gtk.gdk.BUTTON_PRESS:
 			if event.button == 1:
