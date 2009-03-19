@@ -36,6 +36,7 @@ if __name__ == '__main__':
 		                               (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
 		                                gtk.STOCK_OPEN, gtk.RESPONSE_OK))
 		dialog.set_default_response(gtk.RESPONSE_OK)
+		dialog.set_position(gtk.WIN_POS_CENTER)
 
 		filter = gtk.FileFilter()
 		filter.set_name("PDF files")
@@ -60,6 +61,7 @@ if __name__ == '__main__':
 		# Use a GTK dialog to tell we need a file
 		msg="""No file selected!\n\nYou can specify the PDF file to open on the command line if you don't want to use the "Open File" dialog."""
 		dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK, message_format=msg)
+		dialog.set_position(gtk.WIN_POS_CENTER)
 		dialog.run()
 		sys.exit(1)
 	else:

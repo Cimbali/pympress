@@ -33,44 +33,79 @@ class Presenter:
 		win = gtk.Window(gtk.WINDOW_TOPLEVEL)
 		win.set_title("pympress presenter")
 		win.set_default_size(800, 600)
-		#~ win.modify_bg(gtk.STATE_NORMAL, black)
+		win.set_position(gtk.WIN_POS_CENTER)
 		win.connect("delete-event", gtk.main_quit)
 
-		# Horizontal box
-		hbox = gtk.HBox(True)
-		win.add(hbox)
+		# A little space around everything in the window
+		align = gtk.Alignment(0.5, 0.5, 1, 1)
+		align.set_padding(20, 20, 20, 20)
+		win.add(align)
 
-		# Aspect frame for current page
-		self.frame_current = gtk.AspectFrame(ratio=4./3., obey_child=False)
-		#~ self.frame_current.modify_bg(gtk.STATE_NORMAL, black)
-		hbox.pack_start(self.frame_current)
+		# Table
+		table = gtk.Table(2, 10, False)
+		table.set_col_spacings(25)
+		table.set_row_spacings(25)
+		align.add(table)
 
-		# Drawing area for current page
+		# "Current slide" frame
+		frame = gtk.Frame("Current slide")
+		table.attach(frame, 0, 6, 0, 1)
+		align = gtk.Alignment(0.5, 0.5, 1, 1)
+		align.set_padding(0, 0, 12, 0)
+		frame.add(align)
+		vbox = gtk.VBox()
+		align.add(vbox)
+		self.frame_current = gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
+		vbox.pack_start(self.frame_current)
+		self.label_current = gtk.Label()
+		self.label_current.set_justify(gtk.JUSTIFY_CENTER)
+		self.label_current.set_use_markup(True)
+		vbox.pack_start(self.label_current, False, False, 10)
 		self.da_current = gtk.DrawingArea()
 		self.da_current.modify_bg(gtk.STATE_NORMAL, black)
 		self.da_current.connect("expose-event", self.on_expose)
 		self.frame_current.add(self.da_current)
 
-		# Vertical box
-		vbox = gtk.VBox(False)
-		hbox.pack_start(vbox)
-
-		# Text label
-		self.label = gtk.Label()
-		self.label.set_justify(gtk.JUSTIFY_CENTER)
-		self.label.set_use_markup(True)
-		vbox.pack_start(self.label, False, False)
-
-		# Aspect frame for next page
-		self.frame_next = gtk.AspectFrame(ratio=4./3., obey_child=False)
-		#~ self.frame_next.modify_bg(gtk.STATE_NORMAL, black)
+		# "Next slide" frame
+		frame = gtk.Frame("Next slide")
+		table.attach(frame, 6, 10, 0, 1)
+		align = gtk.Alignment(0.5, 0.5, 1, 1)
+		align.set_padding(0, 0, 12, 0)
+		frame.add(align)
+		vbox = gtk.VBox()
+		align.add(vbox)
+		self.frame_next = gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
 		vbox.pack_start(self.frame_next)
-
-		# Drawing area for next page
+		self.label_next = gtk.Label()
+		self.label_next.set_justify(gtk.JUSTIFY_CENTER)
+		self.label_next.set_use_markup(True)
+		vbox.pack_start(self.label_next, False, False, 10)
 		self.da_next = gtk.DrawingArea()
 		self.da_next.modify_bg(gtk.STATE_NORMAL, black)
 		self.da_next.connect("expose-event", self.on_expose)
 		self.frame_next.add(self.da_next)
+
+		# "Time elapsed" frame
+		frame = gtk.Frame("Time elapsed")
+		table.attach(frame, 0, 5, 1, 2, yoptions=gtk.FILL)
+		align = gtk.Alignment(0.5, 0.5, 1, 1)
+		align.set_padding(10, 10, 12, 0)
+		frame.add(align)
+		self.label_time = gtk.Label()
+		self.label_time.set_justify(gtk.JUSTIFY_CENTER)
+		self.label_time.set_use_markup(True)
+		align.add(self.label_time)
+
+		# "Clock" frame
+		frame = gtk.Frame("Clock")
+		table.attach(frame, 5, 10, 1, 2, yoptions=gtk.FILL)
+		align = gtk.Alignment(0.5, 0.5, 1, 1)
+		align.set_padding(10, 10, 12, 0)
+		frame.add(align)
+		self.label_clock = gtk.Label()
+		self.label_clock.set_justify(gtk.JUSTIFY_CENTER)
+		self.label_clock.set_use_markup(True)
+		align.add(self.label_clock)
 
 		# Add events
 		win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.SCROLL_MASK)
@@ -82,7 +117,7 @@ class Presenter:
 		self.set_page(current, next, number, False)
 
 		# Setup timer
-		gobject.timeout_add(1000, self.update_text)
+		gobject.timeout_add(1000, self.update_time)
 
 		win.show_all()
 
@@ -133,16 +168,27 @@ class Presenter:
 			self.start_time = time.time()
 
 		# Update display
-		self.update_text()
+		self.update_numbers()
 
 		self.da_current.queue_draw()
 		self.da_next.queue_draw()
 
-	def update_text(self):
-		text = "%s\n\n%s\nSlide %d/%d"
+	def update_numbers(self):
+		text = "<span font='36'>%s</span>"
+
+		cur = "%d/%d" % (self.number_current+1, self.number_total)
+		next = "--"
+		if self.number_current+2 <= self.number_total:
+			next = "%d/%d" % (self.number_current+2, self.number_total)
+
+		self.label_current.set_markup(text % cur)
+		self.label_next.set_markup(text % next)
+
+	def update_time(self):
+		text = "<span font='36'>%s</span>"
 
 		# Current time
-		cur_time = time.strftime("%H:%M:%S")
+		clock = time.strftime("%H:%M:%S")
 
 		# Time elapsed since the beginning of the presentation
 		delta = time.time() - self.start_time
@@ -150,7 +196,7 @@ class Presenter:
 			delta = 0
 		elapsed = "%02d:%02d" % (int(delta/60), int(delta%60))
 
-		text = text % (cur_time, elapsed, self.number_current+1, self.number_total)
-		text = "<span font='36'>%s</span>" % text
-		self.label.set_markup(text)
+		self.label_time.set_markup(text % elapsed)
+		self.label_clock.set_markup(text % clock)
+
 		return True
