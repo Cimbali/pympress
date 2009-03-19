@@ -97,7 +97,7 @@ class Content:
 		scale = min(ww/self.pw, wh/self.ph)
 		cr.scale(scale, scale)
 
-		cr.rectangle(0, 0, ww, wh)
+		cr.rectangle(0, 0, self.pw, self.ph)
 		cr.fill()
 		self.page.render(cr)
 

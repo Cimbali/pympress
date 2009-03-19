@@ -104,7 +104,7 @@ class Presenter:
 		scale = min(ww/pw, wh/ph)
 		cr.scale(scale, scale)
 
-		cr.rectangle(0, 0, ww, wh)
+		cr.rectangle(0, 0, pw, ph)
 		cr.fill()
 
 		if page is not None:
