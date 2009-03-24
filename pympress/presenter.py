@@ -27,6 +27,9 @@ class Presenter:
 		black = gtk.gdk.Color(0, 0, 0)
 
 		self.start_time = 0
+		self.delta = 0
+		self.paused = False
+
 		self.number_total = total
 
 		# Window
@@ -191,12 +194,25 @@ class Presenter:
 		clock = time.strftime("%H:%M:%S")
 
 		# Time elapsed since the beginning of the presentation
-		delta = time.time() - self.start_time
+		if not self.paused:
+			self.delta = time.time() - self.start_time
 		if self.start_time == 0:
-			delta = 0
-		elapsed = "%02d:%02d" % (int(delta/60), int(delta%60))
+			self.delta = 0
+		elapsed = "%02d:%02d" % (int(self.delta/60), int(self.delta%60))
+		if self.paused:
+			elapsed += " (pause)"
 
 		self.label_time.set_markup(text % elapsed)
 		self.label_clock.set_markup(text % clock)
 
 		return True
+
+	def switch_pause(self):
+		if self.paused:
+			self.start_time = time.time() - self.delta
+			self.paused = False
+		else:
+			self.paused = True
+
+	def reset_counter(self):
+		self.start_time = 0

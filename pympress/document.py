@@ -84,6 +84,10 @@ class Document:
 				self.fullscreen()
 			elif name.upper() == "Q":
 				gtk.main_quit()
+			elif name in ["p", "P", "Pause"]:
+				self.presenter.switch_pause()
+			elif name.upper() == "R":
+				self.presenter.reset_counter()
 
 		elif event.type == gtk.gdk.BUTTON_PRESS:
 			if event.button == 1:
