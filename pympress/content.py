@@ -19,7 +19,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import gtk
+import gtk, os, sys
 
 class Content:
 	def __init__(self, page, event_callback):
@@ -70,6 +70,43 @@ class Content:
 		# Don't queue draw event but draw directly (faster)
 		self.on_expose(self.da)
 
+	def set_screensaver(self, enabled):
+		if os.name == 'posix':
+			# On Linux, set screensaver with xdg-screensaver
+			# (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
+			cmd = "resume" if enabled else "suspend"
+			status = os.system("xdg-screensaver %s %s" % (cmd, self.win.window.xid))
+			if status != 0:
+				print >>sys.stderr, "Warning: Could not disable screensaver: got status %d" % status
+
+			# Also manage screen blanking via DPMS
+			if enabled:
+				# Get current DPMS status
+				pipe = os.popen("xset q") # TODO: check if this works on all locales
+				dpms_status = "Disabled"
+				for line in pipe.readlines():
+					if line.count("DPMS is") > 0:
+						dpms_status = line.split()[-1]
+						break
+				pipe.close()
+
+				# Set the new value correctly
+				if dpms_status == "Enabled":
+					self.dpms_was_enabled = True
+					status = os.system("xset -dpms")
+					if status != 0:
+						print >>sys.stderr, "Warning: Could not disable DPMS screen blanking: got status %d" % status
+				else:
+					self.dpms_was_enabled = False
+
+			elif self.dpms_was_enabled:
+				# Re-enable DPMS
+				status = os.system("xset -dpms")
+				if status != 0:
+					print >>sys.stderr, "Warning: Could not disable DPMS screen blanking: got status %d" % status
+		else:
+			print >>sys.stderr, "Warning: Unsupported OS: can't enable/disable screensaver"
+
 	def switch_fullscreen(self):
 		if self.fullscreen:
 			self.win.unfullscreen()
@@ -77,6 +114,8 @@ class Content:
 		else:
 			self.win.fullscreen()
 			self.fullscreen = True
+
+		self.set_screensaver(self.fullscreen)
 
 	def on_expose(self, widget, event=None):
 		# Make sure the object is initialized
