@@ -29,6 +29,15 @@ if __name__ == '__main__':
 	name = None
 	if len(sys.argv) > 1:
 		name = os.path.abspath(sys.argv[1])
+
+		# Check if the path is valid
+		if not os.path.exists(name):
+			msg="""Could not find the file "%s".""" % name
+			dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK, message_format=msg)
+			dialog.set_position(gtk.WIN_POS_CENTER)
+			dialog.run()
+			sys.exit(1)
+
 	else:
 		# Use a GTK file dialog to choose file
 		dialog = gtk.FileChooserDialog("Open...", None,
@@ -64,6 +73,7 @@ if __name__ == '__main__':
 		dialog.set_position(gtk.WIN_POS_CENTER)
 		dialog.run()
 		sys.exit(1)
-	else:
-		doc = pympress.document.Document("file://" + name)
-		doc.run()
+
+	# Really open the PDF file
+	doc = pympress.document.Document("file://" + name)
+	doc.run()
