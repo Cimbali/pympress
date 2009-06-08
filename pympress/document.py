@@ -20,7 +20,7 @@
 #       MA 02110-1301, USA.
 
 import gtk
-import poppler
+import pympress.poppler
 
 import pympress.content, pympress.presenter
 
