@@ -1,1 +1,4 @@
 *.pyc
+build
+poppler.c
+poppler.so
