@@ -560,14 +560,60 @@
   )
 )
 
-
-
 ;; From poppler-action.h
 
-(define-function poppler_action_get_type
+(define-function get_type
   (c-name "poppler_action_get_type")
   (return-type "GType")
+)        
+                        
+(define-method get_action_type
+  (of-object "PopplerAction")
+  (c-name "poppler_action_get_action_type")
+  (return-type "PopplerActionType")
+)               
+                                
+(define-method get_title
+  (of-object "PopplerAction")
+  (c-name "poppler_action_get_title")
+  (return-type "uchar*")
+)               
+                
+(define-method get_uri
+  (of-object "PopplerAction")
+  (c-name "poppler_action_get_uri")
+  (return-type "uchar*")
+)         
+        
+(define-method get_dest
+  (of-object "PopplerAction")
+  (c-name "poppler_action_get_dest")
+  (return-type "PopplerDest *")
+)                
+                        
+(define-method get_named_dest
+  (of-object "PopplerAction")
+  (c-name "poppler_action_get_named_dest")
+  (return-type "uchar*")
+)                           
+                                                  
+(define-method get_file_name
+  (of-object "PopplerAction")
+  (c-name "poppler_action_get_file_name")
+  (return-type "uchar*")
 )
+                      
+(define-method get_params
+  (of-object "PopplerAction")
+  (c-name "poppler_action_get_params")
+  (return-type "uchar*")
+)                
+                                 
+(define-method get_dest
+  (of-object "PopplerAction")
+  (c-name "poppler_action_get_dest")
+  (return-type "PopplerDest *")
+)                         
 
 (define-method free
   (of-object "PopplerAction")

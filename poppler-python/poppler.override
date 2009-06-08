@@ -386,3 +386,122 @@ _wrap_poppler_page_get_image(PyGObject *self,
     return PycairoSurface_FromSurface(surface, NULL, NULL);
 #endif
 }
+%%
+override poppler_action_get_action_type noargs
+static PyObject *
+_wrap_poppler_action_get_action_type(PyObject *self)
+{
+    PyObject * ret;
+    PopplerActionAny* action;
+    
+    action = pyg_boxed_get(self, PopplerActionAny);
+    
+    ret = pyg_enum_from_gtype(POPPLER_TYPE_ACTION_TYPE, action->type);
+   
+    return ret;
+}
+%%
+override poppler_action_get_title noargs
+static PyObject *
+_wrap_poppler_action_get_title(PyObject *self)
+{
+    PopplerActionAny* action;
+    
+    action = pyg_boxed_get(self, PopplerActionAny);
+    
+    return Py_BuildValue("s", action->title);
+}
+%%
+override poppler_action_get_uri noargs
+static PyObject *
+_wrap_poppler_action_get_uri(PyObject *self)
+{
+    PopplerActionAny* action;
+    
+    action = pyg_boxed_get(self, PopplerActionAny);
+    
+    if (action->type == POPPLER_ACTION_URI)
+    {
+        return Py_BuildValue("s", ((PopplerActionUri*)action)->uri);
+    }
+    
+    return Py_BuildValue("");
+}
+%%
+override poppler_action_get_dest noargs
+static PyObject *
+_wrap_poppler_action_get_dest(PyObject *self)
+{
+    PopplerActionAny* action;
+    PopplerDest *dest;
+    
+    action = pyg_boxed_get(self, PopplerActionAny);
+ 
+    switch (action->type)
+    {
+        case POPPLER_ACTION_GOTO_DEST:
+            dest = ((PopplerActionGotoDest*)action)->dest;
+            break;
+        case POPPLER_ACTION_GOTO_REMOTE:
+            dest = ((PopplerActionGotoRemote*)action)->dest;
+            break;
+        default:
+            dest = NULL;
+    }
+    
+    if (dest)
+    {
+        return pyg_boxed_new (POPPLER_TYPE_DEST, dest,
+                              TRUE, TRUE);
+    }
+
+    return Py_BuildValue("");
+}
+%%
+override poppler_action_get_named_dest noargs
+static PyObject *
+_wrap_poppler_action_get_named_dest(PyObject *self)
+{
+    PopplerActionAny* action;
+    
+    action = pyg_boxed_get(self, PopplerActionAny);
+    
+    if (action->type == POPPLER_ACTION_NAMED)
+    {
+        return Py_BuildValue("s", ((PopplerActionNamed*)action)->named_dest);
+    }
+    
+    return Py_BuildValue("");
+}
+%%
+override poppler_action_get_file_name noargs
+static PyObject *
+_wrap_poppler_action_get_file_name(PyObject *self)
+{
+    PopplerActionAny* action;
+    
+    action = pyg_boxed_get(self, PopplerActionAny);
+    
+    if (action->type == POPPLER_ACTION_LAUNCH)
+    {
+        return Py_BuildValue("s", ((PopplerActionLaunch*)action)->file_name);
+    }
+    
+    return Py_BuildValue("");
+}
+%%
+override poppler_action_get_params noargs
+static PyObject *
+_wrap_poppler_action_get_params(PyObject *self)
+{
+    PopplerActionAny* action;
+    
+    action = pyg_boxed_get(self, PopplerActionAny);
+    
+    if (action->type == POPPLER_ACTION_LAUNCH)
+    {
+        return Py_BuildValue("s", ((PopplerActionLaunch*)action)->params);
+    }
+    
+    return Py_BuildValue("");
+}
