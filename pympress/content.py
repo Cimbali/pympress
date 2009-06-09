@@ -22,7 +22,39 @@
 import gtk, os, sys
 
 class Content:
+	"""
+	This class manages the Content window, i.e. the one that displays only the
+	current page in full size.
+
+	@ivar fullscreen: indicates if the Content window is currently in fullscreen mode
+	@type fullscreen: boolean
+
+	@ivar win  : GTK widget representing the Content window
+	@type win  : gtk.Window
+	@ivar frame: GTK widget used to display pages with the right size and aspect ratio
+	@type frame: gtk.AspectFrame
+	@ivar da   : GTK widget on which pages are rendered
+	@type da   : gtk.DrawingArea
+
+	@ivar page: page displayed in the Content window
+	@type page: poppler.Page
+	@ivar ph  : page height
+	@type ph  : float
+	@ivar pw  : page width
+	@type pw  : float
+
+	@ivar dpms_was_enabled: DPMS state the system was before running pympress
+	@type dpms_was_enabled: boolean
+	"""
+
 	def __init__(self, page, event_callback):
+		"""
+		@param page: page to be displayed in the Content window
+		@type  page: poppler.Page
+		@param event_callback: callback function that will be called when the
+		user interacts with the window (click, key press, etc.)
+		@type  event_callback: GTK event handler function
+		"""
 		black = gtk.gdk.Color(0, 0, 0)
 
 		# Main window
@@ -58,6 +90,12 @@ class Content:
 		self.win.show_all()
 
 	def set_page(self, page):
+		"""
+		Switch to another page and display it.
+
+		@param page: new page to be displayed
+		@type  page: poppler.Page
+		"""
 		self.page = page
 
 		# Page size
@@ -71,6 +109,17 @@ class Content:
 		self.on_expose(self.da)
 
 	def set_screensaver(self, must_disable):
+		"""
+		Enable or disable the screensaver.
+
+		@bug: At the moment, this is only supported on POSIX systems where
+		xdg-screensaver is installed and working. For now, I{this feature has
+		only been tested on Linux}.
+
+		@param must_disable: if C{True}, indicates that the screensaver must be
+		disabled; otherwise it will be enabled
+		@type  must_disable: boolean
+		"""
 		if os.name == 'posix':
 			# On Linux, set screensaver with xdg-screensaver
 			# (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
@@ -108,6 +157,12 @@ class Content:
 			print >>sys.stderr, "Warning: Unsupported OS: can't enable/disable screensaver"
 
 	def switch_fullscreen(self):
+		"""Switch the Content window to fullscreen (if in normal mode) or to
+		normal mode (if fullscreen).
+
+		Screensaver will be disabled when entering fullscreen mode, and enabled
+		when leaving fullscreen mode.
+		"""
 		if self.fullscreen:
 			self.win.unfullscreen()
 			self.fullscreen = False
@@ -118,6 +173,17 @@ class Content:
 		self.set_screensaver(self.fullscreen)
 
 	def on_expose(self, widget, event=None):
+		"""
+		Manage expose events by rendering the current page to the Content window.
+
+		This function may be called manually to force the Content window to be
+		refreshed immediately.
+
+		@param widget: the widget in which the expose event occured
+		@type  widget: gtk.Widget
+		@param event : the event that occured
+		@type  event : gtk.gdk.Event
+		"""
 		# Make sure the object is initialized
 		if widget.window is None:
 			return
