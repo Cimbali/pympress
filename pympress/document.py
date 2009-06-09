@@ -20,7 +20,7 @@
 #       MA 02110-1301, USA.
 
 import gtk
-import pympress.poppler
+import pympress.poppler as poppler
 
 import pympress.content, pympress.presenter
 
@@ -50,7 +50,26 @@ class Document:
 		if page+1 < self.nb_pages:
 			next = self.doc.get_page(page+1)
 
+		self.get_links(current)
+
 		return (page, current, next)
+
+	def get_links(self, page):
+		links = page.get_link_mapping()
+		page_links = []
+
+		for link in links:
+			if link.action.get_action_type() == poppler.ACTION_GOTO_DEST:
+				dest = link.action.get_dest()
+				page_num = dest.page_num
+
+				if dest.type == poppler.DEST_NAMED:
+					page_num = self.doc.find_dest(dest.named_dest).page_num
+
+				my_link = (link.area.x1, link.area.y1, link.area.x2, link.area.y2, page_num)
+				page_links.append(my_link)
+
+		return page_links
 
 	def run(self):
 		gtk.main()
