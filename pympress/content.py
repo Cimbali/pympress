@@ -70,17 +70,17 @@ class Content:
 		# Don't queue draw event but draw directly (faster)
 		self.on_expose(self.da)
 
-	def set_screensaver(self, enabled):
+	def set_screensaver(self, must_disable):
 		if os.name == 'posix':
 			# On Linux, set screensaver with xdg-screensaver
 			# (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
-			cmd = "resume" if enabled else "suspend"
+			cmd = "suspend" if must_disable else "resume"
 			status = os.system("xdg-screensaver %s %s" % (cmd, self.win.window.xid))
 			if status != 0:
-				print >>sys.stderr, "Warning: Could not disable screensaver: got status %d" % status
+				print >>sys.stderr, "Warning: Could not set screensaver status: got status %d" % status
 
 			# Also manage screen blanking via DPMS
-			if enabled:
+			if must_disable:
 				# Get current DPMS status
 				pipe = os.popen("xset q") # TODO: check if this works on all locales
 				dpms_status = "Disabled"
@@ -101,9 +101,9 @@ class Content:
 
 			elif self.dpms_was_enabled:
 				# Re-enable DPMS
-				status = os.system("xset -dpms")
+				status = os.system("xset +dpms")
 				if status != 0:
-					print >>sys.stderr, "Warning: Could not disable DPMS screen blanking: got status %d" % status
+					print >>sys.stderr, "Warning: Could not enable DPMS screen blanking: got status %d" % status
 		else:
 			print >>sys.stderr, "Warning: Unsupported OS: can't enable/disable screensaver"
 
