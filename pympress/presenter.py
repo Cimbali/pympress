@@ -23,7 +23,66 @@ import gobject, gtk
 import time
 
 class Presenter:
+	"""
+	This class manages the Presenter window, i.e. the one that displays both the
+	current and the next page, as well as a time counter and a clock.
+
+	@ivar start_time : timestamp at which the timer was started (0 if it was not started)
+	@type start_time : float
+	@ivar delta      : time elapsed since the timer was started
+	@type delta      : float
+	@ivar paused     : indicates if the timer is on pause or not
+	@type paused     : boolean
+	@ivar label_time : timer label
+	@type label_time : gtk.Label
+	@ivar label_clock: clock label
+	@type label_clock: gtk.Label
+
+	@ivar number_total  : number of pages in the document
+	@type number_total  : integer
+	@ivar number_current: current page number
+	@type number_current: integer
+	@ivar page_current  : current page
+	@type page_current  : poppler.Page
+	@ivar page_next     : next page
+	@type page_next     : poppler.Page
+	@ivar pw_cur        : current page width
+	@type pw_cur        : float
+	@ivar ph_cur        : current page height
+	@type ph_cur        : float
+	@ivar pw_next       : next page width
+	@type pw_next       : float
+	@ivar ph_next       : next page height
+	@type ph_next       : float
+
+	@ivar frame_current: GTK widget used to display current pages with the right size and aspect ratio
+	@type frame_current: gtk.AspectFrame
+	@ivar frame_next   : GTK widget used to display next pages with the right size and aspect ratio
+	@type frame_next   : gtk.AspectFrame
+	@ivar label_current: label indicating the current page number
+	@type label_current: gtk.Label
+	@ivar label_next   : label indicating the next page number
+	@type label_next   : gtk.Label
+	@ivar da_current   : GTK widget on which current pages are rendered
+	@type da_current   : gtk.DrawingArea
+	@ivar da_next      : GTK widget on which next pages are rendered
+	@type da_next      : gtk.DrawingArea
+	"""
+
 	def __init__(self, current, next, number, total, event_callback):
+		"""
+		@param current: current page
+		@type  current: poppler.Page
+		@param next   : next page
+		@type  next   : poppler.Page
+		@param number : current page number
+		@type  number : integer
+		@param total  : number of pages in the document
+		@type  total  : integer
+		@param event_callback: callback function that will be called when the
+		user interacts with the window (click, key press, etc.)
+		@type  event_callback: GTK event handler function
+		"""
 		black = gtk.gdk.Color(0, 0, 0)
 
 		self.start_time = 0
@@ -125,6 +184,18 @@ class Presenter:
 		win.show_all()
 
 	def on_expose(self, widget, event):
+		"""
+		Manage expose events by rendering the current page and the next page to
+		the Presenter window.
+
+		This function may be called manually to force the Presenter window to be
+		refreshed immediately.
+
+		@param widget: the widget in which the expose event occured
+		@type  widget: gtk.Widget
+		@param event : the event that occured
+		@type  event : gtk.gdk.Event
+		"""
 		cr = widget.window.cairo_create()
 		cr.set_source_rgb(1, 1, 1)
 
@@ -149,6 +220,18 @@ class Presenter:
 			page.render(cr)
 
 	def set_page(self, current, next, number, start = True):
+		"""
+		Switch to another page and display it.
+
+		@param current: new current page to be displayed
+		@type  current: poppler.Page
+		@param next   : new next page to be displayed
+		@type  next   : poppler.Page
+		@param number : number of the new current page
+		@type  number : integer
+		@param start  : specify whether this page change should start the timer or not
+		@type  start  : boolean
+		"""
 		self.page_current = current
 		self.page_next = next
 		self.number_current = number
@@ -177,6 +260,8 @@ class Presenter:
 		self.da_next.queue_draw()
 
 	def update_numbers(self):
+		"""Update the displayed page numbers."""
+
 		text = "<span font='36'>%s</span>"
 
 		cur = "%d/%d" % (self.number_current+1, self.number_total)
@@ -188,6 +273,8 @@ class Presenter:
 		self.label_next.set_markup(text % next)
 
 	def update_time(self):
+		"""Update the timer and clock labels."""
+
 		text = "<span font='36'>%s</span>"
 
 		# Current time
@@ -208,6 +295,8 @@ class Presenter:
 		return True
 
 	def switch_pause(self):
+		"""Switch the timer between paused mode and running (normal) mode."""
+
 		if self.paused:
 			self.start_time = time.time() - self.delta
 			self.paused = False
@@ -215,4 +304,5 @@ class Presenter:
 			self.paused = True
 
 	def reset_counter(self):
+		"""Reset the timer."""
 		self.start_time = 0
