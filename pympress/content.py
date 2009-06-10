@@ -157,8 +157,9 @@ class Content:
 			print >>sys.stderr, "Warning: Unsupported OS: can't enable/disable screensaver"
 
 	def switch_fullscreen(self):
-		"""Switch the Content window to fullscreen (if in normal mode) or to
-		normal mode (if fullscreen).
+		"""
+		Switch the Content window to fullscreen (if in normal mode) or to normal
+		mode (if fullscreen).
 
 		Screensaver will be disabled when entering fullscreen mode, and enabled
 		when leaving fullscreen mode.
