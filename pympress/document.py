@@ -131,7 +131,7 @@ class Document:
 			elif name in ["p", "P", "Pause"]:
 				self.presenter.switch_pause()
 			elif name.upper() == "R":
-				self.presenter.reset_counter()
+				self.presenter.reset_timer()
 
 		elif event.type == gtk.gdk.BUTTON_PRESS:
 			if event.button == 1:

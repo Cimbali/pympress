@@ -303,6 +303,6 @@ class Presenter:
 		else:
 			self.paused = True
 
-	def reset_counter(self):
+	def reset_timer(self):
 		"""Reset the timer."""
 		self.start_time = 0
