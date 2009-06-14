@@ -39,11 +39,7 @@ class Content:
 	@type da   : gtk.DrawingArea
 
 	@ivar page: page displayed in the Content window
-	@type page: poppler.Page
-	@ivar ph  : page height
-	@type ph  : float
-	@ivar pw  : page width
-	@type pw  : float
+	@type page: L{pympress.Page}
 
 	@ivar dpms_was_enabled: DPMS state the system was before running pympress
 	@type dpms_was_enabled: boolean
@@ -52,7 +48,7 @@ class Content:
 	def __init__(self, page, event_callback):
 		"""
 		@param page: page to be displayed in the Content window
-		@type  page: poppler.Page
+		@type  page: L{pympress.Page}
 		@param event_callback: callback function that will be called when the
 		user interacts with the window (click, key press, etc.)
 		@type  event_callback: GTK event handler function
@@ -96,15 +92,12 @@ class Content:
 		Switch to another page and display it.
 
 		@param page: new page to be displayed
-		@type  page: poppler.Page
+		@type  page: L{pympress.Page}
 		"""
 		self.page = page
 
-		# Page size
-		self.pw, self.ph = self.page.get_size()
-
 		# Page aspect ratio
-		pr = self.pw / self.ph
+		pr = self.page.get_aspect_ratio()
 		self.frame.set_property("ratio", pr)
 
 		# Don't queue draw event but draw directly (faster)
@@ -187,27 +180,4 @@ class Content:
 		@param event : the event that occured
 		@type  event : gtk.gdk.Event
 		"""
-		# Make sure the object is initialized
-		if widget.window is None:
-			return
-
-		# Widget size
-		ww, wh = widget.window.get_size()
-
-		# Manual double buffering (since we use direct drawing instead of
-		# calling self.da.queue_draw())
-		widget.window.begin_paint_rect(gtk.gdk.Rectangle(0, 0, ww, wh))
-
-		cr = widget.window.cairo_create()
-		cr.set_source_rgb(1, 1, 1)
-
-		# Scale
-		scale = min(ww/self.pw, wh/self.ph)
-		cr.scale(scale, scale)
-
-		cr.rectangle(0, 0, self.pw, self.ph)
-		cr.fill()
-		self.page.render(cr)
-
-		# Blit off-screen buffer to screen
-		widget.window.end_paint()
+		self.page.render_on(widget)
