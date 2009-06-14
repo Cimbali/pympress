@@ -14,3 +14,4 @@ poppler-python/poppler.la
 poppler-python/poppler_la-poppler.lo
 poppler-python/poppler_la-popplermodule.lo
 poppler-python/stamp-h1
+apidoc/

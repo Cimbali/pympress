@@ -19,13 +19,38 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import pygtk
+pygtk.require('2.0')
 import gtk
 import pympress.poppler as poppler
 
 import pympress.content, pympress.presenter
 
 class Document:
+	"""
+	This is the main class. It deals with the Poppler library for PDF document
+	handling, and a little bit with the GUI too.
+
+	@ivar doc      : the PDF document that is currently displayed
+	@type doc      : poppler.Document
+	@ivar nb_pages : number of pages in the document
+	@type nb_pages : integer
+	@ivar current  : number of the current page
+	@type current  : integer
+	@ivar presenter: pympress's Presenter window
+	@type presenter: L{pympress.Presenter}
+	@ivar content  : pympress's Content window
+	@type content  : L{pympress.Content}
+	"""
+
 	def __init__(self, uri, page=0):
+		"""
+		@param uri : URI to the PDF file to open (local only, starting with file://)
+		@type  uri : string
+		@param page: page number to which the file should be opened
+		@type  page: integer
+		"""
+
 		# Open PDF file
 		self.doc = poppler.document_new_from_file(uri, None)
 
@@ -40,6 +65,15 @@ class Document:
 		self.content = pympress.content.Content(first, self.event_callback)
 
 	def get_current_and_next(self, page):
+		"""
+		Return the specified page and the next one. If there is no next page,
+		C{None} is returned instead.
+
+		@param page: number of the page to retrieve
+		@type  page: integer
+		@return    : the specified page and the next one
+		@rtype     : (poppler.Page, poppler.Page)
+		"""
 		if page >= self.nb_pages:
 			page = self.nb_pages-1
 		elif page < 0:
@@ -72,24 +106,36 @@ class Document:
 		return page_links
 
 	def run(self):
+		"""Run the GTK main loop."""
 		gtk.main()
 
 	def next(self):
+		"""Switch to the next page."""
 		page, current, next = self.get_current_and_next(self.current + 1)
 		self.content.set_page(current)
 		self.presenter.set_page(current, next, page)
 		self.current = page
 
 	def prev(self):
+		"""Switch to the previous page."""
 		page, current, next = self.get_current_and_next(self.current - 1)
 		self.content.set_page(current)
 		self.presenter.set_page(current, next, page)
 		self.current = page
 
 	def fullscreen(self):
+		"""Switch between fullscreen and normal mode."""
 		self.content.switch_fullscreen()
 
 	def event_callback(self, widget, event):
+		"""
+		Manage events as key presses or clicks.
+
+		@param widget: the widget in which the event occured
+		@type  widget: gtk.Widget
+		@param event : the event that occured
+		@type  event : gtk.gdk.Event
+		"""
 		if event.type == gtk.gdk.KEY_PRESS:
 			name = gtk.gdk.keyval_name(event.keyval)
 
@@ -106,7 +152,7 @@ class Document:
 			elif name in ["p", "P", "Pause"]:
 				self.presenter.switch_pause()
 			elif name.upper() == "R":
-				self.presenter.reset_counter()
+				self.presenter.reset_timer()
 
 		elif event.type == gtk.gdk.BUTTON_PRESS:
 			if event.button == 1:
