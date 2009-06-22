@@ -58,7 +58,7 @@ class Link:
 		self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
 		self.dest = dest
 
-	def isOver(self, x, y):
+	def is_over(self, x, y):
 		"""
 		Tell if the input coordinates are on the link rectangle.
 
@@ -70,9 +70,9 @@ class Link:
 		C{False} otherwise
 		@rtype : boolean
 		"""
-		return ( (x1 <= x) and (x <= x2) and (y1 <= y) and (y <= y2) )
+		return ( (self.x1 <= x) and (x <= self.x2) and (self.y1 <= y) and (y <= self.y2) )
 
-	def getDestination(self):
+	def get_destination(self):
 		"""
 		Get the link destination.
 
@@ -93,13 +93,13 @@ class Page:
 	@ivar pw   : page width
 	@type pw   : float
 	@ivar ph   : page height
-	@ivar ph   : float
+	@type ph   : float
 	"""
 
 	def __init__(self, doc, number):
 		"""
-		@param page  : the PDF document
-		@type  page  : poppler.Document
+		@param doc   : the PDF document
+		@type  doc   : poppler.Document
 		@param number: number of the page to fetch in the document
 		@param number: integer
 		"""
@@ -120,6 +120,9 @@ class Page:
 				if dest.type == poppler.DEST_NAMED:
 					page_num = doc.find_dest(dest.named_dest).page_num
 
+				# Page numbering starts at 0
+				page_num -= 1
+
 				my_link = Link(link.area.x1, link.area.y1, link.area.x2, link.area.y2, page_num)
 				self.links.append(my_link)
 
@@ -136,7 +139,7 @@ class Page:
 		@rtype  : L{pympress.Link}
 		"""
 		for link in self.links:
-			if link.isOver(x, y):
+			if link.is_over(x, y):
 				return link
 
 		return None
@@ -206,6 +209,9 @@ class Document:
 	@type presenter : L{pympress.Presenter}
 	@ivar content   : pympress's Content window
 	@type content   : L{pympress.Content}
+
+	@note: Page numbering starts at 0, so internally the first page is page 0,
+	the second page is page 1, etc.
 	"""
 
 	def __init__(self, uri, page=0):
