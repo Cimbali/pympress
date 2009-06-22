@@ -45,13 +45,17 @@ class Content:
 	@type dpms_was_enabled: boolean
 	"""
 
-	def __init__(self, page, event_callback):
+	def __init__(self, page, navigation_cb, link_cb):
 		"""
 		@param page: page to be displayed in the Content window
 		@type  page: L{pympress.Page}
-		@param event_callback: callback function that will be called when the
-		user interacts with the window (click, key press, etc.)
-		@type  event_callback: GTK event handler function
+		@param navigation_cb: callback function that will be called when the
+		user interacts with the window to navigate from page to page (mouse
+		scroll, key press, etc.)
+		@type  navigation_cb: GTK event handler function
+		@param link_cb      : callback function that will be called when the
+		user moves the mouse over a link or activates one
+		@type  link_cb      : GTK event handler function
 		"""
 		black = gtk.gdk.Color(0, 0, 0)
 
@@ -74,10 +78,15 @@ class Content:
 		# Prepare the window
 		self.frame.add(self.da)
 		self.win.add(self.frame)
-		self.win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.SCROLL_MASK)
-		self.win.connect("key-press-event", event_callback)
-		self.win.connect("button-press-event", event_callback)
-		self.win.connect("scroll-event", event_callback)
+
+		# Add events
+		self.win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.SCROLL_MASK)
+		self.win.connect("key-press-event", navigation_cb)
+		self.win.connect("scroll-event", navigation_cb)
+
+		self.da.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
+		self.da.connect("button-press-event", link_cb, self.get_page)
+		self.da.connect("motion-notify-event", link_cb, self.get_page)
 
 		# Don't start in fullscreen mode
 		self.fullscreen = False
@@ -102,6 +111,15 @@ class Content:
 
 		# Don't queue draw event but draw directly (faster)
 		self.on_expose(self.da)
+
+	def get_page(self):
+		"""
+		Return the current page.
+
+		@return: current page
+		@rtype : L{pympress.Page}
+		"""
+		return self.page
 
 	def set_screensaver(self, must_disable):
 		"""

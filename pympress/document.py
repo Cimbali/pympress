@@ -160,6 +160,29 @@ class Page:
 		"""
 		return self.pw / self.ph
 
+	def get_page_coords(self, widget, x, y):
+		"""
+		Compute page coordinates from the widget-relative ones.
+
+		@param widget: widget on which the page is displayed
+		@type  widget: gtk.Widget
+		@param x: x input coordinate
+		@type  x: float
+		@param y: y input coordinate
+		@type  y: float
+		@return : tuple of real coordinates
+		@rtype  : (float, float)
+		"""
+		# Widget size
+		ww, wh = widget.window.get_size()
+
+		# Page coordinates
+		px = x * (self.pw/ww)
+		py = self.ph - (y * (self.ph/wh))
+
+		return (px, py)
+
+
 	def render_on(self, widget):
 		"""
 		Render the page on the specified widget.
@@ -232,8 +255,8 @@ class Document:
 		self.nb_current, first, second = self.get_two_pages(page)
 
 		# Create windows
-		self.presenter = pympress.presenter.Presenter(first, second, self.nb_current, self.nb_pages, self.event_callback)
-		self.content = pympress.content.Content(first, self.event_callback)
+		self.presenter = pympress.presenter.Presenter(first, second, self.nb_current, self.nb_pages, self.navigation_cb, self.link_cb)
+		self.content = pympress.content.Content(first, self.navigation_cb, self.link_cb)
 
 	def get_two_pages(self, first):
 		"""
@@ -263,27 +286,33 @@ class Document:
 		"""Run the GTK main loop."""
 		gtk.main()
 
-	def next(self):
-		"""Switch to the next page."""
-		page, current, next = self.get_two_pages(self.nb_current + 1)
+	def goto(self, number):
+		"""
+		Switch to another page.
+
+		@param number: number of the destination page
+		@type  number: integer
+		"""
+		page, current, next = self.get_two_pages(number)
 		self.content.set_page(current)
 		self.presenter.set_page(current, next, page)
 		self.nb_current = page
 
+	def next(self):
+		"""Switch to the next page."""
+		self.goto(self.nb_current + 1)
+
 	def prev(self):
 		"""Switch to the previous page."""
-		page, current, next = self.get_two_pages(self.nb_current - 1)
-		self.content.set_page(current)
-		self.presenter.set_page(current, next, page)
-		self.nb_current = page
+		self.goto(self.nb_current - 1)
 
 	def fullscreen(self):
 		"""Switch between fullscreen and normal mode."""
 		self.content.switch_fullscreen()
 
-	def event_callback(self, widget, event):
+	def navigation_cb(self, widget, event):
 		"""
-		Manage events as key presses or clicks.
+		Manage events as mouse scroll or clicks.
 
 		@param widget: the widget in which the event occured
 		@type  widget: gtk.Widget
@@ -308,12 +337,6 @@ class Document:
 			elif name.upper() == "R":
 				self.presenter.reset_timer()
 
-		elif event.type == gtk.gdk.BUTTON_PRESS:
-			if event.button == 1:
-				self.next()
-			else:
-				self.prev()
-
 		elif event.type == gtk.gdk.SCROLL:
 			if event.direction in [gtk.gdk.SCROLL_RIGHT, gtk.gdk.SCROLL_DOWN]:
 				self.next()
@@ -322,3 +345,38 @@ class Document:
 
 		else:
 			print "Unknown event %s" % event.type
+
+	def link_cb(self, widget, event, get_page):
+		"""
+		Manage events related to hyperlinks.
+
+		@param widget  : the widget in which the event occured
+		@type  widget  : gtk.Widget
+		@param event   : the event that occured
+		@type  event   : gtk.gdk.Event
+		@param get_page: method returning the L{pympress.Page} on which the
+		event occured
+		@type  get_page: callable returning a L{pympress.Page} (or C{None})
+		"""
+		# Get link
+		page = get_page()
+		x, y = event.get_coords()
+		x2, y2 = page.get_page_coords(widget, x, y)
+		link = page.get_link_at(x2, y2)
+
+		# Event type?
+		if event.type == gtk.gdk.BUTTON_PRESS:
+			if link is not None:
+				dest = link.get_destination()
+				self.goto(dest)
+
+		elif event.type == gtk.gdk.MOTION_NOTIFY:
+			if link is not None:
+				cursor = gtk.gdk.Cursor(gtk.gdk.HAND2)
+				widget.window.set_cursor(cursor)
+			else:
+				widget.window.set_cursor(None)
+
+		else:
+			print "Unknown event %s" % event.type
+

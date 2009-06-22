@@ -63,7 +63,7 @@ class Presenter:
 	@type da_next      : gtk.DrawingArea
 	"""
 
-	def __init__(self, current, next, number, total, event_callback):
+	def __init__(self, current, next, number, total, navigation_cb, link_cb):
 		"""
 		@param current: current page
 		@type  current: L{pympress.Page}
@@ -73,9 +73,13 @@ class Presenter:
 		@type  number : integer
 		@param total  : number of pages in the document
 		@type  total  : integer
-		@param event_callback: callback function that will be called when the
-		user interacts with the window (click, key press, etc.)
-		@type  event_callback: GTK event handler function
+		@param navigation_cb: callback function that will be called when the
+		user interacts with the window to navigate from page to page (mouse
+		scroll, key press, etc.)
+		@type  navigation_cb: GTK event handler function
+		@param link_cb      : callback function that will be called when the
+		user moves the mouse over a link or activates one
+		@type  link_cb      : GTK event handler function
 		"""
 		black = gtk.gdk.Color(0, 0, 0)
 
@@ -164,10 +168,17 @@ class Presenter:
 		align.add(self.label_clock)
 
 		# Add events
-		win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.SCROLL_MASK)
-		win.connect("key-press-event", event_callback)
-		win.connect("button-press-event", event_callback)
-		win.connect("scroll-event", event_callback)
+		win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.SCROLL_MASK)
+		win.connect("key-press-event", navigation_cb)
+		win.connect("scroll-event", navigation_cb)
+
+		self.da_current.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
+		self.da_current.connect("button-press-event", link_cb, self.get_current_page)
+		self.da_current.connect("motion-notify-event", link_cb, self.get_current_page)
+
+		self.da_next.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
+		self.da_next.connect("button-press-event", link_cb, self.get_next_page)
+		self.da_next.connect("motion-notify-event", link_cb, self.get_next_page)
 
 		# Set page
 		self.set_page(current, next, number, False)
@@ -240,6 +251,24 @@ class Presenter:
 
 		self.da_current.queue_draw()
 		self.da_next.queue_draw()
+
+	def get_current_page(self):
+		"""
+		Return the current page.
+
+		@return: current page
+		@rtype : L{pympress.Page}
+		"""
+		return self.page_current
+
+	def get_next_page(self):
+		"""
+		Return the next page.
+
+		@return: next page
+		@rtype : L{pympress.Page}
+		"""
+		return self.page_next
 
 	def update_numbers(self):
 		"""Update the displayed page numbers."""
