@@ -21,10 +21,12 @@
 
 from distutils.core import setup
 from distutils.command.build import build
+from distutils.command.install import install
+from distutils import file_util
 
 import os, os.path, shutil, subprocess
 
-
+# Build poppler-python during the build phase
 class PopplerBuild(build):
 	def run(self):
 		os.chdir("poppler-python")
@@ -33,6 +35,18 @@ class PopplerBuild(build):
 		os.chdir("..")
 
 		build.run(self)
+
+# Install poppler-python during the install phase
+class PopplerInstall(install):
+	def run(self):
+		install.run(self)
+
+		file_util.copy_file(
+			os.path.join("poppler-python", ".libs", "poppler.so"),
+			os.path.join(self.install_lib, "pympress"),
+			update=True
+		)
+
 
 version="0.1"
 
@@ -57,7 +71,6 @@ setup(name="pympress",
 		'Topic :: Multimedia :: Graphics :: Viewers',
 	],
 	packages=["pympress"],
-	package_data={"pympress": [os.path.join("..", "poppler-python", "libs", "*.so")]},
 	scripts=["bin/pympress"],
-	cmdclass= {'build': PopplerBuild}
+	cmdclass= {'build': PopplerBuild, 'install': PopplerInstall}
 )
