@@ -24,7 +24,7 @@ from distutils.command.build import build
 from distutils.command.install import install
 from distutils import file_util
 
-import os, os.path, shutil, subprocess
+import glob, os, os.path, shutil, subprocess
 
 # Build poppler-python during the build phase
 class PopplerBuild(build):
@@ -46,7 +46,6 @@ class PopplerInstall(install):
 			os.path.join(self.install_lib, "pympress"),
 			update=True
 		)
-
 
 version="0.1"
 
@@ -72,5 +71,8 @@ setup(name="pympress",
 	],
 	packages=["pympress"],
 	scripts=["bin/pympress"],
+	data_files=[
+		("share/pixmaps", glob.glob("pixmaps/pympress*")),
+	],
 	cmdclass= {'build': PopplerBuild, 'install': PopplerInstall}
 )

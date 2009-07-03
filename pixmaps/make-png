@@ -1,0 +1,5 @@
+#!/bin/sh
+
+for SIZE in 16 22 24 32 48 64 128; do
+	inkscape -w $SIZE -e pympress-$SIZE.png pympress.svg
+done
