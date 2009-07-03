@@ -22,6 +22,7 @@
 from distutils.core import setup
 from distutils.command.build import build
 from distutils.command.install import install
+from distutils.command.sdist import sdist
 from distutils import file_util
 
 import glob, os, os.path, shutil, subprocess
@@ -46,6 +47,15 @@ class PopplerInstall(install):
 			os.path.join(self.install_lib, "pympress"),
 			update=True
 		)
+
+# Clean the poppler-python before building a source distribution
+class PopplerSdist(sdist):
+	def run(self):
+		os.chdir("poppler-python")
+		subprocess.check_call(["make", "distclean"])
+		os.chdir("..")
+
+		sdist.run(self)
 
 version="0.1"
 
@@ -74,5 +84,5 @@ setup(name="pympress",
 	data_files=[
 		("share/pixmaps", glob.glob("pixmaps/pympress*")),
 	],
-	cmdclass= {'build': PopplerBuild, 'install': PopplerInstall}
+	cmdclass= {'build': PopplerBuild, 'install': PopplerInstall, 'sdist': PopplerSdist},
 )
