@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-#       __init__.py
+#       util.py
 #
 #       Copyright 2009 Thomas Jost <thomas.jost@gmail.com>
 #
@@ -19,4 +19,21 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-__all__ = ["content", "document", "presenter", "util"]
+import pygtk
+pygtk.require('2.0')
+import gtk
+import os, os.path, sys
+
+def load_icons():
+	icons_path = os.path.join(sys.prefix, "share", "pixmaps")
+
+	if not os.path.exists(os.path.join(icons_path, "pympress-16.png")):
+		icons_path = "pixmaps"
+	
+	icons = []
+	for size in [16, 32, 48, 64, 128]:
+		icon = gtk.gdk.pixbuf_new_from_file(os.path.join(icons_path, "pympress-%d.png" % size))
+		icons.append(icon)
+	
+	return icons
+

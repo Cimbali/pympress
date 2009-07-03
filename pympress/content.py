@@ -23,6 +23,8 @@ import pygtk
 pygtk.require('2.0')
 import gtk, os, sys
 
+import pympress.util
+
 class Content:
 	"""
 	This class manages the Content window, i.e. the one that displays only the
@@ -65,6 +67,9 @@ class Content:
 		self.win.set_default_size(800, 600)
 		self.win.modify_bg(gtk.STATE_NORMAL, black)
 		self.win.connect("delete-event", gtk.main_quit)
+
+		# Icons
+		self.win.set_icon_list(*pympress.util.load_icons())
 
 		# Aspect frame
 		self.frame = gtk.AspectFrame(ratio=4./3., obey_child=False)

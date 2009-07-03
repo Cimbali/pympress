@@ -24,6 +24,8 @@ pygtk.require('2.0')
 import gobject, gtk
 import time
 
+import pympress.util
+
 class Presenter:
 	"""
 	This class manages the Presenter window, i.e. the one that displays both the
@@ -99,6 +101,9 @@ class Presenter:
 		win.set_default_size(800, 600)
 		win.set_position(gtk.WIN_POS_CENTER)
 		win.connect("delete-event", gtk.main_quit)
+
+		# Icons
+		win.set_icon_list(*pympress.util.load_icons())
 
 		# A little space around everything in the window
 		align = gtk.Alignment(0.5, 0.5, 1, 1)
