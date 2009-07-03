@@ -1,5 +1,7 @@
 *.pyc
-build
+build/
+dist/
+MANIFEST
 poppler.c
 poppler.so
 poppler-python/.deps/
