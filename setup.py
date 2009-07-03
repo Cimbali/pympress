@@ -20,6 +20,7 @@
 #       MA 02110-1301, USA.
 
 from distutils.core import setup
+import glob
 
 version="0.1"
 
@@ -45,4 +46,7 @@ setup(name="pympress",
 	],
 	packages=["pympress"],
 	scripts=["bin/pympress"],
+	data_files=[
+		("share/pixmaps", glob.glob("pixmaps/pympress*")),
+	],
 )
