@@ -23,6 +23,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import os, os.path, sys
+import poppler
 
 def load_icons():
 	icons_path = os.path.join(sys.prefix, "share", "pixmaps")
@@ -37,3 +38,17 @@ def load_icons():
 	
 	return icons
 
+
+def poppler_links_available():
+	"""Check if hyperlink support is enabled in python-poppler.
+
+	@return: C{True} if hyperlink support is avaibable, C{False} otherwise
+	@rtype : boolean
+	"""
+
+	try:
+		type(poppler.ActionGotoDest)
+	except AttributeError:
+		return False
+	else:
+		return True

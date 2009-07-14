@@ -41,23 +41,23 @@ class Content:
 	@type da   : gtk.DrawingArea
 
 	@ivar page: page displayed in the Content window
-	@type page: poppler.Page
-	@ivar ph  : page height
-	@type ph  : float
-	@ivar pw  : page width
-	@type pw  : float
+	@type page: L{pympress.Page}
 
 	@ivar dpms_was_enabled: DPMS state the system was before running pympress
 	@type dpms_was_enabled: boolean
 	"""
 
-	def __init__(self, page, event_callback):
+	def __init__(self, page, navigation_cb, link_cb):
 		"""
 		@param page: page to be displayed in the Content window
-		@type  page: poppler.Page
-		@param event_callback: callback function that will be called when the
-		user interacts with the window (click, key press, etc.)
-		@type  event_callback: GTK event handler function
+		@type  page: L{pympress.Page}
+		@param navigation_cb: callback function that will be called when the
+		user interacts with the window to navigate from page to page (mouse
+		scroll, key press, etc.)
+		@type  navigation_cb: GTK event handler function
+		@param link_cb      : callback function that will be called when the
+		user moves the mouse over a link or activates one
+		@type  link_cb      : GTK event handler function
 		"""
 		black = gtk.gdk.Color(0, 0, 0)
 
@@ -83,10 +83,16 @@ class Content:
 		# Prepare the window
 		self.frame.add(self.da)
 		self.win.add(self.frame)
-		self.win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.SCROLL_MASK)
-		self.win.connect("key-press-event", event_callback)
-		self.win.connect("button-press-event", event_callback)
-		self.win.connect("scroll-event", event_callback)
+
+		# Add events
+		self.win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.SCROLL_MASK)
+		self.win.connect("key-press-event", navigation_cb)
+		self.win.connect("scroll-event", navigation_cb)
+
+		if pympress.util.poppler_links_available():
+			self.da.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
+			self.da.connect("button-press-event", link_cb, self.get_page)
+			self.da.connect("motion-notify-event", link_cb, self.get_page)
 
 		# Don't start in fullscreen mode
 		self.fullscreen = False
@@ -101,19 +107,25 @@ class Content:
 		Switch to another page and display it.
 
 		@param page: new page to be displayed
-		@type  page: poppler.Page
+		@type  page: L{pympress.Page}
 		"""
 		self.page = page
 
-		# Page size
-		self.pw, self.ph = self.page.get_size()
-
 		# Page aspect ratio
-		pr = self.pw / self.ph
+		pr = self.page.get_aspect_ratio()
 		self.frame.set_property("ratio", pr)
 
 		# Don't queue draw event but draw directly (faster)
 		self.on_expose(self.da)
+
+	def get_page(self):
+		"""
+		Return the current page.
+
+		@return: current page
+		@rtype : L{pympress.Page}
+		"""
+		return self.page
 
 	def set_screensaver(self, must_disable):
 		"""
@@ -192,27 +204,4 @@ class Content:
 		@param event : the event that occured
 		@type  event : gtk.gdk.Event
 		"""
-		# Make sure the object is initialized
-		if widget.window is None:
-			return
-
-		# Widget size
-		ww, wh = widget.window.get_size()
-
-		# Manual double buffering (since we use direct drawing instead of
-		# calling self.da.queue_draw())
-		widget.window.begin_paint_rect(gtk.gdk.Rectangle(0, 0, ww, wh))
-
-		cr = widget.window.cairo_create()
-		cr.set_source_rgb(1, 1, 1)
-
-		# Scale
-		scale = min(ww/self.pw, wh/self.ph)
-		cr.scale(scale, scale)
-
-		cr.rectangle(0, 0, self.pw, self.ph)
-		cr.fill()
-		self.page.render(cr)
-
-		# Blit off-screen buffer to screen
-		widget.window.end_paint()
+		self.page.render_on(widget)

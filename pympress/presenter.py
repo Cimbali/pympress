@@ -47,17 +47,9 @@ class Presenter:
 	@ivar number_current: current page number
 	@type number_current: integer
 	@ivar page_current  : current page
-	@type page_current  : poppler.Page
+	@type page_current  : L{pympress.Page}
 	@ivar page_next     : next page
-	@type page_next     : poppler.Page
-	@ivar pw_cur        : current page width
-	@type pw_cur        : float
-	@ivar ph_cur        : current page height
-	@type ph_cur        : float
-	@ivar pw_next       : next page width
-	@type pw_next       : float
-	@ivar ph_next       : next page height
-	@type ph_next       : float
+	@type page_next     : L{pympress.Page}
 
 	@ivar frame_current: GTK widget used to display current pages with the right size and aspect ratio
 	@type frame_current: gtk.AspectFrame
@@ -73,19 +65,23 @@ class Presenter:
 	@type da_next      : gtk.DrawingArea
 	"""
 
-	def __init__(self, current, next, number, total, event_callback):
+	def __init__(self, current, next, number, total, navigation_cb, link_cb):
 		"""
 		@param current: current page
-		@type  current: poppler.Page
+		@type  current: L{pympress.Page}
 		@param next   : next page
-		@type  next   : poppler.Page
+		@type  next   : L{pympress.Page}
 		@param number : current page number
 		@type  number : integer
 		@param total  : number of pages in the document
 		@type  total  : integer
-		@param event_callback: callback function that will be called when the
-		user interacts with the window (click, key press, etc.)
-		@type  event_callback: GTK event handler function
+		@param navigation_cb: callback function that will be called when the
+		user interacts with the window to navigate from page to page (mouse
+		scroll, key press, etc.)
+		@type  navigation_cb: GTK event handler function
+		@param link_cb      : callback function that will be called when the
+		user moves the mouse over a link or activates one
+		@type  link_cb      : GTK event handler function
 		"""
 		black = gtk.gdk.Color(0, 0, 0)
 
@@ -177,10 +173,18 @@ class Presenter:
 		align.add(self.label_clock)
 
 		# Add events
-		win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.SCROLL_MASK)
-		win.connect("key-press-event", event_callback)
-		win.connect("button-press-event", event_callback)
-		win.connect("scroll-event", event_callback)
+		win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.SCROLL_MASK)
+		win.connect("key-press-event", navigation_cb)
+		win.connect("scroll-event", navigation_cb)
+
+		if pympress.util.poppler_links_available():
+			self.da_current.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
+			self.da_current.connect("button-press-event", link_cb, self.get_current_page)
+			self.da_current.connect("motion-notify-event", link_cb, self.get_current_page)
+
+			self.da_next.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
+			self.da_next.connect("button-press-event", link_cb, self.get_next_page)
+		self.da_next.connect("motion-notify-event", link_cb, self.get_next_page)
 
 		# Set page
 		self.set_page(current, next, number, False)
@@ -203,37 +207,29 @@ class Presenter:
 		@param event : the event that occured
 		@type  event : gtk.gdk.Event
 		"""
-		cr = widget.window.cairo_create()
-		cr.set_source_rgb(1, 1, 1)
-
-		# Widget size
-		ww, wh = widget.window.get_size()
-
-		# Page-specific stuff (dirty)
-		page = self.page_current
-		pw, ph = self.pw_cur, self.ph_cur
-		if widget == self.da_next:
-			page = self.page_next
-			pw, ph = self.pw_next, self.ph_next
-
-		# Scale
-		scale = min(ww/pw, wh/ph)
-		cr.scale(scale, scale)
-
-		cr.rectangle(0, 0, pw, ph)
-		cr.fill()
-
-		if page is not None:
-			page.render(cr)
+		if widget == self.da_current:
+			self.page_current.render_on(widget)
+		else:
+			# Next page: it can be None
+			if self.page_next is not None:
+				self.page_next.render_on(widget)
+			else:
+				# Blank the widget
+				cr = widget.window.cairo_create()
+				cr.set_source_rgb(1, 1, 1)
+				cr.scale(1, 1)
+				ww, wh = widget.window.get_size()
+				cr.rectangle(0, 0, ww, wh)
+				cr.fill()
 
 	def set_page(self, current, next, number, start = True):
 		"""
 		Switch to another page and display it.
 
 		@param current: new current page to be displayed
-		@type  current: poppler.Page
+		@type  current: L{pympress.Page}
 		@param next   : new next page to be displayed
-		@type  next   : poppler.Page
+		@type  next   : L{pympress.Page}
 		@param number : number of the new current page
 		@type  number : integer
 		@param start  : specify whether this page change should start the timer or not
@@ -243,17 +239,13 @@ class Presenter:
 		self.page_next = next
 		self.number_current = number
 
-		# Page sizes
-		self.pw_cur, self.ph_cur = self.page_current.get_size()
-
 		# Aspect ratios
-		pr = self.pw_cur / self.ph_cur
+		pr = self.page_current.get_aspect_ratio()
 		self.frame_current.set_property("ratio", pr)
 
 		# Same thing for next page if it's set
 		if self.page_next is not None:
-			self.pw_next, self.ph_next = self.page_next.get_size()
-			pr = self.pw_next / self.ph_next
+			pr = self.page_next.get_aspect_ratio()
 			self.frame_next.set_property("ratio", pr)
 
 		# Start counter if needed
@@ -265,6 +257,24 @@ class Presenter:
 
 		self.da_current.queue_draw()
 		self.da_next.queue_draw()
+
+	def get_current_page(self):
+		"""
+		Return the current page.
+
+		@return: current page
+		@rtype : L{pympress.Page}
+		"""
+		return self.page_current
+
+	def get_next_page(self):
+		"""
+		Return the next page.
+
+		@return: next page
+		@rtype : L{pympress.Page}
+		"""
+		return self.page_next
 
 	def update_numbers(self):
 		"""Update the displayed page numbers."""
