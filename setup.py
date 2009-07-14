@@ -20,42 +20,7 @@
 #       MA 02110-1301, USA.
 
 from distutils.core import setup
-from distutils.command.build import build
-from distutils.command.install import install
-from distutils.command.sdist import sdist
-from distutils import file_util
-
-import glob, os, os.path, shutil, subprocess
-
-# Build poppler-python during the build phase
-class PopplerBuild(build):
-	def run(self):
-		os.chdir("poppler-python")
-		subprocess.check_call(["sh", "configure"])
-		subprocess.check_call(["make", "clean", "all"])
-		os.chdir("..")
-
-		build.run(self)
-
-# Install poppler-python during the install phase
-class PopplerInstall(install):
-	def run(self):
-		install.run(self)
-
-		file_util.copy_file(
-			os.path.join("poppler-python", ".libs", "poppler.so"),
-			os.path.join(self.install_lib, "pympress"),
-			update=True
-		)
-
-# Clean the poppler-python before building a source distribution
-class PopplerSdist(sdist):
-	def run(self):
-		os.chdir("poppler-python")
-		subprocess.check_call(["make", "distclean"])
-		os.chdir("..")
-
-		sdist.run(self)
+import glob
 
 version="0.1"
 
@@ -84,5 +49,4 @@ setup(name="pympress",
 	data_files=[
 		("share/pixmaps", glob.glob("pixmaps/pympress*")),
 	],
-	cmdclass= {'build': PopplerBuild, 'install': PopplerInstall, 'sdist': PopplerSdist},
 )

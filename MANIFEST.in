@@ -1,3 +1,2 @@
 include pixmaps/*.png
 include pixmaps/*.svg
-recursive-include poppler-python *

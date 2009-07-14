@@ -24,6 +24,8 @@ pygtk.require('2.0')
 import gobject, gtk
 import time
 
+import pympress.util
+
 class Presenter:
 	"""
 	This class manages the Presenter window, i.e. the one that displays both the
@@ -172,12 +174,13 @@ class Presenter:
 		win.connect("key-press-event", navigation_cb)
 		win.connect("scroll-event", navigation_cb)
 
-		self.da_current.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
-		self.da_current.connect("button-press-event", link_cb, self.get_current_page)
-		self.da_current.connect("motion-notify-event", link_cb, self.get_current_page)
+		if pympress.util.poppler_links_available():
+			self.da_current.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
+			self.da_current.connect("button-press-event", link_cb, self.get_current_page)
+			self.da_current.connect("motion-notify-event", link_cb, self.get_current_page)
 
-		self.da_next.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
-		self.da_next.connect("button-press-event", link_cb, self.get_next_page)
+			self.da_next.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
+			self.da_next.connect("button-press-event", link_cb, self.get_next_page)
 		self.da_next.connect("motion-notify-event", link_cb, self.get_next_page)
 
 		# Set page

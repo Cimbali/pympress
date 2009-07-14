@@ -23,6 +23,8 @@ import pygtk
 pygtk.require('2.0')
 import gtk, os, sys
 
+import pympress.util
+
 class Content:
 	"""
 	This class manages the Content window, i.e. the one that displays only the
@@ -84,9 +86,10 @@ class Content:
 		self.win.connect("key-press-event", navigation_cb)
 		self.win.connect("scroll-event", navigation_cb)
 
-		self.da.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
-		self.da.connect("button-press-event", link_cb, self.get_page)
-		self.da.connect("motion-notify-event", link_cb, self.get_page)
+		if pympress.util.poppler_links_available():
+			self.da.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
+			self.da.connect("button-press-event", link_cb, self.get_page)
+			self.da.connect("motion-notify-event", link_cb, self.get_page)
 
 		# Don't start in fullscreen mode
 		self.fullscreen = False
