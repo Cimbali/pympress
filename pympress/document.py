@@ -33,28 +33,28 @@ class Link:
 	"""
 	This class encapsulates one hyperlink of the document.
 
-	@ivar x1  : first x coordinate of the link rectangle
-	@type x1  : float
-	@ivar y1  : first y coordinate of the link rectangle
-	@type y1  : float
-	@ivar x2  : second x coordinate of the link rectangle
-	@type x2  : float
-	@ivar y2  : second y coordinate of the link rectangle
-	@type y2  : float
+	@ivar x1: first x coordinate of the link rectangle
+	@type x1: float
+	@ivar y1: first y coordinate of the link rectangle
+	@type y1: float
+	@ivar x2: second x coordinate of the link rectangle
+	@type x2: float
+	@ivar y2: second y coordinate of the link rectangle
+	@type y2: float
 	@ivar dest: page number of the destination
 	@type dest: integer
 	"""
 
 	def __init__(self, x1, y1, x2, y2, dest):
 		"""
-		@param x1  : first x coordinate of the link rectangle
-		@type  x1  : float
-		@param y1  : first y coordinate of the link rectangle
-		@type  y1  : float
-		@param x2  : second x coordinate of the link rectangle
-		@type  x2  : float
-		@param y2  : second y coordinate of the link rectangle
-		@type  y2  : float
+		@param x1: first x coordinate of the link rectangle
+		@type  x1: float
+		@param y1: first y coordinate of the link rectangle
+		@type  y1: float
+		@param x2: second x coordinate of the link rectangle
+		@type  x2: float
+		@param y2: second y coordinate of the link rectangle
+		@type  y2: float
 		@param dest: page number of the destination
 		@type  dest: integer
 		"""
@@ -71,7 +71,7 @@ class Link:
 		@type  y: float
 		@return: C{True} if the input coordinates are within the link rectangle,
 		C{False} otherwise
-		@rtype : boolean
+		@rtype: boolean
 		"""
 		return ( (self.x1 <= x) and (x <= self.x2) and (self.y1 <= y) and (y <= self.y2) )
 
@@ -80,7 +80,7 @@ class Link:
 		Get the link destination.
 
 		@return: destination page number
-		@rtype : integer
+		@rtype: integer
 		"""
 		return self.dest
 
@@ -89,20 +89,20 @@ class Page:
 	"""
 	Class representing a single page.
 
-	@ivar page : one page of the document
-	@type page : poppler.Page
+	@ivar page: one page of the document
+	@type page: poppler.Page
 	@ivar links: list of all the links in the page
 	@type links: list of L{pympress.Link}s
-	@ivar pw   : page width
-	@type pw   : float
-	@ivar ph   : page height
-	@type ph   : float
+	@ivar pw: page width
+	@type pw: float
+	@ivar ph: page height
+	@type ph: float
 	"""
 
 	def __init__(self, doc, number):
 		"""
-		@param doc   : the PDF document
-		@type  doc   : poppler.Document
+		@param doc: the PDF document
+		@type  doc: poppler.Document
 		@param number: number of the page to fetch in the document
 		@param number: integer
 		"""
@@ -139,8 +139,9 @@ class Page:
 		@type  x: float
 		@param y: vertical coordinate
 		@type  y: float
-		@return : the link at the given coordinates if one exists, C{None} otherwise
-		@rtype  : L{pympress.Link}
+		@return: the link at the given coordinates if one exists, C{None}
+		otherwise
+		@rtype: L{pympress.Link}
 		"""
 		for link in self.links:
 			if link.is_over(x, y):
@@ -152,7 +153,7 @@ class Page:
 		"""Return the page size.
 
 		@return: page size
-		@rtype : (float, float)
+		@rtype: (float, float)
 		"""
 		return (self.pw, self.ph)
 
@@ -160,7 +161,7 @@ class Page:
 		"""Return the page aspect ratio.
 
 		@return: page aspect ratio
-		@rtype : float
+		@rtype: float
 		"""
 		return self.pw / self.ph
 
@@ -174,8 +175,8 @@ class Page:
 		@type  x: float
 		@param y: y input coordinate
 		@type  y: float
-		@return : tuple of real coordinates
-		@rtype  : (float, float)
+		@return: tuple of real coordinates
+		@rtype: (float, float)
 		"""
 		# Widget size
 		ww, wh = widget.window.get_size()
@@ -226,16 +227,16 @@ class Document:
 	This is the main class. It deals with the Poppler library for PDF document
 	handling, and a little bit with the GUI too.
 
-	@ivar doc       : the PDF document that is currently displayed
-	@type doc       : poppler.Document
-	@ivar nb_pages  : number of pages in the document
-	@type nb_pages  : integer
+	@ivar doc: the PDF document that is currently displayed
+	@type doc: poppler.Document
+	@ivar nb_pages: number of pages in the document
+	@type nb_pages: integer
 	@ivar nb_current: number of the current page
 	@type nb_current: integer
-	@ivar presenter : pympress's Presenter window
-	@type presenter : L{pympress.Presenter}
-	@ivar content   : pympress's Content window
-	@type content   : L{pympress.Content}
+	@ivar presenter: pympress's Presenter window
+	@type presenter: L{pympress.Presenter}
+	@ivar content: pympress's Content window
+	@type content: L{pympress.Content}
 
 	@note: Page numbering starts at 0, so internally the first page is page 0,
 	the second page is page 1, etc.
@@ -243,8 +244,9 @@ class Document:
 
 	def __init__(self, uri, page=0):
 		"""
-		@param uri : URI to the PDF file to open (local only, starting with file://)
-		@type  uri : string
+		@param uri: URI to the PDF file to open (local only, starting with
+		file://)
+		@type  uri: string
 		@param page: page number to which the file should be opened
 		@type  page: integer
 		"""
@@ -275,8 +277,8 @@ class Document:
 
 		@param first: number of the first page to retrieve
 		@type  first: integer
-		@return     : number of the first page, first page, next one
-		@rtype      : (integer, L{pympress.Page}, L{pympress.Page})
+		@return: number of the first page, first page, next one
+		@rtype: (integer, L{pympress.Page}, L{pympress.Page})
 		"""
 		if first >= self.nb_pages:
 			first = self.nb_pages-1
@@ -324,8 +326,8 @@ class Document:
 
 		@param widget: the widget in which the event occured
 		@type  widget: gtk.Widget
-		@param event : the event that occured
-		@type  event : gtk.gdk.Event
+		@param event: the event that occured
+		@type  event: gtk.gdk.Event
 		"""
 		if event.type == gtk.gdk.KEY_PRESS:
 			name = gtk.gdk.keyval_name(event.keyval)
@@ -358,10 +360,10 @@ class Document:
 		"""
 		Manage events related to hyperlinks.
 
-		@param widget  : the widget in which the event occured
-		@type  widget  : gtk.Widget
-		@param event   : the event that occured
-		@type  event   : gtk.gdk.Event
+		@param widget: the widget in which the event occured
+		@type  widget: gtk.Widget
+		@param event: the event that occured
+		@type  event: gtk.gdk.Event
 		@param get_page: method returning the L{pympress.Page} on which the
 		event occured
 		@type  get_page: callable returning a L{pympress.Page} (or C{None})

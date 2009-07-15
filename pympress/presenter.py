@@ -31,57 +31,60 @@ class Presenter:
 	This class manages the Presenter window, i.e. the one that displays both the
 	current and the next page, as well as a time counter and a clock.
 
-	@ivar start_time : timestamp at which the timer was started (0 if it was not started)
-	@type start_time : float
-	@ivar delta      : time elapsed since the timer was started
-	@type delta      : float
-	@ivar paused     : indicates if the timer is on pause or not
-	@type paused     : boolean
-	@ivar label_time : timer label
-	@type label_time : gtk.Label
+	@ivar start_time: timestamp at which the timer was started (0 if it was not
+	started)
+	@type start_time: float
+	@ivar delta: time elapsed since the timer was started
+	@type delta: float
+	@ivar paused: indicates if the timer is on pause or not
+	@type paused: boolean
+	@ivar label_time: timer label
+	@type label_time: gtk.Label
 	@ivar label_clock: clock label
 	@type label_clock: gtk.Label
 
-	@ivar number_total  : number of pages in the document
-	@type number_total  : integer
+	@ivar number_total: number of pages in the document
+	@type number_total: integer
 	@ivar number_current: current page number
 	@type number_current: integer
-	@ivar page_current  : current page
-	@type page_current  : L{pympress.Page}
-	@ivar page_next     : next page
-	@type page_next     : L{pympress.Page}
+	@ivar page_current: current page
+	@type page_current: L{pympress.Page}
+	@ivar page_next: next page
+	@type page_next: L{pympress.Page}
 
-	@ivar frame_current: GTK widget used to display current pages with the right size and aspect ratio
+	@ivar frame_current: GTK widget used to display current pages with the right
+	size and aspect ratio
 	@type frame_current: gtk.AspectFrame
-	@ivar frame_next   : GTK widget used to display next pages with the right size and aspect ratio
-	@type frame_next   : gtk.AspectFrame
+	@ivar frame_next: GTK widget used to display next pages with the right size
+	and aspect ratio
+	@type frame_next: gtk.AspectFrame
 	@ivar label_current: label indicating the current page number
 	@type label_current: gtk.Label
-	@ivar label_next   : label indicating the next page number
-	@type label_next   : gtk.Label
-	@ivar da_current   : GTK widget on which current pages are rendered
-	@type da_current   : gtk.DrawingArea
-	@ivar da_next      : GTK widget on which next pages are rendered
-	@type da_next      : gtk.DrawingArea
+	@ivar label_next: label indicating the next page number
+	@type label_next: gtk.Label
+	@ivar da_current: GTK widget on which current pages are rendered
+	@type da_current: gtk.DrawingArea
+	@ivar da_next: GTK widget on which next pages are rendered
+	@type da_next: gtk.DrawingArea
 	"""
 
 	def __init__(self, current, next, number, total, navigation_cb, link_cb):
 		"""
 		@param current: current page
 		@type  current: L{pympress.Page}
-		@param next   : next page
-		@type  next   : L{pympress.Page}
-		@param number : current page number
-		@type  number : integer
-		@param total  : number of pages in the document
-		@type  total  : integer
+		@param next: next page
+		@type  next: L{pympress.Page}
+		@param number: current page number
+		@type  number: integer
+		@param total: number of pages in the document
+		@type  total: integer
 		@param navigation_cb: callback function that will be called when the
 		user interacts with the window to navigate from page to page (mouse
 		scroll, key press, etc.)
 		@type  navigation_cb: GTK event handler function
-		@param link_cb      : callback function that will be called when the
-		user moves the mouse over a link or activates one
-		@type  link_cb      : GTK event handler function
+		@param link_cb: callback function that will be called when the user
+		moves the mouse over a link or activates one
+		@type  link_cb: GTK event handler function
 		"""
 		black = gtk.gdk.Color(0, 0, 0)
 
@@ -204,8 +207,8 @@ class Presenter:
 
 		@param widget: the widget in which the expose event occured
 		@type  widget: gtk.Widget
-		@param event : the event that occured
-		@type  event : gtk.gdk.Event
+		@param event: the event that occured
+		@type  event: gtk.gdk.Event
 		"""
 		if widget == self.da_current:
 			self.page_current.render_on(widget)
@@ -228,12 +231,13 @@ class Presenter:
 
 		@param current: new current page to be displayed
 		@type  current: L{pympress.Page}
-		@param next   : new next page to be displayed
-		@type  next   : L{pympress.Page}
-		@param number : number of the new current page
-		@type  number : integer
-		@param start  : specify whether this page change should start the timer or not
-		@type  start  : boolean
+		@param next: new next page to be displayed
+		@type  next: L{pympress.Page}
+		@param number: number of the new current page
+		@type  number: integer
+		@param start: specify whether this page change should start the timer or
+		not
+		@type  start: boolean
 		"""
 		self.page_current = current
 		self.page_next = next
@@ -263,7 +267,7 @@ class Presenter:
 		Return the current page.
 
 		@return: current page
-		@rtype : L{pympress.Page}
+		@rtype: L{pympress.Page}
 		"""
 		return self.page_current
 
@@ -272,7 +276,7 @@ class Presenter:
 		Return the next page.
 
 		@return: next page
-		@rtype : L{pympress.Page}
+		@rtype: L{pympress.Page}
 		"""
 		return self.page_next
 

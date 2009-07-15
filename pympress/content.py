@@ -30,15 +30,17 @@ class Content:
 	This class manages the Content window, i.e. the one that displays only the
 	current page in full size.
 
-	@ivar fullscreen: indicates if the Content window is currently in fullscreen mode
+	@ivar fullscreen: indicates if the Content window is currently in fullscreen
+	mode
 	@type fullscreen: boolean
 
-	@ivar win  : GTK widget representing the Content window
-	@type win  : gtk.Window
-	@ivar frame: GTK widget used to display pages with the right size and aspect ratio
+	@ivar win: GTK widget representing the Content window
+	@type win: gtk.Window
+	@ivar frame: GTK widget used to display pages with the right size and aspect
+	ratio
 	@type frame: gtk.AspectFrame
-	@ivar da   : GTK widget on which pages are rendered
-	@type da   : gtk.DrawingArea
+	@ivar da: GTK widget on which pages are rendered
+	@type da: gtk.DrawingArea
 
 	@ivar page: page displayed in the Content window
 	@type page: L{pympress.Page}
@@ -55,9 +57,9 @@ class Content:
 		user interacts with the window to navigate from page to page (mouse
 		scroll, key press, etc.)
 		@type  navigation_cb: GTK event handler function
-		@param link_cb      : callback function that will be called when the
-		user moves the mouse over a link or activates one
-		@type  link_cb      : GTK event handler function
+		@param link_cb: callback function that will be called when the user
+		moves the mouse over a link or activates one
+		@type  link_cb: GTK event handler function
 		"""
 		black = gtk.gdk.Color(0, 0, 0)
 
@@ -123,7 +125,7 @@ class Content:
 		Return the current page.
 
 		@return: current page
-		@rtype : L{pympress.Page}
+		@rtype: L{pympress.Page}
 		"""
 		return self.page
 
@@ -194,14 +196,15 @@ class Content:
 
 	def on_expose(self, widget, event=None):
 		"""
-		Manage expose events by rendering the current page to the Content window.
+		Manage expose events by rendering the current page to the Content
+		window.
 
 		This function may be called manually to force the Content window to be
 		refreshed immediately.
 
 		@param widget: the widget in which the expose event occured
 		@type  widget: gtk.Widget
-		@param event : the event that occured
-		@type  event : gtk.gdk.Event
+		@param event: the event that occured
+		@type  event: gtk.gdk.Event
 		"""
 		self.page.render_on(widget)
