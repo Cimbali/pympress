@@ -19,63 +19,73 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os.path
+import sys
+
 import pygtk
 pygtk.require('2.0')
 import gtk
-import os.path, sys
 
 import pympress.document
 
 if __name__ == '__main__':
-	# PDF file to open
-	name = None
-	if len(sys.argv) > 1:
-		name = os.path.abspath(sys.argv[1])
+    # PDF file to open
+    name = None
+    if len(sys.argv) > 1:
+        name = os.path.abspath(sys.argv[1])
 
-		# Check if the path is valid
-		if not os.path.exists(name):
-			msg="""Could not find the file "%s".""" % name
-			dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK, message_format=msg)
-			dialog.set_position(gtk.WIN_POS_CENTER)
-			dialog.run()
-			sys.exit(1)
+        # Check if the path is valid
+        if not os.path.exists(name):
+            msg="""Could not find the file "%s".""" % name
+            dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK, message_format=msg)
+            dialog.set_position(gtk.WIN_POS_CENTER)
+            dialog.run()
+            sys.exit(1)
 
-	else:
-		# Use a GTK file dialog to choose file
-		dialog = gtk.FileChooserDialog("Open...", None,
-		                               gtk.FILE_CHOOSER_ACTION_OPEN,
-		                               (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-		                                gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-		dialog.set_default_response(gtk.RESPONSE_OK)
-		dialog.set_position(gtk.WIN_POS_CENTER)
+    else:
+        # Use a GTK file dialog to choose file
+        dialog = gtk.FileChooserDialog("Open...", None,
+                                       gtk.FILE_CHOOSER_ACTION_OPEN,
+                                       (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                        gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+        dialog.set_default_response(gtk.RESPONSE_OK)
+        dialog.set_position(gtk.WIN_POS_CENTER)
 
-		filter = gtk.FileFilter()
-		filter.set_name("PDF files")
-		filter.add_mime_type("application/pdf")
-		filter.add_pattern("*.pdf")
-		dialog.add_filter(filter)
+        filter = gtk.FileFilter()
+        filter.set_name("PDF files")
+        filter.add_mime_type("application/pdf")
+        filter.add_pattern("*.pdf")
+        dialog.add_filter(filter)
 
-		filter = gtk.FileFilter()
-		filter.set_name("All files")
-		filter.add_pattern("*")
-		dialog.add_filter(filter)
+        filter = gtk.FileFilter()
+        filter.set_name("All files")
+        filter.add_pattern("*")
+        dialog.add_filter(filter)
 
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-			name =  dialog.get_filename()
-		elif response != gtk.RESPONSE_CANCEL:
-			raise ValueError("Invalid response")
+        response = dialog.run()
+        if response == gtk.RESPONSE_OK:
+            name =  dialog.get_filename()
+        elif response != gtk.RESPONSE_CANCEL:
+            raise ValueError("Invalid response")
 
-		dialog.destroy()
+        dialog.destroy()
 
-	if name is None:
-		# Use a GTK dialog to tell we need a file
-		msg="""No file selected!\n\nYou can specify the PDF file to open on the command line if you don't want to use the "Open File" dialog."""
-		dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK, message_format=msg)
-		dialog.set_position(gtk.WIN_POS_CENTER)
-		dialog.run()
-		sys.exit(1)
+    if name is None:
+        # Use a GTK dialog to tell we need a file
+        msg="""No file selected!\n\nYou can specify the PDF file to open on the command line if you don't want to use the "Open File" dialog."""
+        dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK, message_format=msg)
+        dialog.set_position(gtk.WIN_POS_CENTER)
+        dialog.run()
+        sys.exit(1)
 
-	# Really open the PDF file
-	doc = pympress.document.Document("file://" + name)
-	doc.run()
+    # Really open the PDF file
+    doc = pympress.document.Document("file://" + name)
+    doc.run()
+
+##
+# Local Variables:
+# mode: python
+# indent-tabs-mode: nil
+# py-indent-offset: 4
+# fill-column: 80
+# end:
