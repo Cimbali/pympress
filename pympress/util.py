@@ -26,7 +26,7 @@ import os, os.path, sys
 import poppler
 
 def load_icons():
-	icons_path = os.path.join(sys.prefix, "share", "pixmaps")
+	icons_path = os.path.join(os.path.dirname(sys.argv[0]), os.pardir, "share", "pixmaps")
 
 	if not os.path.exists(os.path.join(icons_path, "pympress-16.png")):
 		icons_path = "pixmaps"
