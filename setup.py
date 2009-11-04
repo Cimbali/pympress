@@ -22,7 +22,7 @@
 from distutils.core import setup
 import glob
 
-version="0.2"
+version="0.3"
 
 setup(name="pympress",
 	version=version,
