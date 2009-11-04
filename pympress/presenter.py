@@ -127,7 +127,7 @@ class Presenter:
         self.label_current.set_justify(gtk.JUSTIFY_CENTER)
         self.label_current.set_use_markup(True)
         self.eb_current.add(self.label_current)
-        self.entry_current = gtk.Entry()        
+        self.entry_current = gtk.Entry()
         self.entry_current.set_alignment(0.5)
         self.entry_current.modify_font(pango.FontDescription('36'))
 
@@ -240,7 +240,7 @@ class Presenter:
         This function replaces the label with an entry when clicked, replaces
         the entry with a label when needed, etc. The nasty stuff it does is an
         ancient kind of dark magic that should be avoided as much as possible...
-        
+
         @param widget: the widget in which the event occured
         @type  widget: gtk.Widget
         @param event: the event that occured
@@ -254,7 +254,7 @@ class Presenter:
             # Set entry text
             self.entry_current.set_text("%d/%d" % (self.doc.nb_current+1, self.doc.nb_pages))
             self.entry_current.select_region(0, -1)
-            
+
             # Replace label with entry
             self.eb_current.remove(self.label_current)
             self.eb_current.add(self.entry_current)
@@ -284,7 +284,7 @@ class Presenter:
 
             # Escape key --> just restore the label
             elif name == "Escape":
-                self.restore_current_label()                
+                self.restore_current_label()
 
         # Propagate the event further
         return False
