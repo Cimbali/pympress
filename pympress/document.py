@@ -267,7 +267,7 @@ class Document:
         self.nb_current, first, second = self.get_two_pages(page)
 
         # Create windows
-        self.presenter = pympress.presenter.Presenter(first, second, self.nb_current, self.nb_pages, self.navigation_cb, self.link_cb)
+        self.presenter = pympress.presenter.Presenter(self)
         self.content = pympress.content.Content(first, self.navigation_cb, self.link_cb)
 
     def get_two_pages(self, first):
@@ -306,9 +306,9 @@ class Document:
         @type  number: integer
         """
         page, current, next = self.get_two_pages(number)
+        self.nb_current = page
         self.content.set_page(current)
         self.presenter.set_page(current, next, page)
-        self.nb_current = page
 
     def next(self):
         """Switch to the next page."""

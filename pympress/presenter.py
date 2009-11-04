@@ -25,6 +25,7 @@ import pygtk
 pygtk.require('2.0')
 import gobject
 import gtk
+import pango
 
 import pympress.util
 
@@ -45,10 +46,8 @@ class Presenter:
     @ivar label_clock: clock label
     @type label_clock: gtk.Label
 
-    @ivar number_total: number of pages in the document
-    @type number_total: integer
-    @ivar number_current: current page number
-    @type number_current: integer
+    @ivar doc: current document
+    @type doc: L{pympress.Document}
     @ivar page_current: current page
     @type page_current: L{pympress.Page}
     @ivar page_next: next page
@@ -70,23 +69,10 @@ class Presenter:
     @type da_next: gtk.DrawingArea
     """
 
-    def __init__(self, current, next, number, total, navigation_cb, link_cb):
+    def __init__(self, doc):
         """
-        @param current: current page
-        @type  current: L{pympress.Page}
-        @param next: next page
-        @type  next: L{pympress.Page}
-        @param number: current page number
-        @type  number: integer
-        @param total: number of pages in the document
-        @type  total: integer
-        @param navigation_cb: callback function that will be called when the
-        user interacts with the window to navigate from page to page (mouse
-        scroll, key press, etc.)
-        @type  navigation_cb: GTK event handler function
-        @param link_cb: callback function that will be called when the user
-        moves the mouse over a link or activates one
-        @type  link_cb: GTK event handler function
+        @param doc: current document
+        @type  doc: L{pympress.Document}
         """
         black = gtk.gdk.Color(0, 0, 0)
 
@@ -94,7 +80,7 @@ class Presenter:
         self.delta = 0
         self.paused = False
 
-        self.number_total = total
+        self.doc = doc
 
         # Window
         win = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -127,14 +113,23 @@ class Presenter:
         align.add(vbox)
         self.frame_current = gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
         vbox.pack_start(self.frame_current)
-        self.label_current = gtk.Label()
-        self.label_current.set_justify(gtk.JUSTIFY_CENTER)
-        self.label_current.set_use_markup(True)
-        vbox.pack_start(self.label_current, False, False, 10)
+        self.eb_current = gtk.EventBox()
+        self.eb_current.set_visible_window(False)
+        self.eb_current.connect("event", self.on_label_event)
+        vbox.pack_start(self.eb_current, False, False, 10)
         self.da_current = gtk.DrawingArea()
         self.da_current.modify_bg(gtk.STATE_NORMAL, black)
         self.da_current.connect("expose-event", self.on_expose)
         self.frame_current.add(self.da_current)
+
+        # "Current slide" label and entry
+        self.label_current = gtk.Label()
+        self.label_current.set_justify(gtk.JUSTIFY_CENTER)
+        self.label_current.set_use_markup(True)
+        self.eb_current.add(self.label_current)
+        self.entry_current = gtk.Entry()        
+        self.entry_current.set_alignment(0.5)
+        self.entry_current.modify_font(pango.FontDescription('36'))
 
         # "Next slide" frame
         frame = gtk.Frame("Next slide")
@@ -179,19 +174,20 @@ class Presenter:
 
         # Add events
         win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.SCROLL_MASK)
-        win.connect("key-press-event", navigation_cb)
-        win.connect("scroll-event", navigation_cb)
+        win.connect("key-press-event", self.doc.navigation_cb)
+        win.connect("scroll-event", self.doc.navigation_cb)
 
         if pympress.util.poppler_links_available():
             self.da_current.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
-            self.da_current.connect("button-press-event", link_cb, self.get_current_page)
-            self.da_current.connect("motion-notify-event", link_cb, self.get_current_page)
+            self.da_current.connect("button-press-event", self.doc.link_cb, self.get_current_page)
+            self.da_current.connect("motion-notify-event", self.doc.link_cb, self.get_current_page)
 
             self.da_next.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
-            self.da_next.connect("button-press-event", link_cb, self.get_next_page)
-            self.da_next.connect("motion-notify-event", link_cb, self.get_next_page)
+            self.da_next.connect("button-press-event", self.doc.link_cb, self.get_next_page)
+            self.da_next.connect("motion-notify-event", self.doc.link_cb, self.get_next_page)
 
         # Set page
+        number, current, next = doc.get_two_pages(doc.nb_current)
         self.set_page(current, next, number, False)
 
         # Setup timer
@@ -227,6 +223,72 @@ class Presenter:
                 cr.rectangle(0, 0, ww, wh)
                 cr.fill()
 
+    def restore_current_label(self):
+        """
+        Make sure that the current page number is displayed in a label and not
+        in an entry. If it is an entry, then replace it with the label.
+        """
+        child = self.eb_current.get_child()
+        if child is not self.label_current:
+            self.eb_current.remove(child)
+            self.eb_current.add(self.label_current)
+
+    def on_label_event(self, widget, event):
+        """
+        Manage events on the current slide label/entry.
+
+        This function replaces the label with an entry when clicked, replaces
+        the entry with a label when needed, etc. The nasty stuff it does is an
+        ancient kind of dark magic that should be avoided as much as possible...
+        
+        @param widget: the widget in which the event occured
+        @type  widget: gtk.Widget
+        @param event: the event that occured
+        @type  event: gtk.gdk.Event
+        """
+
+        widget = self.eb_current.get_child()
+
+        # Click on the label
+        if widget is self.label_current and event.type == gtk.gdk.BUTTON_PRESS:
+            # Set entry text
+            self.entry_current.set_text("%d/%d" % (self.doc.nb_current+1, self.doc.nb_pages))
+            self.entry_current.select_region(0, -1)
+            
+            # Replace label with entry
+            self.eb_current.remove(self.label_current)
+            self.eb_current.add(self.entry_current)
+            self.entry_current.show()
+            self.entry_current.grab_focus()
+
+        # Key pressed in the entry
+        elif widget is self.entry_current and event.type == gtk.gdk.KEY_RELEASE:
+            name = gtk.gdk.keyval_name(event.keyval)
+
+            # Return key --> restore label and goto page
+            if name == "Return":
+                text = self.entry_current.get_text()
+                self.restore_current_label()
+
+                # Deal with the text
+                n = self.doc.nb_current + 1
+                try:
+                    s = text.split('/')[0]
+                    n = int(s)
+                except ValueError:
+                    print "Invalid number: %s" % text
+
+                n -= 1
+                if n != self.doc.nb_current and n >= 0 and n < self.doc.nb_pages:
+                    self.doc.goto(n)
+
+            # Escape key --> just restore the label
+            elif name == "Escape":
+                self.restore_current_label()                
+
+        # Propagate the event further
+        return False
+
     def set_page(self, current, next, number, start = True):
         """
         Switch to another page and display it.
@@ -243,7 +305,6 @@ class Presenter:
         """
         self.page_current = current
         self.page_next = next
-        self.number_current = number
 
         # Aspect ratios
         pr = self.page_current.get_aspect_ratio()
@@ -287,13 +348,14 @@ class Presenter:
 
         text = "<span font='36'>%s</span>"
 
-        cur = "%d/%d" % (self.number_current+1, self.number_total)
+        cur = "%d/%d" % (self.doc.nb_current+1, self.doc.nb_pages)
         next = "--"
-        if self.number_current+2 <= self.number_total:
-            next = "%d/%d" % (self.number_current+2, self.number_total)
+        if self.doc.nb_current+2 <= self.doc.nb_pages:
+            next = "%d/%d" % (self.doc.nb_current+2, self.doc.nb_pages)
 
         self.label_current.set_markup(text % cur)
         self.label_next.set_markup(text % next)
+        self.restore_current_label()
 
     def update_time(self):
         """Update the timer and clock labels."""
