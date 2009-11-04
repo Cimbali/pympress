@@ -189,7 +189,7 @@ class Presenter:
 
             self.da_next.add_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK)
             self.da_next.connect("button-press-event", link_cb, self.get_next_page)
-        self.da_next.connect("motion-notify-event", link_cb, self.get_next_page)
+            self.da_next.connect("motion-notify-event", link_cb, self.get_next_page)
 
         # Set page
         self.set_page(current, next, number, False)

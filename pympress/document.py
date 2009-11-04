@@ -130,7 +130,7 @@ class Page:
                     page_num -= 1
 
                     my_link = Link(link.area.x1, link.area.y1, link.area.x2, link.area.y2, page_num)
-                self.links.append(my_link)
+                    self.links.append(my_link)
 
     def get_link_at(self, x, y):
         """
