@@ -322,8 +322,8 @@ class Presenter:
         # Update display
         self.update_numbers()
 
-        self.da_current.queue_draw()
-        self.da_next.queue_draw()
+        self.page_current.render_on(self.da_current)
+        self.page_next.render_on(self.da_next)
 
     def get_current_page(self):
         """
