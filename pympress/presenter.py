@@ -266,7 +266,7 @@ class Presenter:
             name = gtk.gdk.keyval_name(event.keyval)
 
             # Return key --> restore label and goto page
-            if name == "Return":
+            if name == "Return" or name == "KP_Return":
                 text = self.entry_current.get_text()
                 self.restore_current_label()
 
