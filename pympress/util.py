@@ -26,16 +26,19 @@ import os, os.path, sys
 import poppler
 
 def load_icons():
-    icons_path = os.path.join(os.path.dirname(sys.argv[0]), os.pardir, "share", "pixmaps")
+    path_to_pympress = os.path.realpath(sys.argv[0])
+    icons_path = os.path.join(os.path.dirname(path_to_pympress), os.pardir, "share", "pixmaps")
+    icons_path = os.path.normpath(icons_path)
 
     if not os.path.exists(os.path.join(icons_path, "pympress-16.png")):
         icons_path = "pixmaps"
-    print "Icons from %s" % icons_path
     
     icons = []
     for size in [16, 32, 48, 64, 128]:
-        icon = gtk.gdk.pixbuf_new_from_file(os.path.join(icons_path, "pympress-%d.png" % size))
-        icons.append(icon)
+        try:
+            icon = gtk.gdk.pixbuf_new_from_file(os.path.join(icons_path, "pympress-%d.png" % size))
+            icons.append(icon)
+        except: pass
     
     return icons
 
