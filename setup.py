@@ -25,28 +25,36 @@ import glob
 version="0.3"
 
 setup(name="pympress",
-	version=version,
-	description="A simple dual-screen PDF reader designed for presentations",
-	author="Thomas Jost",
-	author_email="thomas.jost@gmail.com",
-	url="http://www.pympress.org/",
-	download_url="http://github.com/Schnouki/pympress/downloads",
-	classifiers=[
-		'Development Status :: 4 - Beta',
-		'Environment :: X11 Applications :: GTK',
-		'Intended Audience :: End Users/Desktop',
-		'Intended Audience :: Information Technology',
-		'Intended Audience :: Science/Research',
-		'License :: OSI Approved :: GNU General Public License (GPL)',
-		'Natural Language :: English',
-		'Operating System :: POSIX',
-		'Programming Language :: Python',
-		'Topic :: Multimedia :: Graphics :: Presentation',
-		'Topic :: Multimedia :: Graphics :: Viewers',
-	],
-	packages=["pympress"],
-	scripts=["bin/pympress"],
-	data_files=[
-		("share/pixmaps", glob.glob("pixmaps/pympress*")),
-	],
+      version=version,
+      description="A simple dual-screen PDF reader designed for presentations",
+      author="Thomas Jost",
+      author_email="thomas.jost@gmail.com",
+      url="http://www.pympress.org/",
+      download_url="http://github.com/Schnouki/pympress/downloads",
+      classifiers=[
+          'Development Status :: 4 - Beta',
+          'Environment :: X11 Applications :: GTK',
+          'Intended Audience :: End Users/Desktop',
+          'Intended Audience :: Information Technology',
+          'Intended Audience :: Science/Research',
+          'License :: OSI Approved :: GNU General Public License (GPL)',
+          'Natural Language :: English',
+          'Operating System :: POSIX',
+          'Programming Language :: Python',
+          'Topic :: Multimedia :: Graphics :: Presentation',
+          'Topic :: Multimedia :: Graphics :: Viewers',
+      ],
+      packages=["pympress"],
+      scripts=["bin/pympress"],
+      data_files=[
+          ("share/pixmaps", glob.glob("pixmaps/pympress*")),
+      ],
 )
+
+##
+# Local Variables:
+# mode: python
+# indent-tabs-mode: nil
+# py-indent-offset: 4
+# fill-column: 80
+# end:
