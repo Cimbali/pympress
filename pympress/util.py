@@ -26,29 +26,38 @@ import os, os.path, sys
 import poppler
 
 def load_icons():
-	icons_path = os.path.join(os.path.dirname(sys.argv[0]), os.pardir, "share", "pixmaps")
+    icons_path = os.path.join(os.path.dirname(sys.argv[0]), os.pardir, "share", "pixmaps")
 
-	if not os.path.exists(os.path.join(icons_path, "pympress-16.png")):
-		icons_path = "pixmaps"
-	
-	icons = []
-	for size in [16, 32, 48, 64, 128]:
-		icon = gtk.gdk.pixbuf_new_from_file(os.path.join(icons_path, "pympress-%d.png" % size))
-		icons.append(icon)
-	
-	return icons
+    if not os.path.exists(os.path.join(icons_path, "pympress-16.png")):
+        icons_path = "pixmaps"
+    print "Icons from %s" % icons_path
+    
+    icons = []
+    for size in [16, 32, 48, 64, 128]:
+        icon = gtk.gdk.pixbuf_new_from_file(os.path.join(icons_path, "pympress-%d.png" % size))
+        icons.append(icon)
+    
+    return icons
 
 
 def poppler_links_available():
-	"""Check if hyperlink support is enabled in python-poppler.
+    """Check if hyperlink support is enabled in python-poppler.
 
-	@return: C{True} if hyperlink support is avaibable, C{False} otherwise
-	@rtype : boolean
-	"""
+    @return: C{True} if hyperlink support is avaibable, C{False} otherwise
+    @rtype : boolean
+    """
 
-	try:
-		type(poppler.ActionGotoDest)
-	except AttributeError:
-		return False
-	else:
-		return True
+    try:
+        type(poppler.ActionGotoDest)
+    except AttributeError:
+        return False
+    else:
+        return True
+
+##
+# Local Variables:
+# mode: python
+# indent-tabs-mode: nil
+# py-indent-offset: 4
+# fill-column: 80
+# end:
