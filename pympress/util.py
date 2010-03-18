@@ -22,23 +22,22 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+import pkg_resources
 import os, os.path, sys
 import poppler
 
 def load_icons():
-    path_to_pympress = os.path.realpath(sys.argv[0])
-    icons_path = os.path.join(os.path.dirname(path_to_pympress), os.pardir, "share", "pixmaps")
-    icons_path = os.path.normpath(icons_path)
-
-    if not os.path.exists(os.path.join(icons_path, "pympress-16.png")):
-        icons_path = "pixmaps"
-    
+    req = pkg_resources.Requirement.parse("pympress")
+    icon_names = pkg_resources.resource_listdir(req, "pixmaps")
     icons = []
-    for size in [16, 32, 48, 64, 128]:
+    for icon_name in icon_names:
+        if os.path.splitext(icon_name)[1].lower() != ".png": continue
+        icon_fn = pkg_resources.resource_filename(req, "pixmaps/%s" % icon_name)
         try:
-            icon = gtk.gdk.pixbuf_new_from_file(os.path.join(icons_path, "pympress-%d.png" % size))
-            icons.append(icon)
-        except: pass
+            icon_pixbuf = gtk.gdk.pixbuf_new_from_file(icon_fn)
+            icons.append(icon_pixbuf)
+        except Exception, e:
+            print e
     
     return icons
 
