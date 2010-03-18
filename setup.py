@@ -29,7 +29,7 @@ setup(name="pympress",
 	description="A simple dual-screen PDF reader designed for presentations",
 	author="Thomas Jost",
 	author_email="thomas.jost@gmail.com",
-	url="http://wiki.schnouki.net/dev:pympress:accueil",
+	url="http://www.pympress.org/",
 	download_url="http://github.com/Schnouki/pympress/downloads",
 	classifiers=[
 		'Development Status :: 4 - Beta',
