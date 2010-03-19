@@ -218,6 +218,9 @@ class Document:
         # Number of the current page
         self.cur_page = page
 
+        # Pages cache
+        self.pages_cache = {}
+
         # Create windows
         self.ui = pympress.ui.UI(self)
         self.ui.on_page_change(False)
@@ -229,7 +232,9 @@ class Document:
         if number >= self.nb_pages or number < 0:
             return None
 
-        return Page(self.doc, number)
+        if not number in self.pages_cache:
+            self.pages_cache[number] = Page(self.doc, number)
+        return self.pages_cache[number]
     
 
     def current_page(self):
