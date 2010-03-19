@@ -79,8 +79,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # Really open the PDF file
-    doc = pympress.document.Document("file://" + name)
-    doc.run()
+    pympress.document.Document("file://" + name)
 
 ##
 # Local Variables:
