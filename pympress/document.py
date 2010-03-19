@@ -220,7 +220,7 @@ class Document:
 
         # Create windows
         self.ui = pympress.ui.UI(self)
-        self.ui.on_page_change()
+        self.ui.on_page_change(False)
         self.ui.run()
 
 

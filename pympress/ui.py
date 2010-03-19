@@ -68,7 +68,7 @@ class UI:
         # Presenter window
         self.start_time = 0
         self.delta = 0
-        self.paused = False
+        self.paused = True
 
         p_win = gtk.Window(gtk.WINDOW_TOPLEVEL)
         p_win.set_title("pympress presenter")
@@ -180,7 +180,7 @@ class UI:
         self.fullscreen = False
 
         # Setup timer
-        gobject.timeout_add(1000, self.update_time)
+        gobject.timeout_add(250, self.update_time)
         
         # Document
         self.doc = doc
@@ -195,7 +195,7 @@ class UI:
         gtk.main()
 
 
-    def on_page_change(self):
+    def on_page_change(self, unpause=True):
         """
         Switch to another page and display it.
         """
@@ -212,8 +212,10 @@ class UI:
             self.p_frame_next.set_property("ratio", pr)
 
         # Start counter if needed
-        if not self.paused and self.start_time == 0:
-            self.start_time = time.time()
+        if unpause:
+            self.paused = False
+            if self.start_time == 0:
+                self.start_time = time.time()
 
         # Update display
         self.update_page_numbers()
@@ -455,8 +457,6 @@ class UI:
         # Time elapsed since the beginning of the presentation
         if not self.paused:
             self.delta = time.time() - self.start_time
-        if self.start_time == 0:
-            self.delta = 0
         elapsed = "%02d:%02d" % (int(self.delta/60), int(self.delta%60))
         if self.paused:
             elapsed += " (pause)"
@@ -475,11 +475,13 @@ class UI:
             self.paused = False
         else:
             self.paused = True
+        self.update_time()
 
 
     def reset_timer(self):
         """Reset the timer."""
-        self.start_time = 0
+        self.start_time = time.time()
+        self.update_time()
 
 
     def set_screensaver(self, must_disable):
