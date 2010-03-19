@@ -21,9 +21,6 @@
 
 import sys
 
-import pygtk
-pygtk.require('2.0')
-import gtk
 import poppler
 
 import pympress.ui
@@ -224,6 +221,7 @@ class Document:
         # Create windows
         self.ui = pympress.ui.UI(self)
         self.ui.on_page_change()
+        self.ui.run()
 
 
     def page(self, number):
@@ -248,11 +246,6 @@ class Document:
         return self.nb_pages
 
         
-    def run(self):
-        """Run the GTK main loop."""
-        gtk.main()
-
-
     def goto(self, number):
         """
         Switch to another page.

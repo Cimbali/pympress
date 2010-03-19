@@ -188,7 +188,12 @@ class UI:
         # Show all windows
         self.c_win.show_all()
         p_win.show_all()
-        
+
+
+    def run(self):
+        """Run the GTK main loop."""
+        gtk.main()
+
 
     def on_page_change(self):
         """
