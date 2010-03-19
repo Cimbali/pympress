@@ -239,15 +239,13 @@ class UI:
             # Next page: it can be None
             page = self.doc.next_page()
             if page is not None:
+                widget.show_all()
+                widget.parent.set_shadow_type(gtk.SHADOW_IN)
                 page.render_on(widget)
             else:
-                # Blank the widget
-                cr = widget.window.cairo_create()
-                cr.set_source_rgb(1, 1, 1)
-                cr.scale(1, 1)
-                ww, wh = widget.window.get_size()
-                cr.rectangle(0, 0, ww, wh)
-                cr.fill()
+                widget.hide_all()
+                widget.parent.set_shadow_type(gtk.SHADOW_NONE)
+
 
 
     def on_navigation(self, widget, event):
