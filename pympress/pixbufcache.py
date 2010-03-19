@@ -1,4 +1,4 @@
-#       widgetcache.py
+#       pixbufcache.py
 #
 #       Copyright 2010 Thomas Jost <thomas.jost@gmail.com>
 #

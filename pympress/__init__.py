@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-#
 #       __init__.py
 #
-#       Copyright 2009 Thomas Jost <thomas.jost@gmail.com>
+#       Copyright 2009, 2010 Thomas Jost <thomas.jost@gmail.com>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -19,4 +17,4 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-__all__ = ["document", "ui", "util"]
+__all__ = ["document", "pixbufcache", "ui", "util"]
