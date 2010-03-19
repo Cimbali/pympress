@@ -17,6 +17,8 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import os
+import sys
 import time
 
 import pygtk
@@ -24,9 +26,8 @@ pygtk.require('2.0')
 import gobject
 import gtk
 import pango
-import os
-import sys
 
+import pympress.pixbufcache
 import pympress.util
 
 class UI:
@@ -43,6 +44,9 @@ class UI:
         # Common to both windows
         icon_list = pympress.util.load_icons()
 
+        # Pixbuf cache
+        self.cache = pympress.pixbufcache.PixbufCache()
+
         # Content window
         self.c_win = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.c_win.set_title("pympress content")
@@ -57,6 +61,9 @@ class UI:
         self.c_da = gtk.DrawingArea()
         self.c_da.modify_bg(gtk.STATE_NORMAL, black)
         self.c_da.connect("expose-event", self.on_expose)
+        self.c_da.set_name("c_da")
+        self.cache.add_widget("c_da")
+        self.c_da.connect("configure-event", self.on_configure)
 
         self.c_frame.add(self.c_da)
         self.c_win.add(self.c_frame)
@@ -105,6 +112,9 @@ class UI:
         self.p_da_cur = gtk.DrawingArea()
         self.p_da_cur.modify_bg(gtk.STATE_NORMAL, black)
         self.p_da_cur.connect("expose-event", self.on_expose)
+        self.p_da_cur.set_name("p_da_cur")
+        self.cache.add_widget("p_da_cur")
+        self.p_da_cur.connect("configure-event", self.on_configure)
         self.p_frame_cur.add(self.p_da_cur)
 
         # "Current slide" label and entry
@@ -133,6 +143,9 @@ class UI:
         self.p_da_next = gtk.DrawingArea()
         self.p_da_next.modify_bg(gtk.STATE_NORMAL, black)
         self.p_da_next.connect("expose-event", self.on_expose)
+        self.p_da_next.set_name("p_da_next")
+        self.cache.add_widget("p_da_next")
+        self.p_da_next.connect("configure-event", self.on_configure)
         self.p_frame_next.add(self.p_da_next)
 
         # "Time elapsed" frame
@@ -230,29 +243,44 @@ class UI:
         """
         Manage expose events by rendering the current page to the Content
         window.
-
-        This function may be called manually to force the Content window to be
-        refreshed immediately.
-
-        @param widget: the widget in which the expose event occured
-        @type  widget: gtk.Widget
-        @param event: the event that occured
-        @type  event: gtk.gdk.Event
         """
+
         if widget in [self.c_da, self.p_da_cur]:
-            self.render_page(self.doc.current_page(), widget)
-      
+            # Current page
+            page = self.doc.current_page()
         else:
             # Next page: it can be None
             page = self.doc.next_page()
-            if page is not None:
-                widget.show_all()
-                widget.parent.set_shadow_type(gtk.SHADOW_IN)
-                self.render_page(page, widget)
-            else:
+            if page is None:
                 widget.hide_all()
                 widget.parent.set_shadow_type(gtk.SHADOW_NONE)
+                return
+            else:
+                widget.show_all()
+                widget.parent.set_shadow_type(gtk.SHADOW_IN)
 
+        # Instead of rendering the document to a Cairo surface (which is slow),
+        # use a pixbuf from the cache if possible.
+        name = widget.get_name()
+        nb = page.number()
+        pb = self.cache.get(name, nb)
+
+        if pb is None:
+            # Cache miss: render the page, and save it to the cache
+            self.render_page(page, widget)
+            ww, wh = widget.window.get_size()
+            pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)
+            pb.get_from_drawable(widget.window, widget.window.get_colormap(), 0, 0, 0, 0, ww, wh)
+            self.cache.set(name, nb, pb)
+        else:
+            # Cache hit: draw the pixbuf from the cache to the widget
+            gc = widget.window.new_gc()
+            widget.window.draw_pixbuf(gc, pb, 0, 0, 0, 0)
+
+
+    def on_configure(self, widget, event):
+        self.cache.resize_widget(widget.get_name(), event.width, event.height)
+        
 
     def on_navigation(self, widget, event):
         """
