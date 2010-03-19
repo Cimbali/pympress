@@ -149,8 +149,11 @@ class Page:
         otherwise
         @rtype: L{pympress.Link}
         """
+        xx = self.pw * x
+        yy = self.ph * (1. - y)
+        
         for link in self.links:
-            if link.is_over(x, y):
+            if link.is_over(xx, yy):
                 return link
 
         return None
@@ -171,61 +174,9 @@ class Page:
         """
         return self.pw / self.ph
 
-    def get_page_coords(self, widget, x, y):
-        """
-        Compute page coordinates from the widget-relative ones.
-
-        @param widget: widget on which the page is displayed
-        @type  widget: gtk.Widget
-        @param x: x input coordinate
-        @type  x: float
-        @param y: y input coordinate
-        @type  y: float
-        @return: tuple of real coordinates
-        @rtype: (float, float)
-        """
-        # Widget size
-        ww, wh = widget.window.get_size()
-
-        # Page coordinates
-        px = x * (self.pw/ww)
-        py = self.ph - (y * (self.ph/wh))
-
-        return (px, py)
-
-
-    def render_on(self, widget):
-        """
-        Render the page on the specified widget.
-
-        @param widget: widget on which the page must be rendered
-        @type  widget: gtk.Widget
-        """
-        # Make sure the object is initialized
-        if widget.window is None:
-            return
-
-        # Widget size
-        ww, wh = widget.window.get_size()
-
-        # Manual double buffering (since we use direct drawing instead of
-        # calling queue_draw() on the widget)
-        widget.window.begin_paint_rect(gtk.gdk.Rectangle(0, 0, ww, wh))
-
-        cr = widget.window.cairo_create()
-        cr.set_source_rgb(1, 1, 1)
-
-        # Scale
-        scale = min(ww/self.pw, wh/self.ph)
-        cr.scale(scale, scale)
-
-        cr.rectangle(0, 0, self.pw, self.ph)
-        cr.fill()
+    def render_cairo(self, cr):
+        """Render the page on a Cairo surface"""
         self.page.render(cr)
-
-        # Blit off-screen buffer to screen
-        widget.window.end_paint()
-
 
 
 class Document:

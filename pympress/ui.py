@@ -233,7 +233,7 @@ class UI:
         @type  event: gtk.gdk.Event
         """
         if widget in [self.c_da, self.p_da_cur]:
-            self.doc.current_page().render_on(widget)
+            self.render_page(self.doc.current_page(), widget)
       
         else:
             # Next page: it can be None
@@ -241,11 +241,10 @@ class UI:
             if page is not None:
                 widget.show_all()
                 widget.parent.set_shadow_type(gtk.SHADOW_IN)
-                page.render_on(widget)
+                self.render_page(page, widget)
             else:
                 widget.hide_all()
                 widget.parent.set_shadow_type(gtk.SHADOW_NONE)
-
 
 
     def on_navigation(self, widget, event):
@@ -279,6 +278,7 @@ class UI:
         else:
             print "Unknown event %s" % event.type        
 
+
     def on_link(self, widget, event):
         """
         Manage events related to hyperlinks.
@@ -300,9 +300,10 @@ class UI:
         else:
             page = self.doc.current_page()
             
-        # Get link
+        # Normalize event coordinates and get link
         x, y = event.get_coords()
-        x2, y2 = page.get_page_coords(widget, x, y)
+        ww, wh = widget.window.get_size()
+        x2, y2 = x/ww, y/wh
         link = page.get_link_at(x2, y2)
 
         # Event type?
@@ -377,6 +378,39 @@ class UI:
         # Propagate the event further
         return False
 
+
+
+    def render_page(self, page, widget):
+        """Render the page on the specified widget."""
+
+        # Make sure the widget is initialized
+        if widget.window is None:
+            return
+
+        # Widget size
+        ww, wh = widget.window.get_size()
+
+        # Page size
+        pw, ph = page.get_size()
+
+        # Manual double buffering (since we use direct drawing instead of
+        # calling queue_draw() on the widget)
+        widget.window.begin_paint_rect(gtk.gdk.Rectangle(0, 0, ww, wh))
+
+        cr = widget.window.cairo_create()
+        cr.set_source_rgb(1, 1, 1)
+
+        # Scale
+        scale = min(ww/pw, wh/ph)
+        cr.scale(scale, scale)
+
+        cr.rectangle(0, 0, pw, ph)
+        cr.fill()
+        page.render_cairo(cr)
+
+        # Blit off-screen buffer to screen
+        widget.window.end_paint()
+    
 
     def restore_current_label(self):
         """
