@@ -26,8 +26,7 @@ pygtk.require('2.0')
 import gtk
 import poppler
 
-import pympress.content
-import pympress.presenter
+import pympress.ui
 import pympress.util
 
 
@@ -109,6 +108,7 @@ class Page:
         @param number: integer
         """
         self.page = doc.get_page(number)
+        self.page_nb = number
 
         # Read page size
         self.pw, self.ph = self.page.get_size()
@@ -131,6 +131,10 @@ class Page:
 
                     my_link = Link(link.area.x1, link.area.y1, link.area.x2, link.area.y2, page_num)
                     self.links.append(my_link)
+
+    def number(self):
+        """Return the page number"""
+        return self.page_nb
 
     def get_link_at(self, x, y):
         """
@@ -263,40 +267,40 @@ class Document:
         # Pages number
         self.nb_pages = self.doc.get_n_pages()
 
-        # Open first two pages
-        self.nb_current, first, second = self.get_two_pages(page)
+        # Number of the current page
+        self.cur_page = page
 
         # Create windows
-        self.presenter = pympress.presenter.Presenter(self)
-        self.content = pympress.content.Content(first, self.navigation_cb, self.link_cb)
+        self.ui = pympress.ui.UI(self)
+        self.ui.on_page_change()
 
-    def get_two_pages(self, first):
-        """
-        Return the specified page and the next one. If there is no next page,
-        C{None} is used instead. The number of the actual first page is returned
-        first in case the specified number was not correct (i.e. too low or too
-        big).
 
-        @param first: number of the first page to retrieve
-        @type  first: integer
-        @return: number of the first page, first page, next one
-        @rtype: (integer, L{pympress.Page}, L{pympress.Page})
-        """
-        if first >= self.nb_pages:
-            first = self.nb_pages-1
-        elif first < 0:
-            first = 0
-        page = Page(self.doc, first)
+    def page(self, number):
+        """Return the specified page. If it does not exist, return None instead."""
+        if number >= self.nb_pages or number < 0:
+            return None
 
-        next = None
-        if first+1 < self.nb_pages:
-            next = Page(self.doc, first+1)
+        return Page(self.doc, number)
+    
 
-        return (first, page, next)
+    def current_page(self):
+        """Return the current page."""
+        return self.page(self.cur_page)
 
+    def next_page(self):
+        """Return the next page."""
+        return self.page(self.cur_page + 1)
+
+
+    def pages_number(self):
+        """Return the number of pages in the document."""
+        return self.nb_pages
+
+        
     def run(self):
         """Run the GTK main loop."""
         gtk.main()
+
 
     def goto(self, number):
         """
@@ -305,92 +309,23 @@ class Document:
         @param number: number of the destination page
         @type  number: integer
         """
-        page, current, next = self.get_two_pages(number)
-        self.nb_current = page
-        self.content.set_page(current)
-        self.presenter.set_page(current, next, page)
+        if number < 0:
+            number = 0
+        elif number >= self.nb_pages:
+            number = self.nb_pages - 1
+            
+        if number != self.cur_page:
+            self.cur_page = number
+            self.ui.on_page_change()
 
-    def next(self):
+    def goto_next(self):
         """Switch to the next page."""
-        self.goto(self.nb_current + 1)
+        self.goto(self.cur_page + 1)
 
-    def prev(self):
+    def goto_prev(self):
         """Switch to the previous page."""
-        self.goto(self.nb_current - 1)
+        self.goto(self.cur_page - 1)
 
-    def fullscreen(self):
-        """Switch between fullscreen and normal mode."""
-        self.content.switch_fullscreen()
-
-    def navigation_cb(self, widget, event):
-        """
-        Manage events as mouse scroll or clicks.
-
-        @param widget: the widget in which the event occured
-        @type  widget: gtk.Widget
-        @param event: the event that occured
-        @type  event: gtk.gdk.Event
-        """
-        if event.type == gtk.gdk.KEY_PRESS:
-            name = gtk.gdk.keyval_name(event.keyval)
-
-            if name in ["Right", "Down", "Page_Down", "space"]:
-                self.next()
-            elif name in ["Left", "Up", "Page_Up", "BackSpace"]:
-                self.prev()
-            elif (name.upper() in ["F", "F11"]) \
-                or (name == "Return" and event.state & gtk.gdk.MOD1_MASK) \
-                or (name.upper() == "L" and event.state & gtk.gdk.CONTROL_MASK):
-                self.fullscreen()
-            elif name.upper() == "Q":
-                gtk.main_quit()
-            elif name in ["p", "P", "Pause"]:
-                self.presenter.switch_pause()
-            elif name.upper() == "R":
-                self.presenter.reset_timer()
-
-        elif event.type == gtk.gdk.SCROLL:
-            if event.direction in [gtk.gdk.SCROLL_RIGHT, gtk.gdk.SCROLL_DOWN]:
-                self.next()
-            else:
-                self.prev()
-
-        else:
-            print "Unknown event %s" % event.type
-
-    def link_cb(self, widget, event, get_page):
-        """
-        Manage events related to hyperlinks.
-
-        @param widget: the widget in which the event occured
-        @type  widget: gtk.Widget
-        @param event: the event that occured
-        @type  event: gtk.gdk.Event
-        @param get_page: method returning the L{pympress.Page} on which the
-        event occured
-        @type  get_page: callable returning a L{pympress.Page} (or C{None})
-        """
-        # Get link
-        page = get_page()
-        x, y = event.get_coords()
-        x2, y2 = page.get_page_coords(widget, x, y)
-        link = page.get_link_at(x2, y2)
-
-        # Event type?
-        if event.type == gtk.gdk.BUTTON_PRESS:
-            if link is not None:
-                dest = link.get_destination()
-                self.goto(dest)
-
-        elif event.type == gtk.gdk.MOTION_NOTIFY:
-            if link is not None:
-                cursor = gtk.gdk.Cursor(gtk.gdk.HAND2)
-                widget.window.set_cursor(cursor)
-            else:
-                widget.window.set_cursor(None)
-
-        else:
-            print "Unknown event %s" % event.type
 
 ##
 # Local Variables:
