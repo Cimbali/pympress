@@ -88,11 +88,6 @@ class UI:
         bigvbox = gtk.VBox(False, 2)
         p_win.add(bigvbox)
 
-        # A little space around everything in the window
-        align = gtk.Alignment(0.5, 0.5, 1, 1)
-        align.set_padding(20, 20, 20, 20)
-        bigvbox.pack_end(align)
-
         # UI Manager for menu
         ui_manager = gtk.UIManager()
 
@@ -139,13 +134,18 @@ class UI:
         menubar = ui_manager.get_widget('/MenuBar')
         h = ui_manager.get_widget('/MenuBar/Help')
         h.set_right_justified(True)
-        bigvbox.pack_start(menubar, False, True)
+        bigvbox.pack_start(menubar, False)
         
+        # A little space around everything in the window
+        align = gtk.Alignment(0.5, 0.5, 1, 1)
+        align.set_padding(20, 20, 20, 20)
+
         # Table
         table = gtk.Table(2, 10, False)
         table.set_col_spacings(25)
         table.set_row_spacings(25)
         align.add(table)
+        bigvbox.pack_end(align)
 
         # "Current slide" frame
         frame = gtk.Frame("Current slide")
@@ -222,7 +222,6 @@ class UI:
         self.label_clock.set_use_markup(True)
         align.add(self.label_clock)
 
-        bigvbox.pack_end(table, True, True, 0)
         p_win.connect("destroy", gtk.main_quit)
         p_win.show_all()
 
