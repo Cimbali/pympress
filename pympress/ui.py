@@ -361,6 +361,10 @@ class UI:
                 self.doc.goto_next()
             elif name in ["Left", "Up", "Page_Up", "BackSpace"]:
                 self.doc.goto_prev()
+            elif name == 'Home':
+                self.doc.goto_home()
+            elif name == 'End':
+                self.doc.goto_end()
             elif (name.upper() in ["F", "F11"]) \
                 or (name == "Return" and event.state & gtk.gdk.MOD1_MASK) \
                 or (name.upper() == "L" and event.state & gtk.gdk.CONTROL_MASK):

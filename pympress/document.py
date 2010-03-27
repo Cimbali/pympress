@@ -273,6 +273,14 @@ class Document:
         """Switch to the previous page."""
         self.goto(self.cur_page - 1)
 
+    def goto_home(self):
+        """Switch to the first page."""
+        self.goto(0)
+
+    def goto_end(self):
+        """Switch to the last page."""
+        self.goto(self.nb_pages-1)
+
 
 ##
 # Local Variables:
