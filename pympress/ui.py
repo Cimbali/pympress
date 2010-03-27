@@ -84,71 +84,68 @@ class UI:
         p_win.connect("delete-event", gtk.main_quit)
         p_win.set_icon_list(*icon_list)
 
+        # Put Menu and Table in VBox
+        bigvbox = gtk.VBox(False, 2)
+        p_win.add(bigvbox)
+
         # A little space around everything in the window
         align = gtk.Alignment(0.5, 0.5, 1, 1)
         align.set_padding(20, 20, 20, 20)
-        p_win.add(align)
+        bigvbox.pack_end(align)
 
-        # Put Menu and Table in VBox
-        bigvbox = gtk.VBox(False, 2)
-        align.add(bigvbox)
-        
-        # This is the ItemFactoryEntry structure used to generate new menus.
-        # Item 1: The menu path. The letter after the underscore indicates an
-        #       accelerator key once the menu is open.
-        # Item 2: The accelerator key for the entry
-        # Item 3: The callback.
-        # Item 4: The callback action. This changes the parameters with
-        #       which the callback is called. The default is 0.
-        # Item 5: The item type, used to define what kind of an item it is.
-        #     Here are the possible values:
-        #     NULL            -> "<Item>"
-        #     ""             -> "<Item>"
-        #     "<Title>"         -> create a title item
-        #     "<Item>"         -> create a simple item
-        #     "<CheckItem>"      -> create a check item
-        #     "<ToggleItem>"     -> create a toggle item
-        #     "<RadioItem>"      -> create a radio item
-        #     <path>           -> path of a radio item to link against
-        #     "<Separator>"      -> create a separator
-        #     "<Branch>"        -> create an item to hold sub items (optional)
-        #     "<LastBranch>"     -> create a right justified branch
-        self.menu_items = (
-          ( "/_File", None, None, 0, "<Branch>" ),
-          ( "/File/_Open", "<control>O", None, 0, None ),
-          ( "/File/sep1", None, None, 0, "<Separator>" ),
-          ( "/File/Quit", "q", gtk.main_quit, 0, None ),
-          ( "/_Presentation", None, None, 0, "<Branch>" ),
-          ( "/Presentation/Pause Timer", None, self.switch_pause, 0, "<ToggleItem>" ),
-          ( "/Presentation/Reset Timer", None, self.reset_timer, 0, None ),
-          ( "/Presentation/Fullscreen", "f", self.switch_fullscreen, 0, None ),
-          ( "/_Help", None, None, 0, "<LastBranch>" ),
-          ( "/_Help/About", None, self.menu_about, 0, None ),
-          )
-        accel_group = gtk.AccelGroup()
-        # This function initializes the item factory.
-        # Param 1: The type of menu - can be MenuBar, Menu,
-        #        or OptionMenu.
-        # Param 2: The path of the menu.
-        # Param 3: A reference to an AccelGroup. The item factory sets up
-        #        the accelerator table while generating menus.
-        item_factory = gtk.ItemFactory(gtk.MenuBar, "<main>", accel_group)
-        # This method generates the menu items. Pass to the item factory
-        # the list of menu items
-        item_factory.create_items(self.menu_items)
-        # Attach the new accelerator group to the window.
+        # UI Manager for menu
+        ui_manager = gtk.UIManager()
+
+        # UI description
+        ui_desc = '''
+        <menubar name="MenuBar">
+          <menu action="File">
+            <menuitem action="Quit"/>
+          </menu>
+          <menu action="Presentation">
+            <menuitem action="Pause timer"/>
+            <menuitem action="Reset timer"/>
+            <menuitem action="Fullscreen"/>
+          </menu>
+          <menu action="Help">
+            <menuitem action="About"/>
+          </menu>
+        </menubar>'''
+        ui_manager.add_ui_from_string(ui_desc)
+
+        # Accelerator group
+        accel_group = ui_manager.get_accel_group()
         p_win.add_accel_group(accel_group)
-        # need to keep a reference to item_factory to prevent its destruction
-        self.item_factory = item_factory
-        # Finally, return the actual menu bar created by the item factory.
-        menubar = item_factory.get_widget("<main>")
 
-        bigvbox.pack_start(menubar, False, True, 0)
+        # Action group
+        action_group = gtk.ActionGroup("MenuBar")
+        # Name, stock id, label, accelerator, tooltip, action [, is_active]
+        action_group.add_actions([
+            ("File",         None,           "_File"),
+            ("Presentation", None,           "_Presentation"),
+            ("Help",         None,           "_Help"),
+
+            ("Quit",         gtk.STOCK_QUIT, "_Quit",        "q",  None, gtk.main_quit),
+            ("Reset timer",  None,           "_Reset timer", "r",  None, self.reset_timer),
+            ("About",        None,           "_About",       None, None, self.menu_about),
+        ])
+        action_group.add_toggle_actions([
+            ("Pause timer",  None,           "_Pause timer", "p",  None, self.switch_pause,      True),
+            ("Fullscreen",   None,           "_Fullscreen",  "f",  None, self.switch_fullscreen, False),
+        ])
+        ui_manager.insert_action_group(action_group)
+
+        # Add menu bar to the window
+        menubar = ui_manager.get_widget('/MenuBar')
+        h = ui_manager.get_widget('/MenuBar/Help')
+        h.set_right_justified(True)
+        bigvbox.pack_start(menubar, False, True)
         
         # Table
         table = gtk.Table(2, 10, False)
         table.set_col_spacings(25)
         table.set_row_spacings(25)
+        align.add(table)
 
         # "Current slide" frame
         frame = gtk.Frame("Current slide")
