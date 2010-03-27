@@ -89,11 +89,66 @@ class UI:
         align.set_padding(20, 20, 20, 20)
         p_win.add(align)
 
+        # Put Menu and Table in VBox
+        bigvbox = gtk.VBox(False, 2)
+        align.add(bigvbox)
+        
+        # This is the ItemFactoryEntry structure used to generate new menus.
+        # Item 1: The menu path. The letter after the underscore indicates an
+        #       accelerator key once the menu is open.
+        # Item 2: The accelerator key for the entry
+        # Item 3: The callback.
+        # Item 4: The callback action. This changes the parameters with
+        #       which the callback is called. The default is 0.
+        # Item 5: The item type, used to define what kind of an item it is.
+        #     Here are the possible values:
+        #     NULL            -> "<Item>"
+        #     ""             -> "<Item>"
+        #     "<Title>"         -> create a title item
+        #     "<Item>"         -> create a simple item
+        #     "<CheckItem>"      -> create a check item
+        #     "<ToggleItem>"     -> create a toggle item
+        #     "<RadioItem>"      -> create a radio item
+        #     <path>           -> path of a radio item to link against
+        #     "<Separator>"      -> create a separator
+        #     "<Branch>"        -> create an item to hold sub items (optional)
+        #     "<LastBranch>"     -> create a right justified branch
+        self.menu_items = (
+          ( "/_File", None, None, 0, "<Branch>" ),
+          ( "/File/_Open", "<control>O", None, 0, None ),
+          ( "/File/sep1", None, None, 0, "<Separator>" ),
+          ( "/File/Quit", "q", gtk.main_quit, 0, None ),
+          ( "/_Presentation", None, None, 0, "<Branch>" ),
+          ( "/Presentation/Pause Timer", None, self.switch_pause, 0, "<ToggleItem>" ),
+          ( "/Presentation/Reset Timer", None, self.reset_timer, 0, None ),
+          ( "/Presentation/Fullscreen", "f", self.switch_fullscreen, 0, None ),
+          ( "/_Help", None, None, 0, "<LastBranch>" ),
+          ( "/_Help/About", None, self.menu_about, 0, None ),
+          )
+        accel_group = gtk.AccelGroup()
+        # This function initializes the item factory.
+        # Param 1: The type of menu - can be MenuBar, Menu,
+        #        or OptionMenu.
+        # Param 2: The path of the menu.
+        # Param 3: A reference to an AccelGroup. The item factory sets up
+        #        the accelerator table while generating menus.
+        item_factory = gtk.ItemFactory(gtk.MenuBar, "<main>", accel_group)
+        # This method generates the menu items. Pass to the item factory
+        # the list of menu items
+        item_factory.create_items(self.menu_items)
+        # Attach the new accelerator group to the window.
+        p_win.add_accel_group(accel_group)
+        # need to keep a reference to item_factory to prevent its destruction
+        self.item_factory = item_factory
+        # Finally, return the actual menu bar created by the item factory.
+        menubar = item_factory.get_widget("<main>")
+
+        bigvbox.pack_start(menubar, False, True, 0)
+        
         # Table
         table = gtk.Table(2, 10, False)
         table.set_col_spacings(25)
         table.set_row_spacings(25)
-        align.add(table)
 
         # "Current slide" frame
         frame = gtk.Frame("Current slide")
@@ -170,6 +225,11 @@ class UI:
         self.label_clock.set_use_markup(True)
         align.add(self.label_clock)
 
+        bigvbox.pack_end(table, True, True, 0)
+        p_win.connect("destroy", gtk.main_quit)
+        p_win.show_all()
+
+
         # Add events
         p_win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.SCROLL_MASK)
         p_win.connect("key-press-event", self.on_navigation)
@@ -206,6 +266,18 @@ class UI:
     def run(self):
         """Run the GTK main loop."""
         gtk.main()
+
+
+    def menu_about(self, widget=None, event=None):
+        about = gtk.AboutDialog()
+        about.set_program_name("pympress")
+        about.set_version("0.3")
+        about.set_copyright("(c) 2009, 2010 Thomas Jost")
+        about.set_comments("pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.")
+        about.set_website("http://www.pympress.org/")
+        #about.set_logo(gtk.gdk.pixbuf_new_from_file("pympress-128.png"))
+        about.run()
+        about.destroy()
 
 
     def on_page_change(self, unpause=True):
@@ -495,7 +567,7 @@ class UI:
         return True
 
 
-    def switch_pause(self):
+    def switch_pause(self, widget=None, event=None):
         """Switch the timer between paused mode and running (normal) mode."""
 
         if self.paused:
@@ -506,7 +578,7 @@ class UI:
         self.update_time()
 
 
-    def reset_timer(self):
+    def reset_timer(self, widget=None, event=None):
         """Reset the timer."""
         self.start_time = time.time()
         self.update_time()
@@ -561,7 +633,7 @@ class UI:
             print >>sys.stderr, "Warning: Unsupported OS: can't enable/disable screensaver"
 
 
-    def switch_fullscreen(self):
+    def switch_fullscreen(self, widget=None, event=None):
         """
         Switch the Content window to fullscreen (if in normal mode) or to normal
         mode (if fullscreen).
