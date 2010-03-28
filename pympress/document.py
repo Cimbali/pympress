@@ -173,6 +173,10 @@ class Page:
         """Render the page on a Cairo surface"""
         self.page.render(cr)
 
+    def render_pixbuf(self, pixbuf, width, height, scale):
+        """Render the page on a gtk.gdk.Pixbuf"""
+        self.page.render_to_pixbuf(0, 0, width, height, scale, 0, pixbuf)
+
 
 class Document:
     """

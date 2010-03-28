@@ -45,7 +45,7 @@ class UI:
         icon_list = pympress.util.load_icons()
 
         # Pixbuf cache
-        self.cache = pympress.pixbufcache.PixbufCache()
+        self.cache = pympress.pixbufcache.PixbufCache(doc)
 
         # Content window
         self.c_win = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -261,7 +261,10 @@ class UI:
 
     def run(self):
         """Run the GTK main loop."""
+        gtk.gdk.threads_init()
+        gtk.gdk.threads_enter()
         gtk.main()
+        gtk.gdk.threads_leave()
 
 
     def menu_about(self, widget=None, event=None):
@@ -305,6 +308,13 @@ class UI:
         self.on_expose(self.c_da)
         self.on_expose(self.p_da_cur)
         self.on_expose(self.p_da_next)
+
+        # Prerender the 4 next pages and the 2 previous ones
+        cur = page_cur.number()
+        page_max = min(self.doc.pages_number(), cur + 5)
+        page_min = max(0, cur - 2)
+        for p in range(cur+1, page_max) + range(cur, page_min, -1):
+            self.cache.prerender(p)        
 
 
     def on_expose(self, widget, event=None):
