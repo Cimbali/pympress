@@ -17,6 +17,11 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+"""
+:mod:`pympress.ui` -- GUI management
+------------------------------------
+"""
+
 import os
 import sys
 import time

@@ -17,6 +17,21 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+"""
+:mod:`pympress.document` -- document handling
+---------------------------------------------
+
+This modules contains several classes that are used for managing documents (only
+PDF documents are supported at the moment, but other formats may be added in the
+future).
+
+An important point is that this module is *completely* independant from the GUI:
+there should not be any GUI-related code here, except for page rendering (and
+only rendering itself: the preparation of the target surface must be done
+elsewhere).
+"""
+
+
 import sys
 
 import poppler
@@ -26,33 +41,31 @@ import pympress.util
 
 
 class Link:
-    """
-    This class encapsulates one hyperlink of the document.
+    """This class encapsulates one hyperlink of the document."""
 
-    @ivar x1: first x coordinate of the link rectangle
-    @type x1: float
-    @ivar y1: first y coordinate of the link rectangle
-    @type y1: float
-    @ivar x2: second x coordinate of the link rectangle
-    @type x2: float
-    @ivar y2: second y coordinate of the link rectangle
-    @type y2: float
-    @ivar dest: page number of the destination
-    @type dest: integer
-    """
+    #: First x coordinate of the link rectangle, as a float number
+    x1 = None
+    #: First y coordinate of the link rectangle, as a float number
+    y1 = None
+    #: Second x coordinate of the link rectangle, as a float number
+    x2 = None
+    #: Second y coordinate of the link rectangle, as a float number
+    y2 = None
+    #: Page number of the link destination
+    dest = None
 
     def __init__(self, x1, y1, x2, y2, dest):
         """
-        @param x1: first x coordinate of the link rectangle
-        @type  x1: float
-        @param y1: first y coordinate of the link rectangle
-        @type  y1: float
-        @param x2: second x coordinate of the link rectangle
-        @type  x2: float
-        @param y2: second y coordinate of the link rectangle
-        @type  y2: float
-        @param dest: page number of the destination
-        @type  dest: integer
+        :param x1: first x coordinate of the link rectangle
+        :type  x1: float
+        :param y1: first y coordinate of the link rectangle
+        :type  y1: float
+        :param x2: second x coordinate of the link rectangle
+        :type  x2: float
+        :param y2: second y coordinate of the link rectangle
+        :type  y2: float
+        :param dest: page number of the destination
+        :type  dest: integer
         """
         self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
         self.dest = dest
@@ -61,13 +74,13 @@ class Link:
         """
         Tell if the input coordinates are on the link rectangle.
 
-        @param x: input x coordinate
-        @type  x: float
-        @param y: input y coordinate
-        @type  y: float
-        @return: C{True} if the input coordinates are within the link rectangle,
-        C{False} otherwise
-        @rtype: boolean
+        :param x: input x coordinate
+        :type  x: float
+        :param y: input y coordinate
+        :type  y: float
+        :return: ``True`` if the input coordinates are within the link
+           rectangle, ``False`` otherwise
+        :rtype: boolean
         """
         return ( (self.x1 <= x) and (x <= self.x2) and (self.y1 <= y) and (y <= self.y2) )
 
@@ -75,8 +88,8 @@ class Link:
         """
         Get the link destination.
 
-        @return: destination page number
-        @rtype: integer
+        :return: destination page number
+        :rtype: integer
         """
         return self.dest
 
@@ -84,23 +97,30 @@ class Link:
 class Page:
     """
     Class representing a single page.
+    
+    It provides several methods used by the GUI for preparing windows for
+    displaying pages, managing hyperlinks, etc.
 
-    @ivar page: one page of the document
-    @type page: poppler.Page
-    @ivar links: list of all the links in the page
-    @type links: list of L{pympress.Link}s
-    @ivar pw: page width
-    @type pw: float
-    @ivar ph: page height
-    @type ph: float
     """
+
+    #: Page handled by this class (instance of :class:`poppler.Page`)
+    page = None
+    #: Number of the current page (starting from 0)
+    page_nb = -1
+    #: All the links in the page, as a list of :class:`~pympress.document.Link`
+    #: instances
+    links = []
+    #: Page width as a float
+    pw = 0.
+    #: Page height as a float
+    ph = 0.
 
     def __init__(self, doc, number):
         """
-        @param doc: the PDF document
-        @type  doc: poppler.Document
-        @param number: number of the page to fetch in the document
-        @param number: integer
+        :param doc: the PDF document
+        :type  doc: :class:`poppler.Document`
+        :param number: number of the page to fetch in the document
+        :type  number: integer
         """
         self.page = doc.get_page(number)
         self.page_nb = number
@@ -128,21 +148,21 @@ class Page:
                     self.links.append(my_link)
 
     def number(self):
-        """Return the page number"""
+        """Get the page number"""
         return self.page_nb
 
     def get_link_at(self, x, y):
         """
-        Get the L{pympress.Link} corresponding to the given position, or C{None}
-        if there is no link at this position.
+        Get the :class:`~pympress.document.Link` corresponding to the given
+        position, or ``None`` if there is no link at this position.
 
-        @param x: horizontal coordinate
-        @type  x: float
-        @param y: vertical coordinate
-        @type  y: float
-        @return: the link at the given coordinates if one exists, C{None}
-        otherwise
-        @rtype: L{pympress.Link}
+        :param x: horizontal coordinate
+        :type  x: float
+        :param y: vertical coordinate
+        :type  y: float
+        :return: the link at the given coordinates if one exists, ``None``
+           otherwise
+        :rtype: :class:`pympress.document.Link`
         """
         xx = self.pw * x
         yy = self.ph * (1. - y)
@@ -154,57 +174,71 @@ class Page:
         return None
 
     def get_size(self):
-        """Return the page size.
+        """Get the page size.
 
-        @return: page size
-        @rtype: (float, float)
+        :return: page size
+        :rtype: (float, float)
         """
         return (self.pw, self.ph)
 
     def get_aspect_ratio(self):
-        """Return the page aspect ratio.
+        """Get the page aspect ratio.
 
-        @return: page aspect ratio
-        @rtype: float
+        :return: page aspect ratio
+        :rtype: float
         """
         return self.pw / self.ph
 
     def render_cairo(self, cr):
-        """Render the page on a Cairo surface"""
+        """Render the page on a Cairo surface.
+
+        :param cr: target surface
+        :type  cr: :class:`gtk.gdk.CairoContext`
+        """
         self.page.render(cr)
 
     def render_pixbuf(self, pixbuf, width, height, scale):
-        """Render the page on a gtk.gdk.Pixbuf"""
+        """Render the page on a :class:`gtk.gdk.Pixbuf`.
+        
+        :param pixbuf: target pixbuf
+        :type  pixbuf: :class:`gtk.gdk.Pixbuf`
+        :param width: pixbuf width
+        :type  width: integer
+        :param height: pixbuf height
+        :type  height: integer
+        :param scale: scaling factor
+        :type  scale: float
+        """
         self.page.render_to_pixbuf(0, 0, width, height, scale, 0, pixbuf)
 
 
 class Document:
-    """
-    This is the main class. It deals with the Poppler library for PDF document
-    handling, and a little bit with the GUI too.
+    """This is the main document handling class.
 
-    @ivar doc: the PDF document that is currently displayed
-    @type doc: poppler.Document
-    @ivar nb_pages: number of pages in the document
-    @type nb_pages: integer
-    @ivar nb_current: number of the current page
-    @type nb_current: integer
-    @ivar presenter: pympress's Presenter window
-    @type presenter: L{pympress.Presenter}
-    @ivar content: pympress's Content window
-    @type content: L{pympress.Content}
-
-    @note: Page numbering starts at 0, so internally the first page is page 0,
-    the second page is page 1, etc.
+    .. note:: The internal page numbering scheme is the same as in Poppler: it
+       starts at 0.
     """
+
+    #: Current PDF document (:class:`poppler.Document` instance)
+    doc = None
+    #: Number of pages in the document
+    nb_pages = -1
+    #: Number of the current page
+    cur_page = -1
+    #: Pages cache (dictionary of :class:`pympress.document.Page`). This makes
+    #: navigation in the document faster by avoiding calls to Poppler when loading
+    #: a page that has already been loaded.
+    pages_cache = {}
+    #: Instance of :class:`pympress.ui.UI` used when opening a document
+    ui = None
 
     def __init__(self, uri, page=0):
         """
-        @param uri: URI to the PDF file to open (local only, starting with
-        file://)
-        @type  uri: string
-        @param page: page number to which the file should be opened
-        @type  page: integer
+        :param uri: URI to the PDF file to open (local only, starting with
+           :file:`file://`)
+        :type  uri: string
+        :param page: page number to which the file should be opened
+        :type  page: integer
         """
 
         # Check poppler-python version -- we need Bazaar rev. 62
@@ -230,7 +264,13 @@ class Document:
 
 
     def page(self, number):
-        """Return the specified page. If it does not exist, return None instead."""
+        """Get the specified page.
+        
+        :param number: number of the page to return
+        :type  number: integer
+        :return: the wanted page, or ``None`` if it does not exist
+        :rtype: :class:`pympress.document.Page`
+        """
         if number >= self.nb_pages or number < 0:
             return None
 
@@ -240,25 +280,36 @@ class Document:
     
 
     def current_page(self):
-        """Return the current page."""
+        """Get the current page.
+
+        :return: the current page
+        :rtype: :class:`pympress.document.Page`
+        """
         return self.page(self.cur_page)
 
     def next_page(self):
-        """Return the next page."""
+        """Get the next page.
+
+        :return: the next page, or ``None`` if this is the last page
+        :rtype: :class:`pympress.document.Page`
+        """
         return self.page(self.cur_page + 1)
 
 
     def pages_number(self):
-        """Return the number of pages in the document."""
+        """Get the number of pages in the document.
+
+        :return: the number of pages in the document
+        :rtype: integer
+        """
         return self.nb_pages
 
         
     def goto(self, number):
-        """
-        Switch to another page.
+        """Switch to another page.
 
-        @param number: number of the destination page
-        @type  number: integer
+        :param number: number of the destination page
+        :type  number: integer
         """
         if number < 0:
             number = 0

@@ -17,6 +17,11 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+"""
+:mod:`pympress.util` -- various utility functions
+-------------------------------------------------
+"""
+
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -25,6 +30,14 @@ import os, os.path, sys
 import poppler
 
 def load_icons():
+    """
+    Load pympress icons from the pixmaps directory (usually
+    :file:`/usr/share/pixmaps` or something similar).
+
+    :return: loaded icons
+    :rtype: list of :class:`gtk.gdk.Pixbuf`
+    """
+    
     req = pkg_resources.Requirement.parse("pympress")
     icon_names = pkg_resources.resource_listdir(req, "pixmaps")
     icons = []
@@ -41,10 +54,11 @@ def load_icons():
 
 
 def poppler_links_available():
-    """Check if hyperlink support is enabled in python-poppler.
+    """Check if hyperlinks are supported in python-poppler.
 
-    @return: C{True} if hyperlink support is avaibable, C{False} otherwise
-    @rtype : boolean
+    :return: ``True`` if python-poppler is recent enough to support hyperlinks,
+       ``False`` otherwise
+    :rtype: boolean
     """
 
     try:
