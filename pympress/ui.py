@@ -20,6 +20,13 @@
 """
 :mod:`pympress.ui` -- GUI management
 ------------------------------------
+
+This module contains the whole graphical user interface of pympress, which is
+made of two separate windows: the Content window, which displays only the
+current page in full size, and the Presenter window, which displays both the
+current and the next page, as well as a time counter and a clock.
+
+Both windows are managed by the :class:`~pympress.ui.UI` class.
 """
 
 import os
@@ -38,14 +45,60 @@ import pympress.pixbufcache
 import pympress.util
 
 class UI:
-    """
-    This class manages the GUI of pympress, which is made of two separate
-    windows: the Content window, which displays only the current page in full
-    size, and the Presenter window, which displays both the current and the next
-    page, as well as a time counter and a clock.
-    """
+    """Pympress GUI management."""
+
+    #: :class:`~pympress.pixbufcache.PixbufCache` instance.
+    cache = None
+
+    #: Content window, as a :class:`gtk.Window` instance.
+    c_win = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    #: :class:`~gtk.AspectFrame` for the Content window.
+    c_frame = gtk.AspectFrame(ratio=4./3., obey_child=False)
+    #: :class:`~gtk.DrawingArea` for the Content window.
+    c_da = gtk.DrawingArea()
+
+    #: :class:`~gtk.AspectFrame` for the current slide in the Presenter window.
+    p_frame_cur = gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
+    #: :class:`~gtk.DrawingArea` for the current slide in the Presenter window.
+    p_da_cur = gtk.DrawingArea()
+    #: Slide counter :class:`~gtk.Label` for the current slide.
+    label_cur = gtk.Label()
+    #: :class:`~gtk.EventBox` associated with the slide counter label in the Presenter window.
+    eb_cur = gtk.EventBox()
+    #: :class:`~gtk.Entry` used to switch to another slide by typing its number.
+    entry_cur = gtk.Entry()
+
+    #: :class:`~gtk.AspectFrame` for the next slide in the Presenter window.
+    p_frame_next = gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
+    #: :class:`~gtk.DrawingArea` for the next slide in the Presenter window.
+    p_da_next = gtk.DrawingArea()
+    #: Slide counter :class:`~gtk.Label` for the next slide.
+    label_next = gtk.Label()
+
+    #: Elapsed time :class:`~gtk.Label`.
+    label_time = gtk.Label()
+    #: Clock :class:`~gtk.Label`.
+    label_clock = gtk.Label()
+
+    #: Time at which the counter was started.
+    start_time = 0
+    #: Time elapsed since the beginning of the presentation.
+    delta = 0
+    #: Timer paused status.
+    paused = True
+
+    #: Fullscreen toggle. By default, don't start in fullscreen mode.
+    fullscreen = False
+
+    #: Current :class:`~pympress.document.Document` instance.
+    doc = None
+
 
     def __init__(self, doc):
+        """
+        :param doc: the current document
+        :type  doc: :class:`pympress.document.Document`
+        """
         black = gtk.gdk.Color(0, 0, 0)
 
         # Common to both windows
@@ -55,17 +108,14 @@ class UI:
         self.cache = pympress.pixbufcache.PixbufCache(doc)
 
         # Content window
-        self.c_win = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.c_win.set_title("pympress content")
         self.c_win.set_default_size(800, 600)
         self.c_win.modify_bg(gtk.STATE_NORMAL, black)
         self.c_win.connect("delete-event", gtk.main_quit)
         self.c_win.set_icon_list(*icon_list)
 
-        self.c_frame = gtk.AspectFrame(ratio=4./3., obey_child=False)
         self.c_frame.modify_bg(gtk.STATE_NORMAL, black)
 
-        self.c_da = gtk.DrawingArea()
         self.c_da.modify_bg(gtk.STATE_NORMAL, black)
         self.c_da.connect("expose-event", self.on_expose)
         self.c_da.set_name("c_da")
@@ -80,10 +130,6 @@ class UI:
         self.c_win.connect("scroll-event", self.on_navigation)
 
         # Presenter window
-        self.start_time = 0
-        self.delta = 0
-        self.paused = True
-
         p_win = gtk.Window(gtk.WINDOW_TOPLEVEL)
         p_win.set_title("pympress presenter")
         p_win.set_default_size(800, 600)
@@ -162,13 +208,10 @@ class UI:
         frame.add(align)
         vbox = gtk.VBox()
         align.add(vbox)
-        self.p_frame_cur = gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
         vbox.pack_start(self.p_frame_cur)
-        self.eb_cur = gtk.EventBox()
         self.eb_cur.set_visible_window(False)
         self.eb_cur.connect("event", self.on_label_event)
         vbox.pack_start(self.eb_cur, False, False, 10)
-        self.p_da_cur = gtk.DrawingArea()
         self.p_da_cur.modify_bg(gtk.STATE_NORMAL, black)
         self.p_da_cur.connect("expose-event", self.on_expose)
         self.p_da_cur.set_name("p_da_cur")
@@ -177,11 +220,9 @@ class UI:
         self.p_frame_cur.add(self.p_da_cur)
 
         # "Current slide" label and entry
-        self.label_cur = gtk.Label()
         self.label_cur.set_justify(gtk.JUSTIFY_CENTER)
         self.label_cur.set_use_markup(True)
         self.eb_cur.add(self.label_cur)
-        self.entry_cur = gtk.Entry()
         self.entry_cur.set_alignment(0.5)
         self.entry_cur.modify_font(pango.FontDescription('36'))
 
@@ -193,13 +234,10 @@ class UI:
         frame.add(align)
         vbox = gtk.VBox()
         align.add(vbox)
-        self.p_frame_next = gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
         vbox.pack_start(self.p_frame_next)
-        self.label_next = gtk.Label()
         self.label_next.set_justify(gtk.JUSTIFY_CENTER)
         self.label_next.set_use_markup(True)
         vbox.pack_start(self.label_next, False, False, 10)
-        self.p_da_next = gtk.DrawingArea()
         self.p_da_next.modify_bg(gtk.STATE_NORMAL, black)
         self.p_da_next.connect("expose-event", self.on_expose)
         self.p_da_next.set_name("p_da_next")
@@ -213,7 +251,6 @@ class UI:
         align = gtk.Alignment(0.5, 0.5, 1, 1)
         align.set_padding(10, 10, 12, 0)
         frame.add(align)
-        self.label_time = gtk.Label()
         self.label_time.set_justify(gtk.JUSTIFY_CENTER)
         self.label_time.set_use_markup(True)
         align.add(self.label_time)
@@ -224,7 +261,6 @@ class UI:
         align = gtk.Alignment(0.5, 0.5, 1, 1)
         align.set_padding(10, 10, 12, 0)
         frame.add(align)
-        self.label_clock = gtk.Label()
         self.label_clock.set_justify(gtk.JUSTIFY_CENTER)
         self.label_clock.set_use_markup(True)
         align.add(self.label_clock)
@@ -252,9 +288,6 @@ class UI:
             self.p_da_next.connect("button-press-event", self.on_link)
             self.p_da_next.connect("motion-notify-event", self.on_link)
 
-        # Don't start in fullscreen mode
-        self.fullscreen = False
-
         # Setup timer
         gobject.timeout_add(250, self.update_time)
         
@@ -275,6 +308,7 @@ class UI:
 
 
     def menu_about(self, widget=None, event=None):
+        """Display the "About pympress" dialog."""
         about = gtk.AboutDialog()
         about.set_program_name("pympress")
         about.set_version(pympress.__version__)
@@ -294,6 +328,13 @@ class UI:
     def on_page_change(self, unpause=True):
         """
         Switch to another page and display it.
+
+        This is a kind of event which is supposed to be called only from the
+        :class:`~pympress.document.Document` class.
+
+        :param unpause: ``True`` if the page change should unpause the timer,
+           ``False`` otherwise
+        :type  unpause: boolean
         """
         page_cur = self.doc.current_page()
         page_next = self.doc.next_page()
@@ -331,8 +372,17 @@ class UI:
 
     def on_expose(self, widget, event=None):
         """
-        Manage expose events by rendering the current page to the Content
-        window.
+        Manage expose events for both windows.
+
+        This callback may be called either directly on a page change or as an
+        event handler by GTK. In both cases, it determines which widget needs to
+        be updated, and updates it, using the
+        :class:`~pympress.pixbufcache.PixbufCache` if possible.
+
+        :param widget: the widget to update
+        :type  widget: :class:`gtk.Widget`
+        :param event: the GTK event (or ``None`` if called directly)
+        :type  event: :class:`gtk.gdk.Event`
         """
 
         if widget in [self.c_da, self.p_da_cur]:
@@ -369,12 +419,32 @@ class UI:
 
 
     def on_configure(self, widget, event):
+        """
+        Manage "configure" events for both windows.
+
+        In the GTK world, this event is triggered when a widget's configuration
+        is modified, for example when its size changes. So, when this event is
+        triggered, we tell the local :class:`~pympress.pixbufcache.PixbufCache`
+        instance about it, so that it can invalidate its internal cache for the
+        specified widget and pre-render next pages at a correct size.
+
+        :param widget: the widget which has been resized
+        :type  widget: :class:`gtk.Widget`
+        :param event: the GTK event, which contains the new dimensions of the
+           widget
+        :type  event: :class:`gtk.gdk.Event`
+        """
         self.cache.resize_widget(widget.get_name(), event.width, event.height)
         
 
     def on_navigation(self, widget, event):
         """
-        Manage events as mouse scroll or clicks.
+        Manage events as mouse scroll or clicks for both windows.
+
+        :param widget: the widget in which the event occured (ignored)
+        :type  widget: :class:`gtk.Widget`
+        :param event: the event that occured
+        :type  event: :class:`gtk.gdk.Event`
         """
         if event.type == gtk.gdk.KEY_PRESS:
             name = gtk.gdk.keyval_name(event.keyval)
@@ -412,13 +482,10 @@ class UI:
         """
         Manage events related to hyperlinks.
 
-        @param widget: the widget in which the event occured
-        @type  widget: gtk.Widget
-        @param event: the event that occured
-        @type  event: gtk.gdk.Event
-        @param get_page: method returning the L{pympress.Page} on which the
-        event occured
-        @type  get_page: callable returning a L{pympress.Page} (or C{None})
+        :param widget: the widget in which the event occured
+        :type  widget: :class:`gtk.Widget`
+        :param event: the event that occured
+        :type  event: :class:`gtk.gdk.Event`
         """
 
         # Where did the event occur?
@@ -459,6 +526,11 @@ class UI:
         This function replaces the label with an entry when clicked, replaces
         the entry with a label when needed, etc. The nasty stuff it does is an
         ancient kind of dark magic that should be avoided as much as possible...
+
+        :param widget: the widget in which the event occured
+        :type  widget: :class:`gtk.Widget`
+        :param event: the event that occured
+        :type  event: :class:`gtk.gdk.Event`
         """
 
         widget = self.eb_cur.get_child()
@@ -510,7 +582,18 @@ class UI:
 
 
     def render_page(self, page, widget):
-        """Render the page on the specified widget."""
+        """
+        Render a page on a widget.
+
+        This function takes care of properly initializing the widget so that
+        everything looks fine in the end. The rendering to a Cairo surface is
+        done using the :meth:`pympress.document.Page.render_cairo` method.
+
+        :param page: the page to render
+        :type  page: :class:`pympress.document.Page`
+        :param widget: the widget on which the page must be rendered
+        :type  widget: :class:`gtk.DrawingArea`
+        """
 
         # Make sure the widget is initialized
         if widget.window is None:
@@ -569,7 +652,12 @@ class UI:
 
 
     def update_time(self):
-        """Update the timer and clock labels."""
+        """
+        Update the timer and clock labels.
+
+        :return: ``True`` (to prevent the timer from stopping)
+        :rtype: boolean
+        """
 
         text = "<span font='36'>%s</span>"
 
@@ -610,13 +698,13 @@ class UI:
         """
         Enable or disable the screensaver.
 
-        @bug: At the moment, this is only supported on POSIX systems where
-        xdg-screensaver is installed and working. For now, I{this feature has
-        only been tested on Linux}.
+        .. warning:: At the moment, this is only supported on POSIX systems
+           where :command:`xdg-screensaver` is installed and working. For now,
+           this feature has only been tested on **Linux with xscreensaver**.
 
-        @param must_disable: if C{True}, indicates that the screensaver must be
-        disabled; otherwise it will be enabled
-        @type  must_disable: boolean
+        :param must_disable: if ``True``, indicates that the screensaver must be
+           disabled; otherwise it will be enabled
+        :type  must_disable: boolean
         """
         if os.name == 'posix':
             # On Linux, set screensaver with xdg-screensaver
