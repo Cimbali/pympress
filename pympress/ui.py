@@ -26,6 +26,8 @@ import os
 import sys
 import time
 
+import pkg_resources
+
 import pygtk
 pygtk.require('2.0')
 import gobject
@@ -279,7 +281,12 @@ class UI:
         about.set_copyright("(c) 2009, 2010 Thomas Jost")
         about.set_comments("pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.")
         about.set_website("http://www.pympress.org/")
-        #about.set_logo(gtk.gdk.pixbuf_new_from_file("pympress-128.png"))
+        try:
+            req = pkg_resources.Requirement.parse("pympress")
+            icon_fn = pkg_resources.resource_filename(req, "pixmaps/pympress-128.png")
+            about.set_logo(gtk.gdk.pixbuf_new_from_file(icon_fn))
+        except Exception, e:
+            print e
         about.run()
         about.destroy()
 
