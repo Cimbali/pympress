@@ -47,7 +47,7 @@ setup(name="pympress",
       packages=["pympress"],
       scripts=["bin/pympress"],
       data_files=[
-          ("share/pixmaps", glob.glob("pixmaps/pympress*")),
+          ("share/pixmaps", glob.glob("share/pixmaps/pympress*")),
       ],
 )
 
