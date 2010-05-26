@@ -317,7 +317,7 @@ class UI:
         about.set_website("http://www.pympress.org/")
         try:
             req = pkg_resources.Requirement.parse("pympress")
-            icon_fn = pkg_resources.resource_filename(req, "pixmaps/pympress-128.png")
+            icon_fn = pkg_resources.resource_filename(req, "share/pixmaps/pympress-128.png")
             about.set_logo(gtk.gdk.pixbuf_new_from_file(icon_fn))
         except Exception, e:
             print e

@@ -39,11 +39,11 @@ def load_icons():
     """
     
     req = pkg_resources.Requirement.parse("pympress")
-    icon_names = pkg_resources.resource_listdir(req, "pixmaps")
+    icon_names = pkg_resources.resource_listdir(req, "share/pixmaps")
     icons = []
     for icon_name in icon_names:
         if os.path.splitext(icon_name)[1].lower() != ".png": continue
-        icon_fn = pkg_resources.resource_filename(req, "pixmaps/%s" % icon_name)
+        icon_fn = pkg_resources.resource_filename(req, "share/pixmaps/%s" % icon_name)
         try:
             icon_pixbuf = gtk.gdk.pixbuf_new_from_file(icon_fn)
             icons.append(icon_pixbuf)
