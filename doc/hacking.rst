@@ -20,6 +20,9 @@ several modules:
 - :mod:`pympress.util`, which contains several utility functions
 
 
+Modules documentation
+---------------------
+
 .. automodule:: pympress.document
    :members:
 
@@ -32,3 +35,10 @@ several modules:
 .. automodule:: pympress.util
    :members:
 
+
+Indices and tables
+------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

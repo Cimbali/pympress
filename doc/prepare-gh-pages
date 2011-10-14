@@ -1,0 +1,24 @@
+#!/bin/sh
+
+TEMPFILE=/tmp/pympress-gh-pages
+
+if [[ "$(basename $(pwd))" != "pympress" ]]; then
+    echo "Please run me from the repository root!"
+    exit 1
+fi
+
+cd doc
+rm -rf _build
+
+make clean && \
+    make html && \
+    tar cf /tmp/pympress-gh-pages.tar -C _build/html . && \
+    cd .. && \
+    git checkout gh-pages && \
+    git clean -fdx && \
+    rm -rf *.html *.js _images _sources _static && \
+    tar xf /tmp/pympress-gh-pages.tar && \
+    rm /tmp/pympress-gh-pages.tar && \
+    echo "pympress.org" > CNAME && \
+    touch .nojekyll && \
+    git status
