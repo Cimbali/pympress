@@ -93,6 +93,8 @@ class UI:
     #: Current :class:`~pympress.document.Document` instance.
     doc = None
 
+    #: Display mode with notes or not
+    disp_mode = 0
 
     def __init__(self, doc):
         """
@@ -107,6 +109,9 @@ class UI:
         # Pixbuf cache
         self.cache = pympress.pixbufcache.PixbufCache(doc)
 
+        # Pre-set document mode
+        self.disp_mode = doc.get_mode()
+
         # Content window
         self.c_win.set_title("pympress content")
         self.c_win.set_default_size(800, 600)
@@ -119,7 +124,10 @@ class UI:
         self.c_da.modify_bg(gtk.STATE_NORMAL, black)
         self.c_da.connect("expose-event", self.on_expose)
         self.c_da.set_name("c_da")
-        self.cache.add_widget("c_da")
+        if self.disp_mode == 1 : 
+            self.cache.add_widget("c_da", 1)
+        else :
+            self.cache.add_widget("c_da")
         self.c_da.connect("configure-event", self.on_configure)
 
         self.c_frame.add(self.c_da)
@@ -154,6 +162,7 @@ class UI:
             <menuitem action="Pause timer"/>
             <menuitem action="Reset timer"/>
             <menuitem action="Fullscreen"/>
+            <menuitem action="Note mode"/>
           </menu>
           <menu action="Help">
             <menuitem action="About"/>
@@ -180,6 +189,7 @@ class UI:
         action_group.add_toggle_actions([
             ("Pause timer",  None,           "_Pause timer", "p",  None, self.switch_pause,      True),
             ("Fullscreen",   None,           "_Fullscreen",  "f",  None, self.switch_fullscreen, False),
+            ("Note mode",    None,           "_Note mode",   "n",  None, self.switch_mode, self.disp_mode),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -215,7 +225,10 @@ class UI:
         self.p_da_cur.modify_bg(gtk.STATE_NORMAL, black)
         self.p_da_cur.connect("expose-event", self.on_expose)
         self.p_da_cur.set_name("p_da_cur")
-        self.cache.add_widget("p_da_cur")
+        if self.disp_mode == 1 : 
+            self.cache.add_widget("p_da_cur", 2)
+        else :
+            self.cache.add_widget("p_da_cur")
         self.p_da_cur.connect("configure-event", self.on_configure)
         self.p_frame_cur.add(self.p_da_cur)
 
@@ -241,7 +254,10 @@ class UI:
         self.p_da_next.modify_bg(gtk.STATE_NORMAL, black)
         self.p_da_next.connect("expose-event", self.on_expose)
         self.p_da_next.set_name("p_da_next")
-        self.cache.add_widget("p_da_next")
+        if self.disp_mode == 1 : 
+            self.cache.add_widget("p_da_next", 1)
+        else :
+            self.cache.add_widget("p_da_next")
         self.p_da_next.connect("configure-event", self.on_configure)
         self.p_frame_next.add(self.p_da_next)
 
@@ -298,7 +314,6 @@ class UI:
         self.c_win.show_all()
         p_win.show_all()
 
-
     def run(self):
         """Run the GTK main loop."""
         gtk.gdk.threads_init()
@@ -340,12 +355,12 @@ class UI:
         page_next = self.doc.next_page()
 
         # Aspect ratios
-        pr = page_cur.get_aspect_ratio()
+        pr = page_cur.get_aspect_ratio(self.disp_mode)
         self.c_frame.set_property("ratio", pr)
         self.p_frame_cur.set_property("ratio", pr)
 
         if page_next is not None:
-            pr = page_next.get_aspect_ratio()
+            pr = page_next.get_aspect_ratio(self.disp_mode)
             self.p_frame_next.set_property("ratio", pr)
 
         # Start counter if needed
@@ -404,14 +419,12 @@ class UI:
         name = widget.get_name()
         nb = page.number()
         pb = self.cache.get(name, nb)
+        wtype = self.cache.get_widget_type(name)
+        #print "on_expose: widget %s wtype=%d" % (name, wtype)
 
         if pb is None:
             # Cache miss: render the page, and save it to the cache
-            self.render_page(page, widget)
-            ww, wh = widget.window.get_size()
-            pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)
-            pb.get_from_drawable(widget.window, widget.window.get_colormap(), 0, 0, 0, 0, ww, wh)
-            self.cache.set(name, nb, pb)
+            self.render_page(page, widget, wtype)
         else:
             # Cache hit: draw the pixbuf from the cache to the widget
             gc = widget.window.new_gc()
@@ -467,6 +480,8 @@ class UI:
                 self.switch_pause()
             elif name.upper() == "R":
                 self.reset_timer()
+            elif name.upper() == "N":
+                self.switch_mode()
 
         elif event.type == gtk.gdk.SCROLL:
             if event.direction in [gtk.gdk.SCROLL_RIGHT, gtk.gdk.SCROLL_DOWN]:
@@ -581,7 +596,7 @@ class UI:
 
 
 
-    def render_page(self, page, widget):
+    def render_page(self, page, widget, wtype=0):
         """
         Render a page on a widget.
 
@@ -603,8 +618,10 @@ class UI:
         ww, wh = widget.window.get_size()
 
         # Page size
-        pw, ph = page.get_size()
+        pw, ph = page.get_size(wtype)
 
+        """
+        #== Abandon this way of paint the page on a window ==#
         # Manual double buffering (since we use direct drawing instead of
         # calling queue_draw() on the widget)
         widget.window.begin_paint_rect(gtk.gdk.Rectangle(0, 0, ww, wh))
@@ -622,7 +639,24 @@ class UI:
 
         # Blit off-screen buffer to screen
         widget.window.end_paint()
+        """
+
+        #== Instead, use manual buffering like PixbufCache  ==#
     
+        # Check the minimum scale
+        scale = min(ww/pw, wh/ph)
+
+        # Render
+        pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)
+        page.render_pixbuf(pixbuf, ww, wh, scale, wtype)
+
+        # Draw pixbuf to the window
+        gc = widget.window.new_gc()
+        widget.window.draw_pixbuf(gc, pixbuf, 0, 0, 0, 0)
+
+        # Save pixbuf to cache
+        self.cache.set(widget.get_name(), page.number(), pixbuf)
+
 
     def restore_current_label(self):
         """
@@ -759,6 +793,25 @@ class UI:
             self.fullscreen = True
 
         self.set_screensaver(self.fullscreen)
+
+
+    def switch_mode(self, widget=None, event=None):
+        """
+        Switch the display mode to "Note mode" or "Normal mode" (without notes)
+        """
+        if self.disp_mode :
+            self.disp_mode = 0
+            self.cache.set_widget_type("c_da", 0)
+            self.cache.set_widget_type("p_da_cur", 0)
+            self.cache.set_widget_type("p_da_next", 0)
+        else :
+            self.disp_mode = 1
+            self.cache.set_widget_type("c_da", 1)
+            self.cache.set_widget_type("p_da_cur", 2)
+            self.cache.set_widget_type("p_da_next", 1)
+
+        self.on_page_change(False)
+
 
 
 ##

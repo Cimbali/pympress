@@ -173,22 +173,30 @@ class Page:
 
         return None
 
-    def get_size(self):
+    def get_size(self, type=0):
         """Get the page size.
 
         :return: page size
         :rtype: (float, float)
         """
-        return (self.pw, self.ph)
+        if type==0 :
+            return (self.pw, self.ph)
+        else :
+            return (self.pw*0.5, self.ph)
 
-    def get_aspect_ratio(self):
+    def get_aspect_ratio(self, type=0):
         """Get the page aspect ratio.
 
         :return: page aspect ratio
         :rtype: float
         """
-        return self.pw / self.ph
+        if type==0 :
+            return self.pw / self.ph
+        else :
+            return (self.pw*0.5) / self.ph
 
+    ##== this method should be abandoned since it cannot render a page by
+    ##== specifying pixel ranges.
     def render_cairo(self, cr):
         """Render the page on a Cairo surface.
 
@@ -197,7 +205,7 @@ class Page:
         """
         self.page.render(cr)
 
-    def render_pixbuf(self, pixbuf, width, height, scale):
+    def render_pixbuf(self, pixbuf, width, height, scale, type=0):
         """Render the page on a :class:`gtk.gdk.Pixbuf`.
         
         :param pixbuf: target pixbuf
@@ -208,8 +216,15 @@ class Page:
         :type  height: integer
         :param scale: scaling factor
         :type  scale: float
+        :param type: page type (0-without notes; 1-left half; 2-right half)
+        :type  type: integer
         """
-        self.page.render_to_pixbuf(0, 0, width, height, scale, 0, pixbuf)
+        if type==0 or type==1 :
+            self.page.render_to_pixbuf(0, 0, width, height, scale, 0, pixbuf)
+        else :
+            self.page.render_to_pixbuf(width, 0, width, height, scale, 0, pixbuf)
+
+
 
 
 class Document:
@@ -231,6 +246,8 @@ class Document:
     pages_cache = {}
     #: Instance of :class:`pympress.ui.UI` used when opening a document
     ui = None
+    #: Document mode with notes or not
+    note_mode = 0
 
     def __init__(self, uri, page=0):
         """
@@ -257,11 +274,47 @@ class Document:
         # Pages cache
         self.pages_cache = {}
 
+        # Detect note mode
+        self.note_mode = self.detect_mode(page)
+        #print "note_mode = %d" % self.note_mode
+
         # Create windows
         self.ui = pympress.ui.UI(self)
         self.ui.on_page_change(False)
         self.ui.run()
 
+    def detect_mode(self, page=0):
+        """Detect document mode -- whether it is in note mode or not
+
+        :param page: page number
+        :type  page: integer
+        :return: mode type, 0-without notes, 1-with notes
+        :rtye: integer, 0 or 1
+        """
+        p = self.page(page)
+        if p is None:
+            return 0
+
+        if round(p.get_aspect_ratio(),2) <= 4.0/3.0 :
+            return 0
+        else :
+            return 1
+
+    def get_mode(self):
+        """Get the document mode.
+
+        :return: note mode, value 0 or 1
+        :rtype: integer
+        """
+        return self.note_mode
+
+    def set_mode(self, mode=0):
+        """Set the document mode.
+
+        :param mode: the value of note mode, 0 or 1
+        :type  mode: integer
+        """
+        self.note_mode = mode
 
     def page(self, number):
         """Get the specified page.

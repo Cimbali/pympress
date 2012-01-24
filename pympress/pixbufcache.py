@@ -54,6 +54,13 @@ class PixbufCache:
     #: Size of the different managed widgets, as a dictionary of tuples
     pixbuf_size = {}
 
+    #: Type of managed widget to display for general PDF, or double-side PDF
+    #: with notes. It is a dictionary of values: widget name - key; type - value
+    #: 0 - general PDF
+    #: 1 - content (left side) of double-side PDF
+    #: 2 - notes (right side) of double-side PDF
+    pixbuf_type = {}
+
     #: Dictionary of :class:`~threading.Lock`\ s used for managing conccurent
     #: accesses to :attr:`pixbuf_cache`, :attr:`pixbuf_size`, and :attr:`jobs`.
     locks = {}
@@ -80,7 +87,7 @@ class PixbufCache:
         self.doc = doc
         self.doc_lock = threading.Lock()
 
-    def add_widget(self, widget_name):
+    def add_widget(self, widget_name, type=0):
         """
         Add a widget to the list of widgets that have to be managed (for caching
         and prerendering).
@@ -94,11 +101,35 @@ class PixbufCache:
         """
         self.pixbuf_cache[widget_name] = {}
         self.pixbuf_size[widget_name] = (-1, -1)
+        self.pixbuf_type[widget_name] = type
         self.locks[widget_name] = threading.Lock()
         self.threads[widget_name] = threading.Thread(target=self.renderer, args=(widget_name,))
         self.threads[widget_name].daemon = True
         self.jobs[widget_name] = Queue.Queue(0)
         self.threads[widget_name].start()
+
+    def set_widget_type(self, widget_name, type=0):
+        """ Set the cache type of specific widget.
+
+        :param widget_name: string used to identify a widget
+        :type  widget_name: string
+        :param type: cache type of specific widget. the value is 0, 1, or 2
+        :param type: integer
+        """
+        with self.locks[widget_name]:
+            if self.pixbuf_type[widget_name] != type :
+                self.pixbuf_type[widget_name] = type
+                self.pixbuf_cache[widget_name].clear()
+
+    def get_widget_type(self, widget_name):
+        """ Get the cache type of specific widget.
+
+        :param widget_name: string used to identify a widget
+        :type  widget_name: string
+        :return: cache type of specific widget. the value is 0, 1, or 2
+        :rtype: integer
+        """
+        return self.pixbuf_type[widget_name]
 
     def resize_widget(self, widget_name, width, height):
         """
@@ -200,16 +231,17 @@ class PixbufCache:
                     # Already in cache
                     continue
                 ww, wh = self.pixbuf_size[widget_name]
+                type = self.pixbuf_type[widget_name]
             with self.doc_lock:
                 page = self.doc.page(page_nb)
-                pw, ph = page.get_size()
+                pw, ph = page.get_size(type)
 
-            print "Prerendering page %d for widget %s" % (page_nb+1, widget_name)
+            #print "Prerendering page %d for widget %s type %d" % (page_nb+1, widget_name, type)
             
             # Render
             pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)
             scale = min(ww/pw, wh/ph)
-            page.render_pixbuf(pixbuf, ww, wh, scale)
+            page.render_pixbuf(pixbuf, ww, wh, scale, type)
 
             # Save if possible and necessary
             with self.locks[widget_name]:
