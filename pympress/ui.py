@@ -301,10 +301,8 @@ class UI:
 
     def run(self):
         """Run the GTK main loop."""
-        gtk.gdk.threads_init()
-        gtk.gdk.threads_enter()
-        gtk.main()
-        gtk.gdk.threads_leave()
+        with gtk.gdk.lock:
+            gtk.main()
 
 
     def menu_about(self, widget=None, event=None):

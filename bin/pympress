@@ -29,6 +29,8 @@ import gtk
 import pympress.document
 
 if __name__ == '__main__':
+    gtk.gdk.threads_init()
+
     # PDF file to open
     name = None
     if len(sys.argv) > 1:
