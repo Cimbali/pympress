@@ -188,7 +188,7 @@ class UI:
         h = ui_manager.get_widget('/MenuBar/Help')
         h.set_right_justified(True)
         bigvbox.pack_start(menubar, False)
-        
+
         # A little space around everything in the window
         align = gtk.Alignment(0.5, 0.5, 1, 1)
         align.set_padding(20, 20, 20, 20)
@@ -290,7 +290,7 @@ class UI:
 
         # Setup timer
         gobject.timeout_add(250, self.update_time)
-        
+
         # Document
         self.doc = doc
 
@@ -367,7 +367,7 @@ class UI:
         page_max = min(self.doc.pages_number(), cur + 5)
         page_min = max(0, cur - 2)
         for p in range(cur+1, page_max) + range(cur, page_min, -1):
-            self.cache.prerender(p)        
+            self.cache.prerender(p)
 
 
     def on_expose(self, widget, event=None):
@@ -435,7 +435,7 @@ class UI:
         :type  event: :class:`gtk.gdk.Event`
         """
         self.cache.resize_widget(widget.get_name(), event.width, event.height)
-        
+
 
     def on_navigation(self, widget, event):
         """
@@ -475,7 +475,7 @@ class UI:
                 self.doc.goto_prev()
 
         else:
-            print "Unknown event %s" % event.type        
+            print "Unknown event %s" % event.type
 
 
     def on_link(self, widget, event):
@@ -495,7 +495,7 @@ class UI:
                 return
         else:
             page = self.doc.current_page()
-            
+
         # Normalize event coordinates and get link
         x, y = event.get_coords()
         ww, wh = widget.window.get_size()
@@ -517,7 +517,7 @@ class UI:
 
         else:
             print "Unknown event %s" % event.type
-            
+
 
     def on_label_event(self, widget, event):
         """
@@ -622,7 +622,7 @@ class UI:
 
         # Blit off-screen buffer to screen
         widget.window.end_paint()
-    
+
 
     def restore_current_label(self):
         """

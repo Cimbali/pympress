@@ -97,7 +97,7 @@ class Link:
 class Page:
     """
     Class representing a single page.
-    
+
     It provides several methods used by the GUI for preparing windows for
     displaying pages, managing hyperlinks, etc.
 
@@ -166,7 +166,7 @@ class Page:
         """
         xx = self.pw * x
         yy = self.ph * (1. - y)
-        
+
         for link in self.links:
             if link.is_over(xx, yy):
                 return link
@@ -265,7 +265,7 @@ class Document:
 
     def page(self, number):
         """Get the specified page.
-        
+
         :param number: number of the page to return
         :type  number: integer
         :return: the wanted page, or ``None`` if it does not exist
@@ -277,7 +277,7 @@ class Document:
         if not number in self.pages_cache:
             self.pages_cache[number] = Page(self.doc, number)
         return self.pages_cache[number]
-    
+
 
     def current_page(self):
         """Get the current page.
@@ -304,7 +304,7 @@ class Document:
         """
         return self.nb_pages
 
-        
+
     def goto(self, number):
         """Switch to another page.
 
@@ -315,7 +315,7 @@ class Document:
             number = 0
         elif number >= self.nb_pages:
             number = self.nb_pages - 1
-            
+
         if number != self.cur_page:
             self.cur_page = number
             self.ui.on_page_change()

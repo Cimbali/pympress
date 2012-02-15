@@ -90,7 +90,7 @@ class PixbufCache:
         widget.
 
         :param widget_name: string used to identify a widget
-        :type  widget_name: string        
+        :type  widget_name: string
         """
         self.pixbuf_cache[widget_name] = {}
         self.pixbuf_size[widget_name] = (-1, -1)
@@ -187,7 +187,7 @@ class PixbufCache:
         """
         # Give the program some time to start
         time.sleep(5)
-        
+
         while True:
             # Get something to do
             page_nb = self.jobs[widget_name].get()
@@ -205,11 +205,11 @@ class PixbufCache:
                 pw, ph = page.get_size()
 
             print "Prerendering page %d for widget %s" % (page_nb+1, widget_name)
-            
             # Render
             pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)
             scale = min(ww/pw, wh/ph)
             page.render_pixbuf(pixbuf, ww, wh, scale)
+
 
             # Save if possible and necessary
             with self.locks[widget_name]:
