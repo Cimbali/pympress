@@ -54,6 +54,12 @@ class PixbufCache:
     #: Size of the different managed widgets, as a dictionary of tuples
     pixbuf_size = {}
 
+    #: Type of document handled by each widget. It is a dictionary: its keys are
+    #: widget names and its values are document types
+    #: (:const:`~pympress.ui.PDF_REGULAR`, :const:`~pympress.ui.PDF_CONTENT_PAGE`
+    #: or :const:`~pympress.ui.PDF_NOTES_PAGE`).
+    pixbuf_type = {}
+
     #: Dictionary of :class:`~threading.Lock`\ s used for managing conccurent
     #: accesses to :attr:`pixbuf_cache`, :attr:`pixbuf_size`, and :attr:`jobs`.
     locks = {}
@@ -80,7 +86,7 @@ class PixbufCache:
         self.doc = doc
         self.doc_lock = threading.Lock()
 
-    def add_widget(self, widget_name):
+    def add_widget(self, widget_name, type):
         """
         Add a widget to the list of widgets that have to be managed (for caching
         and prerendering).
@@ -91,14 +97,42 @@ class PixbufCache:
 
         :param widget_name: string used to identify a widget
         :type  widget_name: string
+        :param type: type of document handled by the widget (see :attr:`pixbuf_type`)
+        :type  type: integer
         """
         self.pixbuf_cache[widget_name] = {}
         self.pixbuf_size[widget_name] = (-1, -1)
+        self.pixbuf_type[widget_name] = type
         self.locks[widget_name] = threading.Lock()
         self.threads[widget_name] = threading.Thread(target=self.renderer, args=(widget_name,))
         self.threads[widget_name].daemon = True
         self.jobs[widget_name] = Queue.Queue(0)
         self.threads[widget_name].start()
+
+    def set_widget_type(self, widget_name, type):
+        """
+        Set the document type of a widget.
+
+        :param widget_name: string used to identify a widget
+        :type  widget_name: string
+        :param type: type of document handled by the widget (see :attr:`pixbuf_type`)
+        :type  type: integer
+        """
+        with self.locks[widget_name]:
+            if self.pixbuf_type[widget_name] != type :
+                self.pixbuf_type[widget_name] = type
+                self.pixbuf_cache[widget_name].clear()
+
+    def get_widget_type(self, widget_name):
+        """
+        Get the document type of a widget.
+
+        :param widget_name: string used to identify a widget
+        :type  widget_name: string
+        :return: type of document handled by the widget (see :attr:`pixbuf_type`)
+        :rtype: integer
+        """
+        return self.pixbuf_type[widget_name]
 
     def resize_widget(self, widget_name, width, height):
         """
@@ -200,11 +234,12 @@ class PixbufCache:
                     # Already in cache
                     continue
                 ww, wh = self.pixbuf_size[widget_name]
+                type = self.pixbuf_type[widget_name]
             with self.doc_lock:
                 page = self.doc.page(page_nb)
-                pw, ph = page.get_size()
+                pw, ph = page.get_size(type)
 
-            print "Prerendering page %d for widget %s" % (page_nb+1, widget_name)
+            print "Prerendering page %d for widget %s type %d" % (page_nb+1, widget_name, type)
 
             with gtk.gdk.lock:
                 # Render to a pixmap
@@ -217,7 +252,7 @@ class PixbufCache:
 
                 cr.rectangle(0, 0, pw, ph)
                 cr.fill()
-                page.render_cairo(cr)
+                page.render_cairo(cr, type)
 
                 # Convert pixmap to pixbuf
                 pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)

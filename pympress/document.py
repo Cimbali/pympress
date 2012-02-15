@@ -39,6 +39,7 @@ import poppler
 import pympress.ui
 import pympress.util
 
+from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
 class Link:
     """This class encapsulates one hyperlink of the document."""
@@ -173,29 +174,50 @@ class Page:
 
         return None
 
-    def get_size(self):
+    def get_size(self, type=PDF_REGULAR):
         """Get the page size.
 
+        :param type: the type of document to consider
+        :type  type: integer
         :return: page size
         :rtype: (float, float)
         """
-        return (self.pw, self.ph)
+        if type == PDF_REGULAR:
+            return (self.pw, self.ph)
+        else:
+            return (self.pw/2., self.ph)
 
-    def get_aspect_ratio(self):
+    def get_aspect_ratio(self, type=PDF_REGULAR):
         """Get the page aspect ratio.
 
+        :param type: the type of document to consider
+        :type  type: integer
         :return: page aspect ratio
         :rtype: float
         """
-        return self.pw / self.ph
+        if type == PDF_REGULAR:
+            return self.pw / self.ph
+        else:
+            return (self.pw/2.) / self.ph
 
-    def render_cairo(self, cr):
+    def render_cairo(self, cr, type=PDF_REGULAR):
         """Render the page on a Cairo surface.
 
         :param cr: target surface
         :type  cr: :class:`gtk.gdk.CairoContext`
+        :param type: the type of document that should be rendered
+        :type  type: integer
         """
+        # For "regular" pages, there is no problem: just render them.
+        # For "content" or "notes" pages (i.e. left or right half of a page),
+        # the widget already has correct dimensions so we don't need to deal
+        # with that. But for right halfs we must translate the output in order
+        # to only show the right half.
+        if type == PDF_NOTES_PAGE:
+            ww, _ = cr.user_to_device_distance(self.pw, 0)
+            cr.translate(-ww, 0)
         self.page.render(cr)
+
 
 class Document:
     """This is the main document handling class.
@@ -210,6 +232,8 @@ class Document:
     nb_pages = -1
     #: Number of the current page
     cur_page = -1
+    #: Document with notes or not
+    notes = False
     #: Pages cache (dictionary of :class:`pympress.document.Page`). This makes
     #: navigation in the document faster by avoiding calls to Poppler when loading
     #: a page that has already been loaded.
@@ -242,11 +266,27 @@ class Document:
         # Pages cache
         self.pages_cache = {}
 
+        # Guess if the document has notes
+        page0 = self.page(page)
+        if page0 is not None:
+            # "Regular" pages will have an apsect ratio of 4/3, 16/9, 16/10...
+            # Full A4 pages will have an aspect ratio < 1.
+            # So if the aspect ratio is >= 2, we can assume it is a document with notes.
+            ar = page0.get_aspect_ratio()
+            self.notes = (ar >= 2)
+
         # Create windows
         self.ui = pympress.ui.UI(self)
         self.ui.on_page_change(False)
         self.ui.run()
 
+    def has_notes(self):
+        """Get the document mode.
+
+        :return: ``True`` if the document has notes, ``False`` otherwise
+        :rtype: boolean
+        """
+        return self.notes
 
     def page(self, number):
         """Get the specified page.

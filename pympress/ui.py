@@ -44,6 +44,13 @@ import pango
 import pympress.pixbufcache
 import pympress.util
 
+#: "Regular" PDF file (without notes)
+PDF_REGULAR      = 0
+#: Content page (left side) of a PDF file with notes
+PDF_CONTENT_PAGE = 1
+#: Notes page (right side) of a PDF file with notes
+PDF_NOTES_PAGE   = 2
+
 class UI:
     """Pympress GUI management."""
 
@@ -93,6 +100,8 @@ class UI:
     #: Current :class:`~pympress.document.Document` instance.
     doc = None
 
+    #: Whether to use notes mode or not
+    notes_mode = False
 
     def __init__(self, doc):
         """
@@ -107,6 +116,9 @@ class UI:
         # Pixbuf cache
         self.cache = pympress.pixbufcache.PixbufCache(doc)
 
+        # Use notes mode by default if the document has notes
+        self.notes_mode = doc.has_notes()
+
         # Content window
         self.c_win.set_title("pympress content")
         self.c_win.set_default_size(800, 600)
@@ -119,7 +131,10 @@ class UI:
         self.c_da.modify_bg(gtk.STATE_NORMAL, black)
         self.c_da.connect("expose-event", self.on_expose)
         self.c_da.set_name("c_da")
-        self.cache.add_widget("c_da")
+        if self.notes_mode:
+            self.cache.add_widget("c_da", pympress.document.PDF_CONTENT_PAGE)
+        else:
+            self.cache.add_widget("c_da", pympress.document.PDF_REGULAR)
         self.c_da.connect("configure-event", self.on_configure)
 
         self.c_frame.add(self.c_da)
@@ -154,6 +169,7 @@ class UI:
             <menuitem action="Pause timer"/>
             <menuitem action="Reset timer"/>
             <menuitem action="Fullscreen"/>
+            <menuitem action="Notes mode"/>
           </menu>
           <menu action="Help">
             <menuitem action="About"/>
@@ -180,6 +196,7 @@ class UI:
         action_group.add_toggle_actions([
             ("Pause timer",  None,           "_Pause timer", "p",  None, self.switch_pause,      True),
             ("Fullscreen",   None,           "_Fullscreen",  "f",  None, self.switch_fullscreen, False),
+            ("Notes mode",   None,           "_Note mode",   "n",  None, self.switch_mode,       self.notes_mode),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -215,7 +232,10 @@ class UI:
         self.p_da_cur.modify_bg(gtk.STATE_NORMAL, black)
         self.p_da_cur.connect("expose-event", self.on_expose)
         self.p_da_cur.set_name("p_da_cur")
-        self.cache.add_widget("p_da_cur")
+        if self.notes_mode:
+            self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
+        else :
+            self.cache.add_widget("p_da_cur", PDF_REGULAR)
         self.p_da_cur.connect("configure-event", self.on_configure)
         self.p_frame_cur.add(self.p_da_cur)
 
@@ -241,7 +261,10 @@ class UI:
         self.p_da_next.modify_bg(gtk.STATE_NORMAL, black)
         self.p_da_next.connect("expose-event", self.on_expose)
         self.p_da_next.set_name("p_da_next")
-        self.cache.add_widget("p_da_next")
+        if self.notes_mode:
+            self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
+        else :
+            self.cache.add_widget("p_da_next", PDF_REGULAR)
         self.p_da_next.connect("configure-event", self.on_configure)
         self.p_frame_next.add(self.p_da_next)
 
@@ -338,12 +361,12 @@ class UI:
         page_next = self.doc.next_page()
 
         # Aspect ratios
-        pr = page_cur.get_aspect_ratio()
+        pr = page_cur.get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
         self.p_frame_cur.set_property("ratio", pr)
 
         if page_next is not None:
-            pr = page_next.get_aspect_ratio()
+            pr = page_next.get_aspect_ratio(self.notes_mode)
             self.p_frame_next.set_property("ratio", pr)
 
         # Start counter if needed
@@ -402,10 +425,11 @@ class UI:
         name = widget.get_name()
         nb = page.number()
         pb = self.cache.get(name, nb)
+        wtype = self.cache.get_widget_type(name)
 
         if pb is None:
             # Cache miss: render the page, and save it to the cache
-            self.render_page(page, widget)
+            self.render_page(page, widget, wtype)
             ww, wh = widget.window.get_size()
             pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)
             pb.get_from_drawable(widget.window, widget.window.get_colormap(), 0, 0, 0, 0, ww, wh)
@@ -461,10 +485,19 @@ class UI:
                 self.switch_fullscreen()
             elif name.upper() == "Q":
                 gtk.main_quit()
-            elif name in ["p", "P", "Pause"]:
+            elif name == "Pause":
                 self.switch_pause()
             elif name.upper() == "R":
                 self.reset_timer()
+
+            # Some key events are already handled by toggle actions in the
+            # presenter window, so we must handle them in the content window
+            # only to prevent them from double-firing
+            elif widget is self.c_win:
+                if name.upper() == "P":
+                    self.switch_pause()
+                elif name.upper() == "N":
+                    self.switch_mode()
 
         elif event.type == gtk.gdk.SCROLL:
             if event.direction in [gtk.gdk.SCROLL_RIGHT, gtk.gdk.SCROLL_DOWN]:
@@ -579,7 +612,7 @@ class UI:
 
 
 
-    def render_page(self, page, widget):
+    def render_page(self, page, widget, wtype):
         """
         Render a page on a widget.
 
@@ -591,6 +624,8 @@ class UI:
         :type  page: :class:`pympress.document.Page`
         :param widget: the widget on which the page must be rendered
         :type  widget: :class:`gtk.DrawingArea`
+        :param wtype: the type of document to render
+        :type  wtype: integer
         """
 
         # Make sure the widget is initialized
@@ -601,7 +636,7 @@ class UI:
         ww, wh = widget.window.get_size()
 
         # Page size
-        pw, ph = page.get_size()
+        pw, ph = page.get_size(wtype)
 
         # Manual double buffering (since we use direct drawing instead of
         # calling queue_draw() on the widget)
@@ -616,7 +651,7 @@ class UI:
 
         cr.rectangle(0, 0, pw, ph)
         cr.fill()
-        page.render_cairo(cr)
+        page.render_cairo(cr, wtype)
 
         # Blit off-screen buffer to screen
         widget.window.end_paint()
@@ -677,7 +712,6 @@ class UI:
 
     def switch_pause(self, widget=None, event=None):
         """Switch the timer between paused mode and running (normal) mode."""
-
         if self.paused:
             self.start_time = time.time() - self.delta
             self.paused = False
@@ -757,6 +791,24 @@ class UI:
             self.fullscreen = True
 
         self.set_screensaver(self.fullscreen)
+
+
+    def switch_mode(self, widget=None, event=None):
+        """
+        Switch the display mode to "Notes mode" or "Normal mode" (without notes)
+        """
+        if self.notes_mode:
+            self.notes_mode = False
+            self.cache.set_widget_type("c_da", PDF_REGULAR)
+            self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
+            self.cache.set_widget_type("p_da_next", PDF_REGULAR)
+        else:
+            self.notes_mode = True
+            self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
+            self.cache.set_widget_type("p_da_cur", PDF_NOTES_PAGE)
+            self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
+
+        self.on_page_change(False)
 
 
 ##
