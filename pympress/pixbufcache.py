@@ -245,14 +245,7 @@ class PixbufCache:
                 # Render to a pixmap
                 pixmap = gtk.gdk.Pixmap(None, ww, wh, 24) # FIXME: 24 or 32?
                 cr = pixmap.cairo_create()
-                cr.set_source_rgb(1, 1, 1)
-
-                scale = min(ww/pw, wh/ph)
-                cr.scale(scale, scale)
-
-                cr.rectangle(0, 0, pw, ph)
-                cr.fill()
-                page.render_cairo(cr, type)
+                page.render_cairo(cr, ww, wh, type)
 
                 # Convert pixmap to pixbuf
                 pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)

@@ -635,23 +635,12 @@ class UI:
         # Widget size
         ww, wh = widget.window.get_size()
 
-        # Page size
-        pw, ph = page.get_size(wtype)
-
         # Manual double buffering (since we use direct drawing instead of
         # calling queue_draw() on the widget)
         widget.window.begin_paint_rect(gtk.gdk.Rectangle(0, 0, ww, wh))
 
         cr = widget.window.cairo_create()
-        cr.set_source_rgb(1, 1, 1)
-
-        # Scale
-        scale = min(ww/pw, wh/ph)
-        cr.scale(scale, scale)
-
-        cr.rectangle(0, 0, pw, ph)
-        cr.fill()
-        page.render_cairo(cr, wtype)
+        page.render_cairo(cr, ww, wh, wtype)
 
         # Blit off-screen buffer to screen
         widget.window.end_paint()

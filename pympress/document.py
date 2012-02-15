@@ -200,22 +200,38 @@ class Page:
         else:
             return (self.pw/2.) / self.ph
 
-    def render_cairo(self, cr, type=PDF_REGULAR):
+    def render_cairo(self, cr, ww, wh, type=PDF_REGULAR):
         """Render the page on a Cairo surface.
 
         :param cr: target surface
         :type  cr: :class:`gtk.gdk.CairoContext`
+        :param ww: target width in pixels
+        :type  ww: integer
+        :param wh: target height in pixels
+        :type  wh: integer
         :param type: the type of document that should be rendered
         :type  type: integer
         """
+
+        pw, ph = self.get_size(type)
+
+        cr.set_source_rgb(1, 1, 1)
+
+        # Scale
+        scale = min(ww/pw, wh/ph)
+        cr.scale(scale, scale)
+
+        cr.rectangle(0, 0, pw, ph)
+        cr.fill()
+
         # For "regular" pages, there is no problem: just render them.
         # For "content" or "notes" pages (i.e. left or right half of a page),
         # the widget already has correct dimensions so we don't need to deal
         # with that. But for right halfs we must translate the output in order
         # to only show the right half.
         if type == PDF_NOTES_PAGE:
-            ww, _ = cr.user_to_device_distance(self.pw, 0)
-            cr.translate(-ww, 0)
+            cr.translate(-pw, 0)
+
         self.page.render(cr)
 
 
