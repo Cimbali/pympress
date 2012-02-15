@@ -205,11 +205,24 @@ class PixbufCache:
                 pw, ph = page.get_size()
 
             print "Prerendering page %d for widget %s" % (page_nb+1, widget_name)
-            # Render
-            pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)
-            scale = min(ww/pw, wh/ph)
-            page.render_pixbuf(pixbuf, ww, wh, scale)
 
+            with gtk.gdk.lock:
+                # Render to a pixmap
+                pixmap = gtk.gdk.Pixmap(None, ww, wh, 24) # FIXME: 24 or 32?
+                cr = pixmap.cairo_create()
+                cr.set_source_rgb(1, 1, 1)
+
+                scale = min(ww/pw, wh/ph)
+                cr.scale(scale, scale)
+
+                cr.rectangle(0, 0, pw, ph)
+                cr.fill()
+                page.render_cairo(cr)
+
+                # Convert pixmap to pixbuf
+                pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)
+                pixbuf.get_from_drawable(pixmap, gtk.gdk.colormap_get_system(),
+                                         0, 0, 0, 0, ww, wh)
 
             # Save if possible and necessary
             with self.locks[widget_name]:

@@ -197,21 +197,6 @@ class Page:
         """
         self.page.render(cr)
 
-    def render_pixbuf(self, pixbuf, width, height, scale):
-        """Render the page on a :class:`gtk.gdk.Pixbuf`.
-        
-        :param pixbuf: target pixbuf
-        :type  pixbuf: :class:`gtk.gdk.Pixbuf`
-        :param width: pixbuf width
-        :type  width: integer
-        :param height: pixbuf height
-        :type  height: integer
-        :param scale: scaling factor
-        :type  scale: float
-        """
-        self.page.render_to_pixbuf(0, 0, width, height, scale, 0, pixbuf)
-
-
 class Document:
     """This is the main document handling class.
 
