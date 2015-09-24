@@ -43,7 +43,7 @@ def load_icons():
     icons = []
     for icon_name in icon_names:
         if os.path.splitext(icon_name)[1].lower() != ".png": continue
-        icon_fn = pkg_resources.resource_filename(req, "share/pixmaps/%s" % icon_name)
+        icon_fn = pkg_resources.resource_filename(req, "share/pixmaps/" + icon_name)
         try:
             icon_pixbuf = gtk.gdk.pixbuf_new_from_file(icon_fn)
             icons.append(icon_pixbuf)

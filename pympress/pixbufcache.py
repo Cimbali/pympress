@@ -86,7 +86,7 @@ class PixbufCache:
         self.doc = doc
         self.doc_lock = threading.Lock()
 
-    def add_widget(self, widget_name, type):
+    def add_widget(self, widget_name, wtype):
         """
         Add a widget to the list of widgets that have to be managed (for caching
         and prerendering).
@@ -97,30 +97,30 @@ class PixbufCache:
 
         :param widget_name: string used to identify a widget
         :type  widget_name: string
-        :param type: type of document handled by the widget (see :attr:`pixbuf_type`)
-        :type  type: integer
+        :param wtype: type of document handled by the widget (see :attr:`pixbuf_type`)
+        :type  wtype: integer
         """
         self.pixbuf_cache[widget_name] = {}
         self.pixbuf_size[widget_name] = (-1, -1)
-        self.pixbuf_type[widget_name] = type
+        self.pixbuf_type[widget_name] = wtype
         self.locks[widget_name] = threading.Lock()
         self.threads[widget_name] = threading.Thread(target=self.renderer, args=(widget_name,))
         self.threads[widget_name].daemon = True
         self.jobs[widget_name] = Queue.Queue(0)
         self.threads[widget_name].start()
 
-    def set_widget_type(self, widget_name, type):
+    def set_widget_type(self, widget_name, wtype):
         """
         Set the document type of a widget.
 
         :param widget_name: string used to identify a widget
         :type  widget_name: string
-        :param type: type of document handled by the widget (see :attr:`pixbuf_type`)
-        :type  type: integer
+        :param wtype: type of document handled by the widget (see :attr:`pixbuf_type`)
+        :type  wtype: integer
         """
         with self.locks[widget_name]:
-            if self.pixbuf_type[widget_name] != type :
-                self.pixbuf_type[widget_name] = type
+            if self.pixbuf_type[widget_name] != wtype :
+                self.pixbuf_type[widget_name] = wtype
                 self.pixbuf_cache[widget_name].clear()
 
     def get_widget_type(self, widget_name):
@@ -234,18 +234,18 @@ class PixbufCache:
                     # Already in cache
                     continue
                 ww, wh = self.pixbuf_size[widget_name]
-                type = self.pixbuf_type[widget_name]
+                wtype = self.pixbuf_type[widget_name]
             with self.doc_lock:
                 page = self.doc.page(page_nb)
-                pw, ph = page.get_size(type)
+                pw, ph = page.get_size(wtype)
 
-            print "Prerendering page %d for widget %s type %d" % (page_nb+1, widget_name, type)
+            print("Prerendering page {} for widget {} type {}".format(page_nb+1, widget_name, wtype))
 
             with gtk.gdk.lock:
                 # Render to a pixmap
                 pixmap = gtk.gdk.Pixmap(None, ww, wh, 24) # FIXME: 24 or 32?
                 cr = pixmap.cairo_create()
-                page.render_cairo(cr, ww, wh, type)
+                page.render_cairo(cr, ww, wh, wtype)
 
                 # Convert pixmap to pixbuf
                 pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)

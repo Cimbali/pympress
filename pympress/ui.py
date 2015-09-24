@@ -29,6 +29,8 @@ current and the next page, as well as a time counter and a clock.
 Both windows are managed by the :class:`~pympress.ui.UI` class.
 """
 
+from __future__ import print_function
+
 import os
 import sys
 import time
@@ -341,7 +343,7 @@ class UI:
             icon_fn = pkg_resources.resource_filename(req, "share/pixmaps/pympress-128.png")
             about.set_logo(gtk.gdk.pixbuf_new_from_file(icon_fn))
         except Exception, e:
-            print e
+            print(e)
         about.run()
         about.destroy()
 
@@ -506,7 +508,7 @@ class UI:
                 self.doc.goto_prev()
 
         else:
-            print "Unknown event %s" % event.type
+            print("Unknown event " + str(event.type))
 
 
     def on_link(self, widget, event):
@@ -547,7 +549,7 @@ class UI:
                 widget.window.set_cursor(None)
 
         else:
-            print "Unknown event %s" % event.type
+            print("Unknown event " + str(event.type))
 
 
     def on_label_event(self, widget, event):
@@ -569,7 +571,7 @@ class UI:
         # Click on the label
         if widget is self.label_cur and event.type == gtk.gdk.BUTTON_PRESS:
             # Set entry text
-            self.entry_cur.set_text("%d/%d" % (self.doc.current_page().number()+1, self.doc.pages_number()))
+            self.entry_cur.set_text("{}/{}".format(self.doc.current_page().number()+1, self.doc.pages_number()))
             self.entry_cur.select_region(0, -1)
 
             # Replace label with entry
@@ -593,7 +595,7 @@ class UI:
                     s = text.split('/')[0]
                     n = int(s)
                 except ValueError:
-                    print "Invalid number: %s" % text
+                    print("Invalid number: " + str(text))
 
                 n -= 1
                 if n != self.doc.current_page().number():
@@ -660,16 +662,16 @@ class UI:
     def update_page_numbers(self):
         """Update the displayed page numbers."""
 
-        text = "<span font='36'>%s</span>"
+        text = "<span font='36'>{}</span>"
 
         cur_nb = self.doc.current_page().number()
-        cur = "%d/%d" % (cur_nb+1, self.doc.pages_number())
-        next = "--"
+        cur = "{}/{}".format(cur_nb+1, self.doc.pages_number())
+        nex = "--"
         if cur_nb+2 <= self.doc.pages_number():
-            next = "%d/%d" % (cur_nb+2, self.doc.pages_number())
+            nex = "{}/{}".format(cur_nb+2, self.doc.pages_number())
 
-        self.label_cur.set_markup(text % cur)
-        self.label_next.set_markup(text % next)
+        self.label_cur.set_markup(text.format(cur))
+        self.label_next.set_markup(text.format(nex))
         self.restore_current_label()
 
 
@@ -681,7 +683,7 @@ class UI:
         :rtype: boolean
         """
 
-        text = "<span font='36'>%s</span>"
+        text = "<span font='36'>{}</span>"
 
         # Current time
         clock = time.strftime("%H:%M:%S")
@@ -689,12 +691,12 @@ class UI:
         # Time elapsed since the beginning of the presentation
         if not self.paused:
             self.delta = time.time() - self.start_time
-        elapsed = "%02d:%02d" % (int(self.delta/60), int(self.delta%60))
+        elapsed = "{:02}:{:02}".format(int(self.delta/60), int(self.delta%60))
         if self.paused:
             elapsed += " (pause)"
 
-        self.label_time.set_markup(text % elapsed)
-        self.label_clock.set_markup(text % clock)
+        self.label_time.set_markup(text.format(elapsed))
+        self.label_clock.set_markup(text.format(clock))
 
         return True
 
@@ -731,9 +733,9 @@ class UI:
             # On Linux, set screensaver with xdg-screensaver
             # (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
             cmd = "suspend" if must_disable else "resume"
-            status = os.system("xdg-screensaver %s %s" % (cmd, self.c_win.window.xid))
+            status = os.system("xdg-screensaver {} {}".format(cmd, self.c_win.window.xid))
             if status != 0:
-                print >>sys.stderr, "Warning: Could not set screensaver status: got status %d" % status
+                print("Warning: Could not set screensaver status: got status "+str(status), file=sys.stderr)
 
             # Also manage screen blanking via DPMS
             if must_disable:
@@ -751,7 +753,7 @@ class UI:
                     self.dpms_was_enabled = True
                     status = os.system("xset -dpms")
                     if status != 0:
-                        print >>sys.stderr, "Warning: Could not disable DPMS screen blanking: got status %d" % status
+                        print("Warning: Could not disable DPMS screen blanking: got status "+str(status), file=sys.stderr)
                 else:
                     self.dpms_was_enabled = False
 
@@ -759,9 +761,9 @@ class UI:
                 # Re-enable DPMS
                 status = os.system("xset +dpms")
                 if status != 0:
-                    print >>sys.stderr, "Warning: Could not enable DPMS screen blanking: got status %d" % status
+                    print("Warning: Could not enable DPMS screen blanking: got status "+str(status), file=sys.stderr)
         else:
-            print >>sys.stderr, "Warning: Unsupported OS: can't enable/disable screensaver"
+            print("Warning: Unsupported OS: can't enable/disable screensaver", file=sys.stderr)
 
 
     def switch_fullscreen(self, widget=None, event=None):

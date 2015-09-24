@@ -31,6 +31,7 @@ only rendering itself: the preparation of the target surface must be done
 elsewhere).
 """
 
+from __future__ import print_function
 
 import sys
 
@@ -174,33 +175,33 @@ class Page:
 
         return None
 
-    def get_size(self, type=PDF_REGULAR):
+    def get_size(self, dtype=PDF_REGULAR):
         """Get the page size.
 
-        :param type: the type of document to consider
-        :type  type: integer
+        :param dtype: the type of document to consider
+        :type  dtype: integer
         :return: page size
         :rtype: (float, float)
         """
-        if type == PDF_REGULAR:
+        if dtype == PDF_REGULAR:
             return (self.pw, self.ph)
         else:
             return (self.pw/2., self.ph)
 
-    def get_aspect_ratio(self, type=PDF_REGULAR):
+    def get_aspect_ratio(self, dtype=PDF_REGULAR):
         """Get the page aspect ratio.
 
-        :param type: the type of document to consider
-        :type  type: integer
+        :param dtype: the type of document to consider
+        :type  dtype: integer
         :return: page aspect ratio
         :rtype: float
         """
-        if type == PDF_REGULAR:
+        if dtype == PDF_REGULAR:
             return self.pw / self.ph
         else:
             return (self.pw/2.) / self.ph
 
-    def render_cairo(self, cr, ww, wh, type=PDF_REGULAR):
+    def render_cairo(self, cr, ww, wh, dtype=PDF_REGULAR):
         """Render the page on a Cairo surface.
 
         :param cr: target surface
@@ -209,11 +210,11 @@ class Page:
         :type  ww: integer
         :param wh: target height in pixels
         :type  wh: integer
-        :param type: the type of document that should be rendered
-        :type  type: integer
+        :param dtype: the type of document that should be rendered
+        :type  dtype: integer
         """
 
-        pw, ph = self.get_size(type)
+        pw, ph = self.get_size(dtype)
 
         cr.set_source_rgb(1, 1, 1)
 
@@ -229,7 +230,7 @@ class Page:
         # the widget already has correct dimensions so we don't need to deal
         # with that. But for right halfs we must translate the output in order
         # to only show the right half.
-        if type == PDF_NOTES_PAGE:
+        if dtype == PDF_NOTES_PAGE:
             cr.translate(-pw, 0)
 
         self.page.render(cr)
@@ -268,7 +269,7 @@ class Document:
 
         # Check poppler-python version -- we need Bazaar rev. 62
         if not pympress.util.poppler_links_available():
-            print >>sys.stderr, "Hyperlink support not found in poppler-python -- be sure to use at least bazaar rev. 62 to have them working"
+            print("Hyperlink support not found in poppler-python -- be sure to use at least bazaar rev. 62 to have them working", file=sys.stderr)
 
         # Open PDF file
         self.doc = poppler.document_new_from_file(uri, None)
