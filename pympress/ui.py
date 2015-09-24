@@ -53,6 +53,90 @@ PDF_CONTENT_PAGE = 1
 #: Notes page (right side) of a PDF file with notes
 PDF_NOTES_PAGE   = 2
 
+class SlideSelector(gtk.SpinButton):
+    ui = None
+    maxpage = -1
+    timer = -1
+    def __init__(self, parent, maxpage):
+        gtk.SpinButton.__init__(self)
+
+        self.ui = parent
+        self.maxpage = maxpage
+
+        self.set_adjustment(gtk.Adjustment(lower=1, upper=maxpage, step_incr=1))
+        self.set_update_policy(gtk.UPDATE_ALWAYS)
+        self.set_numeric(True)
+
+        self.connect('changed', self.on_changed)
+        self.connect("key-press-event", self.on_keypress)
+        self.connect("key-release-event", self.on_keyup)
+        self.connect("editing-done", self.done)
+        self.connect("insert-text", self.on_changed)
+
+    def on_keyup(self, widget, event):
+        if event.type == gtk.gdk.KEY_PRESS and gtk.gdk.keyval_name(event.keyval).upper() == "G":
+            return False
+        return gtk.SpinButton.do_key_release_event(self, event)
+
+    def done(self, *args):
+        self.ui.restore_current_label()
+        self.ui.doc.goto(self.get_page())
+
+    def cancel(self, *args):
+        self.ui.restore_current_label()
+        self.ui.on_page_change()
+
+    def on_changed(self, *args):
+        self.ui.page_preview(self.get_page())
+
+    def force_update(self, *args):
+        self.timer = -1
+        self.set_value(float(self.get_buffer().get_text()))
+        self.on_changed()
+        return False
+
+    def get_page(self):
+        return max(1, min(self.maxpage, self.get_value_as_int()))-1
+
+    def on_keypress(self, widget, event):
+        if event.type == gtk.gdk.KEY_PRESS:
+            name = gtk.gdk.keyval_name(event.keyval)
+
+            # Return key --> restore label and goto page
+            if name == "Return" or name == "KP_Return":
+                self.done()
+            # Escape key --> just restore the label
+            elif name == "Escape":
+                self.cancel()
+            elif name == 'Home':
+                self.set_value(1)
+            elif name == 'End':
+                self.set_value(self.maxpage)
+
+            elif name in map(str, range(10)):
+                if self.timer >= 0:
+                    gobject.source_remove(self.timer)
+                self.timer = gobject.timeout_add(250, self.force_update)
+                return gtk.SpinButton.do_key_press_event(self, event)
+
+            elif name.upper() in ['A', 'UP', 'DOWN', 'LEFT', 'RIGHT', 'BACKSPACE']:
+                return gtk.SpinButton.do_key_press_event(self, event)
+            else:
+                return False
+
+            if self.timer >= 0:
+                gobject.source_remove(self.timer)
+
+            return True
+
+        elif event.type == gtk.gdk.SCROLL:
+            if event.direction in [gtk.gdk.SCROLL_RIGHT, gtk.gdk.SCROLL_DOWN]:
+                self.set_value(self.get_value_as_int() + 1)
+            else:
+                self.set_value(self.get_value_as_int() - 1)
+
+        return False
+
 class UI:
     """Pympress GUI management."""
 
@@ -74,10 +158,14 @@ class UI:
     p_da_cur = gtk.DrawingArea()
     #: Slide counter :class:`~gtk.Label` for the current slide.
     label_cur = gtk.Label()
+    #: Slide counter :class:`~gtk.Label` for the last slide.
+    label_last = gtk.Label()
     #: :class:`~gtk.EventBox` associated with the slide counter label in the Presenter window.
     eb_cur = gtk.EventBox()
-    #: :class:`~gtk.Entry` used to switch to another slide by typing its number.
-    entry_cur = gtk.Entry()
+    #: forward keystrokes to the Content window even if the window manager puts Presenter on top
+    editing_cur = False
+    #: :class:`~gtk.SpinButton` used to switch to another slide by typing its number.
+    spin_cur = None
 
     #: :class:`~gtk.AspectFrame` for the next slide in the Presenter window.
     p_frame_next = gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
@@ -106,6 +194,9 @@ class UI:
 
     #: Whether to use notes mode or not
     notes_mode = False
+
+    #: number of page currently displayed in Controller window's miniatures
+    page_preview_nb = 0
 
     def __init__(self, doc):
         """
@@ -259,12 +350,23 @@ class UI:
         self.p_da_cur.connect("configure-event", self.on_configure)
         self.p_frame_cur.add(self.p_da_cur)
 
-        # "Current slide" label and entry
-        self.label_cur.set_justify(gtk.JUSTIFY_CENTER)
+        # "CurFalserent slide" label and entry. This is ugly.
+        # We have EventBox eb_cur around HBox hb_cur containing 4 Labels
+        # And Label label_cur can be swapped for a SpinButton spin_cur :
+        # [[ [anonymous spacer] [label_cur|spin_cur] [label_last] [anonymous spacer] ]]
+        self.label_cur.set_justify(gtk.JUSTIFY_RIGHT)
         self.label_cur.set_use_markup(True)
-        self.eb_cur.add(self.label_cur)
-        self.entry_cur.set_alignment(0.5)
-        self.entry_cur.modify_font(pango.FontDescription('36'))
+        self.label_last.set_justify(gtk.JUSTIFY_LEFT)
+        self.label_last.set_use_markup(True)
+        self.hb_cur=gtk.HBox(False, 0)
+        self.hb_cur.pack_start(gtk.Label(), True)
+        self.hb_cur.pack_start(self.label_cur, False)
+        self.hb_cur.pack_start(self.label_last, False)
+        self.hb_cur.pack_start(gtk.Label(), True)
+        self.eb_cur.add(self.hb_cur)
+        self.spin_cur = SlideSelector(self, doc.pages_number())
+        self.spin_cur.set_alignment(0.5)
+        self.spin_cur.modify_font(pango.FontDescription('36'))
 
         # "Next slide" frame
         frame = gtk.Frame("Next slide")
@@ -366,6 +468,42 @@ class UI:
         about.destroy()
 
 
+    def page_preview(self, page_nb):
+        """
+        Switch to another page and display it.
+
+        This is a kind of event which is supposed to be called only from the
+        :class:`~pympress.document.Document` class.
+
+        :param unpause: ``True`` if the page change should unpause the timer,
+           ``False`` otherwise
+        :type  unpause: boolean
+        """
+        page_cur = self.doc.page(page_nb)
+        page_next = self.doc.page(page_nb+1)
+
+        self.page_preview_nb = page_nb
+
+        # Aspect ratios
+        pr = page_cur.get_aspect_ratio(self.notes_mode)
+        self.p_frame_cur.set_property("ratio", pr)
+
+        if page_next is not None:
+            pr = page_next.get_aspect_ratio(self.notes_mode)
+            self.p_frame_next.set_property("ratio", pr)
+
+        # Don't queue draw event but draw directly (faster)
+        self.on_expose(self.p_da_cur)
+        self.on_expose(self.p_da_next)
+
+        # Prerender the 4 next pages and the 2 previous ones
+        cur = page_cur.number()
+        page_max = min(self.doc.pages_number(), cur + 5)
+        page_min = max(0, cur - 2)
+        for p in range(cur+1, page_max) + range(cur, page_min, -1):
+            self.cache.prerender(p)
+
+
     def on_page_change(self, unpause=True):
         """
         Switch to another page and display it.
@@ -379,6 +517,9 @@ class UI:
         """
         page_cur = self.doc.current_page()
         page_next = self.doc.next_page()
+
+        # Page change: resynchronize miniatures
+        self.page_preview_nb = page_cur.number()
 
         # Aspect ratios
         pr = page_cur.get_aspect_ratio(self.notes_mode)
@@ -404,10 +545,9 @@ class UI:
         self.on_expose(self.p_da_next)
 
         # Prerender the 4 next pages and the 2 previous ones
-        cur = page_cur.number()
-        page_max = min(self.doc.pages_number(), cur + 5)
-        page_min = max(0, cur - 2)
-        for p in range(cur+1, page_max) + range(cur, page_min, -1):
+        page_max = min(self.doc.pages_number(), self.page_preview_nb + 5)
+        page_min = max(0, self.page_preview_nb - 2)
+        for p in range(self.page_preview_nb+1, page_max) + range(self.page_preview_nb, page_min, -1):
             self.cache.prerender(p)
 
 
@@ -426,12 +566,15 @@ class UI:
         :type  event: :class:`gtk.gdk.Event`
         """
 
-        if widget in [self.c_da, self.p_da_cur]:
+        if widget is self.c_da:
             # Current page
-            page = self.doc.current_page()
+            page = self.doc.page(self.doc.current_page().number())
+        elif widget is self.p_da_cur:
+            # Current page 'preview'
+            page = self.doc.page(self.page_preview_nb)
         else:
             # Next page: it can be None
-            page = self.doc.next_page()
+            page = self.doc.page(self.page_preview_nb+1)
             if page is None:
                 widget.hide_all()
                 widget.parent.set_shadow_type(gtk.SHADOW_NONE)
@@ -491,6 +634,10 @@ class UI:
         if event.type == gtk.gdk.KEY_PRESS:
             name = gtk.gdk.keyval_name(event.keyval)
 
+            # send all to spinner if it is active to avoid key problems
+            if self.editing_cur and self.spin_cur.on_keypress(widget, event):
+                return True
+
             if name in ["Right", "Down", "Page_Down", "space"]:
                 self.doc.goto_next()
             elif name in ["Left", "Up", "Page_Up", "BackSpace"]:
@@ -509,17 +656,27 @@ class UI:
                 self.switch_pause()
             elif name.upper() == "R":
                 self.reset_timer()
+            elif name.upper() == "G":
+                self.on_label_event(self.eb_cur, gtk.gdk.Event(gtk.gdk.BUTTON_PRESS))
 
             # Some key events are already handled by toggle actions in the
             # presenter window, so we must handle them in the content window
             # only to prevent them from double-firing
-            elif widget is self.c_win:
+            if widget is self.c_win:
                 if name.upper() == "P":
                     self.switch_pause()
+                    return True
                 elif name.upper() == "N":
                     self.switch_mode()
+                    return True
                 elif name.upper() == "S":
                     self.swap_screens()
+                    return True
+
+            else:
+                return False
+
+            return True
 
         elif event.type == gtk.gdk.SCROLL:
             if event.direction in [gtk.gdk.SCROLL_RIGHT, gtk.gdk.SCROLL_DOWN]:
@@ -527,8 +684,12 @@ class UI:
             else:
                 self.doc.goto_prev()
 
+            return True
+
         else:
             print("Unknown event " + str(event.type))
+
+        return False
 
 
     def on_link(self, widget, event):
@@ -586,48 +747,22 @@ class UI:
         :type  event: :class:`gtk.gdk.Event`
         """
 
-        widget = self.eb_cur.get_child()
-
-        # Click on the label
-        if widget is self.label_cur and event.type == gtk.gdk.BUTTON_PRESS:
-            # Set entry text
-            self.entry_cur.set_text("{}/{}".format(self.doc.current_page().number()+1, self.doc.pages_number()))
-            self.entry_cur.select_region(0, -1)
+        # Click in label-mode
+        if self.label_cur in self.hb_cur.children() and event.type == gtk.gdk.BUTTON_PRESS:
 
             # Replace label with entry
-            self.eb_cur.remove(self.label_cur)
-            self.eb_cur.add(self.entry_cur)
-            self.entry_cur.show()
-            self.entry_cur.grab_focus()
+            self.hb_cur.remove(self.label_cur)
+            self.spin_cur.show()
+            self.hb_cur.add(self.spin_cur)
+            self.hb_cur.reorder_child(self.spin_cur, 1)
+            self.spin_cur.grab_focus()
+            self.editing_cur = True
 
-        # Key pressed in the entry
-        elif widget is self.entry_cur and event.type == gtk.gdk.KEY_RELEASE:
-            name = gtk.gdk.keyval_name(event.keyval)
+            self.spin_cur.set_value(self.doc.current_page().number()+1)
+            self.spin_cur.select_region(0, -1)
 
-            # Return key --> restore label and goto page
-            if name == "Return" or name == "KP_Return":
-                text = self.entry_cur.get_text()
-                self.restore_current_label()
-
-                # Deal with the text
-                n = self.doc.current_page().number() + 1
-                try:
-                    s = text.split('/')[0]
-                    n = int(s)
-                except ValueError:
-                    print("Invalid number: " + str(text))
-
-                n -= 1
-                if n != self.doc.current_page().number():
-                    if n <= 0:
-                        n = 0
-                    elif n >= self.doc.pages_number():
-                        n = self.doc.pages_number() - 1
-                    self.doc.goto(n)
-
-            # Escape key --> just restore the label
-            elif name == "Escape":
-                self.restore_current_label()
+        elif self.editing_cur:
+            self.spin_cur.grab_focus()
 
         # Propagate the event further
         return False
@@ -673,10 +808,12 @@ class UI:
         Make sure that the current page number is displayed in a label and not
         in an entry. If it is an entry, then replace it with the label.
         """
-        child = self.eb_cur.get_child()
-        if child is not self.label_cur:
-            self.eb_cur.remove(child)
-            self.eb_cur.add(self.label_cur)
+        if self.label_cur not in self.hb_cur.children():
+            self.hb_cur.remove(self.spin_cur)
+            self.hb_cur.pack_start(self.label_cur, False)
+            self.hb_cur.reorder_child(self.label_cur, 1)
+
+        self.editing_cur = False
 
 
     def update_page_numbers(self):
@@ -685,12 +822,14 @@ class UI:
         text = "<span font='36'>{}</span>"
 
         cur_nb = self.doc.current_page().number()
-        cur = "{}/{}".format(cur_nb+1, self.doc.pages_number())
+        cur = str(cur_nb+1)
+        last = "/{}".format(self.doc.pages_number())
         nex = "--"
         if cur_nb+2 <= self.doc.pages_number():
             nex = "{}/{}".format(cur_nb+2, self.doc.pages_number())
 
         self.label_cur.set_markup(text.format(cur))
+        self.label_last.set_markup(text.format(last))
         self.label_next.set_markup(text.format(nex))
         self.restore_current_label()
 
