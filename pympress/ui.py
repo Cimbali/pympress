@@ -66,6 +66,8 @@ class UI:
     #: :class:`~gtk.DrawingArea` for the Content window.
     c_da = gtk.DrawingArea()
 
+    #: Presentation window, as a :class:`gtk.Window` instance.
+    p_win = gtk.Window(gtk.WINDOW_TOPLEVEL)
     #: :class:`~gtk.AspectFrame` for the current slide in the Presenter window.
     p_frame_cur = gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
     #: :class:`~gtk.DrawingArea` for the current slide in the Presenter window.
@@ -147,16 +149,30 @@ class UI:
         self.c_win.connect("scroll-event", self.on_navigation)
 
         # Presenter window
-        p_win = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        p_win.set_title("pympress presenter")
-        p_win.set_default_size(800, 600)
-        p_win.set_position(gtk.WIN_POS_CENTER)
-        p_win.connect("delete-event", gtk.main_quit)
-        p_win.set_icon_list(*icon_list)
+        self.p_win.set_title("pympress presenter")
+        self.p_win.set_default_size(800, 600)
+        self.p_win.set_position(gtk.WIN_POS_CENTER)
+        self.p_win.connect("delete-event", gtk.main_quit)
+        self.p_win.set_icon_list(*icon_list)
+
+        screen = self.p_win.get_screen()
+        if screen.get_n_monitors() > 1:
+            cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
+            c_monitor = screen.get_monitor_at_point(cx + cw / 2, cy + ch / 2)
+            p_monitor = 0 if c_monitor > 0 else 1
+
+            p_bounds = screen.get_monitor_geometry(p_monitor)
+            self.p_win.move(p_bounds.x, p_bounds.y)
+            self.p_win.maximize()
+
+            c_bounds = screen.get_monitor_geometry(c_monitor)
+            self.c_win.move(c_bounds.x, c_bounds.y)
+            self.c_win.fullscreen()
+            self.fullscreen = True
 
         # Put Menu and Table in VBox
         bigvbox = gtk.VBox(False, 2)
-        p_win.add(bigvbox)
+        self.p_win.add(bigvbox)
 
         # UI Manager for menu
         ui_manager = gtk.UIManager()
@@ -171,6 +187,7 @@ class UI:
             <menuitem action="Pause timer"/>
             <menuitem action="Reset timer"/>
             <menuitem action="Fullscreen"/>
+            <menuitem action="Swap screens"/>
             <menuitem action="Notes mode"/>
           </menu>
           <menu action="Help">
@@ -181,7 +198,7 @@ class UI:
 
         # Accelerator group
         accel_group = ui_manager.get_accel_group()
-        p_win.add_accel_group(accel_group)
+        self.p_win.add_accel_group(accel_group)
 
         # Action group
         action_group = gtk.ActionGroup("MenuBar")
@@ -194,10 +211,11 @@ class UI:
             ("Quit",         gtk.STOCK_QUIT, "_Quit",        "q",  None, gtk.main_quit),
             ("Reset timer",  None,           "_Reset timer", "r",  None, self.reset_timer),
             ("About",        None,           "_About",       None, None, self.menu_about),
+            ("Swap screens", None,           "_Swap screens","s",  None, self.swap_screens),
         ])
         action_group.add_toggle_actions([
             ("Pause timer",  None,           "_Pause timer", "p",  None, self.switch_pause,      True),
-            ("Fullscreen",   None,           "_Fullscreen",  "f",  None, self.switch_fullscreen, False),
+            ("Fullscreen",   None,           "_Fullscreen",  "f",  None, self.switch_fullscreen, self.fullscreen),
             ("Notes mode",   None,           "_Note mode",   "n",  None, self.switch_mode,       self.notes_mode),
         ])
         ui_manager.insert_action_group(action_group)
@@ -290,14 +308,14 @@ class UI:
         self.label_clock.set_use_markup(True)
         align.add(self.label_clock)
 
-        p_win.connect("destroy", gtk.main_quit)
-        p_win.show_all()
+        self.p_win.connect("destroy", gtk.main_quit)
+        self.p_win.show_all()
 
 
         # Add events
-        p_win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.SCROLL_MASK)
-        p_win.connect("key-press-event", self.on_navigation)
-        p_win.connect("scroll-event", self.on_navigation)
+        self.p_win.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.SCROLL_MASK)
+        self.p_win.connect("key-press-event", self.on_navigation)
+        self.p_win.connect("scroll-event", self.on_navigation)
 
         # Hyperlinks if available
         if pympress.util.poppler_links_available():
@@ -321,7 +339,7 @@ class UI:
 
         # Show all windows
         self.c_win.show_all()
-        p_win.show_all()
+        self.p_win.show_all()
 
 
     def run(self):
@@ -500,6 +518,8 @@ class UI:
                     self.switch_pause()
                 elif name.upper() == "N":
                     self.switch_mode()
+                elif name.upper() == "S":
+                    self.swap_screens()
 
         elif event.type == gtk.gdk.SCROLL:
             if event.direction in [gtk.gdk.SCROLL_RIGHT, gtk.gdk.SCROLL_DOWN]:
@@ -782,6 +802,41 @@ class UI:
             self.fullscreen = True
 
         self.set_screensaver(self.fullscreen)
+
+
+    def swap_screens(self, widget=None, event=None):
+        """
+        Swap the monitors on which each window is displayed (if there are 2 monitors at least)
+        """
+        screen = self.p_win.get_screen()
+        if screen.get_n_monitors() > 1:
+            cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
+            px, py, pw, ph = self.p_win.get_position() + self.p_win.get_size()
+            p_monitor = screen.get_monitor_at_point(px + pw / 2, py + ph / 2)
+            c_monitor = screen.get_monitor_at_point(cx + cw / 2, cy + ch / 2)
+
+            if p_monitor == c_monitor:
+                return
+
+            p_monitor, c_monitor = (c_monitor, p_monitor)
+
+            p_bounds = screen.get_monitor_geometry(p_monitor)
+            if self.p_win.maximize_initially:
+                self.p_win.unmaximize()
+                self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
+                self.p_win.maximize()
+            else:
+                self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
+
+            c_bounds = screen.get_monitor_geometry(c_monitor)
+            if self.fullscreen:
+                self.c_win.unfullscreen()
+                self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
+                self.c_win.fullscreen()
+            else:
+                self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
+
+        self.on_page_change(False)
 
 
     def switch_mode(self, widget=None, event=None):
