@@ -171,8 +171,6 @@ class UI:
     p_frame_next = gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
     #: :class:`~gtk.DrawingArea` for the next slide in the Presenter window.
     p_da_next = gtk.DrawingArea()
-    #: Slide counter :class:`~gtk.Label` for the next slide.
-    label_next = gtk.Label()
 
     #: Elapsed time :class:`~gtk.Label`.
     label_time = gtk.Label()
@@ -319,27 +317,22 @@ class UI:
 
         # A little space around everything in the window
         align = gtk.Alignment(0.5, 0.5, 1, 1)
-        align.set_padding(20, 20, 20, 20)
+        align.set_padding(5, 5, 5, 5)
 
         # Table
         table = gtk.Table(2, 10, False)
-        table.set_col_spacings(25)
-        table.set_row_spacings(25)
+        table.set_col_spacings(5)
+        table.set_row_spacings(5)
         align.add(table)
         bigvbox.pack_end(align)
 
         # "Current slide" frame
         frame = gtk.Frame("Current slide")
-        table.attach(frame, 0, 6, 0, 1)
+        table.attach(frame, 0, 7, 0, 1)
         align = gtk.Alignment(0.5, 0.5, 1, 1)
-        align.set_padding(0, 0, 12, 0)
+        align.set_padding(0, 0, 0, 0)
         frame.add(align)
-        vbox = gtk.VBox()
-        align.add(vbox)
-        vbox.pack_start(self.p_frame_cur)
-        self.eb_cur.set_visible_window(False)
-        self.eb_cur.connect("event", self.on_label_event)
-        vbox.pack_start(self.eb_cur, False, False, 10)
+        align.add(self.p_frame_cur)
         self.p_da_cur.modify_bg(gtk.STATE_NORMAL, black)
         self.p_da_cur.connect("expose-event", self.on_expose)
         self.p_da_cur.set_name("p_da_cur")
@@ -350,36 +343,13 @@ class UI:
         self.p_da_cur.connect("configure-event", self.on_configure)
         self.p_frame_cur.add(self.p_da_cur)
 
-        # "CurFalserent slide" label and entry. This is ugly.
-        # We have EventBox eb_cur around HBox hb_cur containing 4 Labels
-        # And Label label_cur can be swapped for a SpinButton spin_cur :
-        # [[ [anonymous spacer] [label_cur|spin_cur] [label_last] [anonymous spacer] ]]
-        self.label_cur.set_justify(gtk.JUSTIFY_RIGHT)
-        self.label_cur.set_use_markup(True)
-        self.label_last.set_justify(gtk.JUSTIFY_LEFT)
-        self.label_last.set_use_markup(True)
-        self.hb_cur=gtk.HBox(False, 0)
-        self.hb_cur.pack_start(gtk.Label(), True)
-        self.hb_cur.pack_start(self.label_cur, False)
-        self.hb_cur.pack_start(self.label_last, False)
-        self.hb_cur.pack_start(gtk.Label(), True)
-        self.eb_cur.add(self.hb_cur)
-        self.spin_cur = SlideSelector(self, doc.pages_number())
-        self.spin_cur.set_alignment(0.5)
-        self.spin_cur.modify_font(pango.FontDescription('36'))
-
         # "Next slide" frame
         frame = gtk.Frame("Next slide")
-        table.attach(frame, 6, 10, 0, 1)
-        align = gtk.Alignment(0.5, 0.5, 1, 1)
-        align.set_padding(0, 0, 12, 0)
-        frame.add(align)
-        vbox = gtk.VBox()
-        align.add(vbox)
-        vbox.pack_start(self.p_frame_next)
-        self.label_next.set_justify(gtk.JUSTIFY_CENTER)
-        self.label_next.set_use_markup(True)
-        vbox.pack_start(self.label_next, False, False, 10)
+        frame.add(self.p_frame_next)
+        align = gtk.Alignment(0.5, 0, 1, 0.5)
+        align.set_padding(0, 0, 0, 0)
+        align.add(frame)
+        table.attach(align, 7, 10, 0, 1)
         self.p_da_next.modify_bg(gtk.STATE_NORMAL, black)
         self.p_da_next.connect("expose-event", self.on_expose)
         self.p_da_next.set_name("p_da_next")
@@ -390,19 +360,45 @@ class UI:
         self.p_da_next.connect("configure-event", self.on_configure)
         self.p_frame_next.add(self.p_da_next)
 
+        # "Current slide" label and entry. This is ugly.
+        # We have EventBox eb_cur around HBox hb_cur containing 4 Labels
+        # And Label label_cur can be swapped for a SpinButton spin_cur :
+        # [[ [anonymous spacer] [label_cur|spin_cur] [label_last] [anonymous spacer] ]]
+        self.label_cur.set_justify(gtk.JUSTIFY_RIGHT)
+        self.label_cur.set_use_markup(True)
+        self.label_last.set_justify(gtk.JUSTIFY_LEFT)
+        self.label_last.set_use_markup(True)
+        self.hb_cur=gtk.HBox()
+        self.hb_cur.pack_start(self.label_cur)
+        self.hb_cur.pack_start(self.label_last)
+        align = gtk.Alignment(0.5, 0.5, 0, 0)
+        align.set_padding(0, 0, 0, 0)
+        align.add(self.hb_cur)
+        self.eb_cur.add(align)
+        self.spin_cur = SlideSelector(self, doc.pages_number())
+        self.spin_cur.set_alignment(0.5)
+        self.spin_cur.modify_font(pango.FontDescription('36'))
+
+        self.eb_cur.set_visible_window(False)
+        self.eb_cur.connect("event", self.on_label_event)
+        frame = gtk.Frame("Slide number")
+        frame.add(self.eb_cur)
+        table.attach(frame, 0, 3, 1, 2, yoptions=gtk.FILL)
+
         # "Time elapsed" frame
         frame = gtk.Frame("Time elapsed")
-        table.attach(frame, 0, 5, 1, 2, yoptions=gtk.FILL)
+        table.attach(frame, 3, 8, 1, 2, yoptions=gtk.FILL)
         align = gtk.Alignment(0.5, 0.5, 1, 1)
         align.set_padding(10, 10, 12, 0)
         frame.add(align)
-        self.label_time.set_justify(gtk.JUSTIFY_CENTER)
         self.label_time.set_use_markup(True)
+        self.label_time.set_justify(gtk.JUSTIFY_CENTER)
+        self.label_time.set_width_chars(44) # close enough to 13 characters at font size 36
         align.add(self.label_time)
 
         # "Clock" frame
         frame = gtk.Frame("Clock")
-        table.attach(frame, 5, 10, 1, 2, yoptions=gtk.FILL)
+        table.attach(frame, 8, 10, 1, 2, yoptions=gtk.FILL)
         align = gtk.Alignment(0.5, 0.5, 1, 1)
         align.set_padding(10, 10, 12, 0)
         frame.add(align)
@@ -754,7 +750,7 @@ class UI:
             self.hb_cur.remove(self.label_cur)
             self.spin_cur.show()
             self.hb_cur.add(self.spin_cur)
-            self.hb_cur.reorder_child(self.spin_cur, 1)
+            self.hb_cur.reorder_child(self.spin_cur, 0)
             self.spin_cur.grab_focus()
             self.editing_cur = True
 
@@ -811,7 +807,7 @@ class UI:
         if self.label_cur not in self.hb_cur.children():
             self.hb_cur.remove(self.spin_cur)
             self.hb_cur.pack_start(self.label_cur, False)
-            self.hb_cur.reorder_child(self.label_cur, 1)
+            self.hb_cur.reorder_child(self.label_cur, 0)
 
         self.editing_cur = False
 
@@ -824,13 +820,9 @@ class UI:
         cur_nb = self.doc.current_page().number()
         cur = str(cur_nb+1)
         last = "/{}".format(self.doc.pages_number())
-        nex = "--"
-        if cur_nb+2 <= self.doc.pages_number():
-            nex = "{}/{}".format(cur_nb+2, self.doc.pages_number())
 
         self.label_cur.set_markup(text.format(cur))
         self.label_last.set_markup(text.format(last))
-        self.label_next.set_markup(text.format(nex))
         self.restore_current_label()
 
 
@@ -842,8 +834,6 @@ class UI:
         :rtype: boolean
         """
 
-        text = "<span font='36'>{}</span>"
-
         # Current time
         clock = time.strftime("%H:%M:%S")
 
@@ -854,8 +844,8 @@ class UI:
         if self.paused:
             elapsed += " (pause)"
 
-        self.label_time.set_markup(text.format(elapsed))
-        self.label_clock.set_markup(text.format(clock))
+        self.label_time.set_markup("<span font='36'>{}</span>".format(elapsed))
+        self.label_clock.set_markup("<span font='24'>{}</span>".format(clock))
 
         return True
 
