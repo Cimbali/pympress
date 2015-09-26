@@ -362,19 +362,19 @@ class Document:
             self.cur_page = number
             self.ui.on_page_change()
 
-    def goto_next(self):
+    def goto_next(self, *args):
         """Switch to the next page."""
         self.goto(self.cur_page + 1)
 
-    def goto_prev(self):
+    def goto_prev(self, *args):
         """Switch to the previous page."""
         self.goto(self.cur_page - 1)
 
-    def goto_home(self):
+    def goto_home(self, *args):
         """Switch to the first page."""
         self.goto(0)
 
-    def goto_end(self):
+    def goto_end(self, *args):
         """Switch to the last page."""
         self.goto(self.nb_pages-1)
 

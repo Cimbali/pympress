@@ -259,6 +259,9 @@ class UI:
             self.c_win.fullscreen()
             self.fullscreen = True
 
+        # Document
+        self.doc = doc
+
         # Put Menu and Table in VBox
         bigvbox = gtk.VBox(False, 2)
         self.p_win.add(bigvbox)
@@ -279,6 +282,13 @@ class UI:
             <menuitem action="Swap screens"/>
             <menuitem action="Notes mode"/>
           </menu>
+          <menu action="Navigation">
+            <menuitem action="Next"/>
+            <menuitem action="Previous"/>
+            <menuitem action="First"/>
+            <menuitem action="Last"/>
+            <menuitem action="Go to..."/>
+          </menu>
           <menu action="Help">
             <menuitem action="About"/>
           </menu>
@@ -295,17 +305,24 @@ class UI:
         action_group.add_actions([
             ("File",         None,           "_File"),
             ("Presentation", None,           "_Presentation"),
+            ("Navigation",   None,           "_Navigation"),
             ("Help",         None,           "_Help"),
 
-            ("Quit",         gtk.STOCK_QUIT, "_Quit",        "q",  None, gtk.main_quit),
-            ("Reset timer",  None,           "_Reset timer", "r",  None, self.reset_timer),
-            ("About",        None,           "_About",       None, None, self.menu_about),
-            ("Swap screens", None,           "_Swap screens","s",  None, self.swap_screens),
+            ("Quit",         gtk.STOCK_QUIT, "_Quit",        "q",     None, gtk.main_quit),
+            ("Reset timer",  None,           "_Reset timer", "r",     None, self.reset_timer),
+            ("About",        None,           "_About",       None,    None, self.menu_about),
+            ("Swap screens", None,           "_Swap screens","s",     None, self.swap_screens),
+
+            ("Next",         None,           "_Next",        "Right", None, self.doc.goto_next),
+            ("Previous",     None,           "_Previous",    "Left",  None, self.doc.goto_prev),
+            ("First",        None,           "_First",       "Home",  None, self.doc.goto_home),
+            ("Last",         None,           "_Last",        "End",   None, self.doc.goto_end),
+            ("Go to...",     None,           "_Go to...",    "g",     None, self.on_label_event),
         ])
         action_group.add_toggle_actions([
-            ("Pause timer",  None,           "_Pause timer", "p",  None, self.switch_pause,      True),
-            ("Fullscreen",   None,           "_Fullscreen",  "f",  None, self.switch_fullscreen, self.fullscreen),
-            ("Notes mode",   None,           "_Note mode",   "n",  None, self.switch_mode,       self.notes_mode),
+            ("Pause timer",  None,           "_Pause timer", "p",     None, self.switch_pause,      True),
+            ("Fullscreen",   None,           "_Fullscreen",  "f",     None, self.switch_fullscreen, self.fullscreen),
+            ("Notes mode",   None,           "_Note mode",   "n",     None, self.switch_mode,       self.notes_mode),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -431,9 +448,6 @@ class UI:
 
         # Setup timer
         gobject.timeout_add(250, self.update_time)
-
-        # Document
-        self.doc = doc
 
         # Show all windows
         self.c_win.show_all()
@@ -652,8 +666,6 @@ class UI:
                 self.switch_pause()
             elif name.upper() == "R":
                 self.reset_timer()
-            elif name.upper() == "G":
-                self.on_label_event(self.eb_cur, gtk.gdk.Event(gtk.gdk.BUTTON_PRESS))
 
             # Some key events are already handled by toggle actions in the
             # presenter window, so we must handle them in the content window
@@ -661,14 +673,15 @@ class UI:
             if widget is self.c_win:
                 if name.upper() == "P":
                     self.switch_pause()
-                    return True
                 elif name.upper() == "N":
                     self.switch_mode()
-                    return True
                 elif name.upper() == "S":
                     self.swap_screens()
-                    return True
-
+                elif name.upper() == "G":
+                    self.on_label_event(self.eb_cur, gtk.gdk.Event(gtk.gdk.BUTTON_PRESS))
+                else:
+                    return False
+                return True
             else:
                 return False
 
@@ -729,7 +742,7 @@ class UI:
             print("Unknown event " + str(event.type))
 
 
-    def on_label_event(self, widget, event):
+    def on_label_event(self, *args):
         """
         Manage events on the current slide label/entry.
 
@@ -743,9 +756,13 @@ class UI:
         :type  event: :class:`gtk.gdk.Event`
         """
 
-        # Click in label-mode
-        if self.label_cur in self.hb_cur.children() and event.type == gtk.gdk.BUTTON_PRESS:
+        event=args[-1]
 
+        # Click in label-mode
+        if self.label_cur in self.hb_cur.children() and (
+            type(event) == gtk.Action or
+            (type(event) ==gtk.gdk.Event and event.type == gtk.gdk.BUTTON_PRESS)
+        ):
             # Replace label with entry
             self.hb_cur.remove(self.label_cur)
             self.spin_cur.show()
