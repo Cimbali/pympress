@@ -455,6 +455,10 @@ class UI:
         self.c_win.show_all()
         self.p_win.show_all()
 
+        # Compute first slides to show
+        time.sleep(0.250)
+        self.on_page_change(False)
+
 
     def run(self):
         """Run the GTK main loop."""
