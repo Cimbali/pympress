@@ -135,6 +135,8 @@ class SlideSelector(gtk.SpinButton):
             else:
                 self.set_value(self.get_value_as_int() - 1)
 
+            return True
+
         return False
 
 class UI:
@@ -688,6 +690,11 @@ class UI:
             return True
 
         elif event.type == gtk.gdk.SCROLL:
+
+            # send all to spinner if it is active to avoid key problems
+            if self.editing_cur and self.spin_cur.on_keypress(widget, event):
+                return True
+
             if event.direction in [gtk.gdk.SCROLL_RIGHT, gtk.gdk.SCROLL_DOWN]:
                 self.doc.goto_next()
             else:
