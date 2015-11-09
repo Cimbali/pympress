@@ -35,7 +35,8 @@ from __future__ import print_function
 
 import sys
 
-import poppler
+import gi
+from gi.repository import Poppler
 
 import pympress.ui
 import pympress.util
@@ -105,7 +106,7 @@ class Page:
 
     """
 
-    #: Page handled by this class (instance of :class:`poppler.Page`)
+    #: Page handled by this class (instance of :class:`Poppler.Page`)
     page = None
     #: Number of the current page (starting from 0)
     page_nb = -1
@@ -120,7 +121,7 @@ class Page:
     def __init__(self, doc, number):
         """
         :param doc: the PDF document
-        :type  doc: :class:`poppler.Document`
+        :type  doc: :class:`Poppler.Document`
         :param number: number of the page to fetch in the document
         :type  number: integer
         """
@@ -136,11 +137,11 @@ class Page:
             self.links = []
 
             for link in link_mapping:
-                if type(link.action) is poppler.ActionGotoDest:
+                if type(link.action) is Poppler.ActionGotoDest:
                     dest = link.action.dest
                     page_num = dest.page_num
 
-                    if dest.type == poppler.DEST_NAMED:
+                    if dest.type == Poppler.DEST_NAMED:
                         page_num = doc.find_dest(dest.named_dest).page_num
 
                     # Page numbering starts at 0
@@ -205,7 +206,7 @@ class Page:
         """Render the page on a Cairo surface.
 
         :param cr: target surface
-        :type  cr: :class:`gtk.gdk.CairoContext`
+        :type  cr: :class:`Gdk.CairoContext`
         :param ww: target width in pixels
         :type  ww: integer
         :param wh: target height in pixels
@@ -243,7 +244,7 @@ class Document:
        starts at 0.
     """
 
-    #: Current PDF document (:class:`poppler.Document` instance)
+    #: Current PDF document (:class:`Poppler.Document` instance)
     doc = None
     #: Number of pages in the document
     nb_pages = -1
@@ -272,7 +273,7 @@ class Document:
             print("Hyperlink support not found in poppler-python -- be sure to use at least bazaar rev. 62 to have them working", file=sys.stderr)
 
         # Open PDF file
-        self.doc = poppler.document_new_from_file(uri, None)
+        self.doc = Poppler.Document.new_from_file(uri, None)
 
         # Pages number
         self.nb_pages = self.doc.get_n_pages()

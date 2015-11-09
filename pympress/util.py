@@ -22,12 +22,13 @@
 -------------------------------------------------
 """
 
-import pygtk
-pygtk.require('2.0')
-import gtk
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+from gi.repository import GdkPixbuf
+from gi.repository import Poppler
 import pkg_resources
 import os, os.path, sys
-import poppler
 
 def load_icons():
     """
@@ -35,9 +36,9 @@ def load_icons():
     :file:`/usr/share/pixmaps` or something similar).
 
     :return: loaded icons
-    :rtype: list of :class:`gtk.gdk.Pixbuf`
+    :rtype: list of :class:`GdkPixbuf.Pixbuf`
     """
-    
+
     req = pkg_resources.Requirement.parse("pympress")
     icon_names = pkg_resources.resource_listdir(req, "share/pixmaps")
     icons = []
@@ -45,16 +46,16 @@ def load_icons():
         if os.path.splitext(icon_name)[1].lower() != ".png": continue
         icon_fn = pkg_resources.resource_filename(req, "share/pixmaps/" + icon_name)
         try:
-            icon_pixbuf = gtk.gdk.pixbuf_new_from_file(icon_fn)
+            icon_pixbuf = GdkPixbuf.Pixbuf.new_from_file(icon_fn)
             icons.append(icon_pixbuf)
-        except Exception, e:
-            print e
-    
+        except Exception as e:
+            print(e)
+
     return icons
 
 
 def poppler_links_available():
-    """Check if hyperlinks are supported in python-poppler.
+    """Check if hyperlinks are supported in python-Poppler.
 
     :return: ``True`` if python-poppler is recent enough to support hyperlinks,
        ``False`` otherwise
@@ -62,7 +63,7 @@ def poppler_links_available():
     """
 
     try:
-        type(poppler.ActionGotoDest)
+        type(Poppler.ActionGotoDest)
     except AttributeError:
         return False
     else:

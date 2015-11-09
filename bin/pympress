@@ -22,14 +22,14 @@
 import os.path
 import sys
 
-import pygtk
-pygtk.require('2.0')
-import gtk
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk
 
 import pympress.document
 
 if __name__ == '__main__':
-    gtk.gdk.threads_init()
+    Gdk.threads_init()
 
     # PDF file to open
     name = None
@@ -39,35 +39,35 @@ if __name__ == '__main__':
         # Check if the path is valid
         if not os.path.exists(name):
             msg="""Could not find the file "{}".""".format(name)
-            dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK, message_format=msg)
-            dialog.set_position(gtk.WIN_POS_CENTER)
+            dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg)
+            dialog.set_position(Gtk.WindowPosition.CENTER)
             dialog.run()
             sys.exit(1)
 
     else:
         # Use a GTK file dialog to choose file
-        dialog = gtk.FileChooserDialog("Open...", None,
-                                       gtk.FILE_CHOOSER_ACTION_OPEN,
-                                       (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                        gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        dialog.set_default_response(gtk.RESPONSE_OK)
-        dialog.set_position(gtk.WIN_POS_CENTER)
+        dialog = Gtk.FileChooserDialog("Open...", None,
+                                       Gtk.FileChooserAction.OPEN,
+                                       (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                                        Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog.set_default_response(Gtk.ResponseType.OK)
+        dialog.set_position(Gtk.WindowPosition.CENTER)
 
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name("PDF files")
         filter.add_mime_type("application/pdf")
         filter.add_pattern("*.pdf")
         dialog.add_filter(filter)
 
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name("All files")
         filter.add_pattern("*")
         dialog.add_filter(filter)
 
         response = dialog.run()
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             name =  dialog.get_filename()
-        elif response != gtk.RESPONSE_CANCEL:
+        elif response != Gtk.ResponseType.CANCEL:
             raise ValueError("Invalid response")
 
         dialog.destroy()
@@ -75,8 +75,8 @@ if __name__ == '__main__':
     if name is None:
         # Use a GTK dialog to tell we need a file
         msg="""No file selected!\n\nYou can specify the PDF file to open on the command line if you don't want to use the "Open File" dialog."""
-        dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK, message_format=msg)
-        dialog.set_position(gtk.WIN_POS_CENTER)
+        dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg)
+        dialog.set_position(Gtk.WindowPosition.CENTER)
         dialog.run()
         sys.exit(1)
 

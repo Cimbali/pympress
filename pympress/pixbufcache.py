@@ -23,7 +23,7 @@
 
 This modules contains stuff needed for caching pages and prerendering them. This
 is done by the :class:`~pympress.pixbufcache.PixbufCache` class, using several
-dictionaries of :class:`gtk.gdk.Pixbuf` for storing rendered pages.
+dictionaries of :class:`GdkPixbuf.Pixbuf` for storing rendered pages.
 
 When used, the prerendering is done asynchronously in another thread.
 
@@ -35,20 +35,23 @@ When used, the prerendering is done asynchronously in another thread.
    documents.
 """
 
-import Queue
+import queue
 import threading
 import time
 
-import pygtk
-pygtk.require('2.0')
-import gtk
+import gi
+import cairo
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import GdkPixbuf
 
 class PixbufCache:
     """Pages caching and prerendering made (almost) easy."""
 
     #: The actual cache. It is a dictionary of dictionaries: its keys are widget
     #: names and its values are dictionaries whose keys are page numbers and
-    #: values are instances of :class:`gtk.gdk.Pixbuf`.
+    #: values are instances of :class:`GdkPixbuf.Pixbuf`.
     pixbuf_cache = {}
 
     #: Size of the different managed widgets, as a dictionary of tuples
@@ -67,7 +70,7 @@ class PixbufCache:
     #: Dictionaries of the prerendering threads.
     threads = {}
 
-    #: Dictionaries of :class:`~Queue.Queue`\ s used to store what has to
+    #: Dictionaries of :class:`~queue.Queue`\ s used to store what has to
     #: be prerendered by each thread.
     jobs = {}
 
@@ -106,7 +109,7 @@ class PixbufCache:
         self.locks[widget_name] = threading.Lock()
         self.threads[widget_name] = threading.Thread(target=self.renderer, args=(widget_name,))
         self.threads[widget_name].daemon = True
-        self.jobs[widget_name] = Queue.Queue(0)
+        self.jobs[widget_name] = queue.Queue(0)
         self.threads[widget_name].start()
 
     def set_widget_type(self, widget_name, wtype):
@@ -159,7 +162,7 @@ class PixbufCache:
         :param page_nb: number of the page to fetch in the cache
         :type  page_nb: integer
         :return: the cached page if available, or ``None`` otherwise
-        :rtype: :class:`gtk.gdk.Pixbuf`
+        :rtype: :class:`GdkPixbuf.Pixbuf`
         """
         with self.locks[widget_name]:
             pc = self.pixbuf_cache[widget_name]
@@ -177,7 +180,7 @@ class PixbufCache:
         :param page_nb: number of the page to store in the cache
         :type  page_nb: integer
         :param val: content to store in the cache
-        :type  val: :class:`gtk.gdk.Pixbuf`
+        :type  val: :class:`GdkPixbuf.Pixbuf`
         """
         with self.locks[widget_name]:
             pc = self.pixbuf_cache[widget_name]
@@ -206,9 +209,9 @@ class PixbufCache:
         ends) and does the following steps:
 
         - fetch the number of a page to render from the jobs
-          :class:`~Queue.Queue`
+          :class:`~queue.Queue`
         - check if it is not already available in the cache
-        - render it in a new :class:`~gtk.gdk.Pixbuf` if necessary
+        - render it in a new :class:`~GdkPixbuf.Pixbuf` if necessary
         - store it in the cache if it was not added there since the beginning of
           the process
 
@@ -241,16 +244,18 @@ class PixbufCache:
 
             print("Prerendering page {} for widget {} type {}".format(page_nb+1, widget_name, wtype))
 
-            with gtk.gdk.lock:
-                # Render to a pixmap
-                pixmap = gtk.gdk.Pixmap(None, ww, wh, 24) # FIXME: 24 or 32?
-                cr = pixmap.cairo_create()
-                page.render_cairo(cr, ww, wh, wtype)
+            #TODO check we're on main thread 'cause we removed this:
+            #with Gdk.lock:
 
-                # Convert pixmap to pixbuf
-                pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, ww, wh)
-                pixbuf.get_from_drawable(pixmap, gtk.gdk.colormap_get_system(),
-                                         0, 0, 0, 0, ww, wh)
+            # Render to a pixmap
+            pixmap = Gdk.Pixmap(None, ww, wh, 24) # FIXME: 24 or 32?
+            cr = pixmap.cairo_create()
+            page.render_cairo(cr, ww, wh, wtype)
+
+            # Convert pixmap to pixbuf
+            pixbuf = GdkPixbuf.Pixbuf(GdkPixbuf.Colorspace.RGB, False, 8, ww, wh)
+            pixbuf.get_from_drawable(pixmap, Gdk.colormap_get_system(),
+                                     0, 0, 0, 0, ww, wh)
 
             # Save if possible and necessary
             with self.locks[widget_name]:
