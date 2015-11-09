@@ -1,4 +1,4 @@
-#       pixbufcache.py
+#       surfacecache.py
 #
 #       Copyright 2010 Thomas Jost <thomas.jost@gmail.com>
 #
@@ -18,11 +18,11 @@
 #       MA 02110-1301, USA.
 
 """
-:mod:`pympress.pixbufcache` -- pages prerendering and caching
+:mod:`pympress.surfacecache` -- pages prerendering and caching
 -------------------------------------------------------------
 
 This modules contains stuff needed for caching pages and prerendering them. This
-is done by the :class:`~pympress.pixbufcache.PixbufCache` class, using several
+is done by the :class:`~pympress.surfacecache.SurfaceCache` class, using several
 dictionaries of :class:`cairo.ImageSurface` for storing rendered pages.
 
 When used, the prerendering is done asynchronously in another thread.
@@ -45,7 +45,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gdk
 
-class PixbufCache:
+class SurfaceCache:
     """Pages caching and prerendering made (almost) easy."""
 
     #: The actual cache. It is a dictionary of dictionaries: its keys are widget
@@ -203,7 +203,7 @@ class PixbufCache:
 
         This function is meant to be run in the various prerendering threads. It
         only uses safe ways to access attributes of the
-        :class:`~pympress.pixbufcache.PixbufCache` class (i.e. synchronization
+        :class:`~pympress.surfacecache.SurfaceCache` class (i.e. synchronization
         with :class:`~threading.Lock`\ s). It runs infinitely (until the program
         ends) and does the following steps:
 

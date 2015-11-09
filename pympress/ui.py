@@ -45,7 +45,7 @@ from gi.repository import GdkX11
 from gi.repository import GdkPixbuf
 from gi.repository import Pango
 
-import pympress.pixbufcache
+import pympress.surfacecache
 import pympress.util
 import pympress.slideselector
 
@@ -60,7 +60,7 @@ PDF_NOTES_PAGE   = 2
 class UI:
     """Pympress GUI management."""
 
-    #: :class:`~pympress.pixbufcache.PixbufCache` instance.
+    #: :class:`~pympress.surfacecache.SurfaceCache` instance.
     cache = None
 
     #: Content window, as a :class:`Gtk.Window` instance.
@@ -133,7 +133,7 @@ class UI:
         icon_list = pympress.util.load_icons()
 
         # Pixbuf cache
-        self.cache = pympress.pixbufcache.PixbufCache(doc)
+        self.cache = pympress.surfacecache.SurfaceCache(doc)
 
         # Use notes mode by default if the document has notes
         self.notes_mode = doc.has_notes()
@@ -407,17 +407,21 @@ class UI:
 
         self.page_preview_nb = page_nb
 
-        # Aspect ratios
+        # Aspect ratios and queue redraws
         pr = page_cur.get_aspect_ratio(self.notes_mode)
         self.p_frame_cur.set_property("ratio", pr)
+
+        #TODO force redraw rather than queue? (like before)
+        self.p_da_cur.queue_draw()
 
         if page_next is not None:
             pr = page_next.get_aspect_ratio(self.notes_mode)
             self.p_frame_next.set_property("ratio", pr)
+            self.p_frame_next.show_all()
+            self.p_da_next.queue_draw()
+        else:
+            self.p_frame_next.hide()
 
-        #TODO force redraw rather than queue? (like before)
-        self.p_da_cur.queue_draw()
-        self.p_da_next.queue_draw()
 
         # Prerender the 4 next pages and the 2 previous ones
         cur = page_cur.number()
@@ -444,14 +448,22 @@ class UI:
         # Page change: resynchronize miniatures
         self.page_preview_nb = page_cur.number()
 
-        # Aspect ratios
+        # Aspect ratios and queue redraws
         pr = page_cur.get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
         self.p_frame_cur.set_property("ratio", pr)
 
+        #TODO force redraw rather than queue? (like before)
+        self.c_da.queue_draw()
+        self.p_da_cur.queue_draw()
+
         if page_next is not None:
             pr = page_next.get_aspect_ratio(self.notes_mode)
             self.p_frame_next.set_property("ratio", pr)
+            self.p_frame_next.show_all()
+            self.p_da_next.queue_draw()
+        else:
+            self.p_frame_next.hide()
 
         # Start counter if needed
         if unpause:
@@ -461,11 +473,6 @@ class UI:
 
         # Update display
         self.update_page_numbers()
-
-        #TODO force redraw rather than queue? (like before)
-        self.c_da.queue_draw()
-        self.p_da_cur.queue_draw()
-        self.p_da_next.queue_draw()
 
         # Prerender the 4 next pages and the 2 previous ones
         page_max = min(self.doc.pages_number(), self.page_preview_nb + 5)
@@ -481,7 +488,7 @@ class UI:
         This callback may be called either directly on a page change or as an
         event handler by GTK. In both cases, it determines which widget needs to
         be updated, and updates it, using the
-        :class:`~pympress.pixbufcache.PixbufCache` if possible.
+        :class:`~pympress.surfacecache.SurfaceCache` if possible.
 
         :param widget: the widget to update
         :type  widget: :class:`Gtk.Widget`
@@ -496,15 +503,11 @@ class UI:
             # Current page 'preview'
             page = self.doc.page(self.page_preview_nb)
         else:
-            # Next page: it can be None
+            # Next page: we shouldn't have queued a redraw if it is None
+            # but maybe on some weird timing issues it may still happen?
             page = self.doc.page(self.page_preview_nb+1)
             if page is None:
-                widget.hide()
-                self.p_frame_next.set_shadow_type(Gtk.ShadowType.NONE)
                 return
-            else:
-                widget.show()
-                self.p_frame_next.set_shadow_type(Gtk.ShadowType.IN)
 
         # Instead of rendering the document to a Cairo surface (which is slow),
         # use a pixbuf from the cache if possible.
@@ -537,7 +540,7 @@ class UI:
 
         In the GTK world, this event is triggered when a widget's configuration
         is modified, for example when its size changes. So, when this event is
-        triggered, we tell the local :class:`~pympress.pixbufcache.PixbufCache`
+        triggered, we tell the local :class:`~pympress.surfacecache.SurfaceCache`
         instance about it, so that it can invalidate its internal cache for the
         specified widget and pre-render next pages at a correct size.
 
