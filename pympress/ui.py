@@ -38,6 +38,7 @@ import time
 import pkg_resources
 
 import gi
+import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import GObject
 from gi.repository import Gtk
@@ -225,6 +226,7 @@ class UI:
         self.c_win.set_icon_list(icon_list)
 
         self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
+        self.c_frame.add(self.c_da)
 
         self.c_da.modify_bg(Gtk.StateType.NORMAL, black)
         self.c_da.connect("draw", self.on_draw)
@@ -235,7 +237,7 @@ class UI:
             self.cache.add_widget("c_da", pympress.document.PDF_REGULAR)
         self.c_da.connect("configure-event", self.on_configure)
 
-        self.c_frame.add(self.c_da)
+        self.c_frame.set_shadow_type(Gtk.ShadowType.NONE)
         self.c_win.add(self.c_frame)
 
         self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
@@ -516,8 +518,8 @@ class UI:
             self.p_frame_next.set_property("ratio", pr)
 
         #TODO force redraw rather than queue? (like before)
-        self.p_da_cur.queue_draw_area(0, 0, self.p_da_cur.get_allocated_width(), self.p_da_cur.get_allocated_height());
-        self.p_da_next.queue_draw_area(0, 0, self.p_da_next.get_allocated_width(), self.p_da_next.get_allocated_height());
+        self.p_da_cur.queue_draw()
+        self.p_da_next.queue_draw()
 
         # Prerender the 4 next pages and the 2 previous ones
         cur = page_cur.number()
@@ -563,9 +565,9 @@ class UI:
         self.update_page_numbers()
 
         #TODO force redraw rather than queue? (like before)
-        self.c_da.queue_draw_area(0, 0, self.c_da.get_allocated_width(), self.c_da.get_allocated_height());
-        self.p_da_cur.queue_draw_area(0, 0, self.p_da_cur.get_allocated_width(), self.p_da_cur.get_allocated_height());
-        self.p_da_next.queue_draw_area(0, 0, self.p_da_next.get_allocated_width(), self.p_da_next.get_allocated_height());
+        self.c_da.queue_draw()
+        self.p_da_cur.queue_draw()
+        self.p_da_next.queue_draw()
 
         # Prerender the 4 next pages and the 2 previous ones
         page_max = min(self.doc.pages_number(), self.page_preview_nb + 5)
@@ -617,13 +619,20 @@ class UI:
 
         if pb is None:
             # Cache miss: render the page, and save it to the cache
-            self.render_page(page, widget, cairo_context, wtype)
             ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
-            pb = Gdk.pixbuf_get_from_window(widget.get_window(), 0, 0, ww, wh)
+            pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
+
+            cairo_prerender = cairo.Context(pb)
+            page.render_cairo(cairo_prerender, ww, wh, wtype)
+
+            cairo_context.set_source_surface(pb, 0, 0)
+            cairo_context.paint()
+
             self.cache.set(name, nb, pb)
         else:
             # Cache hit: draw the pixbuf from the cache to the widget
-            Gdk.cairo_set_source_pixbuf(cairo_context, pb, 0, 0);
+            cairo_context.set_source_surface(pb, 0, 0)
+            cairo_context.paint()
 
 
     def on_configure(self, widget, event):
@@ -797,45 +806,6 @@ class UI:
 
         # Propagate the event further
         return False
-
-
-
-    def render_page(self, page, widget, cr, wtype):
-        """
-        Render a page on a widget.
-
-        This function takes care of properly initializing the widget so that
-        everything looks fine in the end. The rendering to a Cairo surface is
-        done using the :meth:`pympress.document.Page.render_cairo` method.
-
-        :param page: the page to render
-        :type  page: :class:`pympress.document.Page`
-        :param widget: the widget on which the page must be rendered
-        :type  widget: :class:`Gtk.DrawingArea`
-        :param wtype: the type of document to render
-        :type  wtype: integer
-        """
-
-        # Make sure the widget is initialized
-        if widget.get_window() is None:
-            return
-
-        # Widget size
-        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
-
-        # Manual double buffering (since we use direct drawing instead of
-        # calling queue_draw() on the widget)
-        rect = Gdk.Rectangle()
-        rect.x = 0
-        rect.y = 0
-        rect.width = ww
-        rect.height = wh
-        widget.get_window().begin_paint_rect(rect)
-
-        page.render_cairo(cr, ww, wh, wtype)
-
-        # Blit off-screen buffer to screen
-        widget.get_window().end_paint()
 
 
     def restore_current_label(self):

@@ -23,7 +23,7 @@
 
 This modules contains stuff needed for caching pages and prerendering them. This
 is done by the :class:`~pympress.pixbufcache.PixbufCache` class, using several
-dictionaries of :class:`GdkPixbuf.Pixbuf` for storing rendered pages.
+dictionaries of :class:`cairo.ImageSurface` for storing rendered pages.
 
 When used, the prerendering is done asynchronously in another thread.
 
@@ -51,7 +51,7 @@ class PixbufCache:
 
     #: The actual cache. It is a dictionary of dictionaries: its keys are widget
     #: names and its values are dictionaries whose keys are page numbers and
-    #: values are instances of :class:`GdkPixbuf.Pixbuf`.
+    #: values are instances of :class:`cairo.ImageSurface`.
     pixbuf_cache = {}
 
     #: Size of the different managed widgets, as a dictionary of tuples
@@ -162,7 +162,7 @@ class PixbufCache:
         :param page_nb: number of the page to fetch in the cache
         :type  page_nb: integer
         :return: the cached page if available, or ``None`` otherwise
-        :rtype: :class:`GdkPixbuf.Pixbuf`
+        :rtype: :class:`cairo.ImageSurface`
         """
         with self.locks[widget_name]:
             pc = self.pixbuf_cache[widget_name]
@@ -180,7 +180,7 @@ class PixbufCache:
         :param page_nb: number of the page to store in the cache
         :type  page_nb: integer
         :param val: content to store in the cache
-        :type  val: :class:`GdkPixbuf.Pixbuf`
+        :type  val: :class:`cairo.ImageSurface`
         """
         with self.locks[widget_name]:
             pc = self.pixbuf_cache[widget_name]
@@ -211,7 +211,7 @@ class PixbufCache:
         - fetch the number of a page to render from the jobs
           :class:`~queue.Queue`
         - check if it is not already available in the cache
-        - render it in a new :class:`~GdkPixbuf.Pixbuf` if necessary
+        - render it in a new :class:`~cairo.ImageSurface` if necessary
         - store it in the cache if it was not added there since the beginning of
           the process
 
@@ -244,18 +244,12 @@ class PixbufCache:
 
             print("Prerendering page {} for widget {} type {}".format(page_nb+1, widget_name, wtype))
 
-            #TODO check we're on main thread 'cause we removed this:
-            #with Gdk.lock:
-
-            # Render to a pixmap
-            pixmap = Gdk.Pixmap(None, ww, wh, 24) # FIXME: 24 or 32?
-            cr = pixmap.cairo_create()
-            page.render_cairo(cr, ww, wh, wtype)
-
-            # Convert pixmap to pixbuf
-            pixbuf = GdkPixbuf.Pixbuf(GdkPixbuf.Colorspace.RGB, False, 8, ww, wh)
-            pixbuf.get_from_drawable(pixmap, Gdk.colormap_get_system(),
-                                     0, 0, 0, 0, ww, wh)
+            # Render to a ImageSurface
+            # 32 to support alpha (needed with premultiplied values?)
+            # Anyway 24 uses 32-bit values with 8 unused
+            pixbuf = cairo.ImageSurface(cairo.FORMAT_ARGB32, ww, wh)
+            renderer = cairo.Context(pixbuf)
+            page.render_cairo(renderer, ww, wh, wtype)
 
             # Save if possible and necessary
             with self.locks[widget_name]:
