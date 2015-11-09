@@ -29,8 +29,6 @@ current and the next page, as well as a time counter and a clock.
 Both windows are managed by the :class:`~pympress.ui.UI` class.
 """
 
-from __future__ import print_function
-
 import os
 import sys
 import time
@@ -49,6 +47,7 @@ from gi.repository import Pango
 
 import pympress.pixbufcache
 import pympress.util
+import pympress.slideselector
 
 #: "Regular" PDF file (without notes)
 PDF_REGULAR      = 0
@@ -57,91 +56,6 @@ PDF_CONTENT_PAGE = 1
 #: Notes page (right side) of a PDF file with notes
 PDF_NOTES_PAGE   = 2
 
-class SlideSelector(Gtk.SpinButton):
-    ui = None
-    maxpage = -1
-    timer = -1
-    def __init__(self, parent, maxpage):
-        GObject.GObject.__init__(self)
-
-        self.ui = parent
-        self.maxpage = maxpage
-
-        self.set_adjustment(Gtk.Adjustment(lower=1, upper=maxpage, step_incr=1))
-        self.set_update_policy(Gtk.SpinButtonUpdatePolicy.ALWAYS)
-        self.set_numeric(True)
-
-        self.connect('changed', self.on_changed)
-        self.connect("key-press-event", self.on_keypress)
-        self.connect("key-release-event", self.on_keyup)
-        self.connect("editing-done", self.done)
-        self.connect("insert-text", self.on_changed)
-
-    def on_keyup(self, widget, event):
-        if event.type == Gdk.EventType.KEY_PRESS and Gdk.keyval_name(event.keyval).upper() == "G":
-            return False
-        return Gtk.SpinButton.do_key_release_event(self, event)
-
-    def done(self, *args):
-        self.ui.restore_current_label()
-        self.ui.doc.goto(self.get_page())
-
-    def cancel(self, *args):
-        self.ui.restore_current_label()
-        self.ui.on_page_change()
-
-    def on_changed(self, *args):
-        self.ui.page_preview(self.get_page())
-
-    def force_update(self, *args):
-        self.timer = -1
-        self.set_value(float(self.get_buffer().get_text()))
-        self.on_changed()
-        return False
-
-    def get_page(self):
-        return max(1, min(self.maxpage, self.get_value_as_int()))-1
-
-    def on_keypress(self, widget, event):
-        if event.type == Gdk.EventType.KEY_PRESS:
-            name = Gdk.keyval_name(event.keyval)
-
-            # Return key --> restore label and goto page
-            if name == "Return" or name == "KP_Return":
-                self.done()
-            # Escape key --> just restore the label
-            elif name == "Escape":
-                self.cancel()
-            elif name == 'Home':
-                self.set_value(1)
-            elif name == 'End':
-                self.set_value(self.maxpage)
-
-            elif name in map(str, range(10)):
-                if self.timer >= 0:
-                    GObject.source_remove(self.timer)
-                self.timer = GObject.timeout_add(250, self.force_update)
-                return Gtk.SpinButton.do_key_press_event(self, event)
-
-            elif name.upper() in ['A', 'UP', 'DOWN', 'LEFT', 'RIGHT', 'BACKSPACE']:
-                return Gtk.SpinButton.do_key_press_event(self, event)
-            else:
-                return False
-
-            if self.timer >= 0:
-                GObject.source_remove(self.timer)
-
-            return True
-
-        elif event.type == Gdk.EventType.SCROLL:
-            if event.direction in [Gdk.ScrollDirection.RIGHT, Gdk.ScrollDirection.DOWN]:
-                self.set_value(self.get_value_as_int() + 1)
-            else:
-                self.set_value(self.get_value_as_int() - 1)
-
-            return True
-
-        return False
 
 class UI:
     """Pympress GUI management."""
@@ -152,14 +66,14 @@ class UI:
     #: Content window, as a :class:`Gtk.Window` instance.
     c_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
     #: :class:`~Gtk.AspectFrame` for the Content window.
-    c_frame = Gtk.AspectFrame(ratio=4./3., obey_child=False)
+    c_frame = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
     #: :class:`~Gtk.DrawingArea` for the Content window.
     c_da = Gtk.DrawingArea()
 
     #: Presentation window, as a :class:`Gtk.Window` instance.
     p_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
     #: :class:`~Gtk.AspectFrame` for the current slide in the Presenter window.
-    p_frame_cur = Gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
+    p_frame_cur = Gtk.AspectFrame(yalign=0.5, ratio=4./3., obey_child=False)
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
     p_da_cur = Gtk.DrawingArea()
     #: Slide counter :class:`~Gtk.Label` for the current slide.
@@ -174,7 +88,7 @@ class UI:
     spin_cur = None
 
     #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
-    p_frame_next = Gtk.AspectFrame(yalign=1, ratio=4./3., obey_child=False)
+    p_frame_next = Gtk.AspectFrame(yalign=0.5, ratio=4./3., obey_child=False)
     #: :class:`~Gtk.DrawingArea` for the next slide in the Presenter window.
     p_da_next = Gtk.DrawingArea()
 
@@ -202,6 +116,12 @@ class UI:
     #: number of page currently displayed in Controller window's miniatures
     page_preview_nb = 0
 
+    #: remember parameter before we change it
+    dpms_was_enabled = None
+
+    #: track state of preview window
+    p_win_maximized = True
+
     def __init__(self, doc):
         """
         :param doc: the current document
@@ -228,7 +148,6 @@ class UI:
         self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
         self.c_frame.add(self.c_da)
 
-        self.c_da.modify_bg(Gtk.StateType.NORMAL, black)
         self.c_da.connect("draw", self.on_draw)
         self.c_da.set_name("c_da")
         if self.notes_mode:
@@ -288,6 +207,7 @@ class UI:
             <menuitem action="Fullscreen"/>
             <menuitem action="Swap screens"/>
             <menuitem action="Notes mode"/>
+            <menuitem action="Adjust screen"/>
           </menu>
           <menu action="Navigation">
             <menuitem action="Next"/>
@@ -319,6 +239,7 @@ class UI:
             ("Reset timer",  None,           "_Reset timer", "r",     None, self.reset_timer),
             ("About",        None,           "_About",       None,    None, self.menu_about),
             ("Swap screens", None,           "_Swap screens","s",     None, self.swap_screens),
+            ("Adjust screen",None,           "Screen center",None,    None, self.adjust_frame_position),
 
             ("Next",         None,           "_Next",        "Right", None, self.doc.goto_next),
             ("Previous",     None,           "_Previous",    "Left",  None, self.doc.goto_prev),
@@ -337,27 +258,20 @@ class UI:
         menubar = ui_manager.get_widget('/MenuBar')
         h = ui_manager.get_widget('/MenuBar/Help')
         h.set_right_justified(True)
-        bigvbox.pack_start(menubar, False, True, 0)
-
-        # A little space around everything in the window
-        align = Gtk.Alignment.new(0.5, 0.5, 1, 1)
-        align.set_padding(5, 5, 5, 5)
+        bigvbox.pack_start(menubar, False, False, 0)
 
         # Table
         table = Gtk.Table(2, 10, False)
         table.set_col_spacings(5)
         table.set_row_spacings(5)
-        align.add(table)
-        bigvbox.pack_end(align, True, True, 0)
+        table.set_margin_bottom(5)
+        table.set_margin_left(5)
+        table.set_margin_right(5)
+        bigvbox.pack_end(table, True, True, 0)
 
         # "Current slide" frame
-        frame = Gtk.Frame()
-        frame.set_label("Current slide")
-        table.attach(frame, 0, 7, 0, 1)
-        align = Gtk.Alignment.new(0.5, 0.5, 1, 1)
-        align.set_padding(0, 0, 0, 0)
-        frame.add(align)
-        align.add(self.p_frame_cur)
+        self.p_frame_cur.set_label("Current slide")
+        table.attach(self.p_frame_cur, 0, 7, 0, 1)
         self.p_da_cur.modify_bg(Gtk.StateType.NORMAL, black)
         self.p_da_cur.connect("draw", self.on_draw)
         self.p_da_cur.set_name("p_da_cur")
@@ -369,14 +283,8 @@ class UI:
         self.p_frame_cur.add(self.p_da_cur)
 
         # "Next slide" frame
-        frame = Gtk.Frame()
-        frame.set_label("Next slide")
-        frame.add(self.p_frame_next)
-        align = Gtk.Alignment.new(0.5, 0, 1, 0.5)
-        align.set_padding(0, 0, 0, 0)
-        align.add(frame)
-        table.attach(align, 7, 10, 0, 1)
-        self.p_da_next.modify_bg(Gtk.StateType.NORMAL, black)
+        table.attach(self.p_frame_next, 7, 10, 0, 1)
+        self.p_frame_next.set_label("Next slide")
         self.p_da_next.connect("draw", self.on_draw)
         self.p_da_next.set_name("p_da_next")
         if self.notes_mode:
@@ -386,22 +294,17 @@ class UI:
         self.p_da_next.connect("configure-event", self.on_configure)
         self.p_frame_next.add(self.p_da_next)
 
-        # "Current slide" label and entry. This is ugly.
-        # We have EventBox eb_cur around HBox hb_cur containing 4 Labels
-        # And Label label_cur can be swapped for a SpinButton spin_cur :
-        # [[ [anonymous spacer] [label_cur|spin_cur] [label_last] [anonymous spacer] ]]
-        self.label_cur.set_justify(Gtk.Justification.RIGHT)
+        # "Current slide" label and entry. eb_cur gets all events on the whole,
+        # label_cur may be replaced by spin_cur at times, last_cur doesn't move
+        self.label_cur.props.halign = Gtk.Align.END
         self.label_cur.set_use_markup(True)
-        self.label_last.set_justify(Gtk.Justification.LEFT)
+        self.label_last.props.halign = Gtk.Align.START
         self.label_last.set_use_markup(True)
         self.hb_cur=Gtk.HBox()
         self.hb_cur.pack_start(self.label_cur, True, True, 0)
         self.hb_cur.pack_start(self.label_last, True, True, 0)
-        align = Gtk.Alignment.new(0.5, 0.5, 0, 0)
-        align.set_padding(0, 0, 0, 0)
-        align.add(self.hb_cur)
-        self.eb_cur.add(align)
-        self.spin_cur = SlideSelector(self, doc.pages_number())
+        self.eb_cur.add(self.hb_cur)
+        self.spin_cur = pympress.slideselector.SlideSelector(self, doc.pages_number())
         self.spin_cur.set_alignment(0.5)
         self.spin_cur.modify_font(Pango.FontDescription('36'))
 
@@ -410,30 +313,24 @@ class UI:
         frame = Gtk.Frame()
         frame.set_label("Slide number")
         frame.add(self.eb_cur)
-        table.attach(frame, 0, 3, 1, 2, yoptions=Gtk.AttachOptions.FILL)
+        table.attach(frame, 0, 3, 1, 2, xoptions=Gtk.AttachOptions.FILL, yoptions=Gtk.AttachOptions.FILL)
 
         # "Time elapsed" frame
         frame = Gtk.Frame()
         frame.set_label("Time elapsed")
         table.attach(frame, 3, 8, 1, 2, yoptions=Gtk.AttachOptions.FILL)
-        align = Gtk.Alignment.new(0.5, 0.5, 1, 1)
-        align.set_padding(10, 10, 12, 0)
-        frame.add(align)
+        frame.add(self.label_time)
         self.label_time.set_use_markup(True)
         self.label_time.set_justify(Gtk.Justification.CENTER)
         self.label_time.set_width_chars(44) # close enough to 13 characters at font size 36
-        align.add(self.label_time)
 
         # "Clock" frame
         frame = Gtk.Frame()
         frame.set_label("Clock")
         table.attach(frame, 8, 10, 1, 2, yoptions=Gtk.AttachOptions.FILL)
-        align = Gtk.Alignment.new(0.5, 0.5, 1, 1)
-        align.set_padding(10, 10, 12, 0)
-        frame.add(align)
+        frame.add(self.label_clock)
         self.label_clock.set_justify(Gtk.Justification.CENTER)
         self.label_clock.set_use_markup(True)
-        align.add(self.label_clock)
 
         self.p_win.connect("destroy", Gtk.main_quit)
         self.p_win.show_all()
@@ -443,6 +340,7 @@ class UI:
         self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
         self.p_win.connect("key-press-event", self.on_navigation)
         self.p_win.connect("scroll-event", self.on_navigation)
+        self.p_win.connect("window-state-event", self.track_pwin_maximized)
 
         # Hyperlinks if available
         if pympress.util.poppler_links_available():
@@ -601,14 +499,12 @@ class UI:
             # Next page: it can be None
             page = self.doc.page(self.page_preview_nb+1)
             if page is None:
-                widget.hide_all()
+                widget.hide()
                 self.p_frame_next.set_shadow_type(Gtk.ShadowType.NONE)
-                #OLD: widget.parent.set_shadow_type(Gtk.ShadowType.NONE)
                 return
             else:
-                widget.show_all()
+                widget.show()
                 self.p_frame_next.set_shadow_type(Gtk.ShadowType.IN)
-                #OLD: widget.parent.set_shadow_type(Gtk.ShadowType.IN)
 
         # Instead of rendering the document to a Cairo surface (which is slow),
         # use a pixbuf from the cache if possible.
@@ -678,7 +574,8 @@ class UI:
                 self.doc.goto_home()
             elif name == 'End':
                 self.doc.goto_end()
-            elif (name.upper() in ["F", "F11"]) \
+            # sic - acceletator recognizes f not F
+            elif name.upper() == "F11" or name == "F" \
                 or (name == "Return" and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
                 or (name.upper() == "L" and event.get_state() & Gdk.ModifierType.CONTROL_MASK):
                 self.switch_fullscreen()
@@ -699,10 +596,13 @@ class UI:
                     self.switch_mode()
                 elif name.upper() == "S":
                     self.swap_screens()
+                elif name.upper() == "F":
+                    self.switch_fullscreen()
                 elif name.upper() == "G":
-                    self.on_label_event(self.eb_cur, Gdk.Event(Gdk.EventType.BUTTON_PRESS))
+                    self.on_label_event(self.eb_cur, True)
                 else:
                     return False
+
                 return True
             else:
                 return False
@@ -715,7 +615,9 @@ class UI:
             if self.editing_cur and self.spin_cur.on_keypress(widget, event):
                 return True
 
-            if event.direction in [Gdk.ScrollDirection.RIGHT, Gdk.ScrollDirection.DOWN]:
+            if event.direction is Gdk.ScrollDirection.SMOOTH:
+                return False
+            elif event.direction in [Gdk.ScrollDirection.RIGHT, Gdk.ScrollDirection.DOWN]:
                 self.doc.goto_next()
             else:
                 self.doc.goto_prev()
@@ -786,26 +688,31 @@ class UI:
         event=args[-1]
 
         # Click in label-mode
-        if self.label_cur in self.hb_cur and (
-            type(event) == Gtk.Action or
-            (type(event) ==Gdk.Event and event.type == Gdk.EventType.BUTTON_PRESS)
+        if (
+            (type(event) == bool and event is True) or # forced manually
+            (type(event) == Gtk.Action) or # menu action
+            (type(event) == Gdk.Event and event.type == Gdk.EventType.BUTTON_PRESS) # click
         ):
-            # Replace label with entry
-            self.hb_cur.remove(self.label_cur)
-            self.spin_cur.show()
-            self.hb_cur.add(self.spin_cur)
-            self.hb_cur.reorder_child(self.spin_cur, 0)
-            self.spin_cur.grab_focus()
-            self.editing_cur = True
+            if self.label_cur in self.hb_cur:
+                # Replace label with entry
+                self.hb_cur.remove(self.label_cur)
+                self.spin_cur.show()
+                self.hb_cur.add(self.spin_cur)
+                self.hb_cur.reorder_child(self.spin_cur, 0)
+                self.spin_cur.grab_focus()
+                self.editing_cur = True
 
-            self.spin_cur.set_value(self.doc.current_page().number()+1)
-            self.spin_cur.select_region(0, -1)
+                self.spin_cur.set_value(self.doc.current_page().number()+1)
+                self.spin_cur.select_region(0, -1)
 
-        elif self.editing_cur:
-            self.spin_cur.grab_focus()
+            elif self.editing_cur:
+                self.spin_cur.grab_focus()
 
-        # Propagate the event further
-        return False
+        else:
+            # Ignored event - propagate further
+            return False
+
+        return True
 
 
     def restore_current_label(self):
@@ -815,7 +722,7 @@ class UI:
         """
         if self.label_cur not in self.hb_cur:
             self.hb_cur.remove(self.spin_cur)
-            self.hb_cur.pack_start(self.label_cur, False, True, 0)
+            self.hb_cur.pack_start(self.label_cur, True, True, 0)
             self.hb_cur.reorder_child(self.label_cur, 0)
 
         self.editing_cur = False
@@ -872,6 +779,7 @@ class UI:
     def reset_timer(self, widget=None, event=None):
         """Reset the timer."""
         self.start_time = time.time()
+        self.delta = 0
         self.update_time()
 
 
@@ -891,7 +799,7 @@ class UI:
             # On Linux, set screensaver with xdg-screensaver
             # (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
             cmd = "suspend" if must_disable else "resume"
-            status = os.system("xdg-screensaver {} {}".format(cmd, self.c_win.get_window().xid))
+            status = os.system("xdg-screensaver {} {}".format(cmd, self.c_win.get_window().get_xid()))
             if status != 0:
                 print("Warning: Could not set screensaver status: got status "+str(status), file=sys.stderr)
 
@@ -942,6 +850,50 @@ class UI:
         self.set_screensaver(self.fullscreen)
 
 
+    def track_pwin_maximized(self, widget, event, user_data=None):
+        """
+        Track whether the preview window is maximized
+        """
+        self.p_win_maximized = (Gdk.WindowState.MAXIMIZED & event.new_window_state) != 0
+
+
+    def update_frame_position(self, widget=None, user_data=None):
+        if widget and user_data:
+            self.c_frame.set_property(user_data, widget.get_value())
+
+
+    def adjust_frame_position(self, widget=None, event=None):
+        """
+        Select how to align the frame on screen
+        """
+        if self.c_frame.get_allocated_width() == self.c_win.get_allocated_width():
+            prop = "yalign"
+        else:
+            prop = "xalign"
+
+        val = self.c_frame.get_property(prop)
+
+        button = Gtk.SpinButton()
+        button.set_adjustment(Gtk.Adjustment(lower=0.0, upper=1.0, step_incr=0.01))
+        button.set_digits(2)
+        button.set_value(val)
+        button.connect("value-changed", self.update_frame_position, prop)
+
+        popup = Gtk.Dialog("Adjust alignment of slides in projector screen", self.p_win, 0,
+                (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                 Gtk.STOCK_OK, Gtk.ResponseType.OK))
+
+        box = popup.get_content_area()
+        box.add(button)
+        popup.show_all()
+        response = popup.run()
+        popup.destroy()
+
+        # revert if we cancelled
+        if response == Gtk.ResponseType.CANCEL:
+            self.c_frame.set_property(prop, val)
+
+
     def swap_screens(self, widget=None, event=None):
         """
         Swap the monitors on which each window is displayed (if there are 2 monitors at least)
@@ -959,7 +911,7 @@ class UI:
             p_monitor, c_monitor = (c_monitor, p_monitor)
 
             p_bounds = screen.get_monitor_geometry(p_monitor)
-            if self.p_win.maximize_initially:
+            if self.p_win_maximized:
                 self.p_win.unmaximize()
                 self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
                 self.p_win.maximize()

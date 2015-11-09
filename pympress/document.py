@@ -31,8 +31,6 @@ only rendering itself: the preparation of the target surface must be done
 elsewhere).
 """
 
-from __future__ import print_function
-
 import sys
 
 import gi
