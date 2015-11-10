@@ -122,9 +122,6 @@ class UI:
     #: track state of preview window
     p_win_maximized = True
 
-    #: Whether we prerender or just store rendered images in cache
-    prerender = True
-
     #: :class:`configparser.RawConfigParser` to remember preferences
     config = None
 
@@ -141,7 +138,7 @@ class UI:
         icon_list = pympress.util.load_icons()
 
         # Pixbuf cache
-        self.cache = pympress.surfacecache.SurfaceCache(doc)
+        self.cache = pympress.surfacecache.SurfaceCache(doc, self.config.getint('cache', 'maxsize', fallback=200))
 
         # Use notes mode by default if the document has notes
         self.notes_mode = doc.has_notes()
@@ -399,6 +396,8 @@ class UI:
         ratio = float(cur_pane_size) / (cur_pane_size + next_pane_size)
         self.config.set('controller', 'slide_ratio', "{0:.2f}".format(ratio))
 
+        self.config.set('cache', 'maxsize', str(self.config.getint('cache', 'maxsize', fallback=200)))
+
         pympress.util.save_config(self.config)
         Gtk.main_quit()
 
@@ -451,9 +450,6 @@ class UI:
             self.p_frame_next.hide()
 
 
-        if not self.prerender:
-            return
-
         # Prerender the 4 next pages and the 2 previous ones
         cur = page_cur.number()
         page_max = min(self.doc.pages_number(), cur + 5)
@@ -503,9 +499,6 @@ class UI:
 
         # Update display
         self.update_page_numbers()
-
-        if not self.prerender:
-            return
 
         # Prerender the 4 next pages and the 2 previous ones
         page_max = min(self.doc.pages_number(), self.page_preview_nb + 5)

@@ -26,19 +26,13 @@ is done by the :class:`~pympress.surfacecache.SurfaceCache` class, using several
 dictionaries of :class:`cairo.ImageSurface` for storing rendered pages.
 
 The problem is, neither Gtk+ nor Poppler are particularly threadsafe.
-Hence the prerendering isn't really done asynchronously in another thread, but
-scheduled on the main thread at idle times using Gtk.threads_add_idle().
-
-.. warning:: The prerendering code is currently quite dumb and does exactly what
-   it is told to do by the :class:`~pympress.ui.UI` class. So if told to eat all
-   the memory by prerendering all the pages in a 1000+ pages PDF document, it
-   *will* do so. A future version may however include some mechanism to limit
-   the memory consumption. But for now, be careful with the size of your
-   documents.
+Hence the prerendering isn't really done in parallel in another thread, but
+scheduled on the main thread at idle times using GLib.add_idle().
 """
 
 import threading
 import time
+from collections import OrderedDict
 
 import gi
 import cairo
@@ -50,9 +44,12 @@ from gi.repository import GLib
 class SurfaceCache:
     """Pages caching and prerendering made (almost) easy."""
 
-    #: The actual cache. It is a dictionary of dictionaries: its keys are widget
-    #: names and its values are dictionaries whose keys are page numbers and
-    #: values are instances of :class:`cairo.ImageSurface`.
+    #: The actual cache. It is a dictionary of :class:`collections.OrderedDict`:
+    #: its keys are widget names and its values are dictionaries whose keys are
+    #: page numbers and values are instances of :class:`cairo.ImageSurface`.
+    #: In each :class:`collections.OrderedDict` keys are ordered by Least Recently
+    #: Used (get or set), when the size is beyond :attr:`max_pages`, pages are
+    #: popped from the start of the cache.
     surface_cache = {}
 
     #: Size of the different managed widgets, as a dictionary of tuples
@@ -75,11 +72,15 @@ class SurfaceCache:
     #: :attr:`doc`.
     doc_lock = None
 
-    def __init__(self, doc):
+    #: maximum number fo pages we keep in cache
+    max_pages = 200
+
+    def __init__(self, doc, max_pages):
         """
         :param doc: the current document
         :type  doc: :class:`pympress.document.Document`
         """
+        self.max_pages = max_pages
         self.doc = doc
         self.doc_lock = threading.Lock()
 
@@ -97,7 +98,7 @@ class SurfaceCache:
         :param wtype: type of document handled by the widget (see :attr:`surface_type`)
         :type  wtype: integer
         """
-        self.surface_cache[widget_name] = {}
+        self.surface_cache[widget_name] = OrderedDict()
         self.surface_size[widget_name] = (-1, -1)
         self.surface_type[widget_name] = wtype
         self.locks[widget_name] = threading.Lock()
@@ -157,6 +158,7 @@ class SurfaceCache:
         with self.locks[widget_name]:
             pc = self.surface_cache[widget_name]
             if page_nb in pc:
+                pc.move_to_end(page_nb)
                 return pc[page_nb]
             else:
                 return None
@@ -175,6 +177,10 @@ class SurfaceCache:
         with self.locks[widget_name]:
             pc = self.surface_cache[widget_name]
             pc[page_nb] = val
+            pc.move_to_end(page_nb)
+
+            while len(pc) > self.max_pages:
+                pc.popitem(False)
 
     def prerender(self, page_nb):
         """
@@ -230,6 +236,10 @@ class SurfaceCache:
             pc = self.surface_cache[widget_name]
             if (ww, wh) == self.surface_size[widget_name] and not page_nb in pc:
                 pc[page_nb] = surface
+                pc.move_to_end(page_nb)
+
+            while len(pc) > self.max_pages:
+                pc.popitem(False)
 
         return False
 

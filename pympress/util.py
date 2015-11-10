@@ -92,6 +92,7 @@ def load_config():
     config = configparser.ConfigParser()
     config.add_section('presentation')
     config.add_section('controller')
+    config.add_section('cache')
 
     config.read(path_to_config())
 
