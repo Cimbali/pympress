@@ -123,9 +123,9 @@ class UI:
     p_win_maximized = True
 
     #: Whether we prerender or just store rendered images in cache
-    prerender = False
+    prerender = True
 
-    #: :class:`configparser.RawConfigParser`
+    #: :class:`configparser.RawConfigParser` to remember preferences
     config = None
 
     def __init__(self, doc):
