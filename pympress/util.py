@@ -28,6 +28,7 @@ from gi.repository import Gtk
 from gi.repository import GdkPixbuf
 from gi.repository import Poppler
 import pkg_resources
+import configparser
 import os, os.path, sys
 
 def load_icons():
@@ -68,6 +69,37 @@ def poppler_links_available():
         return False
     else:
         return True
+
+def path_to_config():
+    if os.name == 'posix':
+        conf_dir=os.path.expanduser("~/.config")
+        conf_file_nodir=os.path.expanduser("~/.pympress")
+        conf_file_indir=os.path.expanduser("~/.config/pympress")
+
+        if os.path.isfile(conf_file_indir):
+            return conf_file_indir
+        elif os.path.isfile(conf_file_nodir):
+            return conf_file_nodir
+
+        elif os.path.isdir(conf_dir):
+            return conf_file_indir
+        else:
+            return conf_file_nodir
+    else:
+        return os.path.expandvars("%APPDATA%/pympress")
+
+def load_config():
+    config = configparser.ConfigParser()
+    config.add_section('presentation')
+    config.add_section('controller')
+
+    config.read(path_to_config())
+
+    return config
+
+def save_config(config):
+    with open(path_to_config(), 'w') as configfile:
+        config.write(configfile)
 
 ##
 # Local Variables:

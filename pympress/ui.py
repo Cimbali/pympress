@@ -88,7 +88,7 @@ class UI:
     spin_cur = None
 
     #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
-    p_frame_next = Gtk.AspectFrame(yalign=0.5, ratio=4./3., obey_child=False)
+    p_frame_next = Gtk.AspectFrame(yalign=0.25, ratio=4./3., obey_child=False)
     #: :class:`~Gtk.DrawingArea` for the next slide in the Presenter window.
     p_da_next = Gtk.DrawingArea()
 
@@ -122,11 +122,19 @@ class UI:
     #: track state of preview window
     p_win_maximized = True
 
+    #: Whether we prerender or just store rendered images in cache
+    prerender = False
+
+    #: :class:`configparser.RawConfigParser`
+    config = None
+
     def __init__(self, doc):
         """
         :param doc: the current document
         :type  doc: :class:`pympress.document.Document`
         """
+        self.config = pympress.util.load_config()
+
         black = Gdk.Color(0, 0, 0)
 
         # Common to both windows
@@ -142,10 +150,12 @@ class UI:
         self.c_win.set_title("pympress content")
         self.c_win.set_default_size(800, 600)
         self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
-        self.c_win.connect("delete-event", Gtk.main_quit)
+        self.c_win.connect("delete-event", self.save_and_quit)
         self.c_win.set_icon_list(icon_list)
 
         self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
+        self.c_frame.set_property("yalign", self.config.getfloat('presentation', 'yalign', fallback=0.5))
+        self.c_frame.set_property("xalign", self.config.getfloat('presentation', 'xalign', fallback=0.5))
         self.c_frame.add(self.c_da)
 
         self.c_da.connect("draw", self.on_draw)
@@ -154,7 +164,7 @@ class UI:
             self.cache.add_widget("c_da", pympress.document.PDF_CONTENT_PAGE)
         else:
             self.cache.add_widget("c_da", pympress.document.PDF_REGULAR)
-        self.c_da.connect("configure-event", self.on_configure)
+        self.c_da.connect("configure-event", self.on_configure_da)
 
         self.c_frame.set_shadow_type(Gtk.ShadowType.NONE)
         self.c_win.add(self.c_frame)
@@ -167,7 +177,7 @@ class UI:
         self.p_win.set_title("pympress presenter")
         self.p_win.set_default_size(800, 600)
         self.p_win.set_position(Gtk.WindowPosition.CENTER)
-        self.p_win.connect("delete-event", Gtk.main_quit)
+        self.p_win.connect("delete-event", self.save_and_quit)
         self.p_win.set_icon_list(icon_list)
 
         screen = self.p_win.get_screen()
@@ -235,7 +245,7 @@ class UI:
             ("Navigation",   None,           "_Navigation"),
             ("Help",         None,           "_Help"),
 
-            ("Quit",         Gtk.STOCK_QUIT, "_Quit",        "q",     None, Gtk.main_quit),
+            ("Quit",         Gtk.STOCK_QUIT, "_Quit",        "q",     None, self.save_and_quit),
             ("Reset timer",  None,           "_Reset timer", "r",     None, self.reset_timer),
             ("About",        None,           "_About",       None,    None, self.menu_about),
             ("Swap screens", None,           "_Swap screens","s",     None, self.swap_screens),
@@ -260,39 +270,42 @@ class UI:
         h.set_right_justified(True)
         bigvbox.pack_start(menubar, False, False, 0)
 
-        # Table
-        table = Gtk.Table(2, 10, False)
-        table.set_col_spacings(5)
-        table.set_row_spacings(5)
-        table.set_margin_bottom(5)
-        table.set_margin_left(5)
-        table.set_margin_right(5)
-        bigvbox.pack_end(table, True, True, 0)
+        # Panes
+        hpaned = Gtk.Paned()
+        hpaned.set_orientation(Gtk.Orientation.HORIZONTAL)
+        if gi.version_info >= (3,16,0): hpaned.set_wide_handle(True)
+        hpaned.set_margin_top(5)
+        hpaned.set_margin_bottom(5)
+        hpaned.set_margin_left(5)
+        hpaned.set_margin_right(5)
+        bigvbox.pack_start(hpaned, True, True, 0)
 
         # "Current slide" frame
         self.p_frame_cur.set_label("Current slide")
-        table.attach(self.p_frame_cur, 0, 7, 0, 1)
+        hpaned.pack1(self.p_frame_cur, True, True)
         self.p_da_cur.modify_bg(Gtk.StateType.NORMAL, black)
         self.p_da_cur.connect("draw", self.on_draw)
         self.p_da_cur.set_name("p_da_cur")
         if self.notes_mode:
             self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
-        else :
+        else:
             self.cache.add_widget("p_da_cur", PDF_REGULAR)
-        self.p_da_cur.connect("configure-event", self.on_configure)
+        self.p_da_cur.connect("configure-event", self.on_configure_da)
         self.p_frame_cur.add(self.p_da_cur)
 
         # "Next slide" frame
-        table.attach(self.p_frame_next, 7, 10, 0, 1)
+        hpaned.pack2(self.p_frame_next, True, True)
         self.p_frame_next.set_label("Next slide")
         self.p_da_next.connect("draw", self.on_draw)
         self.p_da_next.set_name("p_da_next")
         if self.notes_mode:
             self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
-        else :
+        else:
             self.cache.add_widget("p_da_next", PDF_REGULAR)
-        self.p_da_next.connect("configure-event", self.on_configure)
+        self.p_da_next.connect("configure-event", self.on_configure_da)
         self.p_frame_next.add(self.p_da_next)
+
+        hbox = Gtk.HBox()
 
         # "Current slide" label and entry. eb_cur gets all events on the whole,
         # label_cur may be replaced by spin_cur at times, last_cur doesn't move
@@ -313,12 +326,12 @@ class UI:
         frame = Gtk.Frame()
         frame.set_label("Slide number")
         frame.add(self.eb_cur)
-        table.attach(frame, 0, 3, 1, 2, xoptions=Gtk.AttachOptions.FILL, yoptions=Gtk.AttachOptions.FILL)
+        hbox.pack_start(frame, True, True, 5)
 
         # "Time elapsed" frame
         frame = Gtk.Frame()
         frame.set_label("Time elapsed")
-        table.attach(frame, 3, 8, 1, 2, yoptions=Gtk.AttachOptions.FILL)
+        hbox.pack_start(frame, True, True, 0)
         frame.add(self.label_time)
         self.label_time.set_use_markup(True)
         self.label_time.set_justify(Gtk.Justification.CENTER)
@@ -327,14 +340,20 @@ class UI:
         # "Clock" frame
         frame = Gtk.Frame()
         frame.set_label("Clock")
-        table.attach(frame, 8, 10, 1, 2, yoptions=Gtk.AttachOptions.FILL)
+        hbox.pack_end(frame, True, True, 5)
         frame.add(self.label_clock)
         self.label_clock.set_justify(Gtk.Justification.CENTER)
         self.label_clock.set_use_markup(True)
 
-        self.p_win.connect("destroy", Gtk.main_quit)
+        bigvbox.pack_end(hbox, False, False, 5)
+
+        self.p_win.connect("destroy", self.save_and_quit)
         self.p_win.show_all()
 
+        pane_size = self.config.getfloat('controller', 'slide_ratio', fallback=0.75)
+        avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
+        margins = hpaned.get_allocated_width() - avail_size
+        hpaned.set_position(int(round(pane_size * avail_size)))
 
         # Add events
         self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
@@ -372,6 +391,16 @@ class UI:
         """Run the GTK main loop."""
         Gtk.main()
 
+    def save_and_quit(self, *args):
+        """Save configuration and exit the main loop"""
+        cur_pane_size = self.p_frame_cur.get_allocated_width()
+        next_pane_size = self.p_frame_next.get_allocated_width()
+        # 5 is handle width
+        ratio = float(cur_pane_size) / (cur_pane_size + next_pane_size)
+        self.config.set('controller', 'slide_ratio', "{0:.2f}".format(ratio))
+
+        pympress.util.save_config(self.config)
+        Gtk.main_quit()
 
     def menu_about(self, widget=None, event=None):
         """Display the "About pympress" dialog."""
@@ -379,7 +408,7 @@ class UI:
         about.set_program_name("pympress")
         about.set_version(pympress.__version__)
         about.set_copyright("(c) 2009, 2010 Thomas Jost")
-        about.set_comments("pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.")
+        about.set_comments("pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\nSome preferences are saved in "+pympress.utils.path_to_config())
         about.set_website("http://www.pympress.org/")
         try:
             req = pkg_resources.Requirement.parse("pympress")
@@ -411,7 +440,6 @@ class UI:
         pr = page_cur.get_aspect_ratio(self.notes_mode)
         self.p_frame_cur.set_property("ratio", pr)
 
-        #TODO force redraw rather than queue? (like before)
         self.p_da_cur.queue_draw()
 
         if page_next is not None:
@@ -422,6 +450,9 @@ class UI:
         else:
             self.p_frame_next.hide()
 
+
+        if not self.prerender:
+            return
 
         # Prerender the 4 next pages and the 2 previous ones
         cur = page_cur.number()
@@ -453,7 +484,6 @@ class UI:
         self.c_frame.set_property("ratio", pr)
         self.p_frame_cur.set_property("ratio", pr)
 
-        #TODO force redraw rather than queue? (like before)
         self.c_da.queue_draw()
         self.p_da_cur.queue_draw()
 
@@ -474,6 +504,9 @@ class UI:
         # Update display
         self.update_page_numbers()
 
+        if not self.prerender:
+            return
+
         # Prerender the 4 next pages and the 2 previous ones
         page_max = min(self.doc.pages_number(), self.page_preview_nb + 5)
         page_min = max(0, self.page_preview_nb - 2)
@@ -483,7 +516,7 @@ class UI:
 
     def on_draw(self, widget, cairo_context):
         """
-        Manage expose events for both windows.
+        Manage draw events for both windows.
 
         This callback may be called either directly on a page change or as an
         event handler by GTK. In both cases, it determines which widget needs to
@@ -510,7 +543,7 @@ class UI:
                 return
 
         # Instead of rendering the document to a Cairo surface (which is slow),
-        # use a pixbuf from the cache if possible.
+        # use a surface from the cache if possible.
         name = widget.get_name()
         nb = page.number()
         pb = self.cache.get(name, nb)
@@ -529,12 +562,12 @@ class UI:
 
             self.cache.set(name, nb, pb)
         else:
-            # Cache hit: draw the pixbuf from the cache to the widget
+            # Cache hit: draw the surface from the cache to the widget
             cairo_context.set_source_surface(pb, 0, 0)
             cairo_context.paint()
 
 
-    def on_configure(self, widget, event):
+    def on_configure_da(self, widget, event):
         """
         Manage "configure" events for both windows.
 
@@ -583,7 +616,7 @@ class UI:
                 or (name.upper() == "L" and event.get_state() & Gdk.ModifierType.CONTROL_MASK):
                 self.switch_fullscreen()
             elif name.upper() == "Q":
-                Gtk.main_quit()
+                self.save_and_quit()
             elif name == "Pause":
                 self.switch_pause()
             elif name.upper() == "R":
@@ -895,6 +928,8 @@ class UI:
         # revert if we cancelled
         if response == Gtk.ResponseType.CANCEL:
             self.c_frame.set_property(prop, val)
+        else:
+            self.config.set('presentation', prop, str(button.get_value()))
 
 
     def swap_screens(self, widget=None, event=None):
