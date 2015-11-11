@@ -270,7 +270,7 @@ class UI:
         # Panes
         hpaned = Gtk.Paned()
         hpaned.set_orientation(Gtk.Orientation.HORIZONTAL)
-        if gi.version_info >= (3,16,0): hpaned.set_wide_handle(True)
+        if gi.version_info >= (3,16): hpaned.set_wide_handle(True)
         hpaned.set_margin_top(5)
         hpaned.set_margin_bottom(5)
         hpaned.set_margin_left(5)
@@ -280,7 +280,6 @@ class UI:
         # "Current slide" frame
         self.p_frame_cur.set_label("Current slide")
         hpaned.pack1(self.p_frame_cur, True, True)
-        self.p_da_cur.modify_bg(Gtk.StateType.NORMAL, black)
         self.p_da_cur.connect("draw", self.on_draw)
         self.p_da_cur.set_name("p_da_cur")
         if self.notes_mode:
@@ -439,15 +438,13 @@ class UI:
         pr = page_cur.get_aspect_ratio(self.notes_mode)
         self.p_frame_cur.set_property("ratio", pr)
 
-        self.p_da_cur.queue_draw()
-
         if page_next is not None:
             pr = page_next.get_aspect_ratio(self.notes_mode)
             self.p_frame_next.set_property("ratio", pr)
-            self.p_frame_next.show_all()
-            self.p_da_next.queue_draw()
-        else:
-            self.p_frame_next.hide()
+
+        # queue redraws
+        self.p_da_cur.queue_draw()
+        self.p_da_next.queue_draw()
 
 
         # Prerender the 4 next pages and the 2 previous ones
@@ -475,21 +472,20 @@ class UI:
         # Page change: resynchronize miniatures
         self.page_preview_nb = page_cur.number()
 
-        # Aspect ratios and queue redraws
+        # Aspect ratios
         pr = page_cur.get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
         self.p_frame_cur.set_property("ratio", pr)
 
-        self.c_da.queue_draw()
-        self.p_da_cur.queue_draw()
-
         if page_next is not None:
             pr = page_next.get_aspect_ratio(self.notes_mode)
             self.p_frame_next.set_property("ratio", pr)
-            self.p_frame_next.show_all()
-            self.p_da_next.queue_draw()
-        else:
-            self.p_frame_next.hide()
+
+        # Queue redraws
+        self.c_da.queue_draw()
+        self.p_da_cur.queue_draw()
+        self.p_da_next.queue_draw()
+
 
         # Start counter if needed
         if unpause:
@@ -529,9 +525,8 @@ class UI:
             # Current page 'preview'
             page = self.doc.page(self.page_preview_nb)
         else:
-            # Next page: we shouldn't have queued a redraw if it is None
-            # but maybe on some weird timing issues it may still happen?
             page = self.doc.page(self.page_preview_nb+1)
+            # No next page: just return so we won't draw anything
             if page is None:
                 return
 
