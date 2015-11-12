@@ -37,9 +37,7 @@ if __name__ == '__main__':
         name = os.path.abspath(sys.argv[1])
 
         # Check if the path is valid
-        if os.path.exists(name):
-            name = "file://" + name
-        else:
+        if not os.path.exists(name):
             msg="""Could not find the file "{}".""".format(name)
             dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg)
             dialog.set_position(Gtk.WindowPosition.CENTER)

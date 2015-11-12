@@ -14,8 +14,10 @@ All dependencies are really basic, and installation is standard for a python pac
 
 You will need:
 * Python 3.x, with [setuptools](https://pypi.python.org/pypi/setuptools)
-* [PyGi, the python bindings for GTK+3](https://wiki.gnome.org/Projects/PyGObject), which itself depends on Gtk+3, cairo, etc. PyGi is also known as *pygobject3*, just *pygobject* or *python3-gi*.
-* [Poppler, the PDF rendering library](http://poppler.freedesktop.org/), which is available in every good package manager (and shipped within PyGi for windows)
+* [PyGi, the python bindings for GTK+3](https://wiki.gnome.org/Projects/PyGObject), which itself depends on GTK+3, cairo, etc. PyGi is also known as *pygobject3*, just *pygobject* or *python3-gi*.
+* [Poppler, the PDF rendering library](http://poppler.freedesktop.org/), which is available in every good package manager.
+
+On windows, both GTK+3 and Poppler are shipped in the PyGi installer.
 
 ## Installing
 
@@ -27,8 +29,6 @@ Open any console where you extracted pympress, and type `python setup.py install
 Simply start Pympress and it will ask you what file you want to open.
 You can also start pympress from the command line with a file to open like so:
 `pympress slides.pdf`
-
-If you have multiple screens, Pympress will attempt to guess your 
 
 ## Functionalities
 

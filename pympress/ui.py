@@ -131,10 +131,10 @@ class UI:
     #: :class:`configparser.RawConfigParser` to remember preferences
     config = None
 
-    def __init__(self, uri):
+    def __init__(self, docpath = None):
         """
-        :param doc: the current document
-        :type  doc: :class:`pympress.document.Document`
+        :param docpath: the path to the document to open
+        :type  docpath: string
         """
         self.config = pympress.util.load_config()
 
@@ -144,9 +144,7 @@ class UI:
         icon_list = pympress.util.load_icons()
 
         # Document
-        if uri is None:
-            uri = self.open_file()
-        self.doc = pympress.document.Document(self.on_page_change, uri)
+        self.doc = pympress.document.Document(self.on_page_change, docpath or self.open_file())
 
         # Pixbuf cache
         self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages', fallback=200))
@@ -444,7 +442,7 @@ class UI:
             dialog.run()
             sys.exit(1)
 
-        return "file://" + os.path.abspath(name)
+        return os.path.abspath(name)
 
 
     def menu_about(self, widget=None, event=None):
@@ -459,8 +457,8 @@ class UI:
             req = pkg_resources.Requirement.parse("pympress")
             icon_fn = pkg_resources.resource_filename(req, "share/pixmaps/pympress-128.png")
             about.set_logo(GdkPixbuf.Pixbuf.new_from_file(icon_fn))
-        except Exception as e:
-            print(e)
+        except Exception:
+            print("Error loading icon for about window")
         about.run()
         about.destroy()
 
@@ -899,11 +897,17 @@ class UI:
                 status = os.system("xset +dpms")
                 if status != 0:
                     print("Warning: Could not enable DPMS screen blanking: got status "+str(status), file=sys.stderr)
+
         elif os.name == 'nt':
             with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Control Panel\Desktop') as key:
                 if must_disable:
                     (keytype,self.screensaver_was_enabled) = winreg.QueryValueEx(key, "ScreenSaveActive")
-                    winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "0")
+                    if self.screensaver_was_enabled != "0":
+                        try:
+                            winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "0")
+                        except PermissionError:
+                            print("Error: access denied when trying to deactivate screen saver!")
+                            self.screensaver_was_enabled = "0" # don't reactivate it later
                 elif self.screensaver_was_enabled != "0":
                     winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, self.screensaver_was_enabled)
         else:

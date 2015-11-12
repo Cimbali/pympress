@@ -37,6 +37,8 @@ import gi
 from gi.repository import Poppler
 
 import pympress.util
+from urllib.parse import urljoin
+from urllib.request import pathname2url
 
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
@@ -256,11 +258,10 @@ class Document:
     #: Callback function to signal whenever we change pages
     on_page_change = None
 
-    def __init__(self, page_change_callback, uri, page=0):
+    def __init__(self, page_change_callback, path, page=0):
         """
-        :param uri: URI to the PDF file to open (local only, starting with
-           :file:`file://`)
-        :type  uri: string
+        :param path: Absolute path to the PDF file to open
+        :type  path: string
         :param page: page number to which the file should be opened
         :type  page: integer
         """
@@ -270,7 +271,7 @@ class Document:
             print("Hyperlink support not found in poppler-python -- be sure to use at least bazaar rev. 62 to have them working", file=sys.stderr)
 
         # Open PDF file
-        self.doc = Poppler.Document.new_from_file(uri, None)
+        self.doc = Poppler.Document.new_from_file(urljoin('file:', pathname2url(path)), None)
 
         # Pages number
         self.nb_pages = self.doc.get_n_pages()

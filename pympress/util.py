@@ -49,8 +49,8 @@ def load_icons():
         try:
             icon_pixbuf = GdkPixbuf.Pixbuf.new_from_file(icon_fn)
             icons.append(icon_pixbuf)
-        except Exception as e:
-            print(e)
+        except Exception:
+            print("Error loading icons")
 
     return icons
 
