@@ -149,7 +149,7 @@ class UI:
         self.doc = pympress.document.Document(self.on_page_change, uri)
 
         # Pixbuf cache
-        self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxsize', fallback=200))
+        self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages', fallback=200))
 
         # Use notes mode by default if the document has notes
         self.notes_mode = self.doc.has_notes()
@@ -162,8 +162,8 @@ class UI:
         self.c_win.set_icon_list(icon_list)
 
         self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
-        self.c_frame.set_property("yalign", self.config.getfloat('presentation', 'yalign', fallback=0.5))
-        self.c_frame.set_property("xalign", self.config.getfloat('presentation', 'xalign', fallback=0.5))
+        self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign', fallback=0.5))
+        self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign', fallback=0.5))
         self.c_frame.add(self.c_da)
 
         self.c_da.connect("draw", self.on_draw)
@@ -354,7 +354,7 @@ class UI:
         self.p_win.connect("destroy", self.save_and_quit)
         self.p_win.show_all()
 
-        pane_size = self.config.getfloat('controller', 'slide_ratio', fallback=0.75)
+        pane_size = self.config.getfloat('presenter', 'slide_ratio', fallback=0.75)
         avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
         margins = hpaned.get_allocated_width() - avail_size
         hpaned.set_position(int(round(pane_size * avail_size)))
@@ -402,9 +402,9 @@ class UI:
         next_pane_size = self.p_frame_next.get_allocated_width()
         # 5 is handle width
         ratio = float(cur_pane_size) / (cur_pane_size + next_pane_size)
-        self.config.set('controller', 'slide_ratio', "{0:.2f}".format(ratio))
+        self.config.set('presenter', 'slide_ratio', "{0:.2f}".format(ratio))
 
-        self.config.set('cache', 'maxsize', str(self.config.getint('cache', 'maxsize', fallback=200)))
+        self.config.set('cache', 'maxpages', str(self.config.getint('cache', 'maxpages', fallback=200)))
 
         pympress.util.save_config(self.config)
         Gtk.main_quit()
@@ -971,7 +971,7 @@ class UI:
         if response == Gtk.ResponseType.CANCEL:
             self.c_frame.set_property(prop, val)
         else:
-            self.config.set('presentation', prop, str(button.get_value()))
+            self.config.set('content', prop, str(button.get_value()))
 
 
     def swap_screens(self, widget=None, event=None):
