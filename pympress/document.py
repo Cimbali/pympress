@@ -36,7 +36,6 @@ import sys
 import gi
 from gi.repository import Poppler
 
-import pympress.ui
 import pympress.util
 
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
@@ -254,10 +253,10 @@ class Document:
     #: navigation in the document faster by avoiding calls to Poppler when loading
     #: a page that has already been loaded.
     pages_cache = {}
-    #: Instance of :class:`pympress.ui.UI` used when opening a document
-    ui = None
+    #: Callback function to signal whenever we change pages
+    on_page_change = None
 
-    def __init__(self, uri, page=0):
+    def __init__(self, page_change_callback, uri, page=0):
         """
         :param uri: URI to the PDF file to open (local only, starting with
            :file:`file://`)
@@ -291,10 +290,7 @@ class Document:
             ar = page0.get_aspect_ratio()
             self.notes = (ar >= 2)
 
-        # Create windows
-        self.ui = pympress.ui.UI(self)
-        self.ui.on_page_change(False)
-        self.ui.run()
+        self.on_page_change = page_change_callback
 
     def has_notes(self):
         """Get the document mode.
@@ -359,7 +355,7 @@ class Document:
 
         if number != self.cur_page:
             self.cur_page = number
-            self.ui.on_page_change()
+            self.on_page_change()
 
     def goto_next(self, *args):
         """Switch to the next page."""

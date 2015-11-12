@@ -125,7 +125,7 @@ class UI:
     #: :class:`configparser.RawConfigParser` to remember preferences
     config = None
 
-    def __init__(self, doc):
+    def __init__(self, uri):
         """
         :param doc: the current document
         :type  doc: :class:`pympress.document.Document`
@@ -137,11 +137,14 @@ class UI:
         # Common to both windows
         icon_list = pympress.util.load_icons()
 
+        # Document
+        self.doc = pympress.document.Document(self.on_page_change, uri)
+
         # Pixbuf cache
-        self.cache = pympress.surfacecache.SurfaceCache(doc, self.config.getint('cache', 'maxsize', fallback=200))
+        self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxsize', fallback=200))
 
         # Use notes mode by default if the document has notes
-        self.notes_mode = doc.has_notes()
+        self.notes_mode = self.doc.has_notes()
 
         # Content window
         self.c_win.set_title("pympress content")
@@ -191,9 +194,6 @@ class UI:
             self.c_win.move(c_bounds.x, c_bounds.y)
             self.c_win.fullscreen()
             self.fullscreen = True
-
-        # Document
-        self.doc = doc
 
         # Put Menu and Table in VBox
         bigvbox = Gtk.VBox(False, 2)
@@ -313,7 +313,7 @@ class UI:
         self.hb_cur.pack_start(self.label_cur, True, True, 0)
         self.hb_cur.pack_start(self.label_last, True, True, 0)
         self.eb_cur.add(self.hb_cur)
-        self.spin_cur = pympress.slideselector.SlideSelector(self, doc.pages_number())
+        self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
         self.spin_cur.set_alignment(0.5)
         self.spin_cur.modify_font(Pango.FontDescription('36'))
 
@@ -890,7 +890,7 @@ class UI:
         """
         Select how to align the frame on screen
         """
-        if self.c_frame.get_allocated_width() == self.c_win.get_allocated_width():
+        if self.c_frame.get_allocated_width() == self.c_da.get_allocated_width():
             prop = "yalign"
         else:
             prop = "xalign"

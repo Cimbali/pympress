@@ -80,8 +80,10 @@ if __name__ == '__main__':
         dialog.run()
         sys.exit(1)
 
-    # Really open the PDF file
-    pympress.document.Document("file://" + name)
+    # Create windows
+    ui = pympress.ui.UI("file://" + name)
+    ui.on_page_change(False)
+    ui.run()
 
 ##
 # Local Variables:
