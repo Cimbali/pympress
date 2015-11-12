@@ -33,6 +33,9 @@ import os, os.path
 import sys
 import time
 
+if os.name == 'nt':
+    import winreg
+
 import pkg_resources
 
 import gi
@@ -116,7 +119,10 @@ class UI:
     #: number of page currently displayed in Controller window's miniatures
     page_preview_nb = 0
 
-    #: remember parameter before we change it
+    #: remember screen saver setting before we change it
+    screensaver_was_enabled = 0
+
+    #: remember DPMS setting before we change it
     dpms_was_enabled = None
 
     #: track state of preview window
@@ -893,6 +899,13 @@ class UI:
                 status = os.system("xset +dpms")
                 if status != 0:
                     print("Warning: Could not enable DPMS screen blanking: got status "+str(status), file=sys.stderr)
+        elif os.name == 'nt':
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Control Panel\Desktop') as key:
+                if must_disable:
+                    (keytype,self.screensaver_was_enabled) = winreg.QueryValueEx(key, "ScreenSaveActive")
+                    winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "0")
+                elif self.screensaver_was_enabled != "0":
+                    winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, self.screensaver_was_enabled)
         else:
             print("Warning: Unsupported OS: can't enable/disable screensaver", file=sys.stderr)
 
