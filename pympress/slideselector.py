@@ -1,4 +1,4 @@
-#       ui.py
+#       slideselector.py
 #
 #       Copyright 2010 Thomas Jost <thomas.jost@gmail.com>
 #
@@ -18,15 +18,12 @@
 #       MA 02110-1301, USA.
 
 """
-:mod:`pympress.ui` -- GUI management
+:mod:`pympress.ui` -- Slide selector
 ------------------------------------
 
-This module contains the whole graphical user interface of pympress, which is
-made of two separate windows: the Content window, which displays only the
-current page in full size, and the Presenter window, which displays both the
-current and the next page, as well as a time counter and a clock.
-
-Both windows are managed by the :class:`~pympress.ui.UI` class.
+This module contains the special spinbutton that allows the UI to preview
+pages without changing them on the main screen. It is thus well connected
+to the :class:`~pympress.ui.UI` object.
 """
 
 import os
