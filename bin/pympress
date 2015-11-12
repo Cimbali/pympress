@@ -31,58 +31,23 @@ import pympress.document
 if __name__ == '__main__':
     Gdk.threads_init()
 
-    # PDF file to open
+    # PDF file to open passed on command line?
     name = None
     if len(sys.argv) > 1:
         name = os.path.abspath(sys.argv[1])
 
         # Check if the path is valid
-        if not os.path.exists(name):
+        if os.path.exists(name):
+            name = "file://" + name
+        else:
             msg="""Could not find the file "{}".""".format(name)
             dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg)
             dialog.set_position(Gtk.WindowPosition.CENTER)
             dialog.run()
             sys.exit(1)
 
-    else:
-        # Use a GTK file dialog to choose file
-        dialog = Gtk.FileChooserDialog("Open...", None,
-                                       Gtk.FileChooserAction.OPEN,
-                                       (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                                        Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
-        dialog.set_default_response(Gtk.ResponseType.OK)
-        dialog.set_position(Gtk.WindowPosition.CENTER)
-
-        filter = Gtk.FileFilter()
-        filter.set_name("PDF files")
-        filter.add_mime_type("application/pdf")
-        filter.add_pattern("*.pdf")
-        dialog.add_filter(filter)
-
-        filter = Gtk.FileFilter()
-        filter.set_name("All files")
-        filter.add_pattern("*")
-        dialog.add_filter(filter)
-
-        response = dialog.run()
-        if response == Gtk.ResponseType.OK:
-            name =  dialog.get_filename()
-        elif response != Gtk.ResponseType.CANCEL:
-            raise ValueError("Invalid response")
-
-        dialog.destroy()
-
-    if name is None:
-        # Use a GTK dialog to tell we need a file
-        msg="""No file selected!\n\nYou can specify the PDF file to open on the command line if you don't want to use the "Open File" dialog."""
-        dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg)
-        dialog.set_position(Gtk.WindowPosition.CENTER)
-        dialog.run()
-        sys.exit(1)
-
     # Create windows
-    ui = pympress.ui.UI("file://" + name)
-    ui.on_page_change(False)
+    ui = pympress.ui.UI(name)
     ui.run()
 
 ##

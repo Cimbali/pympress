@@ -29,7 +29,7 @@ current and the next page, as well as a time counter and a clock.
 Both windows are managed by the :class:`~pympress.ui.UI` class.
 """
 
-import os
+import os, os.path
 import sys
 import time
 
@@ -138,6 +138,8 @@ class UI:
         icon_list = pympress.util.load_icons()
 
         # Document
+        if uri is None:
+            uri = self.open_file()
         self.doc = pympress.document.Document(self.on_page_change, uri)
 
         # Pixbuf cache
@@ -387,6 +389,7 @@ class UI:
         """Run the GTK main loop."""
         Gtk.main()
 
+
     def save_and_quit(self, *args):
         """Save configuration and exit the main loop"""
         cur_pane_size = self.p_frame_cur.get_allocated_width()
@@ -399,6 +402,44 @@ class UI:
 
         pympress.util.save_config(self.config)
         Gtk.main_quit()
+
+
+    def open_file(self):
+        # Use a GTK file dialog to choose file
+        dialog = Gtk.FileChooserDialog("Open...", self.p_win,
+                                       Gtk.FileChooserAction.OPEN,
+                                       (Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog.set_default_response(Gtk.ResponseType.OK)
+        dialog.set_position(Gtk.WindowPosition.CENTER)
+
+        filter = Gtk.FileFilter()
+        filter.set_name("PDF files")
+        filter.add_mime_type("application/pdf")
+        filter.add_pattern("*.pdf")
+        dialog.add_filter(filter)
+
+        filter = Gtk.FileFilter()
+        filter.set_name("All files")
+        filter.add_pattern("*")
+        dialog.add_filter(filter)
+
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            name = dialog.get_filename()
+            dialog.destroy()
+        else:
+            dialog.destroy()
+
+            # Use a GTK dialog to tell we need a file
+            msg="""No file selected!\n\nYou can specify the PDF file to open on the command line if you don't want to use the "Open File" dialog."""
+            dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg, parent=self.p_win)
+            dialog.set_position(Gtk.WindowPosition.CENTER)
+            dialog.run()
+            sys.exit(1)
+
+        return "file://" + os.path.abspath(name)
+
 
     def menu_about(self, widget=None, event=None):
         """Display the "About pympress" dialog."""
