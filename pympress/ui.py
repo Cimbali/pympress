@@ -946,7 +946,9 @@ class UI:
         """
         Select how to align the frame on screen
         """
-        if self.c_frame.get_allocated_width() == self.c_da.get_allocated_width():
+        win_aspect_ratio = float(self.c_win.get_allocated_width()) / self.c_win.get_allocated_height()
+
+        if win_aspect_ratio <= float(self.c_frame.get_property("ratio")):
             prop = "yalign"
         else:
             prop = "xalign"
