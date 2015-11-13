@@ -44,13 +44,8 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import GdkX11
 from gi.repository import GdkPixbuf
 from gi.repository import Pango
-
-import pympress.surfacecache
-import pympress.util
-import pympress.slideselector
 
 #: "Regular" PDF file (without notes)
 PDF_REGULAR      = 0
@@ -58,6 +53,11 @@ PDF_REGULAR      = 0
 PDF_CONTENT_PAGE = 1
 #: Notes page (right side) of a PDF file with notes
 PDF_NOTES_PAGE   = 2
+
+import pympress.document
+import pympress.surfacecache
+import pympress.util
+import pympress.slideselector
 
 
 class UI:
@@ -451,12 +451,10 @@ class UI:
         about.set_program_name("pympress")
         about.set_version(pympress.__version__)
         about.set_copyright("(c) 2009, 2010 Thomas Jost")
-        about.set_comments("pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\nSome preferences are saved in "+pympress.utils.path_to_config())
+        about.set_comments("pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\nSome preferences are saved in "+pympress.util.path_to_config())
         about.set_website("http://www.pympress.org/")
         try:
-            req = pkg_resources.Requirement.parse("pympress")
-            icon_fn = pkg_resources.resource_filename(req, "share/pixmaps/pympress-128.png")
-            about.set_logo(GdkPixbuf.Pixbuf.new_from_file(icon_fn))
+            about.set_logo(pympress.util.get_icon_pixbuf("pympress-128.png"))
         except Exception:
             print("Error loading icon for about window")
         about.run()

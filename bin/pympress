@@ -26,11 +26,9 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
-import pympress.document
+import pympress.ui
 
 if __name__ == '__main__':
-    Gdk.threads_init()
-
     # PDF file to open passed on command line?
     name = None
     if len(sys.argv) > 1:

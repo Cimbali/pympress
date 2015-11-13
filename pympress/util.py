@@ -26,10 +26,26 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository import GdkPixbuf
-from gi.repository import Poppler
 import pkg_resources
 import configparser
 import os, os.path, sys
+
+def get_icon_pixbuf(name):
+    if getattr(sys, 'frozen', False):
+        icon_fn = os.path.join(os.path.dirname(sys.executable), "share", "pixmaps", name)
+    else:
+        req = pkg_resources.Requirement.parse("pympress")
+        icon_fn = pkg_resources.resource_filename(req, os.path.join("share", "pixmaps", name))
+    return GdkPixbuf.Pixbuf.new_from_file(icon_fn)
+
+def list_icons():
+    if getattr(sys, 'frozen', False):
+        icons = os.listdir(os.path.join(os.path.dirname(sys.executable), "share", "pixmaps"))
+    else:
+        req = pkg_resources.Requirement.parse("pympress")
+        icons = pkg_resources.resource_listdir(req, os.path.join("share", "pixmaps"))
+
+    return [i for i in icons if os.path.splitext(i)[1].lower() == ".png" and i[:9] == "pympress-"]
 
 def load_icons():
     """
@@ -40,14 +56,10 @@ def load_icons():
     :rtype: list of :class:`GdkPixbuf.Pixbuf`
     """
 
-    req = pkg_resources.Requirement.parse("pympress")
-    icon_names = pkg_resources.resource_listdir(req, "share/pixmaps")
     icons = []
-    for icon_name in icon_names:
-        if os.path.splitext(icon_name)[1].lower() != ".png": continue
-        icon_fn = pkg_resources.resource_filename(req, "share/pixmaps/" + icon_name)
+    for icon_name in list_icons():
         try:
-            icon_pixbuf = GdkPixbuf.Pixbuf.new_from_file(icon_fn)
+            icon_pixbuf = get_icon_pixbuf(icon_name)
             icons.append(icon_pixbuf)
         except Exception:
             print("Error loading icons")
@@ -86,7 +98,7 @@ def path_to_config():
         else:
             return conf_file_nodir
     else:
-        return os.path.expandvars("%APPDATA%/pympress.ini")
+        return os.path.expandvars(os.path.join("%APPDATA%", "pympress.ini"))
 
 def load_config():
     config = configparser.ConfigParser()

@@ -34,6 +34,7 @@ elsewhere).
 import sys
 
 import gi
+gi.require_version('Poppler', '0.18')
 from gi.repository import Poppler
 
 import pympress.util
