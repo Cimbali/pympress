@@ -44,7 +44,6 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository import Gdk
-from gi.repository import GdkPixbuf
 from gi.repository import Pango
 
 #: "Regular" PDF file (without notes)
@@ -186,6 +185,7 @@ class UI:
         self.p_win.connect("delete-event", self.save_and_quit)
         self.p_win.set_icon_list(icon_list)
 
+        # Guess window positions from screens
         screen = self.p_win.get_screen()
         if screen.get_n_monitors() > 1:
             cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
@@ -363,19 +363,18 @@ class UI:
         self.p_win.connect("scroll-event", self.on_navigation)
         self.p_win.connect("window-state-event", self.track_pwin_maximized)
 
-        # Hyperlinks if available
-        if pympress.util.poppler_links_available():
-            self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-            self.c_da.connect("button-press-event", self.on_link)
-            self.c_da.connect("motion-notify-event", self.on_link)
+        # Hyperlinks
+        self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
+        self.c_da.connect("button-press-event", self.on_link)
+        self.c_da.connect("motion-notify-event", self.on_link)
 
-            self.p_da_cur.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-            self.p_da_cur.connect("button-press-event", self.on_link)
-            self.p_da_cur.connect("motion-notify-event", self.on_link)
+        self.p_da_cur.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
+        self.p_da_cur.connect("button-press-event", self.on_link)
+        self.p_da_cur.connect("motion-notify-event", self.on_link)
 
-            self.p_da_next.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-            self.p_da_next.connect("button-press-event", self.on_link)
-            self.p_da_next.connect("motion-notify-event", self.on_link)
+        self.p_da_next.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
+        self.p_da_next.connect("button-press-event", self.on_link)
+        self.p_da_next.connect("motion-notify-event", self.on_link)
 
         # Setup timer
         GObject.timeout_add(250, self.update_time)

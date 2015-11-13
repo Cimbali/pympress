@@ -67,21 +67,6 @@ def load_icons():
     return icons
 
 
-def poppler_links_available():
-    """Check if hyperlinks are supported in python-Poppler.
-
-    :return: ``True`` if python-poppler is recent enough to support hyperlinks,
-       ``False`` otherwise
-    :rtype: boolean
-    """
-
-    try:
-        type(Poppler.ActionGotoDest)
-    except AttributeError:
-        return False
-    else:
-        return True
-
 def path_to_config():
     if os.name == 'posix':
         conf_dir=os.path.expanduser("~/.config")

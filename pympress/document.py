@@ -131,24 +131,23 @@ class Page:
         # Read page size
         self.pw, self.ph = self.page.get_size()
 
-        if pympress.util.poppler_links_available():
-            # Read links on the page
-            link_mapping = self.page.get_link_mapping()
-            self.links = []
+        # Read links on the page
+        link_mapping = self.page.get_link_mapping()
+        self.links = []
 
-            for link in link_mapping:
-                if type(link.action) is Poppler.ActionGotoDest:
-                    dest = link.action.dest
-                    page_num = dest.page_num
+        for link in link_mapping:
+            if type(link.action) is Poppler.ActionGotoDest:
+                dest = link.action.dest
+                page_num = dest.page_num
 
-                    if dest.type == Poppler.DEST_NAMED:
-                        page_num = doc.find_dest(dest.named_dest).page_num
+                if dest.type == Poppler.DEST_NAMED:
+                    page_num = doc.find_dest(dest.named_dest).page_num
 
-                    # Page numbering starts at 0
-                    page_num -= 1
+                # Page numbering starts at 0
+                page_num -= 1
 
-                    my_link = Link(link.area.x1, link.area.y1, link.area.x2, link.area.y2, page_num)
-                    self.links.append(my_link)
+                my_link = Link(link.area.x1, link.area.y1, link.area.x2, link.area.y2, page_num)
+                self.links.append(my_link)
 
     def number(self):
         """Get the page number"""
@@ -266,10 +265,6 @@ class Document:
         :param page: page number to which the file should be opened
         :type  page: integer
         """
-
-        # Check poppler-python version -- we need Bazaar rev. 62
-        if not pympress.util.poppler_links_available():
-            print("Hyperlink support not found in poppler-python -- be sure to use at least bazaar rev. 62 to have them working", file=sys.stderr)
 
         # Open PDF file
         self.doc = Poppler.Document.new_from_file(urljoin('file:', pathname2url(path)), None)
