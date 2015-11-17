@@ -37,9 +37,14 @@ import gi
 gi.require_version('Poppler', '0.18')
 from gi.repository import Poppler
 
+try:
+    from urllib.parse import urljoin
+    from urllib.request import pathname2url
+except ImportError:
+    from urlparse import urljoin
+    from urllib import pathname2url
+
 import pympress.util
-from urllib.parse import urljoin
-from urllib.request import pathname2url
 
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 

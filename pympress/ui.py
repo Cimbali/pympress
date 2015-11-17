@@ -29,12 +29,11 @@ current and the next page, as well as a time counter and a clock.
 Both windows are managed by the :class:`~pympress.ui.UI` class.
 """
 
+from __future__ import print_function
+
 import os, os.path
 import sys
 import time
-
-if os.name == 'nt':
-    import winreg
 
 import pkg_resources
 
@@ -45,6 +44,11 @@ from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Pango
+
+if os.name == 'nt':
+    import winreg
+else:
+    from gi.repository import GdkX11
 
 #: "Regular" PDF file (without notes)
 PDF_REGULAR      = 0
@@ -146,7 +150,7 @@ class UI:
         self.doc = pympress.document.Document(self.on_page_change, docpath or self.open_file())
 
         # Pixbuf cache
-        self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages', fallback=200))
+        self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
 
         # Use notes mode by default if the document has notes
         self.notes_mode = self.doc.has_notes()
@@ -159,8 +163,8 @@ class UI:
         self.c_win.set_icon_list(icon_list)
 
         self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
-        self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign', fallback=0.5))
-        self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign', fallback=0.5))
+        self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
+        self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
         self.c_frame.add(self.c_da)
 
         self.c_da.connect("draw", self.on_draw)
@@ -352,7 +356,7 @@ class UI:
         self.p_win.connect("destroy", self.save_and_quit)
         self.p_win.show_all()
 
-        pane_size = self.config.getfloat('presenter', 'slide_ratio', fallback=0.75)
+        pane_size = self.config.getfloat('presenter', 'slide_ratio')
         avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
         margins = hpaned.get_allocated_width() - avail_size
         hpaned.set_position(int(round(pane_size * avail_size)))
@@ -400,8 +404,6 @@ class UI:
         # 5 is handle width
         ratio = float(cur_pane_size) / (cur_pane_size + next_pane_size)
         self.config.set('presenter', 'slide_ratio', "{0:.2f}".format(ratio))
-
-        self.config.set('cache', 'maxpages', str(self.config.getint('cache', 'maxpages', fallback=200)))
 
         pympress.util.save_config(self.config)
         Gtk.main_quit()

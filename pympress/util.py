@@ -22,13 +22,19 @@
 -------------------------------------------------
 """
 
+from __future__ import print_function
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository import GdkPixbuf
 import pkg_resources
-import configparser
 import os, os.path, sys
+
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 
 def get_icon_pixbuf(name):
     if getattr(sys, 'frozen', False):
@@ -92,6 +98,18 @@ def load_config():
     config.add_section('cache')
 
     config.read(path_to_config())
+
+    if not config.has_option('cache', 'maxpages'):
+        config.set('cache', 'maxpages', '200')
+
+    if not config.has_option('content', 'xalign'):
+        config.set('content', 'xalign', '0.50')
+
+    if not config.has_option('content', 'yalign'):
+        config.set('content', 'yalign', '0.50')
+
+    if not config.has_option('presenter', 'slide_ratio'):
+        config.set('cache', 'maxpages', '0.75')
 
     return config
 

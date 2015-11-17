@@ -32,7 +32,7 @@ scheduled on the main thread at idle times using GLib.add_idle().
 
 import threading
 import time
-from collections import OrderedDict
+import collections
 
 import gi
 import cairo
@@ -41,13 +41,26 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GLib
 
+
+class OrderedDict(collections.OrderedDict):
+    """OrderedDict for python2 compatibility, adding move_to_end()."""
+
+    def move_to_end(self, key):
+        try:
+            collections.OrderedDict.move_to_end(self, key)
+        except AttributeError:
+            val = self[key]
+            del self[key]
+            self[key] = val
+
+
 class SurfaceCache:
     """Pages caching and prerendering made (almost) easy."""
 
-    #: The actual cache. It is a dictionary of :class:`collections.OrderedDict`:
+    #: The actual cache. It is a dictionary of :class:`pympress.surfacecache.Cache`:
     #: its keys are widget names and its values are dictionaries whose keys are
     #: page numbers and values are instances of :class:`cairo.ImageSurface`.
-    #: In each :class:`collections.OrderedDict` keys are ordered by Least Recently
+    #: In each :class:`pympress.surfacecache.Cache` keys are ordered by Least Recently
     #: Used (get or set), when the size is beyond :attr:`max_pages`, pages are
     #: popped from the start of the cache.
     surface_cache = {}
