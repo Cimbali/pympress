@@ -111,6 +111,9 @@ def load_config():
     if not config.has_option('presenter', 'slide_ratio'):
         config.set('cache', 'maxpages', '0.75')
 
+    if not config.has_option('presenter', 'start_blanked'):
+        config.set('presenter', 'start_blanked', 'off')
+
     return config
 
 def save_config(config):

@@ -134,12 +134,17 @@ class UI:
     #: :class:`configparser.RawConfigParser` to remember preferences
     config = None
 
+    #: track whether we blank the screen
+    blanked = False
+
     def __init__(self, docpath = None):
         """
         :param docpath: the path to the document to open
         :type  docpath: string
         """
         self.config = pympress.util.load_config()
+
+        self.blanked = self.config.getboolean('presenter', 'start_blanked')
 
         black = Gdk.Color(0, 0, 0)
 
@@ -224,6 +229,8 @@ class UI:
             <menuitem action="Fullscreen"/>
             <menuitem action="Swap screens"/>
             <menuitem action="Notes mode"/>
+            <menuitem action="Blank screen"/>
+            <menuitem action="Start blanked"/>
             <menuitem action="Adjust screen"/>
           </menu>
           <menu action="Navigation">
@@ -268,6 +275,8 @@ class UI:
             ("Pause timer",  None,           "_Pause timer", "p",     None, self.switch_pause,      True),
             ("Fullscreen",   None,           "_Fullscreen",  "f",     None, self.switch_fullscreen, self.fullscreen),
             ("Notes mode",   None,           "_Note mode",   "n",     None, self.switch_mode,       self.notes_mode),
+            ("Blank screen", None,           "_Blank screen","b",     None, self.switch_blanked,    self.blanked),
+            ("Start blanked",None,           "_Start blanked",None,   None, self.switch_start_blanked,    self.blanked),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -564,6 +573,8 @@ class UI:
 
         if widget is self.c_da:
             # Current page
+            if self.blanked:
+                return
             page = self.doc.page(self.doc.current_page().number())
         elif widget is self.p_da_cur:
             # Current page 'preview'
@@ -668,6 +679,8 @@ class UI:
                     self.switch_fullscreen()
                 elif name.upper() == "G":
                     self.on_label_event(self.eb_cur, True)
+                elif name.upper() == "B":
+                    self.switch_blanked()
                 else:
                     return False
 
@@ -1012,6 +1025,25 @@ class UI:
                 self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
 
         self.on_page_change(False)
+
+
+
+    def switch_blanked(self, widget=None, event=None):
+        """
+        Switch the blanked mode of the main screen
+        """
+        self.blanked = not self.blanked
+        self.c_da.queue_draw()
+
+
+    def switch_start_blanked(self, widget=None, event=None):
+        """
+        Switch the blanked mode of the main screen
+        """
+        if self.config.getboolean('presenter', 'start_blanked'):
+            self.config.set('presenter', 'start_blanked', 'off')
+        else:
+            self.config.set('presenter', 'start_blanked', 'on')
 
 
     def switch_mode(self, widget=None, event=None):
