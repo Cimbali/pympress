@@ -59,10 +59,8 @@ class Link:
     x2 = None
     #: Second y coordinate of the link rectangle, as a float number
     y2 = None
-    #: Page number of the link destination
-    dest = None
 
-    def __init__(self, x1, y1, x2, y2, dest):
+    def __init__(self, x1, y1, x2, y2, action):
         """
         :param x1: first x coordinate of the link rectangle
         :type  x1: float
@@ -72,11 +70,11 @@ class Link:
         :type  x2: float
         :param y2: second y coordinate of the link rectangle
         :type  y2: float
-        :param dest: page number of the destination
-        :type  dest: integer
+        :param action: action to perform when the link is clicked
+        :type  action: function
         """
         self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
-        self.dest = dest
+        self.follow = action
 
     def is_over(self, x, y):
         """
@@ -92,14 +90,11 @@ class Link:
         """
         return ( (self.x1 <= x) and (x <= self.x2) and (self.y1 <= y) and (y <= self.y2) )
 
-    def get_destination(self):
+    def follow(self):
         """
-        Get the link destination.
-
-        :return: destination page number
-        :rtype: integer
+        Follow the link to its destination.
+        This is overriden by the function to perform the actual action in the constructor.
         """
-        return self.dest
 
 
 class Page:
@@ -123,12 +118,14 @@ class Page:
     #: Page height as a float
     ph = 0.
 
-    def __init__(self, doc, number):
+    def __init__(self, doc, number, parent):
         """
         :param doc: the PDF document
         :type  doc: :class:`Poppler.Document`
         :param number: number of the page to fetch in the document
         :type  number: integer
+        :param doc: the parent Document class
+        :type  doc: :class:`pympress.document.Document`
         """
         self.page = doc.get_page(number)
         self.page_nb = number
@@ -141,18 +138,58 @@ class Page:
         self.links = []
 
         for link in link_mapping:
-            if type(link.action) is Poppler.ActionGotoDest:
-                dest = link.action.dest
-                page_num = dest.page_num
+            if link.action.type == Poppler.ActionType.GOTO_DEST:
+                dest_page = link.action.goto_dest.dest.page_num
+                action = lambda: parent.goto(dest_page)
 
-                if dest.type == Poppler.DEST_NAMED:
-                    page_num = doc.find_dest(dest.named_dest).page_num
+            elif link.action.type == Poppler.ActionType.NAMED:
+                dest_name = link.action.named.named_dest
+                dest = doc.find_dest(dest_name)
 
-                # Page numbering starts at 0
-                page_num -= 1
+                if dest:
+                    action = lambda: parent.goto(dest.page_num)
+                elif dest_name == "GoBack":
+                    #TODO make a history of visited pages, use this action to jump back in history
+                    continue
+                elif dest_name == "GoForward":
+                    #TODO make a history of visited pages, use this action to jump forward in history
+                    continue
+                elif dest_name == "GoToPage":
+                    #TODO connecte this to the "G" action which allows to pick a page to jump to
+                    continue
+                elif dest_name == "Find":
+                    #TODO popup a text box and search results with Page.find_text
+                    # http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text
+                    continue
+                else:
+                    #TODO find out other possible named actions?
+                    print("Could not found destination of link type \"{}\": \"{}\"".format(link.action.named.type, dest_name))
+                    continue
 
-                my_link = Link(link.area.x1, link.area.y1, link.area.x2, link.area.y2, page_num)
-                self.links.append(my_link)
+            elif link.action.type == Poppler.ActionType.NONE:
+                continue
+            elif link.action.type == Poppler.ActionType.GOTO_REMOTE:
+                continue
+            elif link.action.type == Poppler.ActionType.LAUNCH:
+                continue
+            elif link.action.type == Poppler.ActionType.URI:
+                continue
+            elif link.action.type == Poppler.ActionType.MOVIE:
+                continue
+            elif link.action.type == Poppler.ActionType.RENDITION:
+                continue
+            elif link.action.type == Poppler.ActionType.OCG_STATE:
+                continue
+            elif link.action.type == Poppler.ActionType.JAVSCRIPT:
+                continue
+            elif link.action.type == Poppler.ActionType.UNKNOWN:
+                continue
+            else:
+                print("UNKNOWN LINK TYPE {}".format(link.action.type))
+                continue
+
+            my_link = Link(link.area.x1, link.area.y1, link.area.x2, link.area.y2, action)
+            self.links.append(my_link)
 
     def number(self):
         """Get the page number"""
@@ -314,7 +351,7 @@ class Document:
             return None
 
         if not number in self.pages_cache:
-            self.pages_cache[number] = Page(self.doc, number)
+            self.pages_cache[number] = Page(self.doc, number, self)
         return self.pages_cache[number]
 
 
@@ -350,6 +387,7 @@ class Document:
         :param number: number of the destination page
         :type  number: integer
         """
+        print("got a goto page {}".format(number))
         if number < 0:
             number = 0
         elif number >= self.nb_pages:

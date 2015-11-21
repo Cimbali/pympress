@@ -143,56 +143,72 @@ class UI:
         :type  docpath: string
         """
         self.config = pympress.util.load_config()
-
         self.blanked = self.config.getboolean('presenter', 'start_blanked')
 
-        black = Gdk.Color(0, 0, 0)
-
-        # Common to both windows
-        icon_list = pympress.util.load_icons()
-
         # Document
-        self.doc = pympress.document.Document(self.on_page_change, docpath or self.open_file())
-
-        # Pixbuf cache
-        self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
+        self.doc = pympress.document.Document(self.on_page_change, docpath or self.pick_file())
 
         # Use notes mode by default if the document has notes
         self.notes_mode = self.doc.has_notes()
+
+        # Surface cache
+        self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
+
+        # Make and populate windows
+        self.make_cwin()
+        self.make_pwin()
+
+        # Common to both windows
+        icon_list = pympress.util.load_icons()
+        self.c_win.set_icon_list(icon_list)
+        self.p_win.set_icon_list(icon_list)
+
+        # Setup timer
+        GObject.timeout_add(250, self.update_time)
+
+        # Connect events
+        self.add_events()
+
+        # Show all windows
+        self.c_win.show_all()
+        self.p_win.show_all()
+
+        # Compute first slides to show
+        self.on_page_change(False)
+
+
+    def make_cwin(self):
+        """Creates and initializes the content window
+        """
+        black = Gdk.Color(0, 0, 0)
 
         # Content window
         self.c_win.set_title("pympress content")
         self.c_win.set_default_size(800, 600)
         self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
-        self.c_win.connect("delete-event", self.save_and_quit)
-        self.c_win.set_icon_list(icon_list)
 
         self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
         self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
         self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
         self.c_frame.add(self.c_da)
 
-        self.c_da.connect("draw", self.on_draw)
         self.c_da.set_name("c_da")
         if self.notes_mode:
             self.cache.add_widget("c_da", pympress.document.PDF_CONTENT_PAGE)
         else:
             self.cache.add_widget("c_da", pympress.document.PDF_REGULAR)
-        self.c_da.connect("configure-event", self.on_configure_da)
 
         self.c_frame.set_shadow_type(Gtk.ShadowType.NONE)
         self.c_win.add(self.c_frame)
 
-        self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
-        self.c_win.connect("key-press-event", self.on_navigation)
-        self.c_win.connect("scroll-event", self.on_navigation)
 
+    def make_pwin(self):
+        """Creates and initializes the presenter window
+        """
         # Presenter window
         self.p_win.set_title("pympress presenter")
         self.p_win.set_default_size(800, 600)
         self.p_win.set_position(Gtk.WindowPosition.CENTER)
-        self.p_win.connect("delete-event", self.save_and_quit)
-        self.p_win.set_icon_list(icon_list)
 
         # Guess window positions from screens
         screen = self.p_win.get_screen()
@@ -214,6 +230,109 @@ class UI:
         bigvbox = Gtk.VBox(False, 2)
         self.p_win.add(bigvbox)
 
+        # make & get menu
+        menubar = self.make_menubar()
+        bigvbox.pack_start(menubar, False, False, 0)
+
+        # panes
+        hpaned = self.make_pwin_panes()
+        bigvbox.pack_start(hpaned, True, True, 0)
+
+        # bottom
+        hbox = self.make_bottom()
+        bigvbox.pack_end(hbox, False, False, 5)
+
+        # Set relative pane sizes
+        # dynamic computation requires to have p_win already visible
+        self.p_win.show_all()
+
+        pane_size = self.config.getfloat('presenter', 'slide_ratio')
+        avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
+        hpaned.set_position(int(round(pane_size * avail_size)))
+
+
+    def add_events(self):
+        """Connects the events we want to the different widgets
+        """
+        self.p_win.connect("destroy", self.save_and_quit)
+        self.c_win.connect("destroy", self.save_and_quit)
+        self.p_win.connect("delete-event", self.save_and_quit)
+        self.c_win.connect("delete-event", self.save_and_quit)
+
+        self.c_da.connect("draw", self.on_draw)
+        self.c_da.connect("configure-event", self.on_configure_da)
+        self.p_da_cur.connect("draw", self.on_draw)
+        self.p_da_cur.connect("configure-event", self.on_configure_da)
+        self.p_da_next.connect("draw", self.on_draw)
+        self.p_da_next.connect("configure-event", self.on_configure_da)
+
+        self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
+        self.p_win.connect("key-press-event", self.on_navigation)
+        self.p_win.connect("scroll-event", self.on_navigation)
+        self.p_win.connect("window-state-event", self.track_pwin_maximized)
+
+        self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
+        self.c_win.connect("key-press-event", self.on_navigation)
+        self.c_win.connect("scroll-event", self.on_navigation)
+
+        # Hyperlinks
+        self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
+        self.c_da.connect("button-press-event", self.on_link)
+        self.c_da.connect("motion-notify-event", self.on_link)
+
+        self.p_da_cur.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
+        self.p_da_cur.connect("button-press-event", self.on_link)
+        self.p_da_cur.connect("motion-notify-event", self.on_link)
+
+        self.p_da_next.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
+        self.p_da_next.connect("button-press-event", self.on_link)
+        self.p_da_next.connect("motion-notify-event", self.on_link)
+
+
+    def make_pwin_panes(self):
+        """Creates and initializes the presenter windows' panes
+
+        :return: the preview panes with current and next slide
+        :rtype: :class:`Gtk.Paned`
+        """
+        # Panes
+        hpaned = Gtk.Paned()
+        hpaned.set_orientation(Gtk.Orientation.HORIZONTAL)
+        if gi.version_info >= (3,16): hpaned.set_wide_handle(True)
+        hpaned.set_margin_top(5)
+        hpaned.set_margin_bottom(5)
+        hpaned.set_margin_left(5)
+        hpaned.set_margin_right(5)
+
+        # "Current slide" frame
+        self.p_frame_cur.set_label("Current slide")
+        hpaned.pack1(self.p_frame_cur, True, True)
+        self.p_da_cur.set_name("p_da_cur")
+        if self.notes_mode:
+            self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
+        else:
+            self.cache.add_widget("p_da_cur", PDF_REGULAR)
+        self.p_frame_cur.add(self.p_da_cur)
+
+        # "Next slide" frame
+        hpaned.pack2(self.p_frame_next, True, True)
+        self.p_frame_next.set_label("Next slide")
+        self.p_da_next.set_name("p_da_next")
+        if self.notes_mode:
+            self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
+        else:
+            self.cache.add_widget("p_da_next", PDF_REGULAR)
+        self.p_frame_next.add(self.p_da_next)
+
+        return hpaned
+
+
+    def make_menubar(self):
+        """Creates and initializes the menu bar
+
+        :return: the menu bar
+        :rtype: :class:`Gtk.Widget`
+        """
         # UI Manager for menu
         ui_manager = Gtk.UIManager()
 
@@ -281,45 +400,17 @@ class UI:
         ui_manager.insert_action_group(action_group)
 
         # Add menu bar to the window
-        menubar = ui_manager.get_widget('/MenuBar')
         h = ui_manager.get_widget('/MenuBar/Help')
         h.set_right_justified(True)
-        bigvbox.pack_start(menubar, False, False, 0)
+        return ui_manager.get_widget('/MenuBar')
 
-        # Panes
-        hpaned = Gtk.Paned()
-        hpaned.set_orientation(Gtk.Orientation.HORIZONTAL)
-        if gi.version_info >= (3,16): hpaned.set_wide_handle(True)
-        hpaned.set_margin_top(5)
-        hpaned.set_margin_bottom(5)
-        hpaned.set_margin_left(5)
-        hpaned.set_margin_right(5)
-        bigvbox.pack_start(hpaned, True, True, 0)
 
-        # "Current slide" frame
-        self.p_frame_cur.set_label("Current slide")
-        hpaned.pack1(self.p_frame_cur, True, True)
-        self.p_da_cur.connect("draw", self.on_draw)
-        self.p_da_cur.set_name("p_da_cur")
-        if self.notes_mode:
-            self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
-        else:
-            self.cache.add_widget("p_da_cur", PDF_REGULAR)
-        self.p_da_cur.connect("configure-event", self.on_configure_da)
-        self.p_frame_cur.add(self.p_da_cur)
+    def make_bottom(self):
+        """Creates and initializes the widgets with page/time info at the bottom of the presenter window
 
-        # "Next slide" frame
-        hpaned.pack2(self.p_frame_next, True, True)
-        self.p_frame_next.set_label("Next slide")
-        self.p_da_next.connect("draw", self.on_draw)
-        self.p_da_next.set_name("p_da_next")
-        if self.notes_mode:
-            self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
-        else:
-            self.cache.add_widget("p_da_next", PDF_REGULAR)
-        self.p_da_next.connect("configure-event", self.on_configure_da)
-        self.p_frame_next.add(self.p_da_next)
-
+        :return: a box widget containing all the info widgets to put at the page bottom
+        :rtype: :class:`Gtk.HBpx`
+        """
         hbox = Gtk.HBox()
 
         # "Current slide" label and entry. eb_cur gets all events on the whole,
@@ -360,45 +451,7 @@ class UI:
         self.label_clock.set_justify(Gtk.Justification.CENTER)
         self.label_clock.set_use_markup(True)
 
-        bigvbox.pack_end(hbox, False, False, 5)
-
-        self.p_win.connect("destroy", self.save_and_quit)
-        self.p_win.show_all()
-
-        pane_size = self.config.getfloat('presenter', 'slide_ratio')
-        avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
-        margins = hpaned.get_allocated_width() - avail_size
-        hpaned.set_position(int(round(pane_size * avail_size)))
-
-        # Add events
-        self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
-        self.p_win.connect("key-press-event", self.on_navigation)
-        self.p_win.connect("scroll-event", self.on_navigation)
-        self.p_win.connect("window-state-event", self.track_pwin_maximized)
-
-        # Hyperlinks
-        self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-        self.c_da.connect("button-press-event", self.on_link)
-        self.c_da.connect("motion-notify-event", self.on_link)
-
-        self.p_da_cur.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-        self.p_da_cur.connect("button-press-event", self.on_link)
-        self.p_da_cur.connect("motion-notify-event", self.on_link)
-
-        self.p_da_next.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-        self.p_da_next.connect("button-press-event", self.on_link)
-        self.p_da_next.connect("motion-notify-event", self.on_link)
-
-        # Setup timer
-        GObject.timeout_add(250, self.update_time)
-
-        # Show all windows
-        self.c_win.show_all()
-        self.p_win.show_all()
-
-        # Compute first slides to show
-        time.sleep(0.250)
-        self.on_page_change(False)
+        return hbox
 
 
     def run(self):
@@ -418,7 +471,7 @@ class UI:
         Gtk.main_quit()
 
 
-    def open_file(self):
+    def pick_file(self):
         # Use a GTK file dialog to choose file
         dialog = Gtk.FileChooserDialog("Open...", self.p_win,
                                        Gtk.FileChooserAction.OPEN,
@@ -738,12 +791,12 @@ class UI:
         # Event type?
         if event.type == Gdk.EventType.BUTTON_PRESS:
             if link is not None:
-                dest = link.get_destination()
-                self.doc.goto(dest)
+                print("following link!")
+                link.follow()
 
         elif event.type == Gdk.EventType.MOTION_NOTIFY:
             if link is not None:
-                cursor = Gdk.Cursor.new(Gdk.HAND2)
+                cursor = Gdk.Cursor.new(Gdk.CursorType.HAND2)
                 widget.get_window().set_cursor(cursor)
             else:
                 widget.get_window().set_cursor(None)
