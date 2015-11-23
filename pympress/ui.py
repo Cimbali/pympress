@@ -793,6 +793,8 @@ class UI:
             if link is not None:
                 print("following link!")
                 link.follow()
+            else:
+                print("got click but no link!")
 
         elif event.type == Gdk.EventType.MOTION_NOTIFY:
             if link is not None:
@@ -924,6 +926,8 @@ class UI:
         .. warning:: At the moment, this is only supported on POSIX systems
            where :command:`xdg-screensaver` is installed and working. For now,
            this feature has only been tested on **Linux with xscreensaver**.
+           On Windows (in a Win7 64b virtual machine), modifying the register
+           always caused a permission error.
 
         :param must_disable: if ``True``, indicates that the screensaver must be
            disabled; otherwise it will be enabled

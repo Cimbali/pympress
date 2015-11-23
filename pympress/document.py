@@ -31,7 +31,10 @@ only rendering itself: the preparation of the target surface must be done
 elsewhere).
 """
 
+import os
 import sys
+import shutil
+import subprocess
 
 import gi
 gi.require_version('Poppler', '0.18')
@@ -43,6 +46,13 @@ try:
 except ImportError:
     from urlparse import urljoin
     from urllib import pathname2url
+
+# find the right function to open files
+if os.name == 'nt':
+    fileopen = os.startfile
+else:
+    opener = "open" if sys.platform == "darwin" else "xdg-open"
+    fileopen = lambda f: subprocess.call([opener, f])
 
 import pympress.util
 
@@ -167,22 +177,47 @@ class Page:
                     continue
 
             elif link.action.type == Poppler.ActionType.NONE:
-                continue
+                print("Could not implement action of link type \"{}\"".format(link.action.type))
             elif link.action.type == Poppler.ActionType.GOTO_REMOTE:
+                print("Could not implement action of link type \"{}\"".format(link.action.type))
                 continue
+
             elif link.action.type == Poppler.ActionType.LAUNCH:
-                continue
+                launch = link.action.launch
+                filepath = None
+
+                for d in [os.getcwd(), os.path.dirname(parent.path)]:
+                    filename = os.path.normpath(os.path.join(d, launch.file_name))
+                    if os.path.exists(filename):
+                        filepath = filename
+                        break
+
+                if launch.params:
+                    print("WARNING ignoring params: " + str(launch.params))
+
+                if not filepath:
+                    print("ERROR can not find file " + launch.file_name)
+                    continue
+
+                action = lambda: fileopen(filename)
+
             elif link.action.type == Poppler.ActionType.URI:
+                print("Could not implement action of link type \"{}\"".format(link.action.type))
                 continue
             elif link.action.type == Poppler.ActionType.MOVIE:
+                print("Could not implement action of link type \"{}\"".format(link.action.type))
                 continue
             elif link.action.type == Poppler.ActionType.RENDITION:
+                print("Could not implement action of link type \"{}\"".format(link.action.type))
                 continue
             elif link.action.type == Poppler.ActionType.OCG_STATE:
+                print("Could not implement action of link type \"{}\"".format(link.action.type))
                 continue
             elif link.action.type == Poppler.ActionType.JAVSCRIPT:
+                print("Could not implement action of link type \"{}\"".format(link.action.type))
                 continue
             elif link.action.type == Poppler.ActionType.UNKNOWN:
+                print("Could not implement action of link type \"{}\"".format(link.action.type))
                 continue
             else:
                 print("UNKNOWN LINK TYPE {}".format(link.action.type))
@@ -287,6 +322,8 @@ class Document:
 
     #: Current PDF document (:class:`Poppler.Document` instance)
     doc = None
+    #: Path to pdf
+    path = None
     #: Number of pages in the document
     nb_pages = -1
     #: Number of the current page
@@ -307,6 +344,8 @@ class Document:
         :param page: page number to which the file should be opened
         :type  page: integer
         """
+
+        self.path = path
 
         # Open PDF file
         self.doc = Poppler.Document.new_from_file(urljoin('file:', pathname2url(path)), None)
