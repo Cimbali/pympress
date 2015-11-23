@@ -45,3 +45,9 @@ A few of the fancier functionalities are listed here:
 - **Resize Current/Next slide**: You can drag the bar between both slides on the Presenter window to adjust their relative sizes to your liking.
 - **Preferences**: Some of your choices are saved in a configuration file, in *~/.config/pympress* or *~/.pympress* on linux, and in *%APPDATA%/pympress.ini* on windows.
 - **Cache**: For efficiency, Pympress caches rendered pages (up to 200 by default). If this is too memory consuming for you, you can change this number in the configuration file.
+
+# Hacking
+
+Feel free to clone this repo and use it, modify it, redistribute it, etc, under the GPLv2+.
+Pympress has sphinx inline (rst-syntax) documentation, and the gh-pages branch hosts [an online documentation generated from it](https://rawgit.com/Cimbali/pympress/gh-pages/pympress.html).
+

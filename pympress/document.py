@@ -21,7 +21,7 @@
 :mod:`pympress.document` -- document handling
 ---------------------------------------------
 
-This modules contains several classes that are used for managing documents (only
+This module contains several classes that are used for managing documents (only
 PDF documents are supported at the moment, but other formats may be added in the
 future).
 

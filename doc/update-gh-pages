@@ -1,0 +1,16 @@
+#!/bin/sh
+
+TEMPFILE=/tmp/pympress-gh-pages.tar
+
+pushd $(dirname $0)
+rm -rf _build
+
+make clean && make $TEMPFILE && \
+cd .. && git checkout gh-pages && git clean -fdx && rm *.html _sources/* _static/* \
+tar xf $TEMPFILE && echo "pympress.org" > CNAME && touch .nojekyll
+
+rm $TMPFILE
+git status
+
+popd
+

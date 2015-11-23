@@ -19,7 +19,7 @@
 
 """
 :mod:`pympress.surfacecache` -- pages prerendering and caching
--------------------------------------------------------------
+--------------------------------------------------------------
 
 This modules contains stuff needed for caching pages and prerendering them. This
 is done by the :class:`~pympress.surfacecache.SurfaceCache` class, using several
