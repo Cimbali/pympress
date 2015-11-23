@@ -5,7 +5,7 @@ sources := $(wildcard $(repo_root)/pympress/*.py) $(repo_root)/bin/pympress
 .INTERMEDIATE:pympress.rst
 
 %.tar:_build/pympress.html
-	tar cf $@ -C _build .
+	tar cf $@ -C $(repo_docs)_build .
 
 _build/pympress.html:pympress.rst
 	sphinx-build -b html $(repo_docs) $(repo_docs)/_build

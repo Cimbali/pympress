@@ -1,15 +1,17 @@
 #!/bin/sh
 
+# should not be in local dir
 TEMPFILE=/tmp/pympress-gh-pages.tar
 
 pushd $(dirname $0)
 rm -rf _build
 
 make clean && make $TEMPFILE && \
-cd .. && git checkout gh-pages && git clean -fdx && rm *.html _sources/* _static/* \
-tar xf $TEMPFILE && echo "pympress.org" > CNAME && touch .nojekyll
+cd .. && git checkout gh-pages && git clean -fdx && \
+rm -fr *.html *.js *.inv _sources/* _static/* && \
+tar xf $TEMPFILE && touch .nojekyll
 
-rm $TMPFILE
+rm $TEMPFILE
 git status
 
 popd
