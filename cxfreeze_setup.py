@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 #
-#       setup.py
+#       cxfreeze_setup.py
 #
 #       Copyright 2009 Thomas Jost <thomas.jost@gmail.com>
+#       Copyright 2015 Cimbali <me@cimba.li>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -34,7 +35,7 @@ if include_path is None:
     print("Can not find where the GTK libraries and Python bindings are installed!")
     exit(1)
 
-version="0.3"
+version="0.4"
 
 libs_etc = [
     'etc',
@@ -48,9 +49,17 @@ libs_etc = [
     os.path.join('share', 'xml')
 ]
 
-#include all Gtk DLLs, because litteraly the only we can skip would save us 104kB, they are:
-#libgailutil-3.0.dll, libharfbuzz-gobject-0.dll, libharfbuzz-icu-0.dll, libgthread-2.0.dll
-libs_etc += [f for f in os.listdir(include_path) if os.path.splitext(f)[1].lower() == ".dll"]
+libs_etc += ['libatk-1.0-0.dll', 'libcairo-gobject-2.dll', 'libepoxy-0.dll',
+    'libffi-6.dll', 'libfontconfig-1.dll', 'libfreetype-6.dll', 'libgailutil-3-0.dll',
+    'libgdk-3-0.dll', 'libgdk_pixbuf-2.0-0.dll', 'libgio-2.0-0.dll',
+    'libgirepository-1.0-1.dll', 'libglib-2.0-0.dll', 'libgmodule-2.0-0.dll',
+    'libgobject-2.0-0.dll', 'libgthread-2.0-0.dll', 'libgtk-3-0.dll', 'libharfbuzz-0.dll',
+    'libharfbuzz-gobject-0.dll', 'libharfbuzz-icu-0.dll', 'libintl-8.dll', 'libjasper-1.dll',
+    'libjpeg-8.dll', 'liblcms2-2.dll', 'libopenjp2.dll', 'libpango-1.0-0.dll',
+    'libpangocairo-1.0-0.dll', 'libpangoft2-1.0-0.dll', 'libpangowin32-1.0-0.dll',
+    'libpng16-16.dll', 'libpoppler-glib-8.dll', 'librsvg-2-2.dll', 'libstdc++-6.dll',
+    'libtiff-5.dll', 'libwebp-5.dll', 'libwinpthread-1.dll', 'libxmlxpat.dll', 'libzzz.dll',
+    'python34.dll']
 
 include_files = [(os.path.join(include_path, item), item) for item in libs_etc]
 
@@ -69,10 +78,10 @@ executables = [Executable(os.path.join("bin", "pympress"), base="Win32GUI")]
 setup(name="pympress",
       version=version,
       description="A simple dual-screen PDF reader designed for presentations",
-      author="Thomas Jost",
-      author_email="thomas.jost@gmail.com",
+      author="Thomas Jost, Cimbali",
+      author_email="me@cimba.li",
       url="http://www.pympress.org/",
-      download_url="http://github.com/Schnouki/pympress/downloads",
+      download_url="https://github.com/Cimbali/pympress/releases/latest",
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: X11 Applications :: GTK',

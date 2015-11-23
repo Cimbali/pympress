@@ -3,6 +3,7 @@
 #       setup.py
 #
 #       Copyright 2009 Thomas Jost <thomas.jost@gmail.com>
+#       Copyright 2015 Cimbali <me@cimba.li>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -27,10 +28,10 @@ version="0.3"
 setup(name="pympress",
       version=version,
       description="A simple dual-screen PDF reader designed for presentations",
-      author="Thomas Jost",
-      author_email="thomas.jost@gmail.com",
+      author="Thomas Jost, Cimbali",
+      author_email="me@cimba.li",
       url="http://www.pympress.org/",
-      download_url="http://github.com/Schnouki/pympress/downloads",
+      download_url="https://github.com/Cimbali/pympress/releases/latest",
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: X11 Applications :: GTK',

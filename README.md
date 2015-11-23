@@ -6,6 +6,8 @@ It is designed to be a dual-screen reader used for presentations and public talk
 
 Pympress is a free software, distributed under the terms of the GPL license (version 2 or, at your option, any later version).
 
+This is now a fork of [Schnouki's original Pympress](https://github.com/Schnouki/pympress), at least for now.
+
 # How-to install
 
 All dependencies are really basic, and installation is standard for a python package.
@@ -49,5 +51,5 @@ A few of the fancier functionalities are listed here:
 # Hacking
 
 Feel free to clone this repo and use it, modify it, redistribute it, etc, under the GPLv2+.
-Pympress has sphinx inline (rst-syntax) documentation, and the gh-pages branch hosts [an online documentation generated from it](https://rawgit.com/Cimbali/pympress/gh-pages/pympress.html).
+Pympress has inline sphinx (rst syntax) documentation, and the gh-pages branch hosts [an online documentation generated from it](https://cimbali.github.io/pympress/pympress.html).
 
