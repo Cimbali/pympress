@@ -128,16 +128,16 @@ class Page:
     #: Page height as a float
     ph = 0.
 
-    def __init__(self, doc, number, parent):
+    def __init__(self, page, number, parent):
         """
-        :param doc: the PDF document
-        :type  doc: :class:`Poppler.Document`
+        :param doc: the poppler object around the page
+        :type  doc: :class:`Poppler.Page`
         :param number: number of the page to fetch in the document
         :type  number: integer
-        :param doc: the parent Document class
-        :type  doc: :class:`pympress.document.Document`
+        :param parent: the parent Document class
+        :type  parent: :class:`pympress.document.Document`
         """
-        self.page = doc.get_page(number)
+        self.page = page
         self.page_nb = number
 
         # Read page size
@@ -148,83 +148,81 @@ class Page:
         self.links = []
 
         for link in link_mapping:
-            if link.action.type == Poppler.ActionType.GOTO_DEST:
-                dest_page = link.action.goto_dest.dest.page_num
-                action = lambda: parent.goto(dest_page)
-
-            elif link.action.type == Poppler.ActionType.NAMED:
-                dest_name = link.action.named.named_dest
-                dest = doc.find_dest(dest_name)
-
-                if dest:
-                    action = lambda: parent.goto(dest.page_num)
-                elif dest_name == "GoBack":
-                    #TODO make a history of visited pages, use this action to jump back in history
-                    continue
-                elif dest_name == "GoForward":
-                    #TODO make a history of visited pages, use this action to jump forward in history
-                    continue
-                elif dest_name == "GoToPage":
-                    #TODO connecte this to the "G" action which allows to pick a page to jump to
-                    continue
-                elif dest_name == "Find":
-                    #TODO popup a text box and search results with Page.find_text
-                    # http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text
-                    continue
-                else:
-                    #TODO find out other possible named actions?
-                    print("Could not found destination of link type \"{}\": \"{}\"".format(link.action.named.type, dest_name))
-                    continue
-
-            elif link.action.type == Poppler.ActionType.NONE:
-                print("Could not implement action of link type \"{}\"".format(link.action.type))
-            elif link.action.type == Poppler.ActionType.GOTO_REMOTE:
-                print("Could not implement action of link type \"{}\"".format(link.action.type))
-                continue
-
-            elif link.action.type == Poppler.ActionType.LAUNCH:
-                launch = link.action.launch
-                filepath = None
-
-                for d in [os.getcwd(), os.path.dirname(parent.path)]:
-                    filename = os.path.normpath(os.path.join(d, launch.file_name))
-                    if os.path.exists(filename):
-                        filepath = filename
-                        break
-
-                if launch.params:
-                    print("WARNING ignoring params: " + str(launch.params))
-
-                if not filepath:
-                    print("ERROR can not find file " + launch.file_name)
-                    continue
-
-                action = lambda: fileopen(filename)
-
-            elif link.action.type == Poppler.ActionType.URI:
-                print("Could not implement action of link type \"{}\"".format(link.action.type))
-                continue
-            elif link.action.type == Poppler.ActionType.MOVIE:
-                print("Could not implement action of link type \"{}\"".format(link.action.type))
-                continue
-            elif link.action.type == Poppler.ActionType.RENDITION:
-                print("Could not implement action of link type \"{}\"".format(link.action.type))
-                continue
-            elif link.action.type == Poppler.ActionType.OCG_STATE:
-                print("Could not implement action of link type \"{}\"".format(link.action.type))
-                continue
-            elif link.action.type == Poppler.ActionType.JAVSCRIPT:
-                print("Could not implement action of link type \"{}\"".format(link.action.type))
-                continue
-            elif link.action.type == Poppler.ActionType.UNKNOWN:
-                print("Could not implement action of link type \"{}\"".format(link.action.type))
-                continue
-            else:
-                print("UNKNOWN LINK TYPE {}".format(link.action.type))
-                continue
-
+            action = self.get_link_action(link.action.type, link.action, parent)
             my_link = Link(link.area.x1, link.area.y1, link.area.x2, link.area.y2, action)
             self.links.append(my_link)
+
+    def get_link_action(self, link_type, action, parent):
+        """Get the function to be called when the link is followed
+        """
+        fun = lambda: print("No action was defined for this link")
+
+        if link_type == Poppler.ActionType.GOTO_DEST:
+            dest_page = action.goto_dest.dest.page_num
+            fun = lambda: parent.goto(dest_page)
+
+        elif link_type == Poppler.ActionType.NAMED:
+            dest_name = action.named.named_dest
+            dest = parent.doc.find_dest(dest_name)
+
+            if dest:
+                fun = lambda: parent.goto(dest.page_num)
+            elif dest_name == "GoBack":
+                #TODO make a history of visited pages, use this action to jump back in history
+                fun = lambda: print("Pympress does not yet support link type \"{}\" to \"{}\"".format(link_type, dest_name))
+            elif dest_name == "GoForward":
+                #TODO make a history of visited pages, use this action to jump forward in history
+                fun = lambda: print("Pympress does not yet support link type \"{}\" to \"{}\"".format(link_type, dest_name))
+            elif dest_name == "GoToPage":
+                #TODO connect this to the "G" action which allows to pick a page to jump to
+                fun = lambda: print("Pympress does not yet support link type \"{}\" to \"{}\"".format(link_type, dest_name))
+            elif dest_name == "Find":
+                #TODO popup a text box and search results with Page.find_text
+                # http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text
+                fun = lambda: print("Pympress does not yet support link type \"{}\" to \"{}\"".format(link_type, dest_name))
+            else:
+                #TODO find out other possible named actions?
+                fun = lambda: print("Pympress does not recognize link type \"{}\" to \"{}\"".format(link_type, dest_name))
+
+        elif link_type == Poppler.ActionType.LAUNCH:
+            launch = action.launch
+            filepath = None
+
+            for d in [os.getcwd(), os.path.dirname(parent.path)]:
+                filename = os.path.normpath(os.path.join(d, launch.file_name))
+                if os.path.exists(filename):
+                    filepath = filename
+                    break
+
+            if launch.params:
+                print("WARNING ignoring params: " + str(launch.params))
+
+            if not filepath:
+                print("ERROR can not find file " + launch.file_name)
+
+            else:
+                fun = lambda: fileopen(filename)
+
+        elif link_type == Poppler.ActionType.NONE:
+            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+        elif link_type == Poppler.ActionType.URI:
+            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+        elif link_type == Poppler.ActionType.GOTO_REMOTE:
+            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+        elif link_type == Poppler.ActionType.MOVIE:
+            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+        elif link_type == Poppler.ActionType.RENDITION:
+            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+        elif link_type == Poppler.ActionType.OCG_STATE:
+            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+        elif link_type == Poppler.ActionType.JAVSCRIPT:
+            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+        elif link_type == Poppler.ActionType.UNKNOWN:
+            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+        else:
+            fun = lambda: print("Pympress does not recognize link type \"{}\"".format(link_type))
+
+        return fun
 
     def number(self):
         """Get the page number"""
@@ -337,8 +335,12 @@ class Document:
     #: Callback function to signal whenever we change pages
     on_page_change = None
 
-    def __init__(self, page_change_callback, path, page=0):
+    def __init__(self, page_change_callback, pop_doc, path, page=0):
         """
+        :param page_change_callback: action to perform to signal we changed pages
+        :type  page_change_callback: function
+        :param pop_doc: Instance of the Poppler document at path that this class will wrap
+        :type  pop_doc: Poppler.Document
         :param path: Absolute path to the PDF file to open
         :type  path: string
         :param page: page number to which the file should be opened
@@ -348,7 +350,7 @@ class Document:
         self.path = path
 
         # Open PDF file
-        self.doc = Poppler.Document.new_from_file(urljoin('file:', pathname2url(path)), None)
+        self.doc = pop_doc
 
         # Pages number
         self.nb_pages = self.doc.get_n_pages()
@@ -370,6 +372,22 @@ class Document:
 
         self.on_page_change = page_change_callback
 
+    @staticmethod
+    def create(page_change_callback, path, page=0):
+        """Initializes a Document by passing it a :class:`Poppler.Document`
+
+        :param page_change_callback: action to perform to signal we changed pages
+        :type  page_change_callback: function
+        :param path: Absolute path to the PDF file to open
+        :type  path: string
+        :param page: page number to which the file should be opened
+        :type  page: integer
+        :return: The initialized document
+        :rtype: Pympress.Document
+        """
+        poppler_doc = Poppler.Document.new_from_file(urljoin('file:', pathname2url(path)), None)
+        return Document(page_change_callback, poppler_doc, path, page)
+
     def has_notes(self):
         """Get the document mode.
 
@@ -390,7 +408,7 @@ class Document:
             return None
 
         if not number in self.pages_cache:
-            self.pages_cache[number] = Page(self.doc, number, self)
+            self.pages_cache[number] = Page(self.doc.get_page(number), number, self)
         return self.pages_cache[number]
 
 
@@ -426,7 +444,6 @@ class Document:
         :param number: number of the destination page
         :type  number: integer
         """
-        print("got a goto page {}".format(number))
         if number < 0:
             number = 0
         elif number >= self.nb_pages:

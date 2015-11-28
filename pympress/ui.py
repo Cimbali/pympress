@@ -1,5 +1,3 @@
-#       ui.py
-#
 #       Copyright 2010 Thomas Jost <thomas.jost@gmail.com>
 #
 #       This program is free software; you can redistribute it and/or modify
@@ -48,6 +46,7 @@ from gi.repository import Pango
 if os.name == 'nt':
     import winreg
 else:
+    gi.require_version('GdkX11', '3.0')
     from gi.repository import GdkX11
 
 #: "Regular" PDF file (without notes)
@@ -146,7 +145,7 @@ class UI:
         self.blanked = self.config.getboolean('presenter', 'start_blanked')
 
         # Document
-        self.doc = pympress.document.Document(self.on_page_change, docpath or self.pick_file())
+        self.doc = pympress.document.Document.create(self.on_page_change, docpath or self.pick_file())
 
         # Use notes mode by default if the document has notes
         self.notes_mode = self.doc.has_notes()
@@ -172,9 +171,6 @@ class UI:
         # Show all windows
         self.c_win.show_all()
         self.p_win.show_all()
-
-        # Compute first slides to show
-        self.on_page_change(False)
 
 
     def make_cwin(self):
@@ -758,9 +754,6 @@ class UI:
 
             return True
 
-        else:
-            print("Unknown event " + str(event.type))
-
         return False
 
 
@@ -791,10 +784,7 @@ class UI:
         # Event type?
         if event.type == Gdk.EventType.BUTTON_PRESS:
             if link is not None:
-                print("following link!")
                 link.follow()
-            else:
-                print("got click but no link!")
 
         elif event.type == Gdk.EventType.MOTION_NOTIFY:
             if link is not None:

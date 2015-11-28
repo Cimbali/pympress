@@ -109,7 +109,7 @@ def load_config():
         config.set('content', 'yalign', '0.50')
 
     if not config.has_option('presenter', 'slide_ratio'):
-        config.set('cache', 'maxpages', '0.75')
+        config.set('presenter', 'slide_ratio', '0.75')
 
     if not config.has_option('presenter', 'start_blanked'):
         config.set('presenter', 'start_blanked', 'off')
