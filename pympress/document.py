@@ -31,10 +31,14 @@ only rendering itself: the preparation of the target surface must be done
 elsewhere).
 """
 
+from __future__ import print_function
+
 import os
 import sys
 import shutil
 import subprocess
+import tempfile
+import mimetypes
 
 import gi
 gi.require_version('Poppler', '0.18')
@@ -57,6 +61,13 @@ else:
 import pympress.util
 
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
+
+def get_extension(mime_type):
+    if not mimetypes.inited:
+        mimetypes.init()
+    for ext in mimetypes.types_map:
+        if mimetypes.types_map[ext] == mime_type:
+            return ext
 
 class Link:
     """This class encapsulates one hyperlink of the document."""
@@ -120,9 +131,10 @@ class Page:
     page = None
     #: Number of the current page (starting from 0)
     page_nb = -1
-    #: All the links in the page, as a list of :class:`~pympress.document.Link`
-    #: instances
+    #: All the links in the page, as a list of :class:`~pympress.document.Link` instances
     links = []
+    #: All the media in the page, as a list of tuples of (area, filename)
+    medias = []
     #: Page width as a float
     pw = 0.
     #: Page height as a float
@@ -139,34 +151,64 @@ class Page:
         """
         self.page = page
         self.page_nb = number
+        self.parent = parent
 
         # Read page size
         self.pw, self.ph = self.page.get_size()
 
         # Read links on the page
-        link_mapping = self.page.get_link_mapping()
         self.links = []
-
-        for link in link_mapping:
-            action = self.get_link_action(link.action.type, link.action, parent)
+        for link in self.page.get_link_mapping():
+            action = self.get_link_action(link.action.type, link.action)
             my_link = Link(link.area.x1, link.area.y1, link.area.x2, link.area.y2, action)
             self.links.append(my_link)
 
-    def get_link_action(self, link_type, action, parent):
+        # Read annotations, in particular those that indicate media
+        self.medias = []
+        for annotation in self.page.get_annot_mapping():
+            annot_type = annotation.annot.get_annot_type()
+            if annot_type == Poppler.AnnotType.LINK:
+                # just an Annot, not subclassed -- probably redundant with links
+                continue
+            elif annot_type == Poppler.AnnotType.MOVIE:
+                movie = annotation.annot.get_movie()
+                filepath = self.parent.get_full_path(movie.get_filename())
+                if filepath:
+                    media = (annotation.area, filepath)
+                    self.medias.append(media)
+                    action = lambda: pympress.ui.UI.play_media(hash(media))
+                else:
+                    print("Pympress can not find file " + movie.get_filename())
+                    continue
+            elif annot_type == Poppler.AnnotType.SCREEN:
+                actionObj = annotation.annot.get_action()
+                action = self.get_annot_action(actionObj.any.type, actionObj, annotation.area)
+                if not action:
+                    continue
+            my_annotation = Link(annotation.area.x1, annotation.area.y1, annotation.area.x2, annotation.area.y2, action)
+            self.links.append(my_annotation)
+
+    def get_link_action(self, link_type, action):
         """Get the function to be called when the link is followed
         """
+        # Poppler.ActionType.RENDITION should only appear in annotations, right? Otherwise how do we know
+        # where to render it? Any documentation on which action types are admissible in links vs in annots
+        # is very welcome. For now, link is fallback to annot so contains all action types.
         fun = lambda: print("No action was defined for this link")
 
-        if link_type == Poppler.ActionType.GOTO_DEST:
+        if link_type == Poppler.ActionType.NONE:
+            fun = None
+
+        elif link_type == Poppler.ActionType.GOTO_DEST:
             dest_page = action.goto_dest.dest.page_num
-            fun = lambda: parent.goto(dest_page)
+            fun = lambda: self.parent.goto(dest_page)
 
         elif link_type == Poppler.ActionType.NAMED:
             dest_name = action.named.named_dest
-            dest = parent.doc.find_dest(dest_name)
+            dest = self.parent.doc.find_dest(dest_name)
 
             if dest:
-                fun = lambda: parent.goto(dest.page_num)
+                fun = lambda: self.parent.goto(dest.page_num)
             elif dest_name == "GoBack":
                 #TODO make a history of visited pages, use this action to jump back in history
                 fun = lambda: print("Pympress does not yet support link type \"{}\" to \"{}\"".format(link_type, dest_name))
@@ -186,32 +228,23 @@ class Page:
 
         elif link_type == Poppler.ActionType.LAUNCH:
             launch = action.launch
-            filepath = None
-
-            for d in [os.getcwd(), os.path.dirname(parent.path)]:
-                filename = os.path.normpath(os.path.join(d, launch.file_name))
-                if os.path.exists(filename):
-                    filepath = filename
-                    break
-
             if launch.params:
                 print("WARNING ignoring params: " + str(launch.params))
 
+            filepath = self.parent.get_full_path(launch.file_name)
             if not filepath:
                 print("ERROR can not find file " + launch.file_name)
 
             else:
-                fun = lambda: fileopen(filename)
+                fun = lambda: fileopen(filepath)
 
-        elif link_type == Poppler.ActionType.NONE:
+        elif link_type == Poppler.ActionType.RENDITION:
+            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+        elif link_type == Poppler.ActionType.MOVIE:
             fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
         elif link_type == Poppler.ActionType.URI:
             fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
         elif link_type == Poppler.ActionType.GOTO_REMOTE:
-            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
-        elif link_type == Poppler.ActionType.MOVIE:
-            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
-        elif link_type == Poppler.ActionType.RENDITION:
             fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
         elif link_type == Poppler.ActionType.OCG_STATE:
             fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
@@ -223,6 +256,32 @@ class Page:
             fun = lambda: print("Pympress does not recognize link type \"{}\"".format(link_type))
 
         return fun
+
+    def get_annot_action(self, link_type, action, rect):
+        """Get the function to be called when the link is followed
+        """
+        if link_type == Poppler.ActionType.RENDITION:
+            media = action.rendition.media
+            if media.is_embedded():
+                ext = get_extension(media.get_mime_type())
+                with tempfile.NamedTemporaryFile('wb', suffix=ext, prefix='pdf_embed_', delete=False) as f:
+                    # now the file name is shotgunned
+                    filename=f.name
+                if not media.save(filename):
+                    print("Pympress can not extract embedded media")
+                    return None
+            else:
+                filename = self.parent.get_full_path(media.get_filename())
+                if not filename:
+                    print("Pympress can not find file "+media.get_filename())
+                    return None
+
+            media = (rect, filename)
+            self.medias.append(media)
+            return lambda: pympress.ui.UI.play_media(hash(media))
+
+        else:
+            return self.get_link_action(link_type, action)
 
     def number(self):
         """Get the page number"""
@@ -275,6 +334,14 @@ class Page:
             return self.pw / self.ph
         else:
             return (self.pw/2.) / self.ph
+
+    def get_media(self):
+        """Get the list of medias this page might want to play
+
+        :return: page aspect ratio
+        :rtype: list of tuples of area and filenames
+        """
+        return self.medias
 
     def render_cairo(self, cr, ww, wh, dtype=PDF_REGULAR):
         """Render the page on a Cairo surface.
@@ -468,6 +535,24 @@ class Document:
     def goto_end(self, *args):
         """Switch to the last page."""
         self.goto(self.nb_pages-1)
+
+    def get_full_path(self, filename):
+        """Returns full path, extrapolated from a path relative to this document
+        or to the current directory.
+
+        :param filename: Name of the file or relative path to it
+        :type  filename: string
+        :return: the full path to the file or None if it doesn't exist
+        :rtype: string
+        """
+        filepath = None
+        if os.path.isabs(filename):
+            return os.path.normpath(filename) if os.path.exists(filename) else None
+
+        for d in [os.path.dirname(self.path), os.getcwd()]:
+            filepath = os.path.normpath(os.path.join(d, filename))
+            if os.path.exists(filepath):
+                return filepath
 
 
 ##

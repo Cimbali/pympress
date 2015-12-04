@@ -60,7 +60,9 @@ import pympress.document
 import pympress.surfacecache
 import pympress.util
 import pympress.slideselector
+import pympress.vlcvideo
 
+media_overlays = {}
 
 class UI:
     """Pympress GUI management."""
@@ -72,6 +74,8 @@ class UI:
     c_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
     #: :class:`~Gtk.AspectFrame` for the Content window.
     c_frame = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
+    #: :class:`~Gtk.Overlay` for the Content window.
+    c_overlay = Gtk.Overlay()
     #: :class:`~Gtk.DrawingArea` for the Content window.
     c_da = Gtk.DrawingArea()
 
@@ -168,9 +172,17 @@ class UI:
         # Connect events
         self.add_events()
 
+        # Add media
+        self.update_media_overlays()
+
         # Show all windows
         self.c_win.show_all()
         self.p_win.show_all()
+
+        # Queue some redraws
+        self.c_overlay.queue_draw()
+        self.p_da_cur.queue_draw()
+        self.p_da_next.queue_draw()
 
 
     def make_cwin(self):
@@ -186,7 +198,10 @@ class UI:
         self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
         self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
         self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
-        self.c_frame.add(self.c_da)
+        self.c_frame.add(self.c_overlay)
+
+        self.c_overlay.add_overlay(self.c_da)
+        self.c_overlay.reorder_overlay(self.c_da, 5)
 
         self.c_da.set_name("c_da")
         if self.notes_mode:
@@ -196,6 +211,9 @@ class UI:
 
         self.c_frame.set_shadow_type(Gtk.ShadowType.NONE)
         self.c_win.add(self.c_frame)
+
+        pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
+        self.c_frame.set_property("ratio", pr)
 
 
     def make_pwin(self):
@@ -603,6 +621,46 @@ class UI:
         page_min = max(0, self.page_preview_nb - 2)
         for p in list(range(self.page_preview_nb+1, page_max)) + list(range(self.page_preview_nb, page_min, -1)):
             self.cache.prerender(p)
+
+        self.update_media_overlays()
+
+
+    def update_media_overlays(self):
+        # Remove old overlays, add new if page contains media
+        self.c_overlay.foreach(lambda child: self.c_overlay.remove(child) if child is not self.c_da else None)
+
+        page_cur = self.doc.current_page()
+        for rect, filename in page_cur.get_media():
+            media_id = hash((rect, filename))
+            global media_overlays
+            if media_id not in media_overlays:
+                v_da = pympress.vlcvideo.VLCVideo()
+                v_da.set_file(filename)
+
+                media_overlays[media_id] = v_da
+
+            pw, ph = page_cur.get_size()
+            cw, ch = self.c_da.get_allocated_width(), self.c_da.get_allocated_height()
+
+            media_overlays[media_id].props.margin_bottom = rect.y1 * ch / ph
+            media_overlays[media_id].props.margin_top = ch - rect.y2 * ch / ph
+            media_overlays[media_id].props.margin_left = rect.x1 * cw / pw
+            media_overlays[media_id].props.margin_right = cw - rect.x2 * cw / pw
+
+            self.c_overlay.add_overlay(media_overlays[media_id])
+            self.c_overlay.reorder_overlay(media_overlays[media_id], 0)
+
+            print("added overlay with filename {} and id {}".format(filename, media_id))
+
+        if page_cur.get_media():
+            self.c_overlay.show_all()
+
+
+    @staticmethod
+    def play_media(media_id):
+        global media_overlays
+        if media_id in media_overlays:
+            media_overlays[media_id].play()
 
 
     def on_draw(self, widget, cairo_context):
@@ -1109,6 +1167,12 @@ class UI:
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
 
         self.on_page_change(False)
+
+
+    def add_video_overlay(self, filename):
+        """
+        Add an overlay to `self.c_overlay` with a video of the current page
+        """
 
 
 ##

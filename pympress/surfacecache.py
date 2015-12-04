@@ -27,7 +27,7 @@ dictionaries of :class:`cairo.ImageSurface` for storing rendered pages.
 
 The problem is, neither Gtk+ nor Poppler are particularly threadsafe.
 Hence the prerendering isn't really done in parallel in another thread, but
-scheduled on the main thread at idle times using GLib.add_idle().
+scheduled on the main thread at idle times using GLib.idle_add().
 """
 
 import threading
