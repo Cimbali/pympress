@@ -174,7 +174,7 @@ class Page:
                 movie = annotation.annot.get_movie()
                 filepath = self.parent.get_full_path(movie.get_filename())
                 if filepath:
-                    media = (annotation.area, filepath)
+                    media = (annotation.area.copy(), filepath)
                     self.medias.append(media)
                     action = lambda: pympress.ui.UI.play_media(hash(media))
                 else:
@@ -276,7 +276,7 @@ class Page:
                     print("Pympress can not find file "+media.get_filename())
                     return None
 
-            media = (rect, filename)
+            media = (rect.copy(), filename)
             self.medias.append(media)
             return lambda: pympress.ui.UI.play_media(hash(media))
 

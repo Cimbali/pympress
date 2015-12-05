@@ -52,9 +52,17 @@ class VLCVideo(Gtk.DrawingArea):
     Its player can be controlled through the 'player' attribute, which
     is a vlc.MediaPlayer() instance.
     """
-    def __init__(self):
-        GObject.GObject.__init__(self)
+    player = None
+    overlay = None
+
+    def __init__(self, overlay):
+        Gtk.DrawingArea.__init__(self)
+
+        self.overlay = overlay
+
         self.player = instance.media_player_new()
+        event_manager = self.player.event_manager()
+        event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self.hide)
 
         def handle_embed(*args):
             global window_handle
@@ -67,26 +75,47 @@ class VLCVideo(Gtk.DrawingArea):
             return True
 
         self.connect("map", handle_embed)
-        self.set_size_request(320, 200)
+
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.connect("button-press-event", self.on_click)
 
     def set_file(self, filepath):
         self.player.set_media(instance.media_new(filepath))
 
-    def is_playing(self):
-        self.player.is_playing()
+    def preview(self):
+        if not self.get_parent():
+            self.overlay.add_overlay(self)
+            self.overlay.show_all()
+        self.player.next_frame()
 
     def play(self):
-        overlay = self.get_parent()
-        if overlay:
-            overlay.reorder_overlay(self, -1)
-            self.player.play()
+        if not self.get_parent():
+            self.overlay.add_overlay(self)
+            self.overlay.show_all()
+        self.player.play()
 
-    def pause(self):
-        self.player.pause()
+    def on_click(self, widget, event):
+        if not self.get_parent():
+            # How was this even clicked on?
+            return
 
-    def stop(self):
-        overlay = self.get_parent()
-        if overlay:
+        if event.type == Gdk.EventType.BUTTON_PRESS:
+            if self.player.is_playing():
+                self.player.pause()
+            else:
+                self.player.play()
+        elif event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
+            if self.player.is_playing():
+                self.player.set_time(0) # en ms
+            else:
+                self.player.play()
+
+    def stop_and_remove(self):
+        if self.player.is_playing():
             self.player.stop()
-            overlay.reorder_overlay(self, 0)
+        self.hide()
+
+    def hide(self, *args):
+        if self.get_parent():
+            self.overlay.remove(self)
 

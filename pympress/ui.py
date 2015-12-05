@@ -172,15 +172,16 @@ class UI:
         # Connect events
         self.add_events()
 
-        # Add media
-        self.update_media_overlays()
-
         # Show all windows
         self.c_win.show_all()
         self.p_win.show_all()
 
+        # Add media
+        self.update_media_overlays()
+
         # Queue some redraws
         self.c_overlay.queue_draw()
+        self.c_da.queue_draw()
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
 
@@ -194,23 +195,26 @@ class UI:
         self.c_win.set_title("pympress content")
         self.c_win.set_default_size(800, 600)
         self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
+        self.c_win.add(self.c_frame)
 
         self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
+        self.c_frame.set_shadow_type(Gtk.ShadowType.NONE)
         self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
         self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
         self.c_frame.add(self.c_overlay)
 
-        self.c_overlay.add_overlay(self.c_da)
-        self.c_overlay.reorder_overlay(self.c_da, 5)
+        self.c_overlay.props.margin = 0
+        self.c_frame.props.border_width = 0
+        self.c_overlay.add(self.c_da)
 
+        self.c_da.props.expand = True
+        self.c_da.props.halign = Gtk.Align.FILL
+        self.c_da.props.valign = Gtk.Align.FILL
         self.c_da.set_name("c_da")
         if self.notes_mode:
             self.cache.add_widget("c_da", pympress.document.PDF_CONTENT_PAGE)
         else:
             self.cache.add_widget("c_da", pympress.document.PDF_REGULAR)
-
-        self.c_frame.set_shadow_type(Gtk.ShadowType.NONE)
-        self.c_win.add(self.c_frame)
 
         pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
@@ -627,14 +631,14 @@ class UI:
 
     def update_media_overlays(self):
         # Remove old overlays, add new if page contains media
-        self.c_overlay.foreach(lambda child: self.c_overlay.remove(child) if child is not self.c_da else None)
+        self.c_overlay.foreach(lambda child, *ignored: child.stop_and_remove() and self.c_overlay.remove(child) if child is not self.c_da else None, None)
 
         page_cur = self.doc.current_page()
         for rect, filename in page_cur.get_media():
             media_id = hash((rect, filename))
             global media_overlays
             if media_id not in media_overlays:
-                v_da = pympress.vlcvideo.VLCVideo()
+                v_da = pympress.vlcvideo.VLCVideo(self.c_overlay)
                 v_da.set_file(filename)
 
                 media_overlays[media_id] = v_da
@@ -642,15 +646,11 @@ class UI:
             pw, ph = page_cur.get_size()
             cw, ch = self.c_da.get_allocated_width(), self.c_da.get_allocated_height()
 
+            media_overlays[media_id].set_size_request(cw, ch)
             media_overlays[media_id].props.margin_bottom = rect.y1 * ch / ph
             media_overlays[media_id].props.margin_top = ch - rect.y2 * ch / ph
             media_overlays[media_id].props.margin_left = rect.x1 * cw / pw
             media_overlays[media_id].props.margin_right = cw - rect.x2 * cw / pw
-
-            self.c_overlay.add_overlay(media_overlays[media_id])
-            self.c_overlay.reorder_overlay(media_overlays[media_id], 0)
-
-            print("added overlay with filename {} and id {}".format(filename, media_id))
 
         if page_cur.get_media():
             self.c_overlay.show_all()
@@ -760,7 +760,7 @@ class UI:
                 self.doc.goto_home()
             elif name == 'End':
                 self.doc.goto_end()
-            # sic - acceletator recognizes f not F
+            # sic - accelerator recognizes f not F
             elif name.upper() == "F11" or name == "F" \
                 or (name == "Return" and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
                 or (name.upper() == "L" and event.get_state() & Gdk.ModifierType.CONTROL_MASK):
