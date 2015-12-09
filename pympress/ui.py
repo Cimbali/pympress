@@ -302,10 +302,6 @@ class UI:
         self.p_da_cur.connect("button-press-event", self.on_link)
         self.p_da_cur.connect("motion-notify-event", self.on_link)
 
-        self.p_da_next.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-        self.p_da_next.connect("button-press-event", self.on_link)
-        self.p_da_next.connect("motion-notify-event", self.on_link)
-
 
     def make_pwin_panes(self):
         """Creates and initializes the presenter windows' panes
@@ -634,11 +630,11 @@ class UI:
         self.c_overlay.foreach(lambda child, *ignored: child.stop_and_remove() and self.c_overlay.remove(child) if child is not self.c_da else None, None)
 
         page_cur = self.doc.current_page()
-        for rect, filename in page_cur.get_media():
-            media_id = hash((rect, filename))
+        for rect, filename, show_controls in page_cur.get_media():
+            media_id = hash((rect, filename, show_controls))
             global media_overlays
             if media_id not in media_overlays:
-                v_da = pympress.vlcvideo.VLCVideo(self.c_overlay)
+                v_da = pympress.vlcvideo.VLCVideo(self.c_overlay, show_controls)
                 v_da.set_file(filename)
 
                 media_overlays[media_id] = v_da

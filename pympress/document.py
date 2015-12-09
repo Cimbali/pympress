@@ -174,7 +174,8 @@ class Page:
                 movie = annotation.annot.get_movie()
                 filepath = self.parent.get_full_path(movie.get_filename())
                 if filepath:
-                    media = (annotation.area.copy(), filepath)
+                    # TODO there is no autoplay, or repeatCount
+                    media = (annotation.area.copy(), filepath, movie.show_controls())
                     self.medias.append(media)
                     action = lambda: pympress.ui.UI.play_media(hash(media))
                 else:
@@ -238,9 +239,9 @@ class Page:
             else:
                 fun = lambda: fileopen(filepath)
 
-        elif link_type == Poppler.ActionType.RENDITION:
+        elif link_type == Poppler.ActionType.RENDITION: # Poppler 0.22
             fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
-        elif link_type == Poppler.ActionType.MOVIE:
+        elif link_type == Poppler.ActionType.MOVIE: # Poppler 0.20
             fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
         elif link_type == Poppler.ActionType.URI:
             fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
@@ -276,7 +277,8 @@ class Page:
                     print("Pympress can not find file "+media.get_filename())
                     return None
 
-            media = (rect.copy(), filename)
+            # TODO grab the show_controls, autoplay, repeat
+            media = (rect.copy(), filename, False)
             self.medias.append(media)
             return lambda: pympress.ui.UI.play_media(hash(media))
 
