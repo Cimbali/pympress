@@ -46,8 +46,11 @@ from gi.repository import Pango
 if os.name == 'nt':
     import winreg
 else:
-    gi.require_version('GdkX11', '3.0')
-    from gi.repository import GdkX11
+    try:
+        gi.require_version('GdkX11', '3.0')
+        from gi.repository import Gtk, Gdk, GObject, GdkX11
+    except:
+        pass
 
 #: "Regular" PDF file (without notes)
 PDF_REGULAR      = 0
