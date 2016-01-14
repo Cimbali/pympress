@@ -762,7 +762,9 @@ class UI:
             # sic - accelerator recognizes f not F
             elif name.upper() == "F11" or name == "F" \
                 or (name == "Return" and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
-                or (name.upper() == "L" and event.get_state() & Gdk.ModifierType.CONTROL_MASK):
+                or (name.upper() == "L" and event.get_state() & Gdk.ModifierType.CONTROL_MASK) \
+                or (name.upper() == "F5" and not self.fullscreen) \
+                or (name == "Escape" and self.fullscreen):
                 self.switch_fullscreen()
             elif name.upper() == "Q":
                 self.save_and_quit()
