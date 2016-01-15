@@ -27,6 +27,14 @@
     font-size: 32pt;
 }
 
+.time-warn {
+    animation: blinker 250ms cubic-bezier(.5, 0, 1, 1) infinite alternate;
+}
+@keyframes blinker {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 #MenuBar,
 #MenuBar GtkMenuItem {
     color: #eee;

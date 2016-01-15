@@ -95,6 +95,14 @@ class UI:
     editing_cur = False
     #: :class:`~Gtk.SpinButton` used to switch to another slide by typing its number.
     spin_cur = None
+    #: forward keystrokes to the Content window even if the window manager puts Presenter on top
+    editing_cur_ett = False
+    #: Estimated talk time :class:`~gtk.Label` for the talk.
+    label_ett = Gtk.Label()
+    #: :class:`~gtk.EventBox` associated with the estimated talk time.
+    eb_ett = Gtk.EventBox()
+    #: :class:`~gtk.Entry` used to set the estimated talk time.
+    entry_ett = Gtk.Entry()
 
     #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
     p_frame_next = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
@@ -110,6 +118,8 @@ class UI:
     start_time = 0
     #: Time elapsed since the beginning of the presentation.
     delta = 0
+    #: Estimated talk time.
+    estTime = 0
     #: Timer paused status.
     paused = True
 
@@ -140,11 +150,17 @@ class UI:
     #: track whether we blank the screen
     blanked = False
 
-    def __init__(self, docpath = None):
+    #: The default color of the info labels
+    label_font_color = None
+
+    def __init__(self, docpath = None, ett = 0):
         """
         :param docpath: the path to the document to open
         :type  docpath: string
+        :param ett: the estimated (intended) talk time
+        :type  ett: int
         """
+        self.estTime = ett
         self.config = pympress.util.load_config()
         self.blanked = self.config.getboolean('presenter', 'start_blanked')
 
@@ -377,7 +393,6 @@ class UI:
         self.eb_cur.add(self.hb_cur)
         self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
         self.spin_cur.set_alignment(0.5)
-        self.spin_cur.modify_font(Pango.FontDescription('32'))
 
         self.eb_cur.set_visible_window(False)
         self.eb_cur.connect("event", self.on_label_event)
@@ -401,7 +416,20 @@ class UI:
 
         #Bottom row
         hbox = Gtk.HBox(True, 5)
-        hbox.pack_start(Gtk.EventBox(), False, True, 0)
+        # Estimated talk time frame
+        self.label_ett.set_name("LEstTalkTime")
+        self.label_ett.get_style_context().add_class("info-label")
+        self.label_ett.set_text("%02d:%02d" % (int(self.estTime / 60), int(self.estTime % 60)))
+        self.label_font_color = self.label_ett.get_style_context().get_color(Gtk.StateType.NORMAL)
+        self.eb_ett.set_visible_window(False)
+        self.eb_ett.connect("event", self.on_label_ett_event)
+        self.eb_ett.add(self.label_ett)
+        self.entry_ett.set_alignment(1)
+        frame = Gtk.Frame()
+        frame.set_label("Time estimated")
+        frame.get_label_widget().get_style_context().add_class("frame-label")
+        frame.add(self.eb_ett)
+        hbox.pack_start(frame, False, True, 0)
      
         # "Time elapsed" frame
         frame = Gtk.Frame()
@@ -775,6 +803,9 @@ class UI:
             # send all to spinner if it is active to avoid key problems
             if self.editing_cur and self.spin_cur.on_keypress(widget, event):
                 return True
+            # send all to entry field if it is active to avoid key problems
+            if self.editing_cur_ett and self.on_label_ett_event(widget, event):
+                return True
 
             if name in ["Right", "Down", "Page_Down", "space"]:
                 self.doc.goto_next()
@@ -903,6 +934,9 @@ class UI:
             (type(event) == Gtk.Action) or # menu action
             (type(event) == Gdk.Event and event.type == Gdk.EventType.BUTTON_PRESS) # click
         ):
+            if self.editing_cur_ett:
+                self.restore_current_label_ett()
+
             if self.label_cur in self.hb_cur:
                 # Replace label with entry
                 self.hb_cur.remove(self.label_cur)
@@ -925,6 +959,72 @@ class UI:
         return True
 
 
+    def on_label_ett_event(self, widget, event):
+        """
+        Manage events on the current slide label/entry.
+
+        This function replaces the label with an entry when clicked, replaces
+        the entry with a label when needed, etc. The nasty stuff it does is an
+        ancient kind of dark magic that should be avoided as much as possible...
+
+        :param widget: the widget in which the event occured
+        :type  widget: :class:`gtk.Widget`
+        :param event: the event that occured
+        :type  event: :class:`gtk.gdk.Event`
+        """
+
+        widget = self.eb_ett.get_child()
+
+        # Click on the label
+        if widget is self.label_ett and event.type == Gdk.EventType.BUTTON_PRESS:
+            if self.editing_cur:
+                self.spin_cur.cancel()
+
+            # Set entry text
+            self.entry_ett.set_text("%02d:%02d" % (int(self.estTime / 60), int(self.estTime % 60)))
+            self.entry_ett.select_region(0, -1)
+
+            # Replace label with entry
+            self.eb_ett.remove(self.label_ett)
+            self.eb_ett.add(self.entry_ett)
+            self.entry_ett.show()
+            self.entry_ett.grab_focus()
+            self.editing_cur_ett = True
+
+        # Key pressed in the entry
+        elif widget is self.entry_ett and event.type == Gdk.EventType.KEY_PRESS:
+            name = Gdk.keyval_name(event.keyval)
+
+            # Return key --> restore label and goto page
+            if name == "Return" or name == "KP_Return":
+                text = self.entry_ett.get_text()
+                self.restore_current_label_ett()
+
+                try:
+                    t = text.split(':')
+                    m = int(t[0])
+                    s = 0
+                    if len(t) > 1:
+                        s = int(t[1])
+                except ValueError:
+                    print("Invalid time (mm:ss expected): {}".format(text))
+                    return False
+
+                self.estTime = m*60 + s;
+                self.label_ett.set_text("%02d:%02d" % (int(self.estTime / 60), int(self.estTime % 60)))
+                self.label_time.override_color(Gtk.StateType.NORMAL, self.label_font_color)
+                return True
+
+            # Escape key --> just restore the label
+            elif name == "Escape":
+                self.restore_current_label_ett()
+                return True
+
+        # Propagate the event further
+        return False
+
+
+
     def restore_current_label(self):
         """
         Make sure that the current page number is displayed in a label and not
@@ -936,6 +1036,20 @@ class UI:
             self.hb_cur.reorder_child(self.label_cur, 0)
 
         self.editing_cur = False
+
+
+
+    def restore_current_label_ett(self):
+        """
+        Make sure that the current page number is displayed in a label and not
+        in an entry. If it is an entry, then replace it with the label.
+        """
+        child = self.eb_ett.get_child()
+        if child is not self.label_ett:
+            self.eb_ett.remove(child)
+            self.eb_ett.add(self.label_ett)
+
+        self.editing_cur_ett = False
 
 
     def update_page_numbers(self):
@@ -968,6 +1082,42 @@ class UI:
 
         self.label_time.set_text(elapsed)
         self.label_clock.set_text(clock)
+
+        # Update color
+        if not self.estTime == 0:
+            color = None
+
+            offset = self.estTime - self.delta
+            if offset <= 300: # less than 5 minutes left
+                if offset >= 0:
+                    r = int(65535 - (133 * (300 - offset)))
+                    g  = int(65535 - (47 * (300 - offset)))
+                    color = Gdk.Color(r, g, r)
+                elif offset >= -150:
+                    r = int(25635 - (266 * offset))
+                    g = int(51435 - (94 * offset))
+                    b = int(25635 * (150 + offset) / 150)
+                    color = Gdk.Color(r, g, b)
+                elif offset >= -300:
+                    r = 65535
+                    g = int(65535 * (300 + offset) / 150)
+                    b = 0
+                    color = Gdk.Color(r, g, b)
+                else:
+                    color = Gdk.Color(65535, 0, 0)
+
+            if color:
+                self.label_time.modify_fg(Gtk.StateType.NORMAL, color)
+                
+            if (
+                (offset <= 0 and offset > -5) or
+                (offset <= -300 and offset > -310)
+            ):
+                self.label_time.get_style_context().add_class("time-warn")
+            else:
+                self.label_time.get_style_context().remove_class("time-warn")
+
+        # End update color
 
         return True
 
