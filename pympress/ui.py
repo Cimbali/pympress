@@ -635,7 +635,7 @@ class UI:
         about = Gtk.AboutDialog()
         about.set_program_name("pympress")
         about.set_version(pympress.__version__)
-        about.set_copyright("(c) 2009, 2010 Thomas Jost")
+        about.set_copyright("(c) 2009-2016 Thomas Jost, Cimbali, Christof Rath")
         about.set_comments("pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\nSome preferences are saved in "+pympress.util.path_to_config())
         about.set_website("http://www.pympress.org/")
         try:

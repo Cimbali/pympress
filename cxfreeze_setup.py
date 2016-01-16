@@ -35,7 +35,7 @@ if include_path is None:
     print("Can not find where the GTK libraries and Python bindings are installed!")
     exit(1)
 
-version="0.4"
+version="0.5"
 
 libs_etc = [
     'etc',

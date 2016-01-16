@@ -23,12 +23,12 @@
 from setuptools import setup
 import glob
 
-version="0.3"
+version="0.5"
 
 setup(name="pympress",
       version=version,
       description="A simple dual-screen PDF reader designed for presentations",
-      author="Thomas Jost, Cimbali",
+      author="Thomas Jost, Cimbali, Christof Rath",
       author_email="me@cimba.li",
       url="http://www.pympress.org/",
       download_url="https://github.com/Cimbali/pympress/releases/latest",
