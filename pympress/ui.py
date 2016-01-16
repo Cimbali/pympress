@@ -305,9 +305,8 @@ class UI:
         self.p_da_next.connect("draw", self.on_draw)
         self.p_da_next.connect("configure-event", self.on_configure_da)
 
-        self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
+        self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK)
         self.p_win.connect("key-press-event", self.on_navigation)
-        self.p_win.connect("scroll-event", self.on_navigation)
         self.p_win.connect("window-state-event", self.track_pwin_maximized)
 
         self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
