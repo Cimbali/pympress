@@ -139,6 +139,8 @@ class Page:
     pw = 0.
     #: Page height as a float
     ph = 0.
+    #: All text annotations
+    annot = []
 
     def __init__(self, page, number, parent):
         """
@@ -152,19 +154,20 @@ class Page:
         self.page = page
         self.page_nb = number
         self.parent = parent
+        self.links = []
+        self.medias = []
+        self.annot = []
 
         # Read page size
         self.pw, self.ph = self.page.get_size()
 
         # Read links on the page
-        self.links = []
         for link in self.page.get_link_mapping():
             action = self.get_link_action(link.action.type, link.action)
             my_link = Link(link.area.x1, link.area.y1, link.area.x2, link.area.y2, action)
             self.links.append(my_link)
 
         # Read annotations, in particular those that indicate media
-        self.medias = []
         for annotation in self.page.get_annot_mapping():
             annot_type = annotation.annot.get_annot_type()
             if annot_type == Poppler.AnnotType.LINK:
@@ -186,6 +189,14 @@ class Page:
                 action = self.get_annot_action(actionObj.any.type, actionObj, annotation.area)
                 if not action:
                     continue
+            elif annot_type == Poppler.AnnotType.TEXT:
+                self.annot.append(annotation.annot.get_contents())
+                self.page.remove_annot(annotation.annot)
+                continue
+            else:
+                print("Pympress can not interpret annotation of type: {} ".format(annot_type))
+                continue
+
             my_annotation = Link(annotation.area.x1, annotation.area.y1, annotation.area.x2, annotation.area.y2, action)
             self.links.append(my_annotation)
 

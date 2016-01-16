@@ -7,6 +7,14 @@
 #PresenterWindow GtkFrame {
 }
 
+#PresenterWindow GtkListBox {
+    background-color: transparent;
+}
+
+#PresenterWindow GtkListBox GtkLabel {
+    font-size: 130%;
+}
+
 #PresenterWindow GtkEntry {
 	font-size: 32pt;
 }

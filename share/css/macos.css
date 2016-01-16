@@ -11,6 +11,16 @@
     border-style: none;
 }
 
+#PresenterWindow GtkListBox {
+    border-style: none;
+    background-color: transparent;
+}
+
+#PresenterWindow GtkListBox GtkLabel {
+    color: #aaa;
+    font-size: 130%;
+}
+
 #PresenterWindow GtkEntry {
 	font-size: 22pt;
 }

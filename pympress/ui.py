@@ -152,6 +152,12 @@ class UI:
 
     #: The default color of the info labels
     label_font_color = None
+    
+    #: The annotations label
+    list_annot = Gtk.ListBox()
+    #: And its surrounding window
+    scrolled_window = Gtk.ScrolledWindow()
+
 
     def __init__(self, docpath = None, ett = 0):
         """
@@ -287,7 +293,7 @@ class UI:
         pane_size = self.config.getfloat('presenter', 'slide_ratio')
         avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
         hpaned.set_position(int(round(pane_size * avail_size)))
-        self.update_page_numbers()
+        self.on_page_change(False)
 
 
     def add_events(self):
@@ -355,10 +361,10 @@ class UI:
 
         return hpaned
 
+
     def make_pright(self):
         vbox = Gtk.VBox(False, 20)
         vbox.set_margin_left(5)
-        
         
         # "Next slide" frame
         self.p_frame_next.set_label("Next slide")
@@ -371,6 +377,17 @@ class UI:
         self.p_frame_next.add(self.p_da_next)
         
         vbox.pack_start(self.p_frame_next, True, True, 0)
+
+        
+        # Annotations label
+        self.list_annot.set_name("LAnnotations")
+        self.list_annot.set_selection_mode(Gtk.SelectionMode.NONE)
+
+        self.scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.scrolled_window.add_with_viewport(self.list_annot)
+        self.scrolled_window.set_min_content_height(100)
+
+        vbox.pack_start(self.scrolled_window, False, True, 0)
 
 
         #Top row
@@ -523,6 +540,26 @@ class UI:
         return ui_manager.get_widget('/MenuBar')
 
 
+    def add_annotations(self):
+        row = self.list_annot.get_row_at_index(0)
+        while row:
+            row.destroy()
+            row = self.list_annot.get_row_at_index(0)
+        
+        for annot in self.doc.current_page().annot:
+            row = Gtk.ListBoxRow()
+            hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
+            row.add(hbox)
+            l_ann = Gtk.Label(annot, xalign=0)
+            l_ann.set_line_wrap(True)
+            hbox.pack_start(Gtk.Label("•", xalign=0, yalign=0), False, True, 0)
+            hbox.pack_start(l_ann, True, True, 0)
+            self.list_annot.add(row)
+            hbox.show()
+        
+        self.list_annot.show_all()
+
+
     def run(self):
         """Run the GTK main loop."""
         Gtk.main()
@@ -643,6 +680,8 @@ class UI:
         """
         page_cur = self.doc.current_page()
         page_next = self.doc.next_page()
+        
+        self.add_annotations()
 
         # Page change: resynchronize miniatures
         self.page_preview_nb = page_cur.number()
@@ -1023,6 +1062,28 @@ class UI:
         return False
 
 
+    def on_resize_annotation_list(self, widget = None, scrolltype = None):
+        if len(self.doc.current_page().annot) == 0:
+            self.scrolled_window.set_min_content_height(0)
+            return
+
+        h_min = 60
+        w_da = self.p_da_next.get_allocated_width()
+        w_f = self.p_frame_next.get_allocated_width()
+        d = w_f - w_da
+        if d > 5:
+            # Shrink Annotations
+            h = self.scrolled_window.get_allocated_height() - (d / 4 * 3)
+            self.scrolled_window.set_min_content_height(max(h_min, h))
+            return
+
+        h_ann = self.scrolled_window.get_allocated_height()
+        h_da = self.p_da_next.get_allocated_height()
+        h_fnext = self.p_frame_next.get_allocated_height()
+        h = h_ann + h_fnext - h_da - 20
+
+        self.scrolled_window.set_min_content_height(h)
+
 
     def restore_current_label(self):
         """
@@ -1117,6 +1178,7 @@ class UI:
                 self.label_time.get_style_context().remove_class("time-warn")
 
         # End update color
+        self.on_resize_annotation_list()
 
         return True
 
