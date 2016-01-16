@@ -38,10 +38,7 @@ import pkg_resources
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import GObject
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import Pango
+from gi.repository import GObject, Gtk, Gdk, Pango
 
 if os.name == 'nt':
     import winreg
@@ -85,7 +82,7 @@ class UI:
     #: Presentation window, as a :class:`Gtk.Window` instance.
     p_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
     #: :class:`~Gtk.AspectFrame` for the current slide in the Presenter window.
-    p_frame_cur = Gtk.AspectFrame(yalign=0.5, ratio=4./3., obey_child=False)
+    p_frame_cur = Gtk.AspectFrame(xalign=0, yalign=0, ratio=4./3., obey_child=False)
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
     p_da_cur = Gtk.DrawingArea()
     #: Slide counter :class:`~Gtk.Label` for the current slide.
@@ -100,7 +97,7 @@ class UI:
     spin_cur = None
 
     #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
-    p_frame_next = Gtk.AspectFrame(yalign=0.25, ratio=4./3., obey_child=False)
+    p_frame_next = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
     #: :class:`~Gtk.DrawingArea` for the next slide in the Presenter window.
     p_da_next = Gtk.DrawingArea()
 
@@ -151,6 +148,12 @@ class UI:
         self.config = pympress.util.load_config()
         self.blanked = self.config.getboolean('presenter', 'start_blanked')
 
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(), 
+            pympress.util.get_style_provider(),
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+        
         # Document
         self.doc = pympress.document.Document.create(self.on_page_change, docpath or self.pick_file())
 
@@ -195,8 +198,9 @@ class UI:
         black = Gdk.Color(0, 0, 0)
 
         # Content window
+        self.c_win.set_name('ContentWindow')
         self.c_win.set_title("pympress content")
-        self.c_win.set_default_size(800, 600)
+        self.c_win.set_default_size(1067, 600)
         self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
         self.c_win.add(self.c_frame)
 
@@ -227,8 +231,9 @@ class UI:
         """Creates and initializes the presenter window
         """
         # Presenter window
+        self.p_win.set_name('PresenterWindow')
         self.p_win.set_title("pympress presenter")
-        self.p_win.set_default_size(800, 600)
+        self.p_win.set_default_size(1067, 600)
         self.p_win.set_position(Gtk.WindowPosition.CENTER)
 
         # Guess window positions from screens
@@ -259,10 +264,6 @@ class UI:
         hpaned = self.make_pwin_panes()
         bigvbox.pack_start(hpaned, True, True, 0)
 
-        # bottom
-        hbox = self.make_bottom()
-        bigvbox.pack_end(hbox, False, False, 5)
-
         # Set relative pane sizes
         # dynamic computation requires to have p_win already visible
         self.p_win.show_all()
@@ -270,6 +271,7 @@ class UI:
         pane_size = self.config.getfloat('presenter', 'slide_ratio')
         avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
         hpaned.set_position(int(round(pane_size * avail_size)))
+        self.update_page_numbers()
 
 
     def add_events(self):
@@ -323,6 +325,8 @@ class UI:
 
         # "Current slide" frame
         self.p_frame_cur.set_label("Current slide")
+        self.p_frame_cur.get_label_widget().get_style_context().add_class("frame-label")
+        self.p_frame_cur.set_margin_right(5)
         hpaned.pack1(self.p_frame_cur, True, True)
         self.p_da_cur.set_name("p_da_cur")
         if self.notes_mode:
@@ -331,18 +335,88 @@ class UI:
             self.cache.add_widget("p_da_cur", PDF_REGULAR)
         self.p_frame_cur.add(self.p_da_cur)
 
+        pright = self.make_pright()
+        hpaned.pack2(pright, True, True)
+
+        return hpaned
+
+    def make_pright(self):
+        vbox = Gtk.VBox(False, 20)
+        vbox.set_margin_left(5)
+        
+        
         # "Next slide" frame
-        hpaned.pack2(self.p_frame_next, True, True)
         self.p_frame_next.set_label("Next slide")
+        self.p_frame_next.get_label_widget().get_style_context().add_class("frame-label")
         self.p_da_next.set_name("p_da_next")
         if self.notes_mode:
             self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
         else:
             self.cache.add_widget("p_da_next", PDF_REGULAR)
         self.p_frame_next.add(self.p_da_next)
+        
+        vbox.pack_start(self.p_frame_next, True, True, 0)
 
-        return hpaned
 
+        #Top row
+        hbox = Gtk.HBox(True, 5)
+        # "Current slide" label and entry. eb_cur gets all events on the whole,
+        # label_cur may be replaced by spin_cur at times, last_cur doesn't move
+        self.label_cur.set_name("LSlideCur")
+        self.label_cur.get_style_context().add_class("info-label")
+        self.label_cur.props.halign = Gtk.Align.END
+        self.label_cur.set_use_markup(True)
+        self.label_last.set_name("LSlideLast")
+        self.label_last.get_style_context().add_class("info-label")
+        self.label_last.props.halign = Gtk.Align.START
+        self.label_last.set_text("/{}".format(self.doc.pages_number()))
+        
+        self.hb_cur=Gtk.HBox()
+        self.hb_cur.pack_start(self.label_cur, True, True, 0)
+        self.hb_cur.pack_start(self.label_last, True, True, 0)
+        self.eb_cur.add(self.hb_cur)
+        self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
+        self.spin_cur.set_alignment(0.5)
+        self.spin_cur.modify_font(Pango.FontDescription('32'))
+
+        self.eb_cur.set_visible_window(False)
+        self.eb_cur.connect("event", self.on_label_event)
+        frame = Gtk.Frame()
+        frame.set_label("Slide number")
+        frame.get_label_widget().get_style_context().add_class("frame-label")
+        frame.add(self.eb_cur)
+        hbox.pack_start(frame, True, True, 0)
+
+        # "Clock" frame
+        frame = Gtk.Frame()
+        frame.set_label("Clock")
+        frame.get_label_widget().get_style_context().add_class("frame-label")
+        frame.add(self.label_clock)
+        self.label_clock.set_name("LClock")
+        self.label_clock.get_style_context().add_class("info-label")
+        hbox.pack_start(frame, True, True, 0)
+
+        vbox.pack_start(hbox, False, True, 0)
+        
+
+        #Bottom row
+        hbox = Gtk.HBox(True, 5)
+        hbox.pack_start(Gtk.EventBox(), False, True, 0)
+     
+        # "Time elapsed" frame
+        frame = Gtk.Frame()
+        frame.set_label("Time elapsed")
+        frame.get_label_widget().get_style_context().add_class("frame-label")
+        self.label_time.set_name("LTimeElapsed")
+        self.label_time.get_style_context().add_class("info-label")
+        frame.add(self.label_time)
+        hbox.pack_start(frame, False, True, 0)
+
+
+        vbox.pack_start(hbox, False, True, 0)
+        
+        return vbox
+        
 
     def make_menubar(self):
         """Creates and initializes the menu bar
@@ -420,55 +494,6 @@ class UI:
         h = ui_manager.get_widget('/MenuBar/Help')
         h.set_right_justified(True)
         return ui_manager.get_widget('/MenuBar')
-
-
-    def make_bottom(self):
-        """Creates and initializes the widgets with page/time info at the bottom of the presenter window
-
-        :return: a box widget containing all the info widgets to put at the page bottom
-        :rtype: :class:`Gtk.HBpx`
-        """
-        hbox = Gtk.HBox()
-
-        # "Current slide" label and entry. eb_cur gets all events on the whole,
-        # label_cur may be replaced by spin_cur at times, last_cur doesn't move
-        self.label_cur.props.halign = Gtk.Align.END
-        self.label_cur.set_use_markup(True)
-        self.label_last.props.halign = Gtk.Align.START
-        self.label_last.set_use_markup(True)
-        self.hb_cur=Gtk.HBox()
-        self.hb_cur.pack_start(self.label_cur, True, True, 0)
-        self.hb_cur.pack_start(self.label_last, True, True, 0)
-        self.eb_cur.add(self.hb_cur)
-        self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
-        self.spin_cur.set_alignment(0.5)
-        self.spin_cur.modify_font(Pango.FontDescription('36'))
-
-        self.eb_cur.set_visible_window(False)
-        self.eb_cur.connect("event", self.on_label_event)
-        frame = Gtk.Frame()
-        frame.set_label("Slide number")
-        frame.add(self.eb_cur)
-        hbox.pack_start(frame, True, True, 5)
-
-        # "Time elapsed" frame
-        frame = Gtk.Frame()
-        frame.set_label("Time elapsed")
-        hbox.pack_start(frame, True, True, 0)
-        frame.add(self.label_time)
-        self.label_time.set_use_markup(True)
-        self.label_time.set_justify(Gtk.Justification.CENTER)
-        self.label_time.set_width_chars(44) # close enough to 13 characters at font size 36
-
-        # "Clock" frame
-        frame = Gtk.Frame()
-        frame.set_label("Clock")
-        hbox.pack_end(frame, True, True, 5)
-        frame.add(self.label_clock)
-        self.label_clock.set_justify(Gtk.Justification.CENTER)
-        self.label_clock.set_use_markup(True)
-
-        return hbox
 
 
     def run(self):
@@ -916,14 +941,10 @@ class UI:
     def update_page_numbers(self):
         """Update the displayed page numbers."""
 
-        text = "<span font='36'>{}</span>"
-
         cur_nb = self.doc.current_page().number()
         cur = str(cur_nb+1)
-        last = "/{}".format(self.doc.pages_number())
 
-        self.label_cur.set_markup(text.format(cur))
-        self.label_last.set_markup(text.format(last))
+        self.label_cur.set_text(cur)
         self.restore_current_label()
 
 
@@ -936,17 +957,17 @@ class UI:
         """
 
         # Current time
-        clock = time.strftime("%H:%M:%S")
+        clock = time.strftime("%H:%M") #"%H:%M:%S"
 
         # Time elapsed since the beginning of the presentation
         if not self.paused:
             self.delta = time.time() - self.start_time
         elapsed = "{:02}:{:02}".format(int(self.delta/60), int(self.delta%60))
         if self.paused:
-            elapsed += " (pause)"
+            elapsed += " (p)"
 
-        self.label_time.set_markup("<span font='36'>{}</span>".format(elapsed))
-        self.label_clock.set_markup("<span font='24'>{}</span>".format(clock))
+        self.label_time.set_text(elapsed)
+        self.label_clock.set_text(clock)
 
         return True
 

@@ -1,0 +1,26 @@
+#PresenterWindow {
+}
+
+#PresenterWindow GtkPaned .pane-separator {
+}
+
+#PresenterWindow GtkFrame {
+}
+
+#PresenterWindow GtkEntry {
+	font-size: 32pt;
+}
+
+.frame-label {
+}
+
+.info-label {
+    opacity: 1;
+    font-size: 32pt;
+}
+
+#MenuBar,
+#MenuBar * {
+}
+#MenuBar *:hover {
+}

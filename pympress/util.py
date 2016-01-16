@@ -26,8 +26,7 @@ from __future__ import print_function
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
-from gi.repository import GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf
 import pkg_resources
 import os, os.path, sys
 
@@ -35,6 +34,23 @@ try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
+
+def get_style_provider():
+    if sys.platform == "darwin":
+        # MAC OS X
+        name = "macos.css"
+    else:
+        name = "default.css"
+
+    if getattr(sys, 'frozen', False):
+        css_fn = os.path.join(os.path.dirname(sys.executable), "share", "css", name)
+    else:
+        req = pkg_resources.Requirement.parse("pympress")
+        css_fn = pkg_resources.resource_filename(req, os.path.join("share", "css", name))
+
+    style_provider = Gtk.CssProvider()
+    style_provider.load_from_path(css_fn)
+    return style_provider
 
 def get_icon_pixbuf(name):
     if getattr(sys, 'frozen', False):
