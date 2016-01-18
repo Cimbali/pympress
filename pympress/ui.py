@@ -60,7 +60,12 @@ import pympress.document
 import pympress.surfacecache
 import pympress.util
 import pympress.slideselector
-import pympress.vlcvideo
+try:
+    import pympress.vlcvideo
+    vlc_enabled = True
+except:
+    vlc_enabled = False
+
 
 media_overlays = {}
 
@@ -727,7 +732,7 @@ class UI:
         for rect, filename, show_controls in page_cur.get_media():
             media_id = hash((rect, filename, show_controls))
             global media_overlays
-            if media_id not in media_overlays:
+            if media_id not in media_overlays and vlc_enabled:
                 v_da = pympress.vlcvideo.VLCVideo(self.c_overlay, show_controls)
                 v_da.set_file(filename)
 
