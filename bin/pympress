@@ -22,6 +22,7 @@
 import os.path
 import sys
 import getopt
+import signal
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -38,6 +39,7 @@ def usage():
     print
 
 def main(argv):
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     try:
         opts, args = getopt.getopt(argv, "ht:", ["help", "talk-time="])
     except getopt.GetoptError:
