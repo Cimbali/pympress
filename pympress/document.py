@@ -39,6 +39,7 @@ import shutil
 import subprocess
 import tempfile
 import mimetypes
+import webbrowser
 
 import gi
 gi.require_version('Poppler', '0.18')
@@ -255,7 +256,7 @@ class Page:
         elif link_type == Poppler.ActionType.MOVIE: # Poppler 0.20
             fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
         elif link_type == Poppler.ActionType.URI:
-            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+            fun = lambda: webbrowser.open_new_tab(action.uri.uri)
         elif link_type == Poppler.ActionType.GOTO_REMOTE:
             fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
         elif link_type == Poppler.ActionType.OCG_STATE:
