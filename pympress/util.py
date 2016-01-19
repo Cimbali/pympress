@@ -121,20 +121,26 @@ def load_config():
     if not config.has_option('content', 'xalign'):
         config.set('content', 'xalign', '0.50')
 
+    if not config.has_option('content', 'yalign'):
+        config.set('content', 'yalign', '0.50')
+
     if not config.has_option('content', 'monitor'):
         config.set('content', 'monitor', '0')
 
-    if not config.has_option('content', 'yalign'):
-        config.set('content', 'yalign', '0.50')
+    if not config.has_option('content', 'start_blanked'):
+        config.set('content', 'start_blanked', 'off')
+
+    if not config.has_option('content', 'start_fullscreen'):
+        config.set('content', 'start_fullscreen', 'on')
 
     if not config.has_option('presenter', 'slide_ratio'):
         config.set('presenter', 'slide_ratio', '0.75')
 
-    if not config.has_option('presenter', 'start_blanked'):
-        config.set('presenter', 'start_blanked', 'off')
-
     if not config.has_option('presenter', 'monitor'):
         config.set('presenter', 'monitor', '1')
+
+    if not config.has_option('presenter', 'start_fullscreen'):
+        config.set('presenter', 'start_fullscreen', 'off')
 
     return config
 

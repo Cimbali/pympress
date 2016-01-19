@@ -128,8 +128,8 @@ class UI:
     #: Timer paused status.
     paused = True
 
-    #: Fullscreen toggle. By default, start in fullscreen mode.
-    c_win_fullscreen = True
+    #: Fullscreen toggle. By config value, start in fullscreen mode.
+    c_win_fullscreen = False
 
     #: Current :class:`~pympress.document.Document` instance.
     doc = None
@@ -173,7 +173,7 @@ class UI:
         """
         self.estTime = ett
         self.config = pympress.util.load_config()
-        self.blanked = self.config.getboolean('presenter', 'start_blanked')
+        self.blanked = self.config.getboolean('content', 'start_blanked')
 
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(),
@@ -275,11 +275,15 @@ class UI:
 
             p_bounds = screen.get_monitor_geometry(p_monitor)
             self.p_win.move(p_bounds.x, p_bounds.y)
-            self.p_win.maximize()
+            if self.config.getboolean('presenter', 'start_fullscreen'):
+                self.p_win.fullscreen()
+            else:
+                self.p_win.maximize()
 
             c_bounds = screen.get_monitor_geometry(c_monitor)
             self.c_win.move(c_bounds.x, c_bounds.y)
-            self.c_win.fullscreen()
+            if self.config.getboolean('content', 'start_fullscreen'):
+                self.c_win.fullscreen()
 
         # Put Menu and Table in VBox
         bigvbox = Gtk.VBox(False, 2)
@@ -492,7 +496,9 @@ class UI:
             <menuitem action="Swap screens"/>
             <menuitem action="Notes mode"/>
             <menuitem action="Blank screen"/>
-            <menuitem action="Start blanked"/>
+            <menuitem action="Start content blanked"/>
+            <menuitem action="Start content fullscreen"/>
+            <menuitem action="Start presenter fullscreen"/>
             <menuitem action="Adjust screen"/>
           </menu>
           <menu action="Navigation">
@@ -535,10 +541,12 @@ class UI:
         ])
         action_group.add_toggle_actions([
             ("Pause timer",  None,           "_Pause timer", "p",     None, self.switch_pause,         True),
-            ("Fullscreen",   None,           "_Fullscreen",  "f",     None, self.switch_fullscreen,    self.c_win_fullscreen),
+            ("Fullscreen",   None,           "_Fullscreen",  "f",     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
             ("Notes mode",   None,           "_Note mode",   "n",     None, self.switch_mode,          self.notes_mode),
             ("Blank screen", None,           "_Blank screen","b",     None, self.switch_blanked,       self.blanked),
-            ("Start blanked",None,           "_Start blanked",None,   None, self.switch_start_blanked, self.blanked),
+            ("Start content blanked",      None, "_Start content blanked",     None, None, self.switch_start_blanked,    self.blanked),
+            ("Start content fullscreen",   None, "Start content fullscreen",   None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
+            ("Start presenter fullscreen", None, "Start presenter fullscreen", None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -868,7 +876,9 @@ class UI:
                 or (name.upper() == "L" and ctrl_pressed) \
                 or (name.upper() == "F5" and not self.c_win_fullscreen) \
                 or (name == "Escape" and self.c_win_fullscreen):
-                self.switch_fullscreen()
+                self.switch_fullscreen(self.c_win)
+            elif name.upper() == "F" and ctrl_pressed:
+                self.switch_fullscreen(self.p_win)
             elif name.upper() == "Q":
                 self.save_and_quit()
             elif name == "Pause":
@@ -887,7 +897,10 @@ class UI:
                 elif name.upper() == "S":
                     self.swap_screens()
                 elif name.upper() == "F":
-                    self.switch_fullscreen()
+                    if ctrl_pressed:
+                        self.switch_fullscreen(self.p_win)
+                    else:
+                        self.switch_fullscreen(self.c_win)
                 elif name.upper() == "G":
                     self.on_label_event(self.eb_cur, True)
                 elif name.upper() == "B":
@@ -1292,10 +1305,22 @@ class UI:
         Screensaver will be disabled when entering fullscreen mode, and enabled
         when leaving fullscreen mode.
         """
-        if self.c_win_fullscreen:
-            self.c_win.unfullscreen()
+        if isinstance(widget, Gtk.Action):
+            # Called from menu -> use c_win
+            widget = self.c_win
+            fullscreen = self.c_win_fullscreen
+        elif widget == self.c_win:
+            fullscreen = self.c_win_fullscreen
+        elif widget == self.p_win:
+            fullscreen = self.p_win_fullscreen
         else:
-            self.c_win.fullscreen()
+            print ("Unknow widget " + str(widget) + " to be fullscreened, aborting.", file=sys.stderr)
+            return
+
+        if fullscreen:
+            widget.unfullscreen()
+        else:
+            widget.fullscreen()
 
 
     def on_window_state_event(self, widget, event, user_data=None):
@@ -1404,10 +1429,25 @@ class UI:
         """
         Switch the blanked mode of the main screen
         """
-        if self.config.getboolean('presenter', 'start_blanked'):
-            self.config.set('presenter', 'start_blanked', 'off')
+        if self.config.getboolean('content', 'start_blanked'):
+            self.config.set('content', 'start_blanked', 'off')
         else:
-            self.config.set('presenter', 'start_blanked', 'on')
+            self.config.set('content', 'start_blanked', 'on')
+
+
+    def switch_start_fullscreen(self, widget=None):
+        """
+        Switch the blanked mode of the main screen
+        """
+        if widget.get_name() == 'Start content fullscreen':
+            target = 'content'
+        else:
+            target = 'presenter'
+
+        if self.config.getboolean(target, 'start_fullscreen'):
+            self.config.set(target, 'start_fullscreen', 'off')
+        else:
+            self.config.set(target, 'start_fullscreen', 'on')
 
 
     def switch_mode(self, widget=None, event=None):
