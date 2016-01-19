@@ -263,12 +263,15 @@ class UI:
         self.p_win.set_default_size(1067, 600)
         self.p_win.set_position(Gtk.WindowPosition.CENTER)
 
-        # Guess window positions from screens
+        # If multiple monitors, apply windows to monitors according to config
         screen = self.p_win.get_screen()
         if screen.get_n_monitors() > 1:
-            cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
-            c_monitor = screen.get_monitor_at_point(cx + cw / 2, cy + ch / 2)
-            p_monitor = 0 if c_monitor > 0 else 1
+            c_monitor = self.config.getint('content', 'monitor')
+            p_monitor = self.config.getint('presenter', 'monitor')
+            if c_monitor == p_monitor:
+                print("Warning: Content and presenter window must not be on the same monitor!", file=sys.stderr)
+                p_monitor = 0 if c_monitor > 0 else 1
+                self.config.set('presenter', 'monitor', str(p_monitor))
 
             p_bounds = screen.get_monitor_geometry(p_monitor)
             self.p_win.move(p_bounds.x, p_bounds.y)
@@ -1354,14 +1357,13 @@ class UI:
         if screen.get_n_monitors() > 1:
             cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
             px, py, pw, ph = self.p_win.get_position() + self.p_win.get_size()
-            p_monitor = screen.get_monitor_at_point(px + pw / 2, py + ph / 2)
-            c_monitor = screen.get_monitor_at_point(cx + cw / 2, cy + ch / 2)
-
-            if p_monitor == c_monitor:
-                return
+            c_monitor = self.config.getint('content', 'monitor')
+            p_monitor = self.config.getint('presenter', 'monitor')
 
             p_monitor, c_monitor = (c_monitor, p_monitor)
 
+            self.config.set('presenter', 'monitor', str(p_monitor))
+            self.config.set('content', 'monitor', str(c_monitor))
             p_bounds = screen.get_monitor_geometry(p_monitor)
             if self.p_win_maximized:
                 self.p_win.unmaximize()
