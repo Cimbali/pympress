@@ -29,7 +29,7 @@ Both windows are managed by the :class:`~pympress.ui.UI` class.
 
 from __future__ import print_function
 
-import os, os.path
+import os, os.path, subprocess
 import sys
 import time
 
@@ -1219,7 +1219,18 @@ class UI:
            disabled; otherwise it will be enabled
         :type  must_disable: boolean
         """
-        if os.name == 'posix':
+        if sys.platform == "darwin":
+            # On Mac OS X we can use caffeinate to prevent the display from sleeping
+            if must_disable:
+                if self.dpms_was_enabled == None or self.dpms_was_enabled.poll():
+                    self.dpms_was_enabled = subprocess.Popen(['caffeinate', '-d', '-w', str(os.getpid())])
+            else:
+                if self.dpms_was_enabled and not self.dpms_was_enabled.poll():
+                    self.dpms_was_enabled.kill()
+                    self.dpms_was_enabled.poll()
+                    self.dpms_was_enabled = None
+
+        elif os.name == 'posix':
             # On Linux, set screensaver with xdg-screensaver
             # (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
             cmd = "suspend" if must_disable else "resume"
