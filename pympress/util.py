@@ -121,6 +121,9 @@ def load_config():
     if not config.has_option('content', 'xalign'):
         config.set('content', 'xalign', '0.50')
 
+    if not config.has_option('content', 'monitor'):
+        config.set('content', 'monitor', '0')
+
     if not config.has_option('content', 'yalign'):
         config.set('content', 'yalign', '0.50')
 
@@ -129,6 +132,9 @@ def load_config():
 
     if not config.has_option('presenter', 'start_blanked'):
         config.set('presenter', 'start_blanked', 'off')
+
+    if not config.has_option('presenter', 'monitor'):
+        config.set('presenter', 'monitor', '1')
 
     return config
 

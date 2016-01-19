@@ -128,8 +128,8 @@ class UI:
     #: Timer paused status.
     paused = True
 
-    #: Fullscreen toggle. By default, don't start in fullscreen mode.
-    fullscreen = False
+    #: Fullscreen toggle. By default, start in fullscreen mode.
+    c_win_fullscreen = True
 
     #: Current :class:`~pympress.document.Document` instance.
     doc = None
@@ -157,7 +157,7 @@ class UI:
 
     #: The default color of the info labels
     label_font_color = None
-    
+
     #: The annotations label
     list_annot = Gtk.ListBox()
     #: And its surrounding window
@@ -176,11 +176,11 @@ class UI:
         self.blanked = self.config.getboolean('presenter', 'start_blanked')
 
         Gtk.StyleContext.add_provider_for_screen(
-            Gdk.Screen.get_default(), 
+            Gdk.Screen.get_default(),
             pympress.util.get_style_provider(),
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
-        
+
         # Document
         self.doc = pympress.document.Document.create(self.on_page_change, docpath or self.pick_file())
 
@@ -280,7 +280,6 @@ class UI:
             c_bounds = screen.get_monitor_geometry(c_monitor)
             self.c_win.move(c_bounds.x, c_bounds.y)
             self.c_win.fullscreen()
-            self.fullscreen = True
 
         # Put Menu and Table in VBox
         bigvbox = Gtk.VBox(False, 2)
@@ -321,7 +320,8 @@ class UI:
 
         self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK)
         self.p_win.connect("key-press-event", self.on_navigation)
-        self.p_win.connect("window-state-event", self.track_pwin_maximized)
+        self.c_win.connect("window-state-event", self.on_window_state_event)
+        self.p_win.connect("window-state-event", self.on_window_state_event)
 
         self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
         self.c_win.connect("key-press-event", self.on_navigation)
@@ -373,7 +373,7 @@ class UI:
     def make_pright(self):
         vbox = Gtk.VBox(False, 20)
         vbox.set_margin_left(5)
-        
+
         # "Next slide" frame
         self.p_frame_next.set_label("Next slide")
         self.p_frame_next.get_label_widget().get_style_context().add_class("frame-label")
@@ -383,10 +383,10 @@ class UI:
         else:
             self.cache.add_widget("p_da_next", PDF_REGULAR)
         self.p_frame_next.add(self.p_da_next)
-        
+
         vbox.pack_start(self.p_frame_next, True, True, 0)
 
-        
+
         # Annotations label
         self.list_annot.set_name("LAnnotations")
         self.list_annot.set_selection_mode(Gtk.SelectionMode.NONE)
@@ -410,7 +410,7 @@ class UI:
         self.label_last.get_style_context().add_class("info-label")
         self.label_last.props.halign = Gtk.Align.START
         self.label_last.set_text("/{}".format(self.doc.pages_number()))
-        
+
         self.hb_cur=Gtk.HBox()
         self.hb_cur.pack_start(self.label_cur, True, True, 0)
         self.hb_cur.pack_start(self.label_last, True, True, 0)
@@ -436,7 +436,7 @@ class UI:
         hbox.pack_start(frame, True, True, 0)
 
         vbox.pack_start(hbox, False, True, 0)
-        
+
 
         #Bottom row
         hbox = Gtk.HBox(True, 5)
@@ -454,7 +454,7 @@ class UI:
         frame.get_label_widget().get_style_context().add_class("frame-label")
         frame.add(self.eb_ett)
         hbox.pack_start(frame, False, True, 0)
-     
+
         # "Time elapsed" frame
         frame = Gtk.Frame()
         frame.set_label("Time elapsed")
@@ -466,9 +466,9 @@ class UI:
 
 
         vbox.pack_start(hbox, False, True, 0)
-        
+
         return vbox
-        
+
 
     def make_menubar(self):
         """Creates and initializes the menu bar
@@ -534,11 +534,11 @@ class UI:
             ("Go to...",     None,           "_Go to...",    "g",     None, self.on_label_event),
         ])
         action_group.add_toggle_actions([
-            ("Pause timer",  None,           "_Pause timer", "p",     None, self.switch_pause,      True),
-            ("Fullscreen",   None,           "_Fullscreen",  "f",     None, self.switch_fullscreen, self.fullscreen),
-            ("Notes mode",   None,           "_Note mode",   "n",     None, self.switch_mode,       self.notes_mode),
-            ("Blank screen", None,           "_Blank screen","b",     None, self.switch_blanked,    self.blanked),
-            ("Start blanked",None,           "_Start blanked",None,   None, self.switch_start_blanked,    self.blanked),
+            ("Pause timer",  None,           "_Pause timer", "p",     None, self.switch_pause,         True),
+            ("Fullscreen",   None,           "_Fullscreen",  "f",     None, self.switch_fullscreen,    self.c_win_fullscreen),
+            ("Notes mode",   None,           "_Note mode",   "n",     None, self.switch_mode,          self.notes_mode),
+            ("Blank screen", None,           "_Blank screen","b",     None, self.switch_blanked,       self.blanked),
+            ("Start blanked",None,           "_Start blanked",None,   None, self.switch_start_blanked, self.blanked),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -553,7 +553,7 @@ class UI:
         while row:
             row.destroy()
             row = self.list_annot.get_row_at_index(0)
-        
+
         for annot in self.doc.current_page().annot:
             row = Gtk.ListBoxRow()
             hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
@@ -564,7 +564,7 @@ class UI:
             hbox.pack_start(l_ann, True, True, 0)
             self.list_annot.add(row)
             hbox.show()
-        
+
         self.list_annot.show_all()
 
 
@@ -688,7 +688,7 @@ class UI:
         """
         page_cur = self.doc.current_page()
         page_next = self.doc.next_page()
-        
+
         self.add_annotations()
 
         # Page change: resynchronize miniatures
@@ -845,6 +845,7 @@ class UI:
         """
         if event.type == Gdk.EventType.KEY_PRESS:
             name = Gdk.keyval_name(event.keyval)
+            ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
 
             # send all to spinner if it is active to avoid key problems
             if self.editing_cur and self.spin_cur.on_keypress(widget, event):
@@ -864,9 +865,9 @@ class UI:
             # sic - accelerator recognizes f not F
             elif name.upper() == "F11" or name == "F" \
                 or (name == "Return" and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
-                or (name.upper() == "L" and event.get_state() & Gdk.ModifierType.CONTROL_MASK) \
-                or (name.upper() == "F5" and not self.fullscreen) \
-                or (name == "Escape" and self.fullscreen):
+                or (name.upper() == "L" and ctrl_pressed) \
+                or (name.upper() == "F5" and not self.c_win_fullscreen) \
+                or (name == "Escape" and self.c_win_fullscreen):
                 self.switch_fullscreen()
             elif name.upper() == "Q":
                 self.save_and_quit()
@@ -1176,7 +1177,7 @@ class UI:
 
             if color:
                 self.label_time.modify_fg(Gtk.StateType.NORMAL, color)
-                
+
             if (
                 (offset <= 0 and offset > -5) or
                 (offset <= -300 and offset > -310)
@@ -1291,21 +1292,22 @@ class UI:
         Screensaver will be disabled when entering fullscreen mode, and enabled
         when leaving fullscreen mode.
         """
-        if self.fullscreen:
+        if self.c_win_fullscreen:
             self.c_win.unfullscreen()
-            self.fullscreen = False
         else:
             self.c_win.fullscreen()
-            self.fullscreen = True
-
-        self.set_screensaver(self.fullscreen)
 
 
-    def track_pwin_maximized(self, widget, event, user_data=None):
+    def on_window_state_event(self, widget, event, user_data=None):
         """
         Track whether the preview window is maximized
         """
-        self.p_win_maximized = (Gdk.WindowState.MAXIMIZED & event.new_window_state) != 0
+        if widget.get_name() == self.p_win.get_name():
+            self.p_win_maximized = (Gdk.WindowState.MAXIMIZED & event.new_window_state) != 0
+            self.p_win_fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
+        elif widget.get_name() == self.c_win.get_name():
+            self.c_win_fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
+            self.set_screensaver(self.c_win_fullscreen)
 
 
     def update_frame_position(self, widget=None, user_data=None):
@@ -1353,10 +1355,18 @@ class UI:
         """
         Swap the monitors on which each window is displayed (if there are 2 monitors at least)
         """
+        c_win_was_fullscreen = self.c_win_fullscreen
+        p_win_was_fullscreen = self.p_win_fullscreen
+        p_win_was_maximized  = self.p_win_maximized
+        if c_win_was_fullscreen:
+            self.c_win.unfullscreen()
+        if p_win_was_fullscreen:
+            self.p_win.unfullscreen()
+        if p_win_was_maximized:
+            self.p_win.unmaximize()
+
         screen = self.p_win.get_screen()
         if screen.get_n_monitors() > 1:
-            cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
-            px, py, pw, ph = self.p_win.get_position() + self.p_win.get_size()
             c_monitor = self.config.getint('content', 'monitor')
             p_monitor = self.config.getint('presenter', 'monitor')
 
@@ -1364,23 +1374,21 @@ class UI:
 
             self.config.set('presenter', 'monitor', str(p_monitor))
             self.config.set('content', 'monitor', str(c_monitor))
-            p_bounds = screen.get_monitor_geometry(p_monitor)
-            if self.p_win_maximized:
-                self.p_win.unmaximize()
-                self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
-                self.p_win.maximize()
-            else:
-                self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
 
+            cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
+            px, py, pw, ph = self.p_win.get_position() + self.p_win.get_size()
             c_bounds = screen.get_monitor_geometry(c_monitor)
-            if self.fullscreen:
-                self.c_win.unfullscreen()
-                self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
-                self.c_win.fullscreen()
-            else:
-                self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
+            p_bounds = screen.get_monitor_geometry(p_monitor)
+            self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
+            self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
 
-        self.on_page_change(False)
+            if p_win_was_fullscreen:
+                self.p_win.fullscreen()
+            elif p_win_was_maximized:
+                self.p_win.maximize()
+
+            if c_win_was_fullscreen:
+                self.c_win.fullscreen()
 
 
 
