@@ -41,15 +41,6 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import GObject, Gtk, Gdk, Pango
 
-if os.name == 'nt':
-    import winreg
-else:
-    try:
-        gi.require_version('GdkX11', '3.0')
-        from gi.repository import Gtk, Gdk, GObject, GdkX11
-    except:
-        pass
-
 #: "Regular" PDF file (without notes)
 PDF_REGULAR      = 0
 #: Content page (left side) of a PDF file with notes
@@ -66,6 +57,17 @@ try:
     vlc_enabled = True
 except:
     vlc_enabled = False
+
+from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
+
+if IS_WINDOWS:
+    import winreg
+else:
+    try:
+        gi.require_version('GdkX11', '3.0')
+        from gi.repository import GdkX11
+    except:
+        pass
 
 
 media_overlays = {}
@@ -1244,7 +1246,7 @@ class UI:
            disabled; otherwise it will be enabled
         :type  must_disable: boolean
         """
-        if sys.platform == "darwin":
+        if IS_MAC_OS:
             # On Mac OS X we can use caffeinate to prevent the display from sleeping
             if must_disable:
                 if self.dpms_was_enabled == None or self.dpms_was_enabled.poll():
@@ -1255,7 +1257,7 @@ class UI:
                     self.dpms_was_enabled.poll()
                     self.dpms_was_enabled = None
 
-        elif os.name == 'posix':
+        elif IS_POSIX:
             # On Linux, set screensaver with xdg-screensaver
             # (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
             cmd = "suspend" if must_disable else "resume"
@@ -1289,7 +1291,7 @@ class UI:
                 if status != 0:
                     print("Warning: Could not enable DPMS screen blanking: got status "+str(status), file=sys.stderr)
 
-        elif os.name == 'nt':
+        elif IS_WINDOWS:
             with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Control Panel\Desktop') as key:
                 if must_disable:
                     (keytype,self.screensaver_was_enabled) = winreg.QueryValueEx(key, "ScreenSaveActive")

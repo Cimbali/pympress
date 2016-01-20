@@ -30,14 +30,17 @@ from gi.repository import Gtk, GdkPixbuf
 import pkg_resources
 import os, os.path, sys
 
+IS_POSIX = os.name == 'posix'
+IS_MAC_OS = sys.platform == "darwin"
+IS_WINDOWS = os.name == 'nt'
+
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
 
 def get_style_provider():
-    if sys.platform == "darwin":
-        # MAC OS X
+    if IS_MAC_OS:
         name = "macos.css"
     else:
         name = "default.css"
@@ -90,7 +93,7 @@ def load_icons():
 
 
 def path_to_config():
-    if os.name == 'posix':
+    if IS_POSIX:
         conf_dir=os.path.expanduser("~/.config")
         conf_file_nodir=os.path.expanduser("~/.pympress")
         conf_file_indir=os.path.expanduser("~/.config/pympress")
