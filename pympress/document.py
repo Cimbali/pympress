@@ -141,7 +141,7 @@ class Page:
     #: Page height as a float
     ph = 0.
     #: All text annotations
-    annot = []
+    annotations = []
 
     def __init__(self, page, number, parent):
         """
@@ -157,7 +157,7 @@ class Page:
         self.parent = parent
         self.links = []
         self.medias = []
-        self.annot = []
+        self.annotations = []
 
         # Read page size
         self.pw, self.ph = self.page.get_size()
@@ -186,12 +186,12 @@ class Page:
                     print("Pympress can not find file " + movie.get_filename())
                     continue
             elif annot_type == Poppler.AnnotType.SCREEN:
-                actionObj = annotation.annot.get_action()
-                action = self.get_annot_action(actionObj.any.type, actionObj, annotation.area)
+                action_obj = annotation.annot.get_action()
+                action = self.get_annot_action(action_obj.any.type, action_obj, annotation.area)
                 if not action:
                     continue
             elif annot_type == Poppler.AnnotType.TEXT:
-                self.annot.append(annotation.annot.get_contents())
+                self.annotations.append(annotation.annot.get_contents())
                 self.page.remove_annot(annotation.annot)
                 continue
             else:

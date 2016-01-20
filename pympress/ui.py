@@ -127,7 +127,7 @@ class UI:
     #: Time elapsed since the beginning of the presentation.
     delta = 0
     #: Estimated talk time.
-    estTime = 0
+    est_time = 0
     #: Timer paused status.
     paused = True
 
@@ -174,7 +174,7 @@ class UI:
         :param ett: the estimated (intended) talk time
         :type  ett: int
         """
-        self.estTime = ett
+        self.est_time = ett
         self.config = pympress.util.load_config()
         self.blanked = self.config.getboolean('content', 'start_blanked')
 
@@ -451,7 +451,7 @@ class UI:
         # Estimated talk time frame
         self.label_ett.set_name("LEstTalkTime")
         self.label_ett.get_style_context().add_class("info-label")
-        self.label_ett.set_text("%02d:%02d" % (int(self.estTime / 60), int(self.estTime % 60)))
+        self.label_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
         self.label_font_color = self.label_ett.get_style_context().get_color(Gtk.StateType.NORMAL)
         self.eb_ett.set_visible_window(False)
         self.eb_ett.connect("event", self.on_label_ett_event)
@@ -566,12 +566,12 @@ class UI:
             row.destroy()
             row = self.list_annot.get_row_at_index(0)
 
-        annots = page.annot if page else self.doc.current_page().annot
-        for annot in annots:
+        annotations = page.annotations if page else self.doc.current_page().annotations
+        for annotation in annotations:
             row = Gtk.ListBoxRow()
             hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
             row.add(hbox)
-            l_ann = Gtk.Label(annot, xalign=0)
+            l_ann = Gtk.Label(annotation, xalign=0)
             l_ann.set_line_wrap(True)
             hbox.pack_start(Gtk.Label("•", xalign=0, yalign=0), False, True, 0)
             hbox.pack_start(l_ann, True, True, 0)
@@ -1051,7 +1051,7 @@ class UI:
                 self.spin_cur.cancel()
 
             # Set entry text
-            self.entry_ett.set_text("%02d:%02d" % (int(self.estTime / 60), int(self.estTime % 60)))
+            self.entry_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
             self.entry_ett.select_region(0, -1)
 
             # Replace label with entry
@@ -1080,8 +1080,8 @@ class UI:
                     print("Invalid time (mm:ss expected): {}".format(text))
                     return False
 
-                self.estTime = m*60 + s;
-                self.label_ett.set_text("%02d:%02d" % (int(self.estTime / 60), int(self.estTime % 60)))
+                self.est_time = m*60 + s;
+                self.label_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
                 self.label_time.override_color(Gtk.StateType.NORMAL, self.label_font_color)
                 return True
 
@@ -1095,7 +1095,7 @@ class UI:
 
 
     def on_resize_annotation_list(self, widget = None, scrolltype = None):
-        if len(self.doc.current_page().annot) == 0:
+        if len(self.doc.current_page().annotations) == 0:
             self.scrolled_window.set_min_content_height(0)
             return
 
@@ -1176,10 +1176,10 @@ class UI:
         self.label_clock.set_text(clock)
 
         # Update color
-        if not self.estTime == 0:
+        if not self.est_time == 0:
             color = None
 
-            offset = self.estTime - self.delta
+            offset = self.est_time - self.delta
             if offset <= 300: # less than 5 minutes left
                 if offset >= 0:
                     r = int(65535 - (133 * (300 - offset)))
