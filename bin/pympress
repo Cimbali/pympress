@@ -54,13 +54,13 @@ def main(argv):
         elif opt in ("-t", "--talk-time"):
             try:
                 t = arg.split(':')
-                m = int(t[0])
+                m = int(t[0] if len(t[0]) > 0 else '0')
                 s = 0
                 if len(t) > 1:
                     s = int(t[1])
                 ett = m * 60 + s
             except ValueError:
-                print("Invalid time (mm:ss expected): {}".format(text))
+                print("Invalid time (mm:ss expected): {}".format(arg))
                 usage()
                 sys.exit(2)
 
