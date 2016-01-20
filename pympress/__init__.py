@@ -17,6 +17,6 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-__version__ = "0.5"
+__version__ = "0.5.1"
 
 __all__ = ["document", "surfacecache", "ui", "util", "slideselector"]

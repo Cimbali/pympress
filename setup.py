@@ -23,7 +23,7 @@
 from setuptools import setup
 import glob
 
-version="0.5"
+version="0.5.1"
 
 setup(name="pympress",
       version=version,
@@ -47,6 +47,11 @@ setup(name="pympress",
       ],
       packages=["pympress"],
       scripts=["bin/pympress"],
+      license='GPLv2',
+      install_requires=[
+          'pypoppler',
+          'python-vlc',
+      ],
       data_files=[
           ("share/pixmaps", glob.glob("share/pixmaps/pympress*")),
           ("share/css", glob.glob("share/css/*")),
