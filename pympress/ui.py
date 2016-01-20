@@ -558,13 +558,14 @@ class UI:
         return ui_manager.get_widget('/MenuBar')
 
 
-    def add_annotations(self):
+    def add_annotations(self, page = None):
         row = self.list_annot.get_row_at_index(0)
         while row:
             row.destroy()
             row = self.list_annot.get_row_at_index(0)
 
-        for annot in self.doc.current_page().annot:
+        annots = page.annot if page else self.doc.current_page().annot
+        for annot in annots:
             row = Gtk.ListBoxRow()
             hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
             row.add(hbox)
@@ -675,6 +676,8 @@ class UI:
         # queue redraws
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
+
+        self.add_annotations(page_cur)
 
 
         # Prerender the 4 next pages and the 2 previous ones
