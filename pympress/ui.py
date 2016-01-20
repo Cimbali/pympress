@@ -323,8 +323,9 @@ class UI:
         self.p_da_next.connect("draw", self.on_draw)
         self.p_da_next.connect("configure-event", self.on_configure_da)
 
-        self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK)
+        self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
         self.p_win.connect("key-press-event", self.on_navigation)
+        self.p_win.connect("scroll-event", self.on_navigation)
         self.c_win.connect("window-state-event", self.on_window_state_event)
         self.p_win.connect("window-state-event", self.on_window_state_event)
 
@@ -920,6 +921,9 @@ class UI:
             # send all to spinner if it is active to avoid key problems
             if self.editing_cur and self.spin_cur.on_keypress(widget, event):
                 return True
+
+            if widget is self.p_win:
+                return False
 
             if event.direction is Gdk.ScrollDirection.SMOOTH:
                 return False
