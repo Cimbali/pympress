@@ -49,7 +49,6 @@ setup(name="pympress",
       scripts=["bin/pympress"],
       license='GPLv2',
       install_requires=[
-          'pypoppler',
           'python-vlc',
       ],
       data_files=[
