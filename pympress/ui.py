@@ -159,7 +159,13 @@ class UI:
     blanked = False
 
     #: The default color of the info labels
-    label_font_color = None
+    label_color_default = None
+    #: The color of the elapsed time label if the estimated talk time is reached
+    label_color_ett_reached = None
+    #: The color of the elapsed time label if the estimated talk time is exceeded by 2:30 minutes
+    label_color_ett_info = None
+    #: The color of the elapsed time label if the estimated talk time is exceeded by 5 minutes
+    label_color_ett_warn = None
 
     #: The annotations label
     list_annot = Gtk.ListBox()
@@ -220,6 +226,8 @@ class UI:
         self.c_da.queue_draw()
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
+
+        self.label_color_default = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
 
 
     def make_cwin(self):
@@ -445,6 +453,22 @@ class UI:
 
         vbox.pack_start(hbox, False, True, 0)
 
+
+        # Load color from CSS
+        self.label_time.get_style_context().add_class("ett-reached")
+        self.label_time.show();
+        self.label_color_ett_reached = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
+        self.label_time.get_style_context().remove_class("ett-reached")
+        self.label_time.get_style_context().add_class("ett-info")
+        self.label_time.show();
+        self.label_color_ett_info = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
+        self.label_time.get_style_context().remove_class("ett-info")
+        self.label_time.get_style_context().add_class("ett-warn")
+        self.label_time.show();
+        self.label_color_ett_warn = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
+        self.label_time.get_style_context().remove_class("ett-warn")
+        self.label_time.get_style_context().add_class("info-label")
+        self.label_time.show();
 
         #Bottom row
         hbox = Gtk.HBox(True, 5)
@@ -1082,7 +1106,7 @@ class UI:
 
                 self.est_time = m*60 + s;
                 self.label_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
-                self.label_time.override_color(Gtk.StateType.NORMAL, self.label_font_color)
+                self.label_time.override_color(Gtk.StateType.NORMAL, self.label_color_default)
                 return True
 
             # Escape key --> just restore the label
@@ -1175,31 +1199,38 @@ class UI:
         self.label_time.set_text(elapsed)
         self.label_clock.set_text(clock)
 
-        # Update color
+        self.update_color()
+        self.on_resize_annotation_list()
+
+        return True
+
+
+    def calc_color(self, f, t, offset):
+        s = lambda c: ( c.red, c.green, c.blue, c.alpha )
+        c = lambda s, g: s + (g - s) * offset
+        return Gdk.RGBA(*map(c, s(f), s(t)))
+
+
+    def update_color(self):
         if not self.est_time == 0:
             color = None
 
             offset = self.est_time - self.delta
             if offset <= 300: # less than 5 minutes left
                 if offset >= 0:
-                    r = int(65535 - (133 * (300 - offset)))
-                    g  = int(65535 - (47 * (300 - offset)))
-                    color = Gdk.Color(r, g, r)
+                    of = lambda max: (max - offset)/float(max)
+                    color = self.calc_color(self.label_color_default, self.label_color_ett_reached, of(300))
                 elif offset >= -150:
-                    r = int(25635 - (266 * offset))
-                    g = int(51435 - (94 * offset))
-                    b = int(25635 * (150 + offset) / 150)
-                    color = Gdk.Color(r, g, b)
+                    of = lambda max: offset/float(max)
+                    color = self.calc_color(self.label_color_ett_reached, self.label_color_ett_info, of(-150))
                 elif offset >= -300:
-                    r = 65535
-                    g = int(65535 * (300 + offset) / 150)
-                    b = 0
-                    color = Gdk.Color(r, g, b)
+                    of = lambda max: (offset + 150)/float(max)
+                    color = self.calc_color(self.label_color_ett_info, self.label_color_ett_warn, of(-150))
                 else:
-                    color = Gdk.Color(65535, 0, 0)
+                    color = self.label_color_ett_warn
 
             if color:
-                self.label_time.modify_fg(Gtk.StateType.NORMAL, color)
+                self.label_time.override_color(Gtk.StateType.NORMAL, color)
 
             if (
                 (offset <= 0 and offset > -5) or
@@ -1208,11 +1239,6 @@ class UI:
                 self.label_time.get_style_context().add_class("time-warn")
             else:
                 self.label_time.get_style_context().remove_class("time-warn")
-
-        # End update color
-        self.on_resize_annotation_list()
-
-        return True
 
 
     def switch_pause(self, widget=None, event=None):

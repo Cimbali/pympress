@@ -16,7 +16,7 @@
 }
 
 #PresenterWindow GtkEntry {
-	font-size: 32pt;
+	font-size: 14pt;
 }
 
 .frame-label {
@@ -24,9 +24,18 @@
 
 .info-label {
     opacity: 1;
-    font-size: 32pt;
+    font-size: 20pt;
 }
 
+.ett-reached {
+    color: #64c864;
+}
+.ett-info {
+    color: #FFBF00;
+}
+.ett-warn {
+    color: #FF0000;
+}
 .time-warn {
     animation: blinker 250ms cubic-bezier(.5, 0, 1, 1) infinite alternate;
 }
