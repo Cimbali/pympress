@@ -919,7 +919,9 @@ class UI:
             if self.editing_cur_ett and self.on_label_ett_event(widget, event):
                 return True
 
-            if name in ["Right", "Down", "Page_Down", "space"]:
+            if self.paused and name == "space":
+                self.switch_pause()
+            elif name in ["Right", "Down", "Page_Down", "space"]:
                 self.doc.goto_next()
             elif name in ["Left", "Up", "Page_Up", "BackSpace"]:
                 self.doc.goto_prev()
