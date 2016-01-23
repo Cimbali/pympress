@@ -368,11 +368,29 @@ class UI:
         hpaned.set_margin_left(5)
         hpaned.set_margin_right(5)
 
+        #####################
+        # Lefthand side:
+        #####################
         # "Current slide" frame
         self.p_frame_cur.set_label("Current slide")
         self.p_frame_cur.get_label_widget().get_style_context().add_class("frame-label")
         self.p_frame_cur.set_margin_right(5)
-        hpaned.pack1(self.p_frame_cur, True, True)
+
+        vbox = Gtk.VBox(False, 15)
+        vbox.pack_start(self.p_frame_cur, True, True, 0)
+
+        # Bottom row
+        hbox = Gtk.HBox(False, 0)
+        hbox.set_margin_right(5)
+        hbox.set_halign(Gtk.Align.FILL)
+        hbox.pack_start(self.make_frame_ett(), False, False, 0)
+        spacer = Gtk.EventBox()
+        spacer.set_halign(Gtk.Align.FILL)
+        hbox.pack_start(spacer, True, True, 0)
+        hbox.pack_start(self.make_frame_slidenum(), False, False, 0)
+
+        vbox.pack_start(hbox, False, True, 0)
+        hpaned.pack1(vbox, True, True)
         self.p_da_cur.set_name("p_da_cur")
         if self.notes_mode:
             self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
@@ -380,14 +398,11 @@ class UI:
             self.cache.add_widget("p_da_cur", PDF_REGULAR)
         self.p_frame_cur.add(self.p_da_cur)
 
-        pright = self.make_pright()
-        hpaned.pack2(pright, True, True)
-
-        return hpaned
-
-
-    def make_pright(self):
-        vbox = Gtk.VBox(False, 20)
+        #####################
+        # Righthand side:
+        #####################
+        vbox = Gtk.VBox(False, 15)
+        vbox.set_halign(Gtk.Align.FILL)
         vbox.set_margin_left(5)
 
         # "Next slide" frame
@@ -414,8 +429,21 @@ class UI:
         vbox.pack_start(self.scrolled_window, False, True, 0)
 
 
-        #Top row
-        hbox = Gtk.HBox(True, 5)
+        #Bottom row
+        hbox = Gtk.HBox(False, 0)
+        hbox.set_halign(Gtk.Align.FILL)
+        hbox.pack_start(self.make_frame_time(), False, False, 0)
+        hbox.pack_start(Gtk.EventBox(), True, True, 10)
+        hbox.pack_start(self.make_frame_clock(), False, False, 0)
+
+        vbox.pack_start(hbox, False, False, 0)
+
+        hpaned.pack2(vbox, True, True)
+
+        return hpaned
+
+
+    def make_frame_slidenum(self):
         # "Current slide" label and entry. eb_cur gets all events on the whole,
         # label_cur may be replaced by spin_cur at times, last_cur doesn't move
         self.label_cur.set_name("LSlideCur")
@@ -439,20 +467,30 @@ class UI:
         frame = Gtk.Frame()
         frame.set_label("Slide number")
         frame.get_label_widget().get_style_context().add_class("frame-label")
+        frame.set_size_request(200, 0)
         frame.add(self.eb_cur)
-        hbox.pack_start(frame, True, True, 0)
+        return frame
 
+
+    def make_frame_clock(self):
         # "Clock" frame
         frame = Gtk.Frame()
         frame.set_label("Clock")
+        frame.set_size_request(170, 0)
         frame.get_label_widget().get_style_context().add_class("frame-label")
         frame.add(self.label_clock)
         self.label_clock.set_name("LClock")
         self.label_clock.get_style_context().add_class("info-label")
-        hbox.pack_start(frame, True, True, 0)
+        return frame
 
-        vbox.pack_start(hbox, False, True, 0)
 
+    def make_frame_time(self):
+        # "Time elapsed" frame
+        frame = Gtk.Frame()
+        frame.set_label("Time elapsed")
+        frame.set_size_request(170, 0)
+        frame.get_label_widget().get_style_context().add_class("frame-label")
+        self.label_time.set_name("LTimeElapsed")
 
         # Load color from CSS
         self.label_time.get_style_context().add_class("ett-reached")
@@ -469,37 +507,25 @@ class UI:
         self.label_time.get_style_context().remove_class("ett-warn")
         self.label_time.get_style_context().add_class("info-label")
         self.label_time.show();
+        frame.add(self.label_time)
+        return frame
 
-        #Bottom row
-        hbox = Gtk.HBox(True, 5)
+
+    def make_frame_ett(self):
         # Estimated talk time frame
         self.label_ett.set_name("LEstTalkTime")
         self.label_ett.get_style_context().add_class("info-label")
         self.label_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
-        self.label_font_color = self.label_ett.get_style_context().get_color(Gtk.StateType.NORMAL)
         self.eb_ett.set_visible_window(False)
         self.eb_ett.connect("event", self.on_label_ett_event)
         self.eb_ett.add(self.label_ett)
-        self.entry_ett.set_alignment(1)
+        self.entry_ett.set_alignment(0.5)
         frame = Gtk.Frame()
         frame.set_label("Time estimated")
         frame.get_label_widget().get_style_context().add_class("frame-label")
+        frame.set_size_request(170, 0)
         frame.add(self.eb_ett)
-        hbox.pack_start(frame, False, True, 0)
-
-        # "Time elapsed" frame
-        frame = Gtk.Frame()
-        frame.set_label("Time elapsed")
-        frame.get_label_widget().get_style_context().add_class("frame-label")
-        self.label_time.set_name("LTimeElapsed")
-        self.label_time.get_style_context().add_class("info-label")
-        frame.add(self.label_time)
-        hbox.pack_start(frame, False, True, 0)
-
-
-        vbox.pack_start(hbox, False, True, 0)
-
-        return vbox
+        return frame
 
 
     def make_menubar(self):
