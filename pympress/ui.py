@@ -1124,13 +1124,13 @@ class UI:
 
                 try:
                     t = text.split(':')
-                    m = int(t[0])
+                    m = int(t[0] if len(t[0]) > 0 else "0")
                     s = 0
                     if len(t) > 1:
                         s = int(t[1])
                 except ValueError:
                     print("Invalid time (mm:ss expected): {}".format(text))
-                    return False
+                    return True
 
                 self.est_time = m*60 + s;
                 self.label_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
@@ -1141,9 +1141,10 @@ class UI:
             elif name == "Escape":
                 self.restore_current_label_ett()
                 return True
+            else:
+                Gtk.Entry.do_key_press_event(widget, event)
 
-        # Propagate the event further
-        return False
+        return True
 
 
     def on_resize_annotation_list(self, widget = None, scrolltype = None):
