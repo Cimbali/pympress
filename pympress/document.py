@@ -519,7 +519,7 @@ class Document:
         return self.nb_pages
 
 
-    def goto(self, number):
+    def goto(self, number, unpause = True):
         """Switch to another page.
 
         :param number: number of the destination page
@@ -532,7 +532,7 @@ class Document:
 
         if number != self.cur_page:
             self.cur_page = number
-            self.on_page_change()
+            self.on_page_change(unpause)
 
     def goto_next(self, *args):
         """Switch to the next page."""

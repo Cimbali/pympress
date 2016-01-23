@@ -64,11 +64,11 @@ class SlideSelector(Gtk.SpinButton):
 
     def done(self, *args):
         self.ui.restore_current_label()
-        self.ui.doc.goto(self.get_page())
+        self.ui.doc.goto(self.get_page(), False)
 
     def cancel(self, *args):
         self.ui.restore_current_label()
-        self.ui.on_page_change()
+        self.ui.on_page_change(False)
 
     def on_changed(self, *args):
         self.ui.page_preview(self.get_page())
