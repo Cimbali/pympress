@@ -25,17 +25,17 @@ import getopt
 import signal
 
 import gi
-gi.require_version('Gtk', '3.0')
+gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
 
 import pympress.ui
 
 def usage():
-    print 'Usage: '+sys.argv[0]+' [options] [presentation_file]'
+    print ("Usage: " + sys.argv[0] + " [options] <presentation_file>")
     print
-    print "Options:"
-    print "    -h, --help: This help"
-    print "    -t xx, --talk-time=xx: The estimated (intended) talk time in minutes"
+    print ("Options:")
+    print ("    -h, --help: This help")
+    print ("    -t xx, --talk-time=xx: The estimated (intended) talk time in minutes")
     print
 
 def main(argv):
@@ -53,8 +53,8 @@ def main(argv):
             sys.exit()
         elif opt in ("-t", "--talk-time"):
             try:
-                t = arg.split(':')
-                m = int(t[0] if len(t[0]) > 0 else '0')
+                t = arg.split(":")
+                m = int(t[0] if len(t[0]) > 0 else "0")
                 s = 0
                 if len(t) > 1:
                     s = int(t[1])
@@ -81,7 +81,7 @@ def main(argv):
     ui.run()
 
 
-if __name__ =='__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])
 
 ##
