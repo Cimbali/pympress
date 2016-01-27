@@ -10,7 +10,7 @@ This is now a fork of [Schnouki's original Pympress](https://github.com/Schnouki
 
 # How-to install
 
-All dependencies are really basic, and installation is standard for a python package.
+All dependencies are really basic, and installation is that of a standard for a python package.
 
 ## Dependencies
 
@@ -20,6 +20,7 @@ You will need:
 * [Poppler, the PDF rendering library](http://poppler.freedesktop.org/), which is available in every good package manager.
 
 On windows, both GTK+3 and Poppler are shipped in the PyGi installer.
+On some platforms, you might need to make sure that the introspection bindings for poppler are shipped as well. On OpenSuse for example the packages `python3-gobject` and `typelib-1_0-Poppler-0_18` are needed.
 
 ## Installing
 
