@@ -202,6 +202,7 @@ class UI:
         # Make and populate windows
         self.make_cwin()
         self.make_pwin()
+        self.setup_screens()
 
         # Common to both windows
         icon_list = pympress.util.load_icons()
@@ -274,39 +275,19 @@ class UI:
         self.p_win.set_default_size(1067, 600)
         self.p_win.set_position(Gtk.WindowPosition.CENTER)
 
-        # If multiple monitors, apply windows to monitors according to config
-        screen = self.p_win.get_screen()
-        if screen.get_n_monitors() > 1:
-            c_monitor = self.config.getint('content', 'monitor')
-            p_monitor = self.config.getint('presenter', 'monitor')
-            if c_monitor == p_monitor:
-                print("Warning: Content and presenter window must not be on the same monitor!", file=sys.stderr)
-                p_monitor = 0 if c_monitor > 0 else 1
-                self.config.set('presenter', 'monitor', str(p_monitor))
-
-            p_bounds = screen.get_monitor_geometry(p_monitor)
-            self.p_win.move(p_bounds.x, p_bounds.y)
-            if self.config.getboolean('presenter', 'start_fullscreen'):
-                self.p_win.fullscreen()
-            else:
-                self.p_win.maximize()
-
-            c_bounds = screen.get_monitor_geometry(c_monitor)
-            self.c_win.move(c_bounds.x, c_bounds.y)
-            if self.config.getboolean('content', 'start_fullscreen'):
-                self.c_win.fullscreen()
-
         # Put Menu and Table in VBox
         bigvbox = Gtk.VBox(False, 2)
         self.p_win.add(bigvbox)
 
         # make & get menu
-        menubar = self.make_menubar()
-        bigvbox.pack_start(menubar, False, False, 0)
+        bigvbox.pack_start(self.make_menubar(), False, False, 0)
 
         # panes
         hpaned = self.make_pwin_panes()
         bigvbox.pack_start(hpaned, True, True, 0)
+
+        # bottom row
+        bigvbox.pack_start(self.make_pwin_bottom(), False, False, 0)
 
         # Set relative pane sizes
         # dynamic computation requires to have p_win already visible
@@ -354,7 +335,7 @@ class UI:
 
 
     def make_pwin_panes(self):
-        """Creates and initializes the presenter windows' panes
+        """Creates and initializes the presenter window's panes
 
         :return: the preview panes with current and next slide
         :rtype: :class:`Gtk.Paned`
@@ -368,29 +349,12 @@ class UI:
         hpaned.set_margin_left(5)
         hpaned.set_margin_right(5)
 
-        #####################
-        # Lefthand side:
-        #####################
         # "Current slide" frame
         self.p_frame_cur.set_label("Current slide")
         self.p_frame_cur.get_label_widget().get_style_context().add_class("frame-label")
         self.p_frame_cur.set_margin_right(5)
 
-        vbox = Gtk.VBox(False, 15)
-        vbox.pack_start(self.p_frame_cur, True, True, 0)
-
-        # Bottom row
-        hbox = Gtk.HBox(False, 0)
-        hbox.set_margin_right(5)
-        hbox.set_halign(Gtk.Align.FILL)
-        hbox.pack_start(self.make_frame_ett(), False, False, 0)
-        spacer = Gtk.EventBox()
-        spacer.set_halign(Gtk.Align.FILL)
-        hbox.pack_start(spacer, True, True, 0)
-        hbox.pack_start(self.make_frame_slidenum(), False, False, 0)
-
-        vbox.pack_start(hbox, False, True, 0)
-        hpaned.pack1(vbox, True, True)
+        hpaned.pack1(self.p_frame_cur, True, True)
         self.p_da_cur.set_name("p_da_cur")
         if self.notes_mode:
             self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
@@ -398,12 +362,10 @@ class UI:
             self.cache.add_widget("p_da_cur", PDF_REGULAR)
         self.p_frame_cur.add(self.p_da_cur)
 
-        #####################
-        # Righthand side:
-        #####################
-        vbox = Gtk.VBox(False, 15)
-        vbox.set_halign(Gtk.Align.FILL)
-        vbox.set_margin_left(5)
+        # Righthand side container
+        right_pane = Gtk.VBox(False, 15)
+        right_pane.set_halign(Gtk.Align.FILL)
+        right_pane.set_margin_left(5)
 
         # "Next slide" frame
         self.p_frame_next.set_label("Next slide")
@@ -415,8 +377,7 @@ class UI:
             self.cache.add_widget("p_da_next", PDF_REGULAR)
         self.p_frame_next.add(self.p_da_next)
 
-        vbox.pack_start(self.p_frame_next, True, True, 0)
-
+        right_pane.pack_start(self.p_frame_next, True, True, 0)
 
         # Annotations label
         self.list_annot.set_name("LAnnotations")
@@ -426,21 +387,54 @@ class UI:
         self.scrolled_window.add_with_viewport(self.list_annot)
         self.scrolled_window.set_min_content_height(100)
 
-        vbox.pack_start(self.scrolled_window, False, True, 0)
+        right_pane.pack_start(self.scrolled_window, False, True, 0)
 
-
-        #Bottom row
-        hbox = Gtk.HBox(False, 0)
-        hbox.set_halign(Gtk.Align.FILL)
-        hbox.pack_start(self.make_frame_time(), False, False, 0)
-        hbox.pack_start(Gtk.EventBox(), True, True, 10)
-        hbox.pack_start(self.make_frame_clock(), False, False, 0)
-
-        vbox.pack_start(hbox, False, False, 0)
-
-        hpaned.pack2(vbox, True, True)
+        hpaned.pack2(right_pane, True, True)
 
         return hpaned
+
+
+    def make_pwin_bottom(self):
+        """ Creates and initializes the presenter window's bottom row of numerical displays
+
+        :return: the preview panes with current and next slide
+        :rtype: :class:`Gtk.HBox`
+        """
+        hbox = Gtk.HBox(False, 0)
+        hbox.set_margin_right(5)
+        hbox.set_halign(Gtk.Align.FILL)
+        hbox.pack_start(self.make_frame_slidenum(), True, True, 0)
+        hbox.pack_start(self.make_frame_time(), True, True, 0)
+        hbox.pack_start(self.make_frame_ett(), False, True, 0)
+        hbox.pack_start(self.make_frame_clock(), False, True, 0)
+
+        return hbox
+
+
+    def setup_screens(self):
+        """ Sets up the position of the windows
+        """
+        # If multiple monitors, apply windows to monitors according to config
+        screen = self.p_win.get_screen()
+        if screen.get_n_monitors() > 1:
+            c_monitor = self.config.getint('content', 'monitor')
+            p_monitor = self.config.getint('presenter', 'monitor')
+            if c_monitor == p_monitor:
+                print("Warning: Content and presenter window must not be on the same monitor!", file=sys.stderr)
+                p_monitor = 0 if c_monitor > 0 else 1
+                self.config.set('presenter', 'monitor', str(p_monitor))
+
+            p_bounds = screen.get_monitor_geometry(p_monitor)
+            self.p_win.move(p_bounds.x, p_bounds.y)
+            if self.config.getboolean('presenter', 'start_fullscreen'):
+                self.p_win.fullscreen()
+            else:
+                self.p_win.maximize()
+
+            c_bounds = screen.get_monitor_geometry(c_monitor)
+            self.c_win.move(c_bounds.x, c_bounds.y)
+            if self.config.getboolean('content', 'start_fullscreen'):
+                self.c_win.fullscreen()
 
 
     def make_frame_slidenum(self):
@@ -521,7 +515,7 @@ class UI:
         self.eb_ett.add(self.label_ett)
         self.entry_ett.set_alignment(0.5)
         frame = Gtk.Frame()
-        frame.set_label("Time estimated")
+        frame.set_label("Time estimation")
         frame.get_label_widget().get_style_context().add_class("frame-label")
         frame.set_size_request(170, 0)
         frame.add(self.eb_ett)
@@ -1223,7 +1217,7 @@ class UI:
             self.delta = time.time() - self.start_time
         elapsed = "{:02}:{:02}".format(int(self.delta/60), int(self.delta%60))
         if self.paused:
-            elapsed += " (p)"
+            elapsed += " (paused)"
 
         self.label_time.set_text(elapsed)
         self.label_clock.set_text(clock)
