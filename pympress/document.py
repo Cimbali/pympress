@@ -194,6 +194,9 @@ class Page:
                 self.annotations.append(annotation.annot.get_contents())
                 self.page.remove_annot(annotation.annot)
                 continue
+            elif annot_type == Poppler.AnnotType.FREE_TEXT:
+                # Poppler already renders annotation of this type
+                continue
             else:
                 print("Pympress can not interpret annotation of type: {} ".format(annot_type))
                 continue
