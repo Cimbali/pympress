@@ -197,6 +197,7 @@ class Page:
                     continue
             elif annot_type == Poppler.AnnotType.TEXT:
                 self.annotations.append(annotation.annot.get_contents())
+                # hide post-it sort of button on screen
                 self.page.remove_annot(annotation.annot)
                 continue
             elif annot_type == Poppler.AnnotType.FREE_TEXT:
@@ -362,6 +363,14 @@ class Page:
             return self.pw / self.ph
         else:
             return (self.pw/2.) / self.ph
+
+    def get_annotations(self):
+        """Get the list of text annotations on this page
+
+        :return: page aspect ratio
+        :rtype: list of tuples of area and filenames
+        """
+        return self.annotations
 
     def get_media(self):
         """Get the list of medias this page might want to play

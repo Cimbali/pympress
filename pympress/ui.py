@@ -167,10 +167,10 @@ class UI:
     #: The color of the elapsed time label if the estimated talk time is exceeded by 5 minutes
     label_color_ett_warn = None
 
-    #: The annotations label
-    list_annot = Gtk.ListBox()
-    #: And its surrounding window
-    scrolled_window = Gtk.ScrolledWindow()
+    #: The containing widget for the annotations
+    scrolled_window = None
+    #: Making the annotations list scroll if it's too long
+    scrollable_treelist = Gtk.ScrolledWindow()
 
 
     def __init__(self, docpath = None, ett = 0):
@@ -366,6 +366,8 @@ class UI:
         right_pane = Gtk.VBox(False, 15)
         right_pane.set_halign(Gtk.Align.FILL)
         right_pane.set_margin_left(5)
+        right_pane.set_homogeneous(False)
+        right_pane.set_name('right pane')
 
         # "Next slide" frame
         self.p_frame_next.set_label("Next slide")
@@ -379,15 +381,27 @@ class UI:
 
         right_pane.pack_start(self.p_frame_next, True, True, 0)
 
-        # Annotations label
-        self.list_annot.set_name("LAnnotations")
-        self.list_annot.set_selection_mode(Gtk.SelectionMode.NONE)
+        # Annotations
+        self.annotation_renderer = Gtk.CellRendererText()
+        self.annotation_renderer.props.wrap_mode = Pango.WrapMode.WORD_CHAR
 
-        self.scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        self.scrolled_window.add_with_viewport(self.list_annot)
-        self.scrolled_window.set_min_content_height(100)
+        column = Gtk.TreeViewColumn("Annotations", self.annotation_renderer, text=0)
+        column.props.sizing = Gtk.TreeViewColumnSizing.AUTOSIZE
+        column.set_fixed_width(1)
 
-        right_pane.pack_start(self.scrolled_window, False, True, 0)
+        self.scrolled_window = Gtk.TreeView.new_with_model(Gtk.ListStore(str))
+        self.scrolled_window.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(red=0, green=0, blue=0, alpha=0))
+        self.scrolled_window.set_headers_visible(False)
+        self.scrolled_window.props.fixed_height_mode = False
+        self.scrolled_window.props.enable_search = False
+        self.scrolled_window.get_selection().set_mode(Gtk.SelectionMode.NONE)
+        self.scrolled_window.append_column(column)
+        self.scrolled_window.set_size_request(0, 0)
+
+        self.scrollable_treelist.set_hexpand(True)
+        self.scrollable_treelist.add(self.scrolled_window)
+
+        right_pane.pack_end(self.scrollable_treelist, False, False, 0)
 
         hpaned.pack2(right_pane, True, True)
 
@@ -606,25 +620,14 @@ class UI:
         return ui_manager.get_widget('/MenuBar')
 
 
-    def add_annotations(self, page = None):
-        row = self.list_annot.get_row_at_index(0)
-        while row:
-            row.destroy()
-            row = self.list_annot.get_row_at_index(0)
+    def add_annotations(self, annotations):
+        list_annot = Gtk.ListStore(str)
 
-        annotations = page.annotations if page else self.doc.current_page().annotations
-        for annotation in annotations:
-            row = Gtk.ListBoxRow()
-            hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
-            row.add(hbox)
-            l_ann = Gtk.Label(annotation, xalign=0)
-            l_ann.set_line_wrap(True)
-            hbox.pack_start(Gtk.Label('•', xalign=0, yalign=0), False, True, 0)
-            hbox.pack_start(l_ann, True, True, 0)
-            self.list_annot.add(row)
-            hbox.show()
+        for annot in annotations:
+            list_annot.append(('• '+annot,))
 
-        self.list_annot.show_all()
+        self.scrolled_window.set_model(list_annot)
+        self.resize_annotation_list()
 
 
     def run(self):
@@ -730,7 +733,7 @@ class UI:
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
 
-        self.add_annotations(page_cur)
+        self.add_annotations(page_cur.get_annotations())
 
 
         # Prerender the 4 next pages and the 2 previous ones
@@ -755,7 +758,7 @@ class UI:
         page_cur = self.doc.current_page()
         page_next = self.doc.next_page()
 
-        self.add_annotations()
+        self.add_annotations(page_cur.get_annotations())
 
         # Page change: resynchronize miniatures
         self.page_preview_nb = page_cur.number()
@@ -900,6 +903,8 @@ class UI:
 
         if widget is self.c_da:
             self.c_overlay.foreach(lambda child, *ignored: child.resize() if child is not self.c_da else None, None)
+        elif widget is self.p_da_next:
+            self.resize_annotation_list()
 
 
     def on_navigation(self, widget, event):
@@ -1150,27 +1155,13 @@ class UI:
         return True
 
 
-    def on_resize_annotation_list(self, widget = None, scrolltype = None):
-        if len(self.doc.current_page().annotations) == 0:
-            self.scrolled_window.set_min_content_height(0)
-            return
-
-        h_min = 60
-        w_da = self.p_da_next.get_allocated_width()
-        w_f = self.p_frame_next.get_allocated_width()
-        d = w_f - w_da
-        if d > 5:
-            # Shrink Annotations
-            h = self.scrolled_window.get_allocated_height() - (d / 4 * 3)
-            self.scrolled_window.set_min_content_height(max(h_min, h))
-            return
-
-        h_ann = self.scrolled_window.get_allocated_height()
-        h_da = self.p_da_next.get_allocated_height()
-        h_fnext = self.p_frame_next.get_allocated_height()
-        h = h_ann + h_fnext - h_da - 20
-
-        self.scrolled_window.set_min_content_height(h)
+    def resize_annotation_list(self):
+        r = self.p_frame_next.props.ratio
+        w = self.p_frame_next.props.parent.get_allocated_width()
+        h = self.p_frame_next.props.parent.props.parent.get_allocated_height() - 10
+        self.annotation_renderer.props.wrap_width = w - 10
+        self.scrolled_window.get_column(0).queue_resize()
+        self.scrollable_treelist.set_size_request(-1, max(h - w / r, 100))
 
 
     def restore_current_label(self):
@@ -1232,7 +1223,6 @@ class UI:
         self.label_clock.set_text(clock)
 
         self.update_color()
-        self.on_resize_annotation_list()
 
         return True
 
