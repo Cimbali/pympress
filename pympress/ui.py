@@ -560,10 +560,7 @@ class UI:
             <menuitem action="Swap screens"/>
             <menuitem action="Notes mode"/>
             <menuitem action="Blank screen"/>
-            <menuitem action="Start content blanked"/>
-            <menuitem action="Start content fullscreen"/>
-            <menuitem action="Start presenter fullscreen"/>
-            <menuitem action="Adjust screen"/>
+            <menuitem action="Align content"/>
           </menu>
           <menu action="Navigation">
             <menuitem action="Next"/>
@@ -571,6 +568,11 @@ class UI:
             <menuitem action="First"/>
             <menuitem action="Last"/>
             <menuitem action="Go to..."/>
+          </menu>
+          <menu action="Starting Configuration">
+            <menuitem action="Content blanked"/>
+            <menuitem action="Content fullscreen"/>
+            <menuitem action="Presenter fullscreen"/>
           </menu>
           <menu action="Help">
             <menuitem action="About"/>
@@ -589,13 +591,14 @@ class UI:
             ('File',         None,           '_File'),
             ('Presentation', None,           '_Presentation'),
             ('Navigation',   None,           '_Navigation'),
+            ('Starting Configuration', None, '_Starting Configuration'),
             ('Help',         None,           '_Help'),
 
             ('Quit',         Gtk.STOCK_QUIT, '_Quit',        'q',     None, self.save_and_quit),
             ('Reset timer',  None,           '_Reset timer', 'r',     None, self.reset_timer),
             ('About',        None,           '_About',       None,    None, self.menu_about),
             ('Swap screens', None,           '_Swap screens','s',     None, self.swap_screens),
-            ('Adjust screen',None,           'Screen center',None,    None, self.adjust_frame_position),
+            ('Align content',None,           '_Align content',None,   None, self.adjust_frame_position),
 
             ('Next',         None,           '_Next',        'Right', None, self.doc.goto_next),
             ('Previous',     None,           '_Previous',    'Left',  None, self.doc.goto_prev),
@@ -608,9 +611,9 @@ class UI:
             ('Fullscreen',   None,           '_Fullscreen',  'f',     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
             ('Notes mode',   None,           '_Note mode',   'n',     None, self.switch_mode,          self.notes_mode),
             ('Blank screen', None,           '_Blank screen','b',     None, self.switch_blanked,       self.blanked),
-            ('Start content blanked',      None, 'Start content blanked',     None, None, self.switch_start_blanked,    self.blanked),
-            ('Start content fullscreen',   None, 'Start content fullscreen',   None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
-            ('Start presenter fullscreen', None, 'Start presenter fullscreen', None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
+            ('Content blanked',      None,   'Content blanked',       None, None, self.switch_start_blanked,    self.config.getboolean('content', 'start_blanked')),
+            ('Content fullscreen',   None,   'Content fullscreen',    None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
+            ('Presenter fullscreen', None,   'Presenter fullscreen',  None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
         ])
         ui_manager.insert_action_group(action_group)
 
