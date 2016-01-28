@@ -990,15 +990,16 @@ class UI:
             if self.editing_cur and self.spin_cur.on_keypress(widget, event):
                 return True
 
-            if widget is self.p_win:
+            elif event.direction is Gdk.ScrollDirection.SMOOTH:
                 return False
-
-            if event.direction is Gdk.ScrollDirection.SMOOTH:
-                return False
-            elif event.direction in [Gdk.ScrollDirection.RIGHT, Gdk.ScrollDirection.DOWN]:
-                self.doc.goto_next()
             else:
-                self.doc.goto_prev()
+                adj = self.scrollable_treelist.get_vadjustment()
+                if event.direction == Gdk.ScrollDirection.UP:
+                    adj.set_value(adj.get_value() - adj.get_step_increment())
+                elif event.direction == Gdk.ScrollDirection.DOWN:
+                    adj.set_value(adj.get_value() + adj.get_step_increment())
+                else:
+                    return False
 
             return True
 
@@ -1159,6 +1160,10 @@ class UI:
 
 
     def resize_annotation_list(self):
+        """
+        Readjust the annotation list's scroll window
+        so it won't compete for space with the next slide frame
+        """
         r = self.p_frame_next.props.ratio
         w = self.p_frame_next.props.parent.get_allocated_width()
         h = self.p_frame_next.props.parent.props.parent.get_allocated_height() - 10
