@@ -36,8 +36,19 @@ import ctypes
 import sys
 import vlc
 
+import pympress.util
+
+vlc_opts=[]
+if pympress.util.IS_POSIX:
+    try:
+        x11 = ctypes.cdll.LoadLibrary('libX11.so')
+        x11.XInitThreads()
+    except:
+        vlc_opts.append("--no-xlib")
+
+
 # Create a single vlc.Instance() to be shared by (possible) multiple players.
-instance = vlc.Instance()
+instance = vlc.Instance(vlc_opts)
 window_handle = None
 
 def get_window_handle(window):
@@ -53,6 +64,7 @@ def get_window_handle(window):
     gdkdll = ctypes.CDLL("libgdk-3-0.dll")
     return gdkdll.gdk_win32_window_get_handle(drawingarea_gpointer)
 
+
 class VLCVideo(Gtk.VBox):
     """Simple VLC widget.
 
@@ -63,11 +75,13 @@ class VLCVideo(Gtk.VBox):
     overlay = None
     controls = None
     movie_zone = None
+    relative_margins = None
 
-    def __init__(self, overlay, show_controls):
+    def __init__(self, overlay, show_controls, relative_margins):
         Gtk.VBox.__init__(self)
 
         self.overlay = overlay
+        self.relative_margins = relative_margins
         self.movie_zone = Gtk.DrawingArea()
         self.pack_start(self.movie_zone, True, True, 0)
 
@@ -108,8 +122,17 @@ class VLCVideo(Gtk.VBox):
             b.set_tooltip_text(tooltip)
             b.connect("clicked", callback)
             tb.insert(b, -1)
-        tb.show_all()
         return tb
+
+    def resize(self):
+        parent = self.get_parent()
+        if not parent:
+            return
+        pw, ph = parent.get_allocated_width(), parent.get_allocated_height()
+        self.props.margin_left   = pw * self.relative_margins.x1
+        self.props.margin_right  = pw * self.relative_margins.x2
+        self.props.margin_bottom = ph * self.relative_margins.y1
+        self.props.margin_top    = ph * self.relative_margins.y2
 
     def set_file(self, filepath):
         self.player.set_media(instance.media_new(filepath))
@@ -117,6 +140,7 @@ class VLCVideo(Gtk.VBox):
     def play(self):
         if not self.get_parent():
             self.overlay.add_overlay(self)
+            self.resize()
             self.overlay.show_all()
         if self.player.get_state() == vlc.State.Ended:
             self.player.stop()

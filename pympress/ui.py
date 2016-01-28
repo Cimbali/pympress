@@ -220,7 +220,7 @@ class UI:
         self.p_win.show_all()
 
         # Add media
-        self.update_media_overlays()
+        self.replace_media_overlays()
 
         # Queue some redraws
         self.c_overlay.queue_draw()
@@ -784,34 +784,33 @@ class UI:
         for p in list(range(self.page_preview_nb+1, page_max)) + list(range(self.page_preview_nb, page_min, -1)):
             self.cache.prerender(p)
 
-        self.update_media_overlays()
+        self.replace_media_overlays()
 
 
-    def update_media_overlays(self):
+    def replace_media_overlays(self):
         # Remove old overlays, add new if page contains media
+        if not vlc_enabled:
+            return
+
         self.c_overlay.foreach(lambda child, *ignored: child.stop_and_remove() and self.c_overlay.remove(child) if child is not self.c_da else None, None)
 
         page_cur = self.doc.current_page()
-        for rect, filename, show_controls in page_cur.get_media():
-            media_id = hash((rect, filename, show_controls))
-            global media_overlays
-            if media_id not in media_overlays and vlc_enabled:
-                v_da = pympress.vlcvideo.VLCVideo(self.c_overlay, show_controls)
+        pw, ph = page_cur.get_size()
+
+        global media_overlays
+
+        for relative_margins, filename, show_controls in page_cur.get_media():
+            media_id = hash((relative_margins, filename, show_controls))
+
+            if media_id not in media_overlays:
+                v_da = pympress.vlcvideo.VLCVideo(self.c_overlay, show_controls, relative_margins)
                 v_da.set_file(filename)
 
                 media_overlays[media_id] = v_da
 
-            pw, ph = page_cur.get_size()
-            cw, ch = self.c_da.get_allocated_width(), self.c_da.get_allocated_height()
-
-            media_overlays[media_id].set_size_request(cw, ch)
-            media_overlays[media_id].props.margin_bottom = rect.y1 * ch / ph
-            media_overlays[media_id].props.margin_top = ch - rect.y2 * ch / ph
-            media_overlays[media_id].props.margin_left = rect.x1 * cw / pw
-            media_overlays[media_id].props.margin_right = cw - rect.x2 * cw / pw
-
-        if page_cur.get_media():
-            self.c_overlay.show_all()
+    def resize_media_overlays(self):
+        cw, ch = self.c_da.get_allocated_width(), self.c_da.get_allocated_height()
+        self.c_overlay.show_all()
 
 
     @staticmethod
@@ -892,6 +891,9 @@ class UI:
         :type  event: :class:`Gdk.Event`
         """
         self.cache.resize_widget(widget.get_name(), event.width, event.height)
+
+        if widget is self.c_da:
+            self.c_overlay.foreach(lambda child, *ignored: child.resize() if child is not self.c_da else None, None)
 
 
     def on_navigation(self, widget, event):
@@ -1526,12 +1528,6 @@ class UI:
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
 
         self.on_page_change(False)
-
-
-    def add_video_overlay(self, filename):
-        """
-        Add an overlay to `self.c_overlay` with a video of the current page
-        """
 
 
 ##

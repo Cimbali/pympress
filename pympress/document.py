@@ -179,7 +179,12 @@ class Page:
                 filepath = self.parent.get_full_path(movie.get_filename())
                 if filepath:
                     # TODO there is no autoplay, or repeatCount
-                    media = (annotation.area.copy(), filepath, movie.show_controls())
+                    relative_margins = Poppler.Rectangle()
+                    relative_margins.x1 = annotation.area.x1 / self.pw       # left
+                    relative_margins.x2 = 1.0 - annotation.area.x2 / self.pw # right
+                    relative_margins.y1 = annotation.area.y1 / self.ph       # bottom
+                    relative_margins.y2 = 1.0 - annotation.area.y2 / self.ph # top
+                    media = (relative_margins, filepath, movie.show_controls())
                     self.medias.append(media)
                     action = lambda: pympress.ui.UI.play_media(hash(media))
                 else:
@@ -293,7 +298,13 @@ class Page:
                     return None
 
             # TODO grab the show_controls, autoplay, repeat
-            media = (rect.copy(), filename, False)
+            relative_margins = Poppler.Rectangle()
+            relative_margins.x1 = rect.x1 / self.pw       # left
+            relative_margins.x2 = 1.0 - rect.x2 / self.pw # right
+            relative_margins.y1 = rect.y1 / self.ph       # bottom
+            relative_margins.y2 = 1.0 - rect.y2 / self.ph # top
+
+            media = (relative_margins, filename, False)
             self.medias.append(media)
             return lambda: pympress.ui.UI.play_media(hash(media))
 
