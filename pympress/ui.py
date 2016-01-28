@@ -509,7 +509,7 @@ class UI:
         # Estimated talk time frame
         self.label_ett.set_name("LEstTalkTime")
         self.label_ett.get_style_context().add_class("info-label")
-        self.label_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
+        self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
         self.eb_ett.set_visible_window(False)
         self.eb_ett.connect("event", self.on_label_ett_event)
         self.eb_ett.add(self.label_ett)
@@ -567,34 +567,34 @@ class UI:
         self.p_win.add_accel_group(accel_group)
 
         # Action group
-        action_group = Gtk.ActionGroup("MenuBar")
+        action_group = Gtk.ActionGroup('MenuBar')
         # Name, stock id, label, accelerator, tooltip, action [, is_active]
         action_group.add_actions([
-            ("File",         None,           "_File"),
-            ("Presentation", None,           "_Presentation"),
-            ("Navigation",   None,           "_Navigation"),
-            ("Help",         None,           "_Help"),
+            ('File',         None,           '_File'),
+            ('Presentation', None,           '_Presentation'),
+            ('Navigation',   None,           '_Navigation'),
+            ('Help',         None,           '_Help'),
 
-            ("Quit",         Gtk.STOCK_QUIT, "_Quit",        "q",     None, self.save_and_quit),
-            ("Reset timer",  None,           "_Reset timer", "r",     None, self.reset_timer),
-            ("About",        None,           "_About",       None,    None, self.menu_about),
-            ("Swap screens", None,           "_Swap screens","s",     None, self.swap_screens),
-            ("Adjust screen",None,           "Screen center",None,    None, self.adjust_frame_position),
+            ('Quit',         Gtk.STOCK_QUIT, '_Quit',        'q',     None, self.save_and_quit),
+            ('Reset timer',  None,           '_Reset timer', 'r',     None, self.reset_timer),
+            ('About',        None,           '_About',       None,    None, self.menu_about),
+            ('Swap screens', None,           '_Swap screens','s',     None, self.swap_screens),
+            ('Adjust screen',None,           'Screen center',None,    None, self.adjust_frame_position),
 
-            ("Next",         None,           "_Next",        "Right", None, self.doc.goto_next),
-            ("Previous",     None,           "_Previous",    "Left",  None, self.doc.goto_prev),
-            ("First",        None,           "_First",       "Home",  None, self.doc.goto_home),
-            ("Last",         None,           "_Last",        "End",   None, self.doc.goto_end),
-            ("Go to...",     None,           "_Go to...",    "g",     None, self.on_label_event),
+            ('Next',         None,           '_Next',        'Right', None, self.doc.goto_next),
+            ('Previous',     None,           '_Previous',    'Left',  None, self.doc.goto_prev),
+            ('First',        None,           '_First',       'Home',  None, self.doc.goto_home),
+            ('Last',         None,           '_Last',        'End',   None, self.doc.goto_end),
+            ('Go to...',     None,           '_Go to...',    'g',     None, self.on_label_event),
         ])
         action_group.add_toggle_actions([
-            ("Pause timer",  None,           "_Pause timer", "p",     None, self.switch_pause,         True),
-            ("Fullscreen",   None,           "_Fullscreen",  "f",     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
-            ("Notes mode",   None,           "_Note mode",   "n",     None, self.switch_mode,          self.notes_mode),
-            ("Blank screen", None,           "_Blank screen","b",     None, self.switch_blanked,       self.blanked),
-            ("Start content blanked",      None, "_Start content blanked",     None, None, self.switch_start_blanked,    self.blanked),
-            ("Start content fullscreen",   None, "Start content fullscreen",   None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
-            ("Start presenter fullscreen", None, "Start presenter fullscreen", None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
+            ('Pause timer',  None,           '_Pause timer', 'p',     None, self.switch_pause,         True),
+            ('Fullscreen',   None,           '_Fullscreen',  'f',     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
+            ('Notes mode',   None,           '_Note mode',   'n',     None, self.switch_mode,          self.notes_mode),
+            ('Blank screen', None,           '_Blank screen','b',     None, self.switch_blanked,       self.blanked),
+            ('Start content blanked',      None, 'Start content blanked',     None, None, self.switch_start_blanked,    self.blanked),
+            ('Start content fullscreen',   None, 'Start content fullscreen',   None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
+            ('Start presenter fullscreen', None, 'Start presenter fullscreen', None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -617,7 +617,7 @@ class UI:
             row.add(hbox)
             l_ann = Gtk.Label(annotation, xalign=0)
             l_ann.set_line_wrap(True)
-            hbox.pack_start(Gtk.Label("•", xalign=0, yalign=0), False, True, 0)
+            hbox.pack_start(Gtk.Label('•', xalign=0, yalign=0), False, True, 0)
             hbox.pack_start(l_ann, True, True, 0)
             self.list_annot.add(row)
             hbox.show()
@@ -644,21 +644,21 @@ class UI:
 
     def pick_file(self):
         # Use a GTK file dialog to choose file
-        dialog = Gtk.FileChooserDialog("Open...", self.p_win,
+        dialog = Gtk.FileChooserDialog('Open...', self.p_win,
                                        Gtk.FileChooserAction.OPEN,
                                        (Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_position(Gtk.WindowPosition.CENTER)
 
         filter = Gtk.FileFilter()
-        filter.set_name("PDF files")
-        filter.add_mime_type("application/pdf")
-        filter.add_pattern("*.pdf")
+        filter.set_name('PDF files')
+        filter.add_mime_type('application/pdf')
+        filter.add_pattern('*.pdf')
         dialog.add_filter(filter)
 
         filter = Gtk.FileFilter()
-        filter.set_name("All files")
-        filter.add_pattern("*")
+        filter.set_name('All files')
+        filter.add_pattern('*')
         dialog.add_filter(filter)
 
         response = dialog.run()
@@ -682,15 +682,16 @@ class UI:
     def menu_about(self, widget=None, event=None):
         """Display the "About pympress" dialog."""
         about = Gtk.AboutDialog()
-        about.set_program_name("pympress")
+        about.set_program_name('pympress')
         about.set_version(pympress.__version__)
-        about.set_copyright("(c) 2009-2016 Thomas Jost, Cimbali, Christof Rath")
-        about.set_comments("pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\nSome preferences are saved in "+pympress.util.path_to_config())
-        about.set_website("http://www.pympress.org/")
+        about.set_copyright('(c) 2009-2016 Thomas Jost, Cimbali, Christof Rath')
+        about.set_comments('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n'
+                         + 'Some preferences are saved in ' + pympress.util.path_to_config())
+        about.set_website('http://www.pympress.org/')
         try:
-            about.set_logo(pympress.util.get_icon_pixbuf("pympress-128.png"))
+            about.set_logo(pympress.util.get_icon_pixbuf('pympress-128.png'))
         except Exception:
-            print("Error loading icon for about window")
+            print('Error loading icon for about window')
         about.run()
         about.destroy()
 
@@ -713,11 +714,11 @@ class UI:
 
         # Aspect ratios and queue redraws
         pr = page_cur.get_aspect_ratio(self.notes_mode)
-        self.p_frame_cur.set_property("ratio", pr)
+        self.p_frame_cur.set_property('ratio', pr)
 
         if page_next is not None:
             pr = page_next.get_aspect_ratio(self.notes_mode)
-            self.p_frame_next.set_property("ratio", pr)
+            self.p_frame_next.set_property('ratio', pr)
 
         # queue redraws
         self.p_da_cur.queue_draw()
@@ -755,12 +756,12 @@ class UI:
 
         # Aspect ratios
         pr = page_cur.get_aspect_ratio(self.notes_mode)
-        self.c_frame.set_property("ratio", pr)
-        self.p_frame_cur.set_property("ratio", pr)
+        self.c_frame.set_property('ratio', pr)
+        self.p_frame_cur.set_property('ratio', pr)
 
         if page_next is not None:
             pr = page_next.get_aspect_ratio(self.notes_mode)
-            self.p_frame_next.set_property("ratio", pr)
+            self.p_frame_next.set_property('ratio', pr)
 
         # Queue redraws
         self.c_da.queue_draw()
@@ -913,50 +914,50 @@ class UI:
             if self.editing_cur_ett and self.on_label_ett_event(widget, event):
                 return True
 
-            if self.paused and name == "space":
+            if self.paused and name == 'space':
                 self.switch_pause()
-            elif name in ["Right", "Down", "Page_Down", "space"]:
+            elif name in ['Right', 'Down', 'Page_Down', 'space']:
                 self.doc.goto_next()
-            elif name in ["Left", "Up", "Page_Up", "BackSpace"]:
+            elif name in ['Left', 'Up', 'Page_Up', 'BackSpace']:
                 self.doc.goto_prev()
             elif name == 'Home':
                 self.doc.goto_home()
             elif name == 'End':
                 self.doc.goto_end()
             # sic - accelerator recognizes f not F
-            elif name.upper() == "F11" or name == "F" \
-                or (name == "Return" and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
-                or (name.upper() == "L" and ctrl_pressed) \
-                or (name.upper() == "F5" and not self.c_win_fullscreen) \
-                or (name == "Escape" and self.c_win_fullscreen):
+            elif name.upper() == 'F11' or name == 'F' \
+                or (name == 'Return' and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
+                or (name.upper() == 'L' and ctrl_pressed) \
+                or (name.upper() == 'F5' and not self.c_win_fullscreen) \
+                or (name == 'Escape' and self.c_win_fullscreen):
                 self.switch_fullscreen(self.c_win)
-            elif name.upper() == "F" and ctrl_pressed:
+            elif name.upper() == 'F' and ctrl_pressed:
                 self.switch_fullscreen(self.p_win)
-            elif name.upper() == "Q":
+            elif name.upper() == 'Q':
                 self.save_and_quit()
-            elif name == "Pause":
+            elif name == 'Pause':
                 self.switch_pause()
-            elif name.upper() == "R":
+            elif name.upper() == 'R':
                 self.reset_timer()
 
             # Some key events are already handled by toggle actions in the
             # presenter window, so we must handle them in the content window
             # only to prevent them from double-firing
             if widget is self.c_win:
-                if name.upper() == "P":
+                if name.upper() == 'P':
                     self.switch_pause()
-                elif name.upper() == "N":
+                elif name.upper() == 'N':
                     self.switch_mode()
-                elif name.upper() == "S":
+                elif name.upper() == 'S':
                     self.swap_screens()
-                elif name.upper() == "F":
+                elif name.upper() == 'F':
                     if ctrl_pressed:
                         self.switch_fullscreen(self.p_win)
                     else:
                         self.switch_fullscreen(self.c_win)
-                elif name.upper() == "G":
+                elif name.upper() == 'G':
                     self.on_label_event(self.eb_cur, True)
-                elif name.upper() == "B":
+                elif name.upper() == 'B':
                     self.switch_blanked()
                 else:
                     return False
@@ -1025,7 +1026,7 @@ class UI:
                 widget.get_window().set_cursor(None)
 
         else:
-            print("Unknown event " + str(event.type))
+            print("Unknown event {}".format(event.type))
 
 
     def on_label_event(self, *args):
@@ -1097,7 +1098,7 @@ class UI:
                 self.spin_cur.cancel()
 
             # Set entry text
-            self.entry_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
+            self.entry_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
             self.entry_ett.select_region(0, -1)
 
             # Replace label with entry
@@ -1116,18 +1117,18 @@ class UI:
                 text = self.entry_ett.get_text()
                 self.restore_current_label_ett()
 
+                t = ["0" + n.strip() for n in text.split(':')]
                 try:
-                    t = text.split(':')
-                    m = int(t[0] if len(t[0]) > 0 else "0")
-                    s = 0
-                    if len(t) > 1:
-                        s = int(t[1])
+                    m = int(t[0])
+                    s = int(t[1])
                 except ValueError:
-                    print("Invalid time (mm:ss expected): {}".format(text))
+                    print("Invalid time (mm or mm:ss expected), got \"{}\"".format(text))
                     return True
+                except IndexError:
+                    s = 0
 
-                self.est_time = m*60 + s;
-                self.label_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
+                self.est_time = m * 60 + s;
+                self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
                 self.label_time.override_color(Gtk.StateType.NORMAL, self.label_color_default)
                 return True
 
@@ -1215,7 +1216,7 @@ class UI:
         # Time elapsed since the beginning of the presentation
         if not self.paused:
             self.delta = time.time() - self.start_time
-        elapsed = "{:02}:{:02}".format(int(self.delta/60), int(self.delta%60))
+        elapsed = "{:02}:{:02}".format(*divmod(int(self.delta), 60))
         if self.paused:
             elapsed += " (paused)"
 

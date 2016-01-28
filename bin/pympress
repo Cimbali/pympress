@@ -31,12 +31,12 @@ from gi.repository import Gtk, Gdk
 import pympress.ui
 
 def usage():
-    print ("Usage: " + sys.argv[0] + " [options] <presentation_file>")
-    print
-    print ("Options:")
-    print ("    -h, --help: This help")
-    print ("    -t xx, --talk-time=xx: The estimated (intended) talk time in minutes")
-    print
+    print("Usage: {} [options] <presentation_file>".format(sys.argv[0]))
+    print("")
+    print("Options:")
+    print("    -h, --help: This help")
+    print("    -t xx, --talk-time=xx: The estimated (intended) talk time in minutes")
+    print("")
 
 def main(argv):
     signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -52,17 +52,17 @@ def main(argv):
             usage()
             sys.exit()
         elif opt in ("-t", "--talk-time"):
+            t = ["0" + n.strip() for n in arg.split(':')]
             try:
-                t = arg.split(":")
-                m = int(t[0] if len(t[0]) > 0 else "0")
-                s = 0
-                if len(t) > 1:
-                    s = int(t[1])
-                ett = m * 60 + s
+                m = int(t[0])
+                s = int(t[1])
             except ValueError:
-                print("Invalid time (mm:ss expected): {}".format(arg))
+                print("Invalid time (mm or mm:ss expected), got \"{}\"".format(text))
                 usage()
                 sys.exit(2)
+            except IndexError:
+                s = 0
+            ett = m * 60 + s
 
     # PDF file to open passed on command line?
     name = None
@@ -71,10 +71,11 @@ def main(argv):
 
         # Check if the path is valid
         if not os.path.exists(name):
-            msg="""Could not find the file "{}".""".format(name)
+            msg="Could not find the file \"{}\"".format(name)
             dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg)
             dialog.set_position(Gtk.WindowPosition.CENTER)
             dialog.run()
+            name = None
 
     # Create windows
     ui = pympress.ui.UI(name, ett)
