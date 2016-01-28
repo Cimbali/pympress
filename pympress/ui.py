@@ -419,21 +419,23 @@ class UI:
         if screen.get_n_monitors() > 1:
             c_monitor = self.config.getint('content', 'monitor')
             p_monitor = self.config.getint('presenter', 'monitor')
-            if c_monitor == p_monitor:
-                print("Warning: Content and presenter window must not be on the same monitor!", file=sys.stderr)
+            p_full = self.config.getboolean('presenter', 'start_fullscreen')
+            c_full = self.config.getboolean('content', 'start_fullscreen')
+
+            if c_monitor == p_monitor and (c_full or p_full):
+                print("Warning: Content and presenter window must not be on the same monitor if you start full screen!", file=sys.stderr)
                 p_monitor = 0 if c_monitor > 0 else 1
-                self.config.set('presenter', 'monitor', str(p_monitor))
 
             p_bounds = screen.get_monitor_geometry(p_monitor)
             self.p_win.move(p_bounds.x, p_bounds.y)
-            if self.config.getboolean('presenter', 'start_fullscreen'):
+            if p_full:
                 self.p_win.fullscreen()
             else:
                 self.p_win.maximize()
 
             c_bounds = screen.get_monitor_geometry(c_monitor)
             self.c_win.move(c_bounds.x, c_bounds.y)
-            if self.config.getboolean('content', 'start_fullscreen'):
+            if c_full:
                 self.c_win.fullscreen()
 
 
@@ -634,9 +636,13 @@ class UI:
         """Save configuration and exit the main loop"""
         cur_pane_size = self.p_frame_cur.get_allocated_width()
         next_pane_size = self.p_frame_next.get_allocated_width()
-        # 5 is handle width
         ratio = float(cur_pane_size) / (cur_pane_size + next_pane_size)
         self.config.set('presenter', 'slide_ratio', "{0:.2f}".format(ratio))
+
+        p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_frame_cur.get_parent_window())
+        c_monitor = self.c_win.get_screen().get_monitor_at_window(self.c_frame.get_parent_window())
+        self.config.set('presenter', 'monitor', str(p_monitor))
+        self.config.set('content', 'monitor', str(c_monitor))
 
         pympress.util.save_config(self.config)
         Gtk.main_quit()
@@ -1454,16 +1460,18 @@ class UI:
 
         screen = self.p_win.get_screen()
         if screen.get_n_monitors() > 1:
-            c_monitor = self.config.getint('content', 'monitor')
-            p_monitor = self.config.getint('presenter', 'monitor')
+            # Though Gtk.Window is a Gtk.Widget get_parent_window() actually returns None on self.{c,p}_win
+            p_monitor = screen.get_monitor_at_window(self.p_frame_cur.get_parent_window())
+            c_monitor = screen.get_monitor_at_window(self.c_frame.get_parent_window())
+
+            if p_monitor == c_monitor:
+                return
 
             p_monitor, c_monitor = (c_monitor, p_monitor)
 
-            self.config.set('presenter', 'monitor', str(p_monitor))
-            self.config.set('content', 'monitor', str(c_monitor))
-
             cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
             px, py, pw, ph = self.p_win.get_position() + self.p_win.get_size()
+
             c_bounds = screen.get_monitor_geometry(c_monitor)
             p_bounds = screen.get_monitor_geometry(p_monitor)
             self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
