@@ -38,10 +38,20 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GObject
 
 class SlideSelector(Gtk.SpinButton):
+    """ Spin button widget to set the page number,
+    it sends information on pages to preview to the ui.
+    """
     ui = None
     maxpage = -1
     timer = -1
+
     def __init__(self, parent, maxpage):
+        """
+        :param parent: The ui that will show preview of pages chosen by this widget.
+        :type  parent: :class:`pympress.ui.UI`
+        :param maxpage: the last possible page
+        :type  maxpage: int
+        """
         GObject.GObject.__init__(self)
 
         self.ui = parent
@@ -51,38 +61,65 @@ class SlideSelector(Gtk.SpinButton):
         self.set_update_policy(Gtk.SpinButtonUpdatePolicy.ALWAYS)
         self.set_numeric(True)
 
-        self.connect('changed', self.on_changed)
+        self.connect("changed", self.on_changed)
         self.connect("key-press-event", self.on_keypress)
         self.connect("key-release-event", self.on_keyup)
         self.connect("editing-done", self.done)
         self.connect("insert-text", self.on_changed)
 
     def on_keyup(self, widget, event):
+        """ Manage key releases.
+
+        Ignore 'G' which is the one used to make the slide selector appear,
+        let others have their default behaviour in a spin button.
+
+        :param widget: the widget which has received the key stroke.
+        :type  widget: :class:`Gtk.Widget`
+        :param event: the GTK event, which contains the ket stroke information.
+        :type  event: :class:`Gdk.Event`
+        """
         if event.type == Gdk.EventType.KEY_PRESS and Gdk.keyval_name(event.keyval).upper() == "G":
             return False
         return Gtk.SpinButton.do_key_release_event(self, event)
 
     def done(self, *args):
+        """ Tell ui to remove this widget and to go to the selected page.
+        """
         self.ui.restore_current_label()
         self.ui.doc.goto(self.get_page(), False)
 
     def cancel(self, *args):
+        """ Tell ui to remove this widget and to stop previewing different pages.
+        """
         self.ui.restore_current_label()
         self.ui.on_page_change(False)
 
     def on_changed(self, *args):
+        """ Tell ui to preview the selected page.
+        """
         self.ui.page_preview(self.get_page())
 
     def force_update(self, *args):
+        """ Validate current text input as a page to be previewed.
+        """
         self.timer = -1
         self.set_value(float(self.get_buffer().get_text()))
         self.on_changed()
         return False
 
     def get_page(self):
+        """ Return the currently selected page number.
+        """
         return max(1, min(self.maxpage, self.get_value_as_int()))-1
 
     def on_keypress(self, widget, event):
+        """ Manage key presses, for validating or navigating input, or cancelling navigation.
+
+        :param widget: the widget which has received the key stroke.
+        :type  widget: :class:`Gtk.Widget`
+        :param event: the GTK event, which contains the ket stroke information.
+        :type  event: :class:`Gdk.Event`
+        """
         if event.type == Gdk.EventType.KEY_PRESS:
             name = Gdk.keyval_name(event.keyval)
 
@@ -127,3 +164,10 @@ class SlideSelector(Gtk.SpinButton):
         return False
 
 
+##
+# Local Variables:
+# mode: python
+# indent-tabs-mode: nil
+# py-indent-offset: 4
+# fill-column: 80
+# end:

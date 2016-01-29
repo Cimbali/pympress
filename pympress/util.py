@@ -39,31 +39,39 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-def get_style_provider():
-    if IS_MAC_OS:
-        name = "macos.css"
-    else:
-        name = "default.css"
 
+def get_resource_path(*path_parts):
+    """ Return the resource path based on whether its frozen or not.
+    """
     if getattr(sys, 'frozen', False):
-        css_fn = os.path.join(os.path.dirname(sys.executable), "share", "css", name)
+        return os.path.join(os.path.dirname(sys.executable), *path_parts)
     else:
         req = pkg_resources.Requirement.parse("pympress")
-        css_fn = pkg_resources.resource_filename(req, os.path.join("share", "css", name))
+        return pkg_resources.resource_filename(req, os.path.join(*path_parts))
+
+
+def get_style_provider():
+    """ Load the css and return corresponding style provider.
+    """
+    if IS_MAC_OS:
+        css_fn = get_resource_path("share", "css", "macos.css")
+    else:
+        css_fn = get_resource_path("share", "css", "default.css")
 
     style_provider = Gtk.CssProvider()
     style_provider.load_from_path(css_fn)
     return style_provider
 
+
 def get_icon_pixbuf(name):
-    if getattr(sys, 'frozen', False):
-        icon_fn = os.path.join(os.path.dirname(sys.executable), "share", "pixmaps", name)
-    else:
-        req = pkg_resources.Requirement.parse("pympress")
-        icon_fn = pkg_resources.resource_filename(req, os.path.join("share", "pixmaps", name))
-    return GdkPixbuf.Pixbuf.new_from_file(icon_fn)
+    """ Load an image from pympress' resources in a Gdk Pixbuf.
+    """
+    return GdkPixbuf.Pixbuf.new_from_file(get_resource_path("share", "pixmaps", name))
+
 
 def list_icons():
+    """ List the icons from pympress' resources.
+    """
     if getattr(sys, 'frozen', False):
         icons = os.listdir(os.path.join(os.path.dirname(sys.executable), "share", "pixmaps"))
     else:
@@ -72,15 +80,14 @@ def list_icons():
 
     return [i for i in icons if os.path.splitext(i)[1].lower() == ".png" and i[:9] == "pympress-"]
 
+
 def load_icons():
-    """
-    Load pympress icons from the pixmaps directory (usually
+    """ Load pympress icons from the pixmaps directory (usually
     :file:`/usr/share/pixmaps` or something similar).
 
     :return: loaded icons
     :rtype: list of :class:`GdkPixbuf.Pixbuf`
     """
-
     icons = []
     for icon_name in list_icons():
         try:
@@ -93,6 +100,8 @@ def load_icons():
 
 
 def path_to_config():
+    """ Return the OS-specific path to the configuration file.
+    """
     if IS_POSIX:
         conf_dir=os.path.expanduser("~/.config")
         conf_file_nodir=os.path.expanduser("~/.pympress")
@@ -110,7 +119,10 @@ def path_to_config():
     else:
         return os.path.join(os.environ["APPDATA"], "pympress.ini")
 
+
 def load_config():
+    """ Get the configuration from its file.
+    """
     config = configparser.ConfigParser()
     config.add_section('content')
     config.add_section('presenter')
@@ -147,9 +159,13 @@ def load_config():
 
     return config
 
+
 def save_config(config):
+    """ Save the configuration to its file.
+    """
     with open(path_to_config(), 'w') as configfile:
         config.write(configfile)
+
 
 ##
 # Local Variables:

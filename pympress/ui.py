@@ -73,7 +73,7 @@ else:
 media_overlays = {}
 
 class UI:
-    """Pympress GUI management.
+    """ Pympress GUI management.
     """
 
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
@@ -233,7 +233,7 @@ class UI:
 
 
     def make_cwin(self):
-        """Creates and initializes the content window
+        """ Creates and initializes the content window.
         """
         black = Gdk.Color(0, 0, 0)
 
@@ -268,7 +268,7 @@ class UI:
 
 
     def make_pwin(self):
-        """Creates and initializes the presenter window
+        """ Creates and initializes the presenter window.
         """
         # Presenter window
         self.p_win.set_name('PresenterWindow')
@@ -301,7 +301,7 @@ class UI:
 
 
     def add_events(self):
-        """Connects the events we want to the different widgets
+        """ Connects the events we want to the different widgets.
         """
         self.p_win.connect("destroy", self.save_and_quit)
         self.c_win.connect("destroy", self.save_and_quit)
@@ -336,7 +336,7 @@ class UI:
 
 
     def make_pwin_panes(self):
-        """Creates and initializes the presenter window's panes
+        """ Creates and initializes the presenter window's panes.
 
         :return: the preview panes with current and next slide
         :rtype: :class:`Gtk.Paned`
@@ -454,8 +454,14 @@ class UI:
 
 
     def make_frame_slidenum(self):
-        # "Current slide" label and entry. eb_cur gets all events on the whole,
-        # label_cur may be replaced by spin_cur at times, last_cur doesn't move
+        """ Make "Current slide" label and entry.
+
+        The left part is a label that shows the current slide number.
+        The right part is a label that shows the total number of slides.
+        Both parts are within an event box that gets all events on the whole.
+
+        The left label may be replaced by a spinner to choose which slide to jump to.
+        """
         self.label_cur.set_name("LSlideCur")
         self.label_cur.get_style_context().add_class("info-label")
         self.label_cur.props.halign = Gtk.Align.END
@@ -483,7 +489,8 @@ class UI:
 
 
     def make_frame_clock(self):
-        # "Clock" frame
+        """ Make "Clock" frame, that will display the time.
+        """
         frame = Gtk.Frame()
         frame.set_label("Clock")
         frame.set_size_request(170, 0)
@@ -495,7 +502,9 @@ class UI:
 
 
     def make_frame_time(self):
-        # "Time elapsed" frame
+        """ Make "Time elapsed" frame that shows how much time spent in presentation.
+        This label may change styles depending on the talk duration estimate.
+        """
         frame = Gtk.Frame()
         frame.set_label("Time elapsed")
         frame.set_size_request(170, 0)
@@ -503,26 +512,28 @@ class UI:
         self.label_time.set_name("LTimeElapsed")
 
         # Load color from CSS
-        self.label_time.get_style_context().add_class("ett-reached")
+        style_context = self.label_time.get_style_context()
+        style_context.add_class("ett-reached")
         self.label_time.show();
-        self.label_color_ett_reached = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
-        self.label_time.get_style_context().remove_class("ett-reached")
-        self.label_time.get_style_context().add_class("ett-info")
+        self.label_color_ett_reached = style_context.get_color(Gtk.StateType.NORMAL)
+        style_context.remove_class("ett-reached")
+        style_context.add_class("ett-info")
         self.label_time.show();
-        self.label_color_ett_info = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
-        self.label_time.get_style_context().remove_class("ett-info")
-        self.label_time.get_style_context().add_class("ett-warn")
+        self.label_color_ett_info = style_context.get_color(Gtk.StateType.NORMAL)
+        style_context.remove_class("ett-info")
+        style_context.add_class("ett-warn")
         self.label_time.show();
-        self.label_color_ett_warn = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
-        self.label_time.get_style_context().remove_class("ett-warn")
-        self.label_time.get_style_context().add_class("info-label")
+        self.label_color_ett_warn = style_context.get_color(Gtk.StateType.NORMAL)
+        style_context.remove_class("ett-warn")
+        style_context.add_class("info-label")
         self.label_time.show();
         frame.add(self.label_time)
         return frame
 
 
     def make_frame_ett(self):
-        # Estimated talk time frame
+        """ Make "Time estimation" frame that shows the time allocated for the talk.
+        """
         self.label_ett.set_name("LEstTalkTime")
         self.label_ett.get_style_context().add_class("info-label")
         self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
@@ -539,7 +550,7 @@ class UI:
 
 
     def make_menubar(self):
-        """Creates and initializes the menu bar
+        """ Creates and initializes the menu bar.
 
         :return: the menu bar
         :rtype: :class:`Gtk.Widget`
@@ -624,6 +635,8 @@ class UI:
 
 
     def add_annotations(self, annotations):
+        """ Insert text annotations into the tree view that displays them.
+        """
         list_annot = Gtk.ListStore(str)
 
         for annot in annotations:
@@ -634,13 +647,13 @@ class UI:
 
 
     def run(self):
-        """Run the GTK main loop.
+        """ Run the GTK main loop.
         """
         Gtk.main()
 
 
     def save_and_quit(self, *args):
-        """Save configuration and exit the main loop.
+        """ Save configuration and exit the main loop.
         """
         cur_pane_size = self.p_frame_cur.get_allocated_width()
         next_pane_size = self.p_frame_next.get_allocated_width()
@@ -657,6 +670,8 @@ class UI:
 
 
     def pick_file(self):
+        """ Ask the user which file he means to open.
+        """
         # Use a GTK file dialog to choose file
         dialog = Gtk.FileChooserDialog('Open...', self.p_win,
                                        Gtk.FileChooserAction.OPEN,
@@ -694,7 +709,7 @@ class UI:
 
 
     def menu_about(self, widget=None, event=None):
-        """Display the "About pympress" dialog.
+        """ Display the "About pympress" dialog.
         """
         about = Gtk.AboutDialog()
         about.set_program_name('pympress')
@@ -712,8 +727,7 @@ class UI:
 
 
     def page_preview(self, page_nb):
-        """
-        Switch to another page and display it.
+        """ Switch to another page and display it.
 
         This is a kind of event which is supposed to be called only from the
         :class:`~pympress.document.Document` class.
@@ -751,8 +765,7 @@ class UI:
 
 
     def on_page_change(self, unpause=True):
-        """
-        Switch to another page and display it.
+        """ Switch to another page and display it.
 
         This is a kind of event which is supposed to be called only from the
         :class:`~pympress.document.Document` class.
@@ -803,7 +816,7 @@ class UI:
 
 
     def replace_media_overlays(self):
-        """Remove current media overlays, add new ones if page contains media.
+        """ Remove current media overlays, add new ones if page contains media.
         """
         if not vlc_enabled:
             return
@@ -827,7 +840,7 @@ class UI:
 
     @staticmethod
     def play_media(media_id):
-        """Static way of starting (playing) a media. Used by callbacks.
+        """ Static way of starting (playing) a media. Used by callbacks.
         """
         global media_overlays
         if media_id in media_overlays:
@@ -835,8 +848,7 @@ class UI:
 
 
     def on_draw(self, widget, cairo_context):
-        """
-        Manage draw events for both windows.
+        """ Manage draw events for both windows.
 
         This callback may be called either directly on a page change or as an
         event handler by GTK. In both cases, it determines which widget needs to
@@ -889,8 +901,7 @@ class UI:
 
 
     def on_configure_da(self, widget, event):
-        """
-        Manage "configure" events for both windows.
+        """ Manage "configure" events for both windows.
 
         In the GTK world, this event is triggered when a widget's configuration
         is modified, for example when its size changes. So, when this event is
@@ -913,8 +924,7 @@ class UI:
 
 
     def on_navigation(self, widget, event):
-        """
-        Manage events as mouse scroll or clicks for both windows.
+        """ Manage events as mouse scroll or clicks for both windows.
 
         :param widget: the widget in which the event occured (ignored)
         :type  widget: :class:`Gtk.Widget`
@@ -1009,8 +1019,7 @@ class UI:
 
 
     def on_link(self, widget, event):
-        """
-        Manage events related to hyperlinks.
+        """ Manage events related to hyperlinks.
 
         :param widget: the widget in which the event occured
         :type  widget: :class:`Gtk.Widget`
@@ -1049,8 +1058,7 @@ class UI:
 
 
     def on_label_event(self, *args):
-        """
-        Manage events on the current slide label/entry.
+        """ Manage events on the current slide label/entry.
 
         This function replaces the label with an entry when clicked, replaces
         the entry with a label when needed, etc. The nasty stuff it does is an
@@ -1096,8 +1104,7 @@ class UI:
 
 
     def on_label_ett_event(self, widget, event):
-        """
-        Manage events on the current slide label/entry.
+        """ Manage events on the current slide label/entry.
 
         This function replaces the label with an entry when clicked, replaces
         the entry with a label when needed, etc. The nasty stuff it does is an
@@ -1162,8 +1169,7 @@ class UI:
 
 
     def resize_annotation_list(self):
-        """
-        Readjust the annotation list's scroll window
+        """ Readjust the annotation list's scroll window
         so it won't compete for space with the next slide frame
         """
         r = self.p_frame_next.props.ratio
@@ -1176,9 +1182,8 @@ class UI:
 
 
     def restore_current_label(self):
-        """
-        Make sure that the current page number is displayed in a label and not
-        in an entry. If it is an entry, then replace it with the label.
+        """ Make sure that the current page number is displayed in a label and not in an entry.
+        If it is an entry, then replace it with the label.
         """
         if self.label_cur not in self.hb_cur:
             self.hb_cur.remove(self.spin_cur)
@@ -1190,9 +1195,8 @@ class UI:
 
 
     def restore_current_label_ett(self):
-        """
-        Make sure that the current page number is displayed in a label and not
-        in an entry. If it is an entry, then replace it with the label.
+        """ Make sure that the current page number is displayed in a label and not in an entry.
+        If it is an entry, then replace it with the label.
         """
         child = self.eb_ett.get_child()
         if child is not self.label_ett:
@@ -1203,7 +1207,7 @@ class UI:
 
 
     def update_page_numbers(self):
-        """Update the displayed page numbers.
+        """ Update the displayed page numbers.
         """
 
         cur_nb = self.doc.current_page().number()
@@ -1214,8 +1218,7 @@ class UI:
 
 
     def update_time(self):
-        """
-        Update the timer and clock labels.
+        """ Update the timer and clock labels.
 
         :return: ``True`` (to prevent the timer from stopping)
         :rtype: boolean
@@ -1240,8 +1243,7 @@ class UI:
 
 
     def calc_color(self, from_color, to_color, position):
-        """
-        Compute the interpolation between two colors.
+        """ Compute the interpolation between two colors.
 
         :param from_color: the color when position = 0
         :type  from_color: :class:`Gdk.RGBA`
@@ -1262,36 +1264,40 @@ class UI:
         """ Update the color of the time label based on how much time is remaining.
         """
         if not self.est_time == 0:
-            color = None
+            # Set up colors between which to fade, based on how much time remains (<0 has run out of time).
+            # Times are given in seconds, in between two of those timestamps the color will interpolated linearly.
+            # Outside of the intervals the closest color will be used.
+            colors = {
+                 300:self.label_color_default,
+                   0:self.label_color_ett_reached,
+                -150:self.label_color_ett_info,
+                -300:self.label_color_ett_warn
+            }
+            bounds=list(sorted(colors, reverse=True)[:-1])
 
-            offset = self.est_time - self.delta
-            if offset <= 300: # less than 5 minutes left
-                if offset >= 0:
-                    of = lambda max: (max - offset)/float(max)
-                    color = self.calc_color(self.label_color_default, self.label_color_ett_reached, of(300))
-                elif offset >= -150:
-                    of = lambda max: offset/float(max)
-                    color = self.calc_color(self.label_color_ett_reached, self.label_color_ett_info, of(-150))
-                elif offset >= -300:
-                    of = lambda max: (offset + 150)/float(max)
-                    color = self.calc_color(self.label_color_ett_info, self.label_color_ett_warn, of(-150))
-                else:
-                    color = self.label_color_ett_warn
+            remaining = self.est_time - self.delta
+            if remaining >= bounds[0]:
+                color = color[bounds[0]]
+            elif remaining <= bounds[-1]:
+                color = colors[bounds[-1]]
+            else:
+                c=1
+                while bounds[c] >= remaining:
+                    c += 1
+                position = (remaining - bounds[c-1]) / (bounds[c] - bounds[c-1])
+                color = self.calc_color(colors[bounds[c-1]], colors[bounds[c]], position)
 
             if color:
                 self.label_time.override_color(Gtk.StateType.NORMAL, color)
 
-            if (
-                (offset <= 0 and offset > -5) or
-                (offset <= -300 and offset > -310)
-            ):
+            if (remaining <= 0 and remaining > -5) or (remaining <= -300 and remaining > -310):
                 self.label_time.get_style_context().add_class("time-warn")
             else:
                 self.label_time.get_style_context().remove_class("time-warn")
 
 
     def switch_pause(self, widget=None, event=None):
-        """Switch the timer between paused mode and running (normal) mode.
+        """ Switch the timer between paused mode and running (normal) mode.
         """
         if self.paused:
             self.start_time = time.time() - self.delta
@@ -1302,7 +1308,7 @@ class UI:
 
 
     def reset_timer(self, widget=None, event=None):
-        """Reset the timer.
+        """ Reset the timer.
         """
         self.start_time = time.time()
         self.delta = 0
@@ -1310,8 +1316,7 @@ class UI:
 
 
     def set_screensaver(self, must_disable):
-        """
-        Enable or disable the screensaver.
+        """ Enable or disable the screensaver.
 
         .. warning:: At the moment, this is only supported on POSIX systems
            where :command:`xdg-screensaver` is installed and working. For now,
@@ -1385,9 +1390,8 @@ class UI:
 
 
     def switch_fullscreen(self, widget=None, event=None):
-        """
-        Switch the Content window to fullscreen (if in normal mode) or to normal
-        mode (if fullscreen).
+        """ Switch the Content window to fullscreen (if in normal mode)
+        or to normal mode (if fullscreen).
 
         Screensaver will be disabled when entering fullscreen mode, and enabled
         when leaving fullscreen mode.
@@ -1411,8 +1415,7 @@ class UI:
 
 
     def on_window_state_event(self, widget, event, user_data=None):
-        """
-        Track whether the preview window is maximized
+        """ Track whether the preview window is maximized.
         """
         if widget.get_name() == self.p_win.get_name():
             self.p_win_maximized = (Gdk.WindowState.MAXIMIZED & event.new_window_state) != 0
@@ -1423,13 +1426,14 @@ class UI:
 
 
     def update_frame_position(self, widget=None, user_data=None):
+        """ Callback to preview the frame alignement, called from the spinbutton.
+        """
         if widget and user_data:
             self.c_frame.set_property(user_data, widget.get_value())
 
 
     def adjust_frame_position(self, widget=None, event=None):
-        """
-        Select how to align the frame on screen
+        """ Select how to align the frame on screen.
         """
         win_aspect_ratio = float(self.c_win.get_allocated_width()) / self.c_win.get_allocated_height()
 
@@ -1464,8 +1468,7 @@ class UI:
 
 
     def swap_screens(self, widget=None, event=None):
-        """
-        Swap the monitors on which each window is displayed (if there are 2 monitors at least)
+        """ Swap the monitors on which each window is displayed (if there are 2 monitors at least).
         """
         c_win_was_fullscreen = self.c_win_fullscreen
         p_win_was_fullscreen = self.p_win_fullscreen
@@ -1507,16 +1510,14 @@ class UI:
 
 
     def switch_blanked(self, widget=None, event=None):
-        """
-        Switch the blanked mode of the main screen
+        """ Switch the blanked mode of the main screen.
         """
         self.blanked = not self.blanked
         self.c_da.queue_draw()
 
 
     def switch_start_blanked(self, widget=None, event=None):
-        """
-        Switch the blanked mode of the main screen
+        """ Switch the blanked mode of the main screen.
         """
         if self.config.getboolean('content', 'start_blanked'):
             self.config.set('content', 'start_blanked', 'off')
@@ -1525,8 +1526,7 @@ class UI:
 
 
     def switch_start_fullscreen(self, widget=None):
-        """
-        Switch the blanked mode of the main screen
+        """ Switch the blanked mode of the main screen.
         """
         if widget.get_name() == 'Start content fullscreen':
             target = 'content'
@@ -1540,8 +1540,7 @@ class UI:
 
 
     def switch_mode(self, widget=None, event=None):
-        """
-        Switch the display mode to "Notes mode" or "Normal mode" (without notes)
+        """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
         """
         if self.notes_mode:
             self.notes_mode = False

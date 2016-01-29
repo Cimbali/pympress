@@ -41,8 +41,8 @@ from gi.repository import Gtk, Gdk, GLib
 
 
 class OrderedDict(collections.OrderedDict):
-    """OrderedDict for python2 compatibility, adding move_to_end()."""
-
+    """ OrderedDict for python2 compatibility, adding move_to_end().
+    """
     def move_to_end(self, key):
         try:
             collections.OrderedDict.move_to_end(self, key)
@@ -53,7 +53,8 @@ class OrderedDict(collections.OrderedDict):
 
 
 class SurfaceCache:
-    """Pages caching and prerendering made (almost) easy."""
+    """ Pages caching and prerendering made (almost) easy.
+    """
 
     #: The actual cache. It is a dictionary of :class:`pympress.surfacecache.Cache`:
     #: its keys are widget names and its values are dictionaries whose keys are
@@ -96,8 +97,7 @@ class SurfaceCache:
         self.doc_lock = threading.Lock()
 
     def add_widget(self, widget_name, wtype):
-        """
-        Add a widget to the list of widgets that have to be managed (for caching
+        """ Add a widget to the list of widgets that have to be managed (for caching
         and prerendering).
 
         This creates new entries for ``widget_name`` in the needed internal data
@@ -115,8 +115,7 @@ class SurfaceCache:
         self.locks[widget_name] = threading.Lock()
 
     def set_widget_type(self, widget_name, wtype):
-        """
-        Set the document type of a widget.
+        """ Set the document type of a widget.
 
         :param widget_name: string used to identify a widget
         :type  widget_name: string
@@ -129,8 +128,7 @@ class SurfaceCache:
                 self.surface_cache[widget_name].clear()
 
     def get_widget_type(self, widget_name):
-        """
-        Get the document type of a widget.
+        """ Get the document type of a widget.
 
         :param widget_name: string used to identify a widget
         :type  widget_name: string
@@ -140,8 +138,7 @@ class SurfaceCache:
         return self.surface_type[widget_name]
 
     def resize_widget(self, widget_name, width, height):
-        """
-        Change the size of a registered widget, thus invalidating all the cached pages.
+        """ Change the size of a registered widget, thus invalidating all the cached pages.
 
         :param widget_name: name of the widget that is resized
         :type  widget_name: string
@@ -156,8 +153,7 @@ class SurfaceCache:
                 self.surface_size[widget_name] = (width, height)
 
     def get(self, widget_name, page_nb):
-        """
-        Fetch a cached, prerendered page for the specified widget.
+        """ Fetch a cached, prerendered page for the specified widget.
 
         :param widget_name: name of the concerned widget
         :type  widget_name: string
@@ -175,8 +171,7 @@ class SurfaceCache:
                 return None
 
     def set(self, widget_name, page_nb, val):
-        """
-        Store a rendered page in the cache.
+        """ Store a rendered page in the cache.
 
         :param widget_name: name of the concerned widget
         :type  wdiget_name: string
@@ -194,8 +189,7 @@ class SurfaceCache:
                 pc.popitem(False)
 
     def prerender(self, page_nb):
-        """
-        Queue a page for prerendering.
+        """ Queue a page for prerendering.
 
         The specified page will be prerendered for all the registered widgets.
 
@@ -206,8 +200,7 @@ class SurfaceCache:
             GLib.idle_add(self.renderer, name, page_nb)
 
     def renderer(self, widget_name, page_nb):
-        """
-        Rendering thread.
+        """ Rendering thread.
 
         This function is meant to be run in the prerendering thread. It runs
         infinitely (until the program ends) and does the following steps:
@@ -254,3 +247,11 @@ class SurfaceCache:
 
         return False
 
+
+##
+# Local Variables:
+# mode: python
+# indent-tabs-mode: nil
+# py-indent-offset: 4
+# fill-column: 80
+# end:

@@ -63,15 +63,20 @@ import pympress.util
 
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
+
 def get_extension(mime_type):
+    """ Returns a valid filename extension (recognized by python) for a given mime type.
+    """
     if not mimetypes.inited:
         mimetypes.init()
     for ext in mimetypes.types_map:
         if mimetypes.types_map[ext] == mime_type:
             return ext
 
+
 class Link:
-    """This class encapsulates one hyperlink of the document."""
+    """ This class encapsulates one hyperlink of the document.
+    """
 
     #: First x coordinate of the link rectangle, as a float number
     x1 = None
@@ -99,8 +104,7 @@ class Link:
         self.follow = action
 
     def is_over(self, x, y):
-        """
-        Tell if the input coordinates are on the link rectangle.
+        """ Tell if the input coordinates are on the link rectangle.
 
         :param x: input x coordinate
         :type  x: float
@@ -113,15 +117,13 @@ class Link:
         return ( (self.x1 <= x) and (x <= self.x2) and (self.y1 <= y) and (y <= self.y2) )
 
     def follow(self):
-        """
-        Follow the link to its destination.
+        """ Follow the link to its destination.
         This is overriden by the function to perform the actual action in the constructor.
         """
 
 
 class Page:
-    """
-    Class representing a single page.
+    """ Class representing a single page.
 
     It provides several methods used by the GUI for preparing windows for
     displaying pages, managing hyperlinks, etc.
@@ -211,7 +213,7 @@ class Page:
             self.links.append(my_annotation)
 
     def get_link_action(self, link_type, action):
-        """Get the function to be called when the link is followed
+        """ Get the function to be called when the link is followed.
         """
         # Poppler.ActionType.RENDITION should only appear in annotations, right? Otherwise how do we know
         # where to render it? Any documentation on which action types are admissible in links vs in annots
@@ -280,7 +282,7 @@ class Page:
         return fun
 
     def get_annot_action(self, link_type, action, rect):
-        """Get the function to be called when the link is followed
+        """ Get the function to be called when the link is followed.
         """
         if link_type == Poppler.ActionType.RENDITION:
             media = action.rendition.media
@@ -313,12 +315,12 @@ class Page:
             return self.get_link_action(link_type, action)
 
     def number(self):
-        """Get the page number"""
+        """ Get the page number.
+        """
         return self.page_nb
 
     def get_link_at(self, x, y):
-        """
-        Get the :class:`~pympress.document.Link` corresponding to the given
+        """ Get the :class:`~pympress.document.Link` corresponding to the given
         position, or ``None`` if there is no link at this position.
 
         :param x: horizontal coordinate
@@ -339,7 +341,7 @@ class Page:
         return None
 
     def get_size(self, dtype=PDF_REGULAR):
-        """Get the page size.
+        """ Get the page size.
 
         :param dtype: the type of document to consider
         :type  dtype: integer
@@ -352,7 +354,7 @@ class Page:
             return (self.pw/2., self.ph)
 
     def get_aspect_ratio(self, dtype=PDF_REGULAR):
-        """Get the page aspect ratio.
+        """ Get the page aspect ratio.
 
         :param dtype: the type of document to consider
         :type  dtype: integer
@@ -365,7 +367,7 @@ class Page:
             return (self.pw/2.) / self.ph
 
     def get_annotations(self):
-        """Get the list of text annotations on this page
+        """ Get the list of text annotations on this page.
 
         :return: page aspect ratio
         :rtype: list of tuples of area and filenames
@@ -373,7 +375,7 @@ class Page:
         return self.annotations
 
     def get_media(self):
-        """Get the list of medias this page might want to play
+        """ Get the list of medias this page might want to play.
 
         :return: page aspect ratio
         :rtype: list of tuples of area and filenames
@@ -381,7 +383,7 @@ class Page:
         return self.medias
 
     def render_cairo(self, cr, ww, wh, dtype=PDF_REGULAR):
-        """Render the page on a Cairo surface.
+        """ Render the page on a Cairo surface.
 
         :param cr: target surface
         :type  cr: :class:`Gdk.CairoContext`
@@ -416,7 +418,7 @@ class Page:
 
 
 class Document:
-    """This is the main document handling class.
+    """ This is the main document handling class.
 
     .. note:: The internal page numbering scheme is the same as in Poppler: it
        starts at 0.
@@ -478,7 +480,7 @@ class Document:
 
     @staticmethod
     def create(page_change_callback, path, page=0):
-        """Initializes a Document by passing it a :class:`Poppler.Document`
+        """ Initializes a Document by passing it a :class:`Poppler.Document`
 
         :param page_change_callback: action to perform to signal we changed pages
         :type  page_change_callback: function
@@ -493,7 +495,7 @@ class Document:
         return Document(page_change_callback, poppler_doc, path, page)
 
     def has_notes(self):
-        """Get the document mode.
+        """ Get the document mode.
 
         :return: ``True`` if the document has notes, ``False`` otherwise
         :rtype: boolean
@@ -501,7 +503,7 @@ class Document:
         return self.notes
 
     def page(self, number):
-        """Get the specified page.
+        """ Get the specified page.
 
         :param number: number of the page to return
         :type  number: integer
@@ -517,7 +519,7 @@ class Document:
 
 
     def current_page(self):
-        """Get the current page.
+        """ Get the current page.
 
         :return: the current page
         :rtype: :class:`pympress.document.Page`
@@ -525,7 +527,7 @@ class Document:
         return self.page(self.cur_page)
 
     def next_page(self):
-        """Get the next page.
+        """ Get the next page.
 
         :return: the next page, or ``None`` if this is the last page
         :rtype: :class:`pympress.document.Page`
@@ -534,7 +536,7 @@ class Document:
 
 
     def pages_number(self):
-        """Get the number of pages in the document.
+        """ Get the number of pages in the document.
 
         :return: the number of pages in the document
         :rtype: integer
@@ -543,7 +545,7 @@ class Document:
 
 
     def goto(self, number, unpause = True):
-        """Switch to another page.
+        """ Switch to another page.
 
         :param number: number of the destination page
         :type  number: integer
@@ -558,23 +560,27 @@ class Document:
             self.on_page_change(unpause)
 
     def goto_next(self, *args):
-        """Switch to the next page."""
+        """ Switch to the next page.
+        """
         self.goto(self.cur_page + 1)
 
     def goto_prev(self, *args):
-        """Switch to the previous page."""
+        """ Switch to the previous page.
+        """
         self.goto(self.cur_page - 1)
 
     def goto_home(self, *args):
-        """Switch to the first page."""
+        """ Switch to the first page.
+        """
         self.goto(0)
 
     def goto_end(self, *args):
-        """Switch to the last page."""
+        """ Switch to the last page.
+        """
         self.goto(self.nb_pages-1)
 
     def get_full_path(self, filename):
-        """Returns full path, extrapolated from a path relative to this document
+        """ Returns full path, extrapolated from a path relative to this document
         or to the current directory.
 
         :param filename: Name of the file or relative path to it

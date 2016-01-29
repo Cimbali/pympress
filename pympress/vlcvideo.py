@@ -66,7 +66,7 @@ def get_window_handle(window):
 
 
 class VLCVideo(Gtk.VBox):
-    """Simple VLC widget.
+    """ Simple VLC widget.
 
     Its player can be controlled through the 'player' attribute, which
     is a vlc.MediaPlayer() instance.
@@ -108,7 +108,7 @@ class VLCVideo(Gtk.VBox):
         self.movie_zone.connect("button-press-event", self.on_click)
 
     def get_player_control_toolbar(self):
-        """Return a player control toolbar
+        """ Return a player control toolbar.
         """
         tb = Gtk.Toolbar()
         tb.set_style(Gtk.ToolbarStyle.ICONS)
@@ -135,9 +135,14 @@ class VLCVideo(Gtk.VBox):
         self.props.margin_top    = ph * self.relative_margins.y2
 
     def set_file(self, filepath):
+        """ Sets the media file to be played bu the widget.
+        """
         self.player.set_media(instance.media_new(filepath))
 
     def play(self):
+        """ Start playing the media file.
+        Bring the widget to the top of the overlays if necessary.
+        """
         if not self.get_parent():
             self.overlay.add_overlay(self)
             self.resize()
@@ -147,6 +152,8 @@ class VLCVideo(Gtk.VBox):
         self.player.play()
 
     def on_click(self, widget, event):
+        """ React to click events by playing or pausing the media.
+        """
         if not self.get_parent():
             # How was this even clicked on?
             return
@@ -159,11 +166,15 @@ class VLCVideo(Gtk.VBox):
             self.player.set_time(0) # en ms
 
     def stop_and_remove(self):
+        """ Stop playing and remove widget from overlays.
+        """
         if self.player.is_playing():
             self.player.stop()
         self.hide()
 
     def hide(self, *args):
+        """ Remove widget from overlays.
+        """
         if self.get_parent():
             self.overlay.remove(self)
 
