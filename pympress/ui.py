@@ -73,7 +73,8 @@ else:
 media_overlays = {}
 
 class UI:
-    """Pympress GUI management."""
+    """Pympress GUI management.
+    """
 
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
     cache = None
@@ -633,12 +634,14 @@ class UI:
 
 
     def run(self):
-        """Run the GTK main loop."""
+        """Run the GTK main loop.
+        """
         Gtk.main()
 
 
     def save_and_quit(self, *args):
-        """Save configuration and exit the main loop"""
+        """Save configuration and exit the main loop.
+        """
         cur_pane_size = self.p_frame_cur.get_allocated_width()
         next_pane_size = self.p_frame_next.get_allocated_width()
         ratio = float(cur_pane_size) / (cur_pane_size + next_pane_size)
@@ -691,7 +694,8 @@ class UI:
 
 
     def menu_about(self, widget=None, event=None):
-        """Display the "About pympress" dialog."""
+        """Display the "About pympress" dialog.
+        """
         about = Gtk.AboutDialog()
         about.set_program_name('pympress')
         about.set_version(pympress.__version__)
@@ -799,7 +803,8 @@ class UI:
 
 
     def replace_media_overlays(self):
-        # Remove old overlays, add new if page contains media
+        """Remove current media overlays, add new ones if page contains media.
+        """
         if not vlc_enabled:
             return
 
@@ -819,13 +824,11 @@ class UI:
 
                 media_overlays[media_id] = v_da
 
-    def resize_media_overlays(self):
-        cw, ch = self.c_da.get_allocated_width(), self.c_da.get_allocated_height()
-        self.c_overlay.show_all()
-
 
     @staticmethod
     def play_media(media_id):
+        """Static way of starting (playing) a media. Used by callbacks.
+        """
         global media_overlays
         if media_id in media_overlays:
             media_overlays[media_id].play()
@@ -1165,10 +1168,11 @@ class UI:
         """
         r = self.p_frame_next.props.ratio
         w = self.p_frame_next.props.parent.get_allocated_width()
-        h = self.p_frame_next.props.parent.props.parent.get_allocated_height() - 10
+        h = self.p_frame_next.props.parent.props.parent.get_allocated_height() - 30
         self.annotation_renderer.props.wrap_width = w - 10
-        self.scrolled_window.get_column(0).queue_resize()
         self.scrollable_treelist.set_size_request(-1, max(h - w / r, 100))
+        self.scrolled_window.get_column(0).queue_resize()
+        self.scrollable_treelist.queue_resize()
 
 
     def restore_current_label(self):
@@ -1199,7 +1203,8 @@ class UI:
 
 
     def update_page_numbers(self):
-        """Update the displayed page numbers."""
+        """Update the displayed page numbers.
+        """
 
         cur_nb = self.doc.current_page().number()
         cur = str(cur_nb+1)
@@ -1234,13 +1239,28 @@ class UI:
         return True
 
 
-    def calc_color(self, f, t, offset):
-        s = lambda c: ( c.red, c.green, c.blue, c.alpha )
-        c = lambda s, g: s + (g - s) * offset
-        return Gdk.RGBA(*map(c, s(f), s(t)))
+    def calc_color(self, from_color, to_color, position):
+        """
+        Compute the interpolation between two colors.
+
+        :param from_color: the color when position = 0
+        :type  from_color: :class:`Gdk.RGBA`
+        :param to_color: the color when position = 1
+        :type  to_color: :class:`Gdk.RGBA`
+        :param position: A floating point value in the interval [0.0, 1.0]
+        :type  position: float
+        :return: The color that is between from_color and to_color
+        :rtype: :class:`Gdk.RGBA`
+        """
+        color_tuple = lambda color: ( color.red, color.green, color.blue, color.alpha )
+        interpolate = lambda start, end: start + (end - start) * position
+
+        return Gdk.RGBA(*map(interpolate, color_tuple(from_color), color_tuple(to_color)))
 
 
     def update_color(self):
+        """ Update the color of the time label based on how much time is remaining.
+        """
         if not self.est_time == 0:
             color = None
 
@@ -1271,7 +1291,8 @@ class UI:
 
 
     def switch_pause(self, widget=None, event=None):
-        """Switch the timer between paused mode and running (normal) mode."""
+        """Switch the timer between paused mode and running (normal) mode.
+        """
         if self.paused:
             self.start_time = time.time() - self.delta
             self.paused = False
@@ -1281,7 +1302,8 @@ class UI:
 
 
     def reset_timer(self, widget=None, event=None):
-        """Reset the timer."""
+        """Reset the timer.
+        """
         self.start_time = time.time()
         self.delta = 0
         self.update_time()
