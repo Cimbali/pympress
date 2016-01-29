@@ -2,21 +2,21 @@
 }
 
 #PresenterWindow GtkPaned .pane-separator {
+    background-color: #ccc;
+    border-radius: 2px;
 }
 
 #PresenterWindow GtkFrame {
 }
 
-#PresenterWindow GtkListBox {
+#PresenterWindow GtkTreeView {
+    border-style: none;
     background-color: transparent;
-}
-
-#PresenterWindow GtkListBox GtkLabel {
-    font-size: 130%;
+    font-size: 16pt;
 }
 
 #PresenterWindow GtkEntry {
-	font-size: 14pt;
+    font-size: 22pt;
 }
 
 .frame-label {

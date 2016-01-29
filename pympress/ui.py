@@ -390,7 +390,6 @@ class UI:
         column.set_fixed_width(1)
 
         self.scrolled_window = Gtk.TreeView.new_with_model(Gtk.ListStore(str))
-        self.scrolled_window.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(red=0, green=0, blue=0, alpha=0))
         self.scrolled_window.set_headers_visible(False)
         self.scrolled_window.props.fixed_height_mode = False
         self.scrolled_window.props.enable_search = False

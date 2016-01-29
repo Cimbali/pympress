@@ -8,21 +8,17 @@
 }
 
 #PresenterWindow GtkFrame {
-    border-style: none;
 }
 
-#PresenterWindow GtkListBox {
+#PresenterWindow GtkTreeView {
     border-style: none;
     background-color: transparent;
-}
-
-#PresenterWindow GtkListBox GtkLabel {
     color: #aaa;
-    font-size: 130%;
+    font-size: 16pt;
 }
 
 #PresenterWindow GtkEntry {
-	font-size: 22pt;
+    font-size: 22pt;
 }
 
 .frame-label {
