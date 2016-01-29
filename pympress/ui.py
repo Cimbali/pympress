@@ -1130,7 +1130,7 @@ class UI:
             name = Gdk.keyval_name(event.keyval)
 
             # Return key --> restore label and goto page
-            if name == "Return" or name == "KP_Return":
+            if name == "Return" or name == "KP_Enter":
                 text = self.entry_ett.get_text()
                 self.restore_current_label_ett()
 
