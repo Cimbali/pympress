@@ -24,7 +24,8 @@ from cx_Freeze import setup, Executable
 import os, site, sys
 import glob
 
-site_dir = site.getsitepackages()[1]
+
+install_dir, site_dir = site.getsitepackages()[:2]
 
 include_path = None
 for dir in ["gtk", "gnome"]:
@@ -49,6 +50,8 @@ libs_etc = [
     os.path.join('share', 'xml')
 ]
 
+# This is all relatively hardcoded and only tested with Python3.4/PyGobjet3.18
+# for example sometimes we need libstdc++-6.dll, other times libstdc++.dll
 libs_etc += ['libatk-1.0-0.dll', 'libcairo-gobject-2.dll', 'libepoxy-0.dll',
     'libffi-6.dll', 'libfontconfig-1.dll', 'libfreetype-6.dll', 'libgailutil-3-0.dll',
     'libgdk-3-0.dll', 'libgdk_pixbuf-2.0-0.dll', 'libgio-2.0-0.dll',
@@ -57,11 +60,19 @@ libs_etc += ['libatk-1.0-0.dll', 'libcairo-gobject-2.dll', 'libepoxy-0.dll',
     'libharfbuzz-gobject-0.dll', 'libharfbuzz-icu-0.dll', 'libintl-8.dll', 'libjasper-1.dll',
     'libjpeg-8.dll', 'liblcms2-2.dll', 'libopenjp2.dll', 'libpango-1.0-0.dll',
     'libpangocairo-1.0-0.dll', 'libpangoft2-1.0-0.dll', 'libpangowin32-1.0-0.dll',
-    'libpng16-16.dll', 'libpoppler-glib-8.dll', 'librsvg-2-2.dll', 'libstdc++-6.dll',
-    'libtiff-5.dll', 'libwebp-5.dll', 'libwinpthread-1.dll', 'libxmlxpat.dll', 'libzzz.dll',
-    'python34.dll']
+    'libpng16-16.dll', 'libpoppler-glib-8.dll', 'librsvg-2-2.dll', 'libstdc++.dll',
+    'libtiff-5.dll', 'libwebp-5.dll', 'libwinpthread-1.dll', 'libxmlxpat.dll', 'libzzz.dll']
 
 include_files = [(os.path.join(include_path, item), item) for item in libs_etc]
+
+python_dll='python{}{}.dll'.format(sys.version_info.major, sys.version_info.minor)
+for d in [install_dir, include_path, os.environ['SYSTEMROOT'],
+    os.path.join(os.environ['SYSTEMROOT'], 'System32'),
+    os.path.join(os.environ['SYSTEMROOT'], 'SysWOW64')]:
+
+    if os.path.isfile(os.path.join(d, python_dll)):
+        include_files.append(os.path.join(d, python_dll))
+        break
 
 include_files.append( (os.path.join("share", "pixmaps"), os.path.join("share", "pixmaps")) )
 

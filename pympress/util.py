@@ -108,7 +108,7 @@ def path_to_config():
         else:
             return conf_file_nodir
     else:
-        return os.path.expandvars(os.path.join("%APPDATA%", "pympress.ini"))
+        return os.path.join(os.environ["APPDATA"], "pympress.ini")
 
 def load_config():
     config = configparser.ConfigParser()
