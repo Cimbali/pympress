@@ -33,44 +33,47 @@ except:
     pass
 
 import ctypes
-import sys
+import sys, os
 import vlc
 
 import pympress.util
 
-vlc_opts=[]
+vlc_opts=['--no-video-title-show']
 if pympress.util.IS_POSIX:
     try:
         x11 = ctypes.cdll.LoadLibrary('libX11.so')
         x11.XInitThreads()
     except:
-        vlc_opts.append("--no-xlib")
+        vlc_opts.append('--no-xlib')
 
+if pympress.util.IS_WINDOWS:
+    # let python find the DLLs
+    os.environ['PATH'] = vlc.plugin_path + ';' + os.environ['PATH']
 
 # Create a single vlc.Instance() to be shared by (possible) multiple players.
 instance = vlc.Instance(vlc_opts)
 window_handle = None
 
 def get_window_handle(window):
-    """ Uses ctypes to call gdk_win32_window_get_handle which is not available
+    ''' Uses ctypes to call gdk_win32_window_get_handle which is not available
     in python gobject introspection porting (yet ?)
     Solution from http://stackoverflow.com/a/27236258/1387346
-    """
+    '''
     # get the c gpointer of the gdk window
     ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
     ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [ctypes.py_object]
     drawingarea_gpointer = ctypes.pythonapi.PyCapsule_GetPointer(window.__gpointer__, None)
     # get the win32 handle
-    gdkdll = ctypes.CDLL("libgdk-3-0.dll")
+    gdkdll = ctypes.CDLL('libgdk-3-0.dll')
     return gdkdll.gdk_win32_window_get_handle(drawingarea_gpointer)
 
 
 class VLCVideo(Gtk.VBox):
-    """ Simple VLC widget.
+    ''' Simple VLC widget.
 
     Its player can be controlled through the 'player' attribute, which
     is a vlc.MediaPlayer() instance.
-    """
+    '''
     player = None
     overlay = None
     controls = None
@@ -97,30 +100,30 @@ class VLCVideo(Gtk.VBox):
             # we need to be on the main thread (espcially for the mess from the win32 window handle)
             #assert isinstance(threading.current_thread(), threading._MainThread)
             if sys.platform == 'win32':
-                self.player.set_hwnd(get_window_handle(self.movie_zone.get_window())) # get_property("window")
+                self.player.set_hwnd(get_window_handle(self.movie_zone.get_window())) # get_property('window')
             else:
                 self.player.set_xwindow(self.movie_zone.get_window().get_xid())
             return True
 
-        self.connect("map", handle_embed)
+        self.connect('map', handle_embed)
 
         self.movie_zone.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        self.movie_zone.connect("button-press-event", self.on_click)
+        self.movie_zone.connect('button-press-event', self.on_click)
 
     def get_player_control_toolbar(self):
-        """ Return a player control toolbar.
-        """
+        ''' Return a player control toolbar.
+        '''
         tb = Gtk.Toolbar()
         tb.set_style(Gtk.ToolbarStyle.ICONS)
         tb.modify_bg(Gtk.StateType.NORMAL, Gdk.Color(0, 0, 0))
         for text, tooltip, stock, callback in (
-            ("Play", "Play", Gtk.STOCK_MEDIA_PLAY, lambda b: self.player.play()),
-            ("Pause", "Pause", Gtk.STOCK_MEDIA_PAUSE, lambda b: self.player.pause()),
-            ("Stop", "Stop", Gtk.STOCK_MEDIA_STOP, lambda b: self.player.stop()),
+            ('Play', 'Play', Gtk.STOCK_MEDIA_PLAY, lambda b: self.player.play()),
+            ('Pause', 'Pause', Gtk.STOCK_MEDIA_PAUSE, lambda b: self.player.pause()),
+            ('Stop', 'Stop', Gtk.STOCK_MEDIA_STOP, lambda b: self.player.stop()),
         ):
             b=Gtk.ToolButton(stock)
             b.set_tooltip_text(tooltip)
-            b.connect("clicked", callback)
+            b.connect('clicked', callback)
             tb.insert(b, -1)
         return tb
 
@@ -135,14 +138,14 @@ class VLCVideo(Gtk.VBox):
         self.props.margin_top    = ph * self.relative_margins.y2
 
     def set_file(self, filepath):
-        """ Sets the media file to be played bu the widget.
-        """
+        ''' Sets the media file to be played bu the widget.
+        '''
         self.player.set_media(instance.media_new(filepath))
 
     def play(self):
-        """ Start playing the media file.
+        ''' Start playing the media file.
         Bring the widget to the top of the overlays if necessary.
-        """
+        '''
         if not self.get_parent():
             self.overlay.add_overlay(self)
             self.resize()
@@ -152,8 +155,8 @@ class VLCVideo(Gtk.VBox):
         self.player.play()
 
     def on_click(self, widget, event):
-        """ React to click events by playing or pausing the media.
-        """
+        ''' React to click events by playing or pausing the media.
+        '''
         if not self.get_parent():
             # How was this even clicked on?
             return
@@ -166,15 +169,15 @@ class VLCVideo(Gtk.VBox):
             self.player.set_time(0) # en ms
 
     def stop_and_remove(self):
-        """ Stop playing and remove widget from overlays.
-        """
+        ''' Stop playing and remove widget from overlays.
+        '''
         if self.player.is_playing():
             self.player.stop()
         self.hide()
 
     def hide(self, *args):
-        """ Remove widget from overlays.
-        """
+        ''' Remove widget from overlays.
+        '''
         if self.get_parent():
             self.overlay.remove(self)
 

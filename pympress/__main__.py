@@ -38,7 +38,7 @@ def usage():
     print("    -t xx, --talk-time=xx: The estimated (intended) talk time in minutes")
     print("")
 
-def main(argv):
+def main(argv = []):
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     try:
         opts, args = getopt.getopt(argv, "ht:", ["help", "talk-time="])

@@ -21,17 +21,17 @@
 #       MA 02110-1301, USA.
 
 from setuptools import setup
-import glob
+import glob, sys
 
-version="0.5.1"
+version='0.5.1'
 
-setup(name="pympress",
+setup(name='pympress',
       version=version,
-      description="A simple dual-screen PDF reader designed for presentations",
-      author="Thomas Jost, Cimbali, Christof Rath",
-      author_email="me@cimba.li",
-      url="http://www.pympress.org/",
-      download_url="https://github.com/Cimbali/pympress/releases/latest",
+      description='A simple dual-screen PDF reader designed for presentations',
+      author='Thomas Jost, Cimbali, Christof Rath',
+      author_email='me@cimba.li',
+      url='http://www.pympress.org/',
+      download_url='https://github.com/Cimbali/pympress/releases/latest',
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: X11 Applications :: GTK',
@@ -45,15 +45,23 @@ setup(name="pympress",
           'Topic :: Multimedia :: Graphics :: Presentation',
           'Topic :: Multimedia :: Graphics :: Viewers',
       ],
-      packages=["pympress"],
-      scripts=["bin/pympress"],
+      packages=['pympress'],
+      entry_points={
+        'console_scripts': [
+            'pympress = pympress.__main__:main',
+        ],
+        'gui_scripts': [
+            'pympress = pympress.__main__:main',
+            'pympress{} = pympress.__main__:main'.format(sys.version_info.major),
+        ]
+      },
       license='GPLv2',
       install_requires=[
           'python-vlc',
       ],
       data_files=[
-          ("share/pixmaps", glob.glob("share/pixmaps/pympress*")),
-          ("share/css", glob.glob("share/css/*")),
+          ('share/pixmaps', glob.glob('share/pixmaps/pympress*')),
+          ('share/css', glob.glob('share/css/*')),
       ],
 )
 

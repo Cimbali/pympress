@@ -24,20 +24,25 @@ from cx_Freeze import setup, Executable
 import os, site, sys
 import glob
 
+IS_POSIX = os.name == 'posix'
+IS_MAC_OS = sys.platform == 'darwin'
+IS_WINDOWS = os.name == 'nt'
+
 
 install_dir, site_dir = site.getsitepackages()[:2]
 
 include_path = None
-for dir in ["gtk", "gnome"]:
+for dir in ['gtk', 'gnome']:
     if os.path.isdir(os.path.join(site_dir, dir)):
         include_path = os.path.join(site_dir, dir)
 
 if include_path is None:
-    print("Can not find where the GTK libraries and Python bindings are installed!")
+    print('Can not find where the GTK libraries and Python bindings are installed!')
     exit(1)
 
-version="0.5.1"
+version='0.5.1'
 
+include_files=[]
 libs_etc = [
     'etc',
     os.path.join('lib', 'girepository-1.0'),
@@ -50,9 +55,10 @@ libs_etc = [
     os.path.join('share', 'xml')
 ]
 
-# This is all relatively hardcoded and only tested with Python3.4/PyGobjet3.18
-# for example sometimes we need libstdc++-6.dll, other times libstdc++.dll
-libs_etc += ['libatk-1.0-0.dll', 'libcairo-gobject-2.dll', 'libepoxy-0.dll',
+if IS_WINDOWS:
+    # This is all relatively hardcoded and only tested with Python3.4/PyGobjet3.18
+    # for example sometimes we need libstdc++-6.dll, other times libstdc++.dll
+    libs_etc += ['libatk-1.0-0.dll', 'libcairo-gobject-2.dll', 'libepoxy-0.dll',
     'libffi-6.dll', 'libfontconfig-1.dll', 'libfreetype-6.dll', 'libgailutil-3-0.dll',
     'libgdk-3-0.dll', 'libgdk_pixbuf-2.0-0.dll', 'libgio-2.0-0.dll',
     'libgirepository-1.0-1.dll', 'libglib-2.0-0.dll', 'libgmodule-2.0-0.dll',
@@ -63,36 +69,65 @@ libs_etc += ['libatk-1.0-0.dll', 'libcairo-gobject-2.dll', 'libepoxy-0.dll',
     'libpng16-16.dll', 'libpoppler-glib-8.dll', 'librsvg-2-2.dll', 'libstdc++.dll',
     'libtiff-5.dll', 'libwebp-5.dll', 'libwinpthread-1.dll', 'libxmlxpat.dll', 'libzzz.dll']
 
-include_files = [(os.path.join(include_path, item), item) for item in libs_etc]
+    python_dll='python{}{}.dll'.format(sys.version_info.major, sys.version_info.minor)
+    for d in [install_dir, include_path, os.environ['SYSTEMROOT'],
+        os.path.join(os.environ['SYSTEMROOT'], 'System32'),
+        os.path.join(os.environ['SYSTEMROOT'], 'SysWOW64')]:
 
-python_dll='python{}{}.dll'.format(sys.version_info.major, sys.version_info.minor)
-for d in [install_dir, include_path, os.environ['SYSTEMROOT'],
-    os.path.join(os.environ['SYSTEMROOT'], 'System32'),
-    os.path.join(os.environ['SYSTEMROOT'], 'SysWOW64')]:
+        if os.path.isfile(os.path.join(d, python_dll)):
+            include_files.append(os.path.join(d, python_dll))
+            break
 
-    if os.path.isfile(os.path.join(d, python_dll)):
-        include_files.append(os.path.join(d, python_dll))
-        break
-
-include_files.append( (os.path.join("share", "pixmaps"), os.path.join("share", "pixmaps")) )
+include_files += [(os.path.join(include_path, item), item) for item in libs_etc]
+include_files.append( ('share', 'share') )
 
 buildOptions = dict(
     compressed = False,
     includes = [],
-    packages = ["gi"],
-    include_files = include_files
+    excludes = [],
+    packages = ['gi', 'vlc'],
+    include_files = include_files,
+    silent = True
 )
 
-# base hides python shell window, but beware: this can cause crashes if gi tries to output some warnings
-executables = [Executable(os.path.join("bin", "pympress"), base="Win32GUI")]
+include_vlc = None
+while include_vlc not in ['y', 'n', '']:
+    try:
+        include_vlc=raw_input('Include VLC in the package? [y/N] ')
+    except NameError:
+        include_vlc=input('Include VLC in the package? [y/N] ')
 
-setup(name="pympress",
+if include_vlc == 'y':
+    try:
+        import vlc
+        buildOptions['packages'].append('vlc')
+        print('Found VLC at '+vlc.plugin_path)
+        
+        for f in glob.glob(os.path.join(vlc.plugin_path, '*.txt')):
+            base, ext = os.path.splitext(os.path.basename(f))
+            include_files.append((f, base + '_VLC' + ext))
+        
+        for f in glob.glob(os.path.join(vlc.plugin_path, '*.dll')):
+            include_files.append((f, os.path.basename(f)))
+            
+        include_files.append((os.path.join(vlc.plugin_path, 'plugins'), ('plugins')))
+    except ImportError:
+        print('ERROR: VLC python module not available!')
+        exit(-1)
+    except Exception as e:
+        print('ERROR: Cannot include VLC: ' + str(e))
+        exit(-1)
+
+# base hides python shell window, but beware: this can cause crashes if gi tries to output some warnings
+executable = Executable(os.path.join('pympress', '__main__.py'), targetName='pympress.exe', base='Win32GUI')
+
+setup(name='pympress',
       version=version,
-      description="A simple dual-screen PDF reader designed for presentations",
-      author="Thomas Jost, Cimbali",
-      author_email="me@cimba.li",
-      url="http://www.pympress.org/",
-      download_url="https://github.com/Cimbali/pympress/releases/latest",
+      description='A simple dual-screen PDF reader designed for presentations',
+      author='Thomas Jost, Cimbali',
+      author_email='me@cimba.li',
+      url='http://www.pympress.org/',
+      download_url='https://github.com/Cimbali/pympress/releases/latest',
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: X11 Applications :: GTK',
@@ -106,13 +141,9 @@ setup(name="pympress",
           'Topic :: Multimedia :: Graphics :: Presentation',
           'Topic :: Multimedia :: Graphics :: Viewers',
       ],
-      packages=["pympress"],
-      scripts=["bin/pympress"],
-      data_files=[
-          ("share/pixmaps", glob.glob("share/pixmaps/pympress*")),
-      ],
+      packages=['pympress'],
       options = dict(build_exe = buildOptions),
-      executables = executables
+      executables = [executable]
 )
 
 ##
