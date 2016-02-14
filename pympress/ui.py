@@ -61,7 +61,10 @@ except:
 from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 
 if IS_WINDOWS:
-    import winreg
+    try:
+        import winreg
+    except ImportError:
+        import _winreg as winreg
 else:
     try:
         gi.require_version('GdkX11', '3.0')
@@ -69,6 +72,11 @@ else:
     except:
         pass
 
+try:
+    PermissionError()
+except NameError:
+    class PermissionError(Exception):
+        pass
 
 media_overlays = {}
 
@@ -143,9 +151,6 @@ class UI:
 
     #: number of page currently displayed in Controller window's miniatures
     page_preview_nb = 0
-
-    #: remember screen saver setting before we change it
-    screensaver_was_enabled = 0
 
     #: remember DPMS setting before we change it
     dpms_was_enabled = None
@@ -1332,12 +1337,6 @@ class UI:
     def set_screensaver(self, must_disable):
         """ Enable or disable the screensaver.
 
-        .. warning:: At the moment, this is only supported on POSIX systems
-           where :command:`xdg-screensaver` is installed and working. For now,
-           this feature has only been tested on **Linux with xscreensaver**.
-           On Windows (in a Win7 64b virtual machine), modifying the register
-           always caused a permission error.
-
         :param must_disable: if ``True``, indicates that the screensaver must be
            disabled; otherwise it will be enabled
         :type  must_disable: boolean
@@ -1388,17 +1387,18 @@ class UI:
                     print("Warning: Could not enable DPMS screen blanking: got status "+str(status), file=sys.stderr)
 
         elif IS_WINDOWS:
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Control Panel\Desktop') as key:
-                if must_disable:
-                    (keytype,self.screensaver_was_enabled) = winreg.QueryValueEx(key, "ScreenSaveActive")
-                    if self.screensaver_was_enabled != "0":
-                        try:
+            try:
+                with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Control Panel\Desktop', 0, winreg.KEY_QUERY_VALUE|winreg.KEY_SET_VALUE) as key:
+                    if must_disable:
+                        (value,type) = winreg.QueryValueEx(key, "ScreenSaveActive")
+                        assert(type == winreg.REG_SZ)
+                        self.dpms_was_enabled = (value == "1")
+                        if self.dpms_was_enabled:
                             winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "0")
-                        except PermissionError:
-                            print("Error: access denied when trying to deactivate screen saver!")
-                            self.screensaver_was_enabled = "0" # don't reactivate it later
-                elif self.screensaver_was_enabled != "0":
-                    winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, self.screensaver_was_enabled)
+                    elif self.dpms_was_enabled:
+                        winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "1")
+            except (OSError, PermissionError):
+                print("Error: access denied when trying to access screen saver settings in registry!")
         else:
             print("Warning: Unsupported OS: can't enable/disable screensaver", file=sys.stderr)
 
