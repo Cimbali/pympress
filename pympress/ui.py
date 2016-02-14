@@ -320,6 +320,8 @@ class UI:
         self.p_win.connect("scroll-event", self.on_navigation)
         self.c_win.connect("window-state-event", self.on_window_state_event)
         self.p_win.connect("window-state-event", self.on_window_state_event)
+        self.c_win.connect("configure-event", self.on_configure_win)
+        self.p_win.connect("configure-event", self.on_configure_win)
 
         self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
         self.c_win.connect("key-press-event", self.on_navigation)
@@ -660,11 +662,6 @@ class UI:
         ratio = float(cur_pane_size) / (cur_pane_size + next_pane_size)
         self.config.set('presenter', 'slide_ratio', "{0:.2f}".format(ratio))
 
-        p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_frame_cur.get_parent_window())
-        c_monitor = self.c_win.get_screen().get_monitor_at_window(self.c_frame.get_parent_window())
-        self.config.set('presenter', 'monitor', str(p_monitor))
-        self.config.set('content', 'monitor', str(c_monitor))
-
         pympress.util.save_config(self.config)
         Gtk.main_quit()
 
@@ -901,7 +898,7 @@ class UI:
 
 
     def on_configure_da(self, widget, event):
-        """ Manage "configure" events for both windows.
+        """ Manage "configure" events for all drawing areas.
 
         In the GTK world, this event is triggered when a widget's configuration
         is modified, for example when its size changes. So, when this event is
@@ -921,6 +918,23 @@ class UI:
             self.c_overlay.foreach(lambda child, *ignored: child.resize() if child is not self.c_da else None, None)
         elif widget is self.p_da_next:
             self.resize_annotation_list()
+
+
+    def on_configure_win(self, widget, event):
+        """ Manage "configure" events for both window widgets.
+
+        :param widget: the window which has been moved or resized
+        :type  widget: :class:`Gtk.Widget`
+        :param event: the GTK event, which contains the new dimensions of the widget
+        :type  event: :class:`Gdk.Event`
+        """
+
+        if widget is self.p_win:
+            p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_frame_cur.get_parent_window())
+            self.config.set('presenter', 'monitor', str(p_monitor))
+        elif widget is self.c_win:
+            c_monitor = self.c_win.get_screen().get_monitor_at_window(self.c_frame.get_parent_window())
+            self.config.set('content', 'monitor', str(c_monitor))
 
 
     def on_navigation(self, widget, event):
