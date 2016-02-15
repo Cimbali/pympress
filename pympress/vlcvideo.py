@@ -48,7 +48,6 @@ if pympress.util.IS_WINDOWS:
 
 # Create a single vlc.Instance() to be shared by (possible) multiple players.
 instance = vlc.Instance(vlc_opts)
-window_handle = None
 
 def get_window_handle(window):
     ''' Uses ctypes to call gdk_win32_window_get_handle which is not available
@@ -92,9 +91,8 @@ class VLCVideo(Gtk.VBox):
         event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self.hide)
 
         def handle_embed(*args):
-            global window_handle
-            # we need to be on the main thread (espcially for the mess from the win32 window handle)
-            #assert isinstance(threading.current_thread(), threading._MainThread)
+            # Do we need to be on the main thread? (especially for the mess from the win32 window handle)
+            #assert(isinstance(threading.current_thread(), threading._MainThread))
             if sys.platform == 'win32':
                 self.player.set_hwnd(get_window_handle(self.movie_zone.get_window())) # get_property('window')
             else:
@@ -142,6 +140,7 @@ class VLCVideo(Gtk.VBox):
         ''' Start playing the media file.
         Bring the widget to the top of the overlays if necessary.
         '''
+        self.movie_zone.show()
         if not self.get_parent():
             self.overlay.add_overlay(self)
             self.resize()
@@ -160,7 +159,7 @@ class VLCVideo(Gtk.VBox):
             if self.player.is_playing():
                 self.player.pause()
             else:
-                self.player.play()
+                self.play()
         elif event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
             self.player.set_time(0) # en ms
 
@@ -174,6 +173,7 @@ class VLCVideo(Gtk.VBox):
     def hide(self, *args):
         ''' Remove widget from overlays.
         '''
+        self.movie_zone.hide()
         if self.get_parent():
             self.overlay.remove(self)
 
