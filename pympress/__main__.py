@@ -38,7 +38,7 @@ def usage():
     print("    -t xx, --talk-time=xx: The estimated (intended) talk time in minutes")
     print("")
 
-def main(argv = []):
+def main(argv = sys.argv[1:]):
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     try:
         opts, args = getopt.getopt(argv, "ht:", ["help", "talk-time="])
@@ -83,7 +83,7 @@ def main(argv = []):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()
 
 ##
 # Local Variables:
