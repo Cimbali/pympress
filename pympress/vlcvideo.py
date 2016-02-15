@@ -40,11 +40,7 @@ import pympress.util
 
 vlc_opts=['--no-video-title-show']
 if pympress.util.IS_POSIX:
-    try:
-        x11 = ctypes.cdll.LoadLibrary('libX11.so')
-        x11.XInitThreads()
-    except:
-        vlc_opts.append('--no-xlib')
+    vlc_opts.append('--no-xlib')
 
 if pympress.util.IS_WINDOWS:
     # let python find the DLLs

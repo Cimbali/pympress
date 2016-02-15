@@ -57,6 +57,7 @@ try:
     vlc_enabled = True
 except:
     vlc_enabled = False
+    print("Warning: video support is disabled")
 
 from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 
