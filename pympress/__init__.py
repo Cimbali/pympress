@@ -17,6 +17,10 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-__version__ = "0.5.1"
+#
+# DON'T IMPORT ANYTHING HERE (OR YOU WILL BREAK setup.py)
+#
 
-__all__ = ["document", "surfacecache", "ui", "util", "slideselector"]
+__version__ = '0.6'
+
+__all__ = ['document', 'surfacecache', 'ui', 'util', 'slideselector']

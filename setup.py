@@ -21,12 +21,13 @@
 #       MA 02110-1301, USA.
 
 from setuptools import setup
-import glob, sys
+import glob, sys, importlib
 
-version='0.5.1'
+#get version
+pkg_meta = importlib.import_module('pympress.__init__')
 
 setup(name='pympress',
-      version=version,
+      version=pkg_meta.__version__,
       description='A simple dual-screen PDF reader designed for presentations',
       author='Thomas Jost, Cimbali, Christof Rath',
       author_email='me@cimba.li',
@@ -47,9 +48,6 @@ setup(name='pympress',
       ],
       packages=['pympress'],
       entry_points={
-        'console_scripts': [
-            'pympress = pympress.__main__:main',
-        ],
         'gui_scripts': [
             'pympress = pympress.__main__:main',
             'pympress{} = pympress.__main__:main'.format(sys.version_info.major),

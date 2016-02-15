@@ -21,7 +21,7 @@
 #       MA 02110-1301, USA.
 
 from cx_Freeze import setup, Executable
-import os, site, sys
+import os, site, sys, importlib
 import glob
 
 IS_POSIX = os.name == 'posix'
@@ -40,7 +40,8 @@ if include_path is None:
     print('Can not find where the GTK libraries and Python bindings are installed!')
     exit(1)
 
-version='0.5.1'
+#get version
+pkg_meta = importlib.import_module('pympress.__init__')
 
 include_files=[]
 libs_etc = [
@@ -122,7 +123,7 @@ if include_vlc == 'y':
 executable = Executable(os.path.join('pympress', '__main__.py'), targetName='pympress.exe', base='Win32GUI')
 
 setup(name='pympress',
-      version=version,
+      version=pkg_meta.__version__,
       description='A simple dual-screen PDF reader designed for presentations',
       author='Thomas Jost, Cimbali',
       author_email='me@cimba.li',
