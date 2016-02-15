@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 #       pympress
 #
@@ -21,18 +21,53 @@
 
 import os.path
 import sys
+import getopt
+import signal
 
 import gi
-gi.require_version('Gtk', '3.0')
+gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
 
 import pympress.ui
 
-if __name__ == '__main__':
+def usage():
+    print ("Usage: " + sys.argv[0] + " [options] <presentation_file>")
+    print
+    print ("Options:")
+    print ("    -h, --help: This help")
+    print ("    -t xx, --talk-time=xx: The estimated (intended) talk time in minutes")
+    print
+
+def main(argv):
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    try:
+        opts, args = getopt.getopt(argv, "ht:", ["help", "talk-time="])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+
+    ett = 0
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif opt in ("-t", "--talk-time"):
+            try:
+                t = arg.split(":")
+                m = int(t[0] if len(t[0]) > 0 else "0")
+                s = 0
+                if len(t) > 1:
+                    s = int(t[1])
+                ett = m * 60 + s
+            except ValueError:
+                print("Invalid time (mm:ss expected): {}".format(arg))
+                usage()
+                sys.exit(2)
+
     # PDF file to open passed on command line?
     name = None
-    if len(sys.argv) > 1:
-        name = os.path.abspath(sys.argv[1])
+    if len(args) > 0:
+        name = os.path.abspath(args[0])
 
         # Check if the path is valid
         if not os.path.exists(name):
@@ -40,11 +75,14 @@ if __name__ == '__main__':
             dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg)
             dialog.set_position(Gtk.WindowPosition.CENTER)
             dialog.run()
-            sys.exit(1)
 
     # Create windows
-    ui = pympress.ui.UI(name)
+    ui = pympress.ui.UI(name, ett)
     ui.run()
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
 
 ##
 # Local Variables:

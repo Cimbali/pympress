@@ -1,0 +1,65 @@
+#PresenterWindow {
+    background-color: #444;
+}
+
+#PresenterWindow GtkPaned .pane-separator {
+    background-color: #aaa;
+    border-radius: 2px;
+}
+
+#PresenterWindow GtkFrame {
+    border-style: none;
+}
+
+#PresenterWindow GtkListBox {
+    border-style: none;
+    background-color: transparent;
+}
+
+#PresenterWindow GtkListBox GtkLabel {
+    color: #aaa;
+    font-size: 130%;
+}
+
+#PresenterWindow GtkEntry {
+	font-size: 22pt;
+}
+
+.frame-label {
+    color: #eee;
+    padding-bottom: 5px;
+    font-size: 110%;
+}
+
+.info-label {
+    color: #aaa;
+    opacity: 1;
+    font-size: 32pt;
+}
+
+.ett-reached {
+    color: #64c864;
+}
+.ett-info {
+    color: #FFEA09;
+}
+.ett-warn {
+    color: #FF0000;
+}
+.time-warn {
+    animation: blinker 250ms cubic-bezier(.5, 0, 1, 1) infinite alternate;
+}
+@keyframes blinker {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+#MenuBar,
+#MenuBar GtkMenuItem {
+    color: #eee;
+    background-color: #aaa;
+}
+#MenuBar *:hover {
+    color: #eee;
+    background-color: #444;
+}

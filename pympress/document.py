@@ -39,6 +39,7 @@ import shutil
 import subprocess
 import tempfile
 import mimetypes
+import webbrowser
 
 import gi
 gi.require_version('Poppler', '0.18')
@@ -139,6 +140,8 @@ class Page:
     pw = 0.
     #: Page height as a float
     ph = 0.
+    #: All text annotations
+    annotations = []
 
     def __init__(self, page, number, parent):
         """
@@ -152,19 +155,20 @@ class Page:
         self.page = page
         self.page_nb = number
         self.parent = parent
+        self.links = []
+        self.medias = []
+        self.annotations = []
 
         # Read page size
         self.pw, self.ph = self.page.get_size()
 
         # Read links on the page
-        self.links = []
         for link in self.page.get_link_mapping():
             action = self.get_link_action(link.action.type, link.action)
             my_link = Link(link.area.x1, link.area.y1, link.area.x2, link.area.y2, action)
             self.links.append(my_link)
 
         # Read annotations, in particular those that indicate media
-        self.medias = []
         for annotation in self.page.get_annot_mapping():
             annot_type = annotation.annot.get_annot_type()
             if annot_type == Poppler.AnnotType.LINK:
@@ -182,10 +186,18 @@ class Page:
                     print("Pympress can not find file " + movie.get_filename())
                     continue
             elif annot_type == Poppler.AnnotType.SCREEN:
-                actionObj = annotation.annot.get_action()
-                action = self.get_annot_action(actionObj.any.type, actionObj, annotation.area)
+                action_obj = annotation.annot.get_action()
+                action = self.get_annot_action(action_obj.any.type, action_obj, annotation.area)
                 if not action:
                     continue
+            elif annot_type == Poppler.AnnotType.TEXT:
+                self.annotations.append(annotation.annot.get_contents())
+                self.page.remove_annot(annotation.annot)
+                continue
+            else:
+                print("Pympress can not interpret annotation of type: {} ".format(annot_type))
+                continue
+
             my_annotation = Link(annotation.area.x1, annotation.area.y1, annotation.area.x2, annotation.area.y2, action)
             self.links.append(my_annotation)
 
@@ -244,7 +256,7 @@ class Page:
         elif link_type == Poppler.ActionType.MOVIE: # Poppler 0.20
             fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
         elif link_type == Poppler.ActionType.URI:
-            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+            fun = lambda: webbrowser.open_new_tab(action.uri.uri)
         elif link_type == Poppler.ActionType.GOTO_REMOTE:
             fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
         elif link_type == Poppler.ActionType.OCG_STATE:
@@ -507,7 +519,7 @@ class Document:
         return self.nb_pages
 
 
-    def goto(self, number):
+    def goto(self, number, unpause = True):
         """Switch to another page.
 
         :param number: number of the destination page
@@ -520,7 +532,7 @@ class Document:
 
         if number != self.cur_page:
             self.cur_page = number
-            self.on_page_change()
+            self.on_page_change(unpause)
 
     def goto_next(self, *args):
         """Switch to the next page."""

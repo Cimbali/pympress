@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #       Copyright 2010 Thomas Jost <thomas.jost@gmail.com>
 #
 #       This program is free software; you can redistribute it and/or modify
@@ -29,7 +30,7 @@ Both windows are managed by the :class:`~pympress.ui.UI` class.
 
 from __future__ import print_function
 
-import os, os.path
+import os, os.path, subprocess
 import sys
 import time
 
@@ -38,16 +39,7 @@ import pkg_resources
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import GObject
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import Pango
-
-if os.name == 'nt':
-    import winreg
-else:
-    gi.require_version('GdkX11', '3.0')
-    from gi.repository import GdkX11
+from gi.repository import GObject, Gtk, Gdk, Pango
 
 #: "Regular" PDF file (without notes)
 PDF_REGULAR      = 0
@@ -60,7 +52,23 @@ import pympress.document
 import pympress.surfacecache
 import pympress.util
 import pympress.slideselector
-import pympress.vlcvideo
+try:
+    import pympress.vlcvideo
+    vlc_enabled = True
+except:
+    vlc_enabled = False
+
+from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
+
+if IS_WINDOWS:
+    import winreg
+else:
+    try:
+        gi.require_version('GdkX11', '3.0')
+        from gi.repository import GdkX11
+    except:
+        pass
+
 
 media_overlays = {}
 
@@ -82,7 +90,7 @@ class UI:
     #: Presentation window, as a :class:`Gtk.Window` instance.
     p_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
     #: :class:`~Gtk.AspectFrame` for the current slide in the Presenter window.
-    p_frame_cur = Gtk.AspectFrame(yalign=0.5, ratio=4./3., obey_child=False)
+    p_frame_cur = Gtk.AspectFrame(xalign=0, yalign=0, ratio=4./3., obey_child=False)
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
     p_da_cur = Gtk.DrawingArea()
     #: Slide counter :class:`~Gtk.Label` for the current slide.
@@ -95,9 +103,17 @@ class UI:
     editing_cur = False
     #: :class:`~Gtk.SpinButton` used to switch to another slide by typing its number.
     spin_cur = None
+    #: forward keystrokes to the Content window even if the window manager puts Presenter on top
+    editing_cur_ett = False
+    #: Estimated talk time :class:`~gtk.Label` for the talk.
+    label_ett = Gtk.Label()
+    #: :class:`~gtk.EventBox` associated with the estimated talk time.
+    eb_ett = Gtk.EventBox()
+    #: :class:`~gtk.Entry` used to set the estimated talk time.
+    entry_ett = Gtk.Entry()
 
     #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
-    p_frame_next = Gtk.AspectFrame(yalign=0.25, ratio=4./3., obey_child=False)
+    p_frame_next = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
     #: :class:`~Gtk.DrawingArea` for the next slide in the Presenter window.
     p_da_next = Gtk.DrawingArea()
 
@@ -110,11 +126,13 @@ class UI:
     start_time = 0
     #: Time elapsed since the beginning of the presentation.
     delta = 0
+    #: Estimated talk time.
+    est_time = 0
     #: Timer paused status.
     paused = True
 
-    #: Fullscreen toggle. By default, don't start in fullscreen mode.
-    fullscreen = False
+    #: Fullscreen toggle. By config value, start in fullscreen mode.
+    c_win_fullscreen = False
 
     #: Current :class:`~pympress.document.Document` instance.
     doc = None
@@ -140,13 +158,37 @@ class UI:
     #: track whether we blank the screen
     blanked = False
 
-    def __init__(self, docpath = None):
+    #: The default color of the info labels
+    label_color_default = None
+    #: The color of the elapsed time label if the estimated talk time is reached
+    label_color_ett_reached = None
+    #: The color of the elapsed time label if the estimated talk time is exceeded by 2:30 minutes
+    label_color_ett_info = None
+    #: The color of the elapsed time label if the estimated talk time is exceeded by 5 minutes
+    label_color_ett_warn = None
+
+    #: The annotations label
+    list_annot = Gtk.ListBox()
+    #: And its surrounding window
+    scrolled_window = Gtk.ScrolledWindow()
+
+
+    def __init__(self, docpath = None, ett = 0):
         """
         :param docpath: the path to the document to open
         :type  docpath: string
+        :param ett: the estimated (intended) talk time
+        :type  ett: int
         """
+        self.est_time = ett
         self.config = pympress.util.load_config()
-        self.blanked = self.config.getboolean('presenter', 'start_blanked')
+        self.blanked = self.config.getboolean('content', 'start_blanked')
+
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            pympress.util.get_style_provider(),
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
 
         # Document
         self.doc = pympress.document.Document.create(self.on_page_change, docpath or self.pick_file())
@@ -185,6 +227,8 @@ class UI:
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
 
+        self.label_color_default = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
+
 
     def make_cwin(self):
         """Creates and initializes the content window
@@ -192,8 +236,9 @@ class UI:
         black = Gdk.Color(0, 0, 0)
 
         # Content window
+        self.c_win.set_name('ContentWindow')
         self.c_win.set_title("pympress content")
-        self.c_win.set_default_size(800, 600)
+        self.c_win.set_default_size(1067, 600)
         self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
         self.c_win.add(self.c_frame)
 
@@ -224,25 +269,32 @@ class UI:
         """Creates and initializes the presenter window
         """
         # Presenter window
+        self.p_win.set_name('PresenterWindow')
         self.p_win.set_title("pympress presenter")
-        self.p_win.set_default_size(800, 600)
+        self.p_win.set_default_size(1067, 600)
         self.p_win.set_position(Gtk.WindowPosition.CENTER)
 
-        # Guess window positions from screens
+        # If multiple monitors, apply windows to monitors according to config
         screen = self.p_win.get_screen()
         if screen.get_n_monitors() > 1:
-            cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
-            c_monitor = screen.get_monitor_at_point(cx + cw / 2, cy + ch / 2)
-            p_monitor = 0 if c_monitor > 0 else 1
+            c_monitor = self.config.getint('content', 'monitor')
+            p_monitor = self.config.getint('presenter', 'monitor')
+            if c_monitor == p_monitor:
+                print("Warning: Content and presenter window must not be on the same monitor!", file=sys.stderr)
+                p_monitor = 0 if c_monitor > 0 else 1
+                self.config.set('presenter', 'monitor', str(p_monitor))
 
             p_bounds = screen.get_monitor_geometry(p_monitor)
             self.p_win.move(p_bounds.x, p_bounds.y)
-            self.p_win.maximize()
+            if self.config.getboolean('presenter', 'start_fullscreen'):
+                self.p_win.fullscreen()
+            else:
+                self.p_win.maximize()
 
             c_bounds = screen.get_monitor_geometry(c_monitor)
             self.c_win.move(c_bounds.x, c_bounds.y)
-            self.c_win.fullscreen()
-            self.fullscreen = True
+            if self.config.getboolean('content', 'start_fullscreen'):
+                self.c_win.fullscreen()
 
         # Put Menu and Table in VBox
         bigvbox = Gtk.VBox(False, 2)
@@ -256,10 +308,6 @@ class UI:
         hpaned = self.make_pwin_panes()
         bigvbox.pack_start(hpaned, True, True, 0)
 
-        # bottom
-        hbox = self.make_bottom()
-        bigvbox.pack_end(hbox, False, False, 5)
-
         # Set relative pane sizes
         # dynamic computation requires to have p_win already visible
         self.p_win.show_all()
@@ -267,6 +315,7 @@ class UI:
         pane_size = self.config.getfloat('presenter', 'slide_ratio')
         avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
         hpaned.set_position(int(round(pane_size * avail_size)))
+        self.on_page_change(False)
 
 
     def add_events(self):
@@ -287,7 +336,8 @@ class UI:
         self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
         self.p_win.connect("key-press-event", self.on_navigation)
         self.p_win.connect("scroll-event", self.on_navigation)
-        self.p_win.connect("window-state-event", self.track_pwin_maximized)
+        self.c_win.connect("window-state-event", self.on_window_state_event)
+        self.p_win.connect("window-state-event", self.on_window_state_event)
 
         self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
         self.c_win.connect("key-press-event", self.on_navigation)
@@ -318,9 +368,29 @@ class UI:
         hpaned.set_margin_left(5)
         hpaned.set_margin_right(5)
 
+        #####################
+        # Lefthand side:
+        #####################
         # "Current slide" frame
         self.p_frame_cur.set_label("Current slide")
-        hpaned.pack1(self.p_frame_cur, True, True)
+        self.p_frame_cur.get_label_widget().get_style_context().add_class("frame-label")
+        self.p_frame_cur.set_margin_right(5)
+
+        vbox = Gtk.VBox(False, 15)
+        vbox.pack_start(self.p_frame_cur, True, True, 0)
+
+        # Bottom row
+        hbox = Gtk.HBox(False, 0)
+        hbox.set_margin_right(5)
+        hbox.set_halign(Gtk.Align.FILL)
+        hbox.pack_start(self.make_frame_ett(), False, False, 0)
+        spacer = Gtk.EventBox()
+        spacer.set_halign(Gtk.Align.FILL)
+        hbox.pack_start(spacer, True, True, 0)
+        hbox.pack_start(self.make_frame_slidenum(), False, False, 0)
+
+        vbox.pack_start(hbox, False, True, 0)
+        hpaned.pack1(vbox, True, True)
         self.p_da_cur.set_name("p_da_cur")
         if self.notes_mode:
             self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
@@ -328,9 +398,16 @@ class UI:
             self.cache.add_widget("p_da_cur", PDF_REGULAR)
         self.p_frame_cur.add(self.p_da_cur)
 
+        #####################
+        # Righthand side:
+        #####################
+        vbox = Gtk.VBox(False, 15)
+        vbox.set_halign(Gtk.Align.FILL)
+        vbox.set_margin_left(5)
+
         # "Next slide" frame
-        hpaned.pack2(self.p_frame_next, True, True)
         self.p_frame_next.set_label("Next slide")
+        self.p_frame_next.get_label_widget().get_style_context().add_class("frame-label")
         self.p_da_next.set_name("p_da_next")
         if self.notes_mode:
             self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
@@ -338,7 +415,117 @@ class UI:
             self.cache.add_widget("p_da_next", PDF_REGULAR)
         self.p_frame_next.add(self.p_da_next)
 
+        vbox.pack_start(self.p_frame_next, True, True, 0)
+
+
+        # Annotations label
+        self.list_annot.set_name("LAnnotations")
+        self.list_annot.set_selection_mode(Gtk.SelectionMode.NONE)
+
+        self.scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.scrolled_window.add_with_viewport(self.list_annot)
+        self.scrolled_window.set_min_content_height(100)
+
+        vbox.pack_start(self.scrolled_window, False, True, 0)
+
+
+        #Bottom row
+        hbox = Gtk.HBox(False, 0)
+        hbox.set_halign(Gtk.Align.FILL)
+        hbox.pack_start(self.make_frame_time(), False, False, 0)
+        hbox.pack_start(Gtk.EventBox(), True, True, 10)
+        hbox.pack_start(self.make_frame_clock(), False, False, 0)
+
+        vbox.pack_start(hbox, False, False, 0)
+
+        hpaned.pack2(vbox, True, True)
+
         return hpaned
+
+
+    def make_frame_slidenum(self):
+        # "Current slide" label and entry. eb_cur gets all events on the whole,
+        # label_cur may be replaced by spin_cur at times, last_cur doesn't move
+        self.label_cur.set_name("LSlideCur")
+        self.label_cur.get_style_context().add_class("info-label")
+        self.label_cur.props.halign = Gtk.Align.END
+        self.label_cur.set_use_markup(True)
+        self.label_last.set_name("LSlideLast")
+        self.label_last.get_style_context().add_class("info-label")
+        self.label_last.props.halign = Gtk.Align.START
+        self.label_last.set_text("/{}".format(self.doc.pages_number()))
+
+        self.hb_cur=Gtk.HBox()
+        self.hb_cur.pack_start(self.label_cur, True, True, 0)
+        self.hb_cur.pack_start(self.label_last, True, True, 0)
+        self.eb_cur.add(self.hb_cur)
+        self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
+        self.spin_cur.set_alignment(0.5)
+
+        self.eb_cur.set_visible_window(False)
+        self.eb_cur.connect("event", self.on_label_event)
+        frame = Gtk.Frame()
+        frame.set_label("Slide number")
+        frame.get_label_widget().get_style_context().add_class("frame-label")
+        frame.set_size_request(200, 0)
+        frame.add(self.eb_cur)
+        return frame
+
+
+    def make_frame_clock(self):
+        # "Clock" frame
+        frame = Gtk.Frame()
+        frame.set_label("Clock")
+        frame.set_size_request(170, 0)
+        frame.get_label_widget().get_style_context().add_class("frame-label")
+        frame.add(self.label_clock)
+        self.label_clock.set_name("LClock")
+        self.label_clock.get_style_context().add_class("info-label")
+        return frame
+
+
+    def make_frame_time(self):
+        # "Time elapsed" frame
+        frame = Gtk.Frame()
+        frame.set_label("Time elapsed")
+        frame.set_size_request(170, 0)
+        frame.get_label_widget().get_style_context().add_class("frame-label")
+        self.label_time.set_name("LTimeElapsed")
+
+        # Load color from CSS
+        self.label_time.get_style_context().add_class("ett-reached")
+        self.label_time.show();
+        self.label_color_ett_reached = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
+        self.label_time.get_style_context().remove_class("ett-reached")
+        self.label_time.get_style_context().add_class("ett-info")
+        self.label_time.show();
+        self.label_color_ett_info = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
+        self.label_time.get_style_context().remove_class("ett-info")
+        self.label_time.get_style_context().add_class("ett-warn")
+        self.label_time.show();
+        self.label_color_ett_warn = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
+        self.label_time.get_style_context().remove_class("ett-warn")
+        self.label_time.get_style_context().add_class("info-label")
+        self.label_time.show();
+        frame.add(self.label_time)
+        return frame
+
+
+    def make_frame_ett(self):
+        # Estimated talk time frame
+        self.label_ett.set_name("LEstTalkTime")
+        self.label_ett.get_style_context().add_class("info-label")
+        self.label_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
+        self.eb_ett.set_visible_window(False)
+        self.eb_ett.connect("event", self.on_label_ett_event)
+        self.eb_ett.add(self.label_ett)
+        self.entry_ett.set_alignment(0.5)
+        frame = Gtk.Frame()
+        frame.set_label("Time estimated")
+        frame.get_label_widget().get_style_context().add_class("frame-label")
+        frame.set_size_request(170, 0)
+        frame.add(self.eb_ett)
+        return frame
 
 
     def make_menubar(self):
@@ -363,7 +550,9 @@ class UI:
             <menuitem action="Swap screens"/>
             <menuitem action="Notes mode"/>
             <menuitem action="Blank screen"/>
-            <menuitem action="Start blanked"/>
+            <menuitem action="Start content blanked"/>
+            <menuitem action="Start content fullscreen"/>
+            <menuitem action="Start presenter fullscreen"/>
             <menuitem action="Adjust screen"/>
           </menu>
           <menu action="Navigation">
@@ -405,11 +594,13 @@ class UI:
             ("Go to...",     None,           "_Go to...",    "g",     None, self.on_label_event),
         ])
         action_group.add_toggle_actions([
-            ("Pause timer",  None,           "_Pause timer", "p",     None, self.switch_pause,      True),
-            ("Fullscreen",   None,           "_Fullscreen",  "f",     None, self.switch_fullscreen, self.fullscreen),
-            ("Notes mode",   None,           "_Note mode",   "n",     None, self.switch_mode,       self.notes_mode),
-            ("Blank screen", None,           "_Blank screen","b",     None, self.switch_blanked,    self.blanked),
-            ("Start blanked",None,           "_Start blanked",None,   None, self.switch_start_blanked,    self.blanked),
+            ("Pause timer",  None,           "_Pause timer", "p",     None, self.switch_pause,         True),
+            ("Fullscreen",   None,           "_Fullscreen",  "f",     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
+            ("Notes mode",   None,           "_Note mode",   "n",     None, self.switch_mode,          self.notes_mode),
+            ("Blank screen", None,           "_Blank screen","b",     None, self.switch_blanked,       self.blanked),
+            ("Start content blanked",      None, "_Start content blanked",     None, None, self.switch_start_blanked,    self.blanked),
+            ("Start content fullscreen",   None, "Start content fullscreen",   None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
+            ("Start presenter fullscreen", None, "Start presenter fullscreen", None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -419,53 +610,25 @@ class UI:
         return ui_manager.get_widget('/MenuBar')
 
 
-    def make_bottom(self):
-        """Creates and initializes the widgets with page/time info at the bottom of the presenter window
+    def add_annotations(self, page = None):
+        row = self.list_annot.get_row_at_index(0)
+        while row:
+            row.destroy()
+            row = self.list_annot.get_row_at_index(0)
 
-        :return: a box widget containing all the info widgets to put at the page bottom
-        :rtype: :class:`Gtk.HBpx`
-        """
-        hbox = Gtk.HBox()
+        annotations = page.annotations if page else self.doc.current_page().annotations
+        for annotation in annotations:
+            row = Gtk.ListBoxRow()
+            hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
+            row.add(hbox)
+            l_ann = Gtk.Label(annotation, xalign=0)
+            l_ann.set_line_wrap(True)
+            hbox.pack_start(Gtk.Label("•", xalign=0, yalign=0), False, True, 0)
+            hbox.pack_start(l_ann, True, True, 0)
+            self.list_annot.add(row)
+            hbox.show()
 
-        # "Current slide" label and entry. eb_cur gets all events on the whole,
-        # label_cur may be replaced by spin_cur at times, last_cur doesn't move
-        self.label_cur.props.halign = Gtk.Align.END
-        self.label_cur.set_use_markup(True)
-        self.label_last.props.halign = Gtk.Align.START
-        self.label_last.set_use_markup(True)
-        self.hb_cur=Gtk.HBox()
-        self.hb_cur.pack_start(self.label_cur, True, True, 0)
-        self.hb_cur.pack_start(self.label_last, True, True, 0)
-        self.eb_cur.add(self.hb_cur)
-        self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
-        self.spin_cur.set_alignment(0.5)
-        self.spin_cur.modify_font(Pango.FontDescription('36'))
-
-        self.eb_cur.set_visible_window(False)
-        self.eb_cur.connect("event", self.on_label_event)
-        frame = Gtk.Frame()
-        frame.set_label("Slide number")
-        frame.add(self.eb_cur)
-        hbox.pack_start(frame, True, True, 5)
-
-        # "Time elapsed" frame
-        frame = Gtk.Frame()
-        frame.set_label("Time elapsed")
-        hbox.pack_start(frame, True, True, 0)
-        frame.add(self.label_time)
-        self.label_time.set_use_markup(True)
-        self.label_time.set_justify(Gtk.Justification.CENTER)
-        self.label_time.set_width_chars(44) # close enough to 13 characters at font size 36
-
-        # "Clock" frame
-        frame = Gtk.Frame()
-        frame.set_label("Clock")
-        hbox.pack_end(frame, True, True, 5)
-        frame.add(self.label_clock)
-        self.label_clock.set_justify(Gtk.Justification.CENTER)
-        self.label_clock.set_use_markup(True)
-
-        return hbox
+        self.list_annot.show_all()
 
 
     def run(self):
@@ -527,7 +690,7 @@ class UI:
         about = Gtk.AboutDialog()
         about.set_program_name("pympress")
         about.set_version(pympress.__version__)
-        about.set_copyright("(c) 2009, 2010 Thomas Jost")
+        about.set_copyright("(c) 2009-2016 Thomas Jost, Cimbali, Christof Rath")
         about.set_comments("pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\nSome preferences are saved in "+pympress.util.path_to_config())
         about.set_website("http://www.pympress.org/")
         try:
@@ -566,6 +729,8 @@ class UI:
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
 
+        self.add_annotations(page_cur)
+
 
         # Prerender the 4 next pages and the 2 previous ones
         cur = page_cur.number()
@@ -588,6 +753,8 @@ class UI:
         """
         page_cur = self.doc.current_page()
         page_next = self.doc.next_page()
+
+        self.add_annotations()
 
         # Page change: resynchronize miniatures
         self.page_preview_nb = page_cur.number()
@@ -633,7 +800,7 @@ class UI:
         for rect, filename, show_controls in page_cur.get_media():
             media_id = hash((rect, filename, show_controls))
             global media_overlays
-            if media_id not in media_overlays:
+            if media_id not in media_overlays and vlc_enabled:
                 v_da = pympress.vlcvideo.VLCVideo(self.c_overlay, show_controls)
                 v_da.set_file(filename)
 
@@ -743,12 +910,18 @@ class UI:
         """
         if event.type == Gdk.EventType.KEY_PRESS:
             name = Gdk.keyval_name(event.keyval)
+            ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
 
             # send all to spinner if it is active to avoid key problems
             if self.editing_cur and self.spin_cur.on_keypress(widget, event):
                 return True
+            # send all to entry field if it is active to avoid key problems
+            if self.editing_cur_ett and self.on_label_ett_event(widget, event):
+                return True
 
-            if name in ["Right", "Down", "Page_Down", "space"]:
+            if self.paused and name == "space":
+                self.switch_pause()
+            elif name in ["Right", "Down", "Page_Down", "space"]:
                 self.doc.goto_next()
             elif name in ["Left", "Up", "Page_Up", "BackSpace"]:
                 self.doc.goto_prev()
@@ -759,8 +932,12 @@ class UI:
             # sic - accelerator recognizes f not F
             elif name.upper() == "F11" or name == "F" \
                 or (name == "Return" and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
-                or (name.upper() == "L" and event.get_state() & Gdk.ModifierType.CONTROL_MASK):
-                self.switch_fullscreen()
+                or (name.upper() == "L" and ctrl_pressed) \
+                or (name.upper() == "F5" and not self.c_win_fullscreen) \
+                or (name == "Escape" and self.c_win_fullscreen):
+                self.switch_fullscreen(self.c_win)
+            elif name.upper() == "F" and ctrl_pressed:
+                self.switch_fullscreen(self.p_win)
             elif name.upper() == "Q":
                 self.save_and_quit()
             elif name == "Pause":
@@ -779,7 +956,10 @@ class UI:
                 elif name.upper() == "S":
                     self.swap_screens()
                 elif name.upper() == "F":
-                    self.switch_fullscreen()
+                    if ctrl_pressed:
+                        self.switch_fullscreen(self.p_win)
+                    else:
+                        self.switch_fullscreen(self.c_win)
                 elif name.upper() == "G":
                     self.on_label_event(self.eb_cur, True)
                 elif name.upper() == "B":
@@ -798,6 +978,9 @@ class UI:
             # send all to spinner if it is active to avoid key problems
             if self.editing_cur and self.spin_cur.on_keypress(widget, event):
                 return True
+
+            if widget is self.p_win:
+                return False
 
             if event.direction is Gdk.ScrollDirection.SMOOTH:
                 return False
@@ -873,6 +1056,9 @@ class UI:
             (type(event) == Gtk.Action) or # menu action
             (type(event) == Gdk.Event and event.type == Gdk.EventType.BUTTON_PRESS) # click
         ):
+            if self.editing_cur_ett:
+                self.restore_current_label_ett()
+
             if self.label_cur in self.hb_cur:
                 # Replace label with entry
                 self.hb_cur.remove(self.label_cur)
@@ -895,6 +1081,95 @@ class UI:
         return True
 
 
+    def on_label_ett_event(self, widget, event):
+        """
+        Manage events on the current slide label/entry.
+
+        This function replaces the label with an entry when clicked, replaces
+        the entry with a label when needed, etc. The nasty stuff it does is an
+        ancient kind of dark magic that should be avoided as much as possible...
+
+        :param widget: the widget in which the event occured
+        :type  widget: :class:`gtk.Widget`
+        :param event: the event that occured
+        :type  event: :class:`gtk.gdk.Event`
+        """
+
+        widget = self.eb_ett.get_child()
+
+        # Click on the label
+        if widget is self.label_ett and event.type == Gdk.EventType.BUTTON_PRESS:
+            if self.editing_cur:
+                self.spin_cur.cancel()
+
+            # Set entry text
+            self.entry_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
+            self.entry_ett.select_region(0, -1)
+
+            # Replace label with entry
+            self.eb_ett.remove(self.label_ett)
+            self.eb_ett.add(self.entry_ett)
+            self.entry_ett.show()
+            self.entry_ett.grab_focus()
+            self.editing_cur_ett = True
+
+        # Key pressed in the entry
+        elif widget is self.entry_ett and event.type == Gdk.EventType.KEY_PRESS:
+            name = Gdk.keyval_name(event.keyval)
+
+            # Return key --> restore label and goto page
+            if name == "Return" or name == "KP_Return":
+                text = self.entry_ett.get_text()
+                self.restore_current_label_ett()
+
+                try:
+                    t = text.split(':')
+                    m = int(t[0] if len(t[0]) > 0 else "0")
+                    s = 0
+                    if len(t) > 1:
+                        s = int(t[1])
+                except ValueError:
+                    print("Invalid time (mm:ss expected): {}".format(text))
+                    return True
+
+                self.est_time = m*60 + s;
+                self.label_ett.set_text("%02d:%02d" % (int(self.est_time / 60), int(self.est_time % 60)))
+                self.label_time.override_color(Gtk.StateType.NORMAL, self.label_color_default)
+                return True
+
+            # Escape key --> just restore the label
+            elif name == "Escape":
+                self.restore_current_label_ett()
+                return True
+            else:
+                Gtk.Entry.do_key_press_event(widget, event)
+
+        return True
+
+
+    def on_resize_annotation_list(self, widget = None, scrolltype = None):
+        if len(self.doc.current_page().annotations) == 0:
+            self.scrolled_window.set_min_content_height(0)
+            return
+
+        h_min = 60
+        w_da = self.p_da_next.get_allocated_width()
+        w_f = self.p_frame_next.get_allocated_width()
+        d = w_f - w_da
+        if d > 5:
+            # Shrink Annotations
+            h = self.scrolled_window.get_allocated_height() - (d / 4 * 3)
+            self.scrolled_window.set_min_content_height(max(h_min, h))
+            return
+
+        h_ann = self.scrolled_window.get_allocated_height()
+        h_da = self.p_da_next.get_allocated_height()
+        h_fnext = self.p_frame_next.get_allocated_height()
+        h = h_ann + h_fnext - h_da - 20
+
+        self.scrolled_window.set_min_content_height(h)
+
+
     def restore_current_label(self):
         """
         Make sure that the current page number is displayed in a label and not
@@ -908,17 +1183,27 @@ class UI:
         self.editing_cur = False
 
 
+
+    def restore_current_label_ett(self):
+        """
+        Make sure that the current page number is displayed in a label and not
+        in an entry. If it is an entry, then replace it with the label.
+        """
+        child = self.eb_ett.get_child()
+        if child is not self.label_ett:
+            self.eb_ett.remove(child)
+            self.eb_ett.add(self.label_ett)
+
+        self.editing_cur_ett = False
+
+
     def update_page_numbers(self):
         """Update the displayed page numbers."""
 
-        text = "<span font='36'>{}</span>"
-
         cur_nb = self.doc.current_page().number()
         cur = str(cur_nb+1)
-        last = "/{}".format(self.doc.pages_number())
 
-        self.label_cur.set_markup(text.format(cur))
-        self.label_last.set_markup(text.format(last))
+        self.label_cur.set_text(cur)
         self.restore_current_label()
 
 
@@ -931,19 +1216,58 @@ class UI:
         """
 
         # Current time
-        clock = time.strftime("%H:%M:%S")
+        clock = time.strftime("%H:%M") #"%H:%M:%S"
 
         # Time elapsed since the beginning of the presentation
         if not self.paused:
             self.delta = time.time() - self.start_time
         elapsed = "{:02}:{:02}".format(int(self.delta/60), int(self.delta%60))
         if self.paused:
-            elapsed += " (pause)"
+            elapsed += " (p)"
 
-        self.label_time.set_markup("<span font='36'>{}</span>".format(elapsed))
-        self.label_clock.set_markup("<span font='24'>{}</span>".format(clock))
+        self.label_time.set_text(elapsed)
+        self.label_clock.set_text(clock)
+
+        self.update_color()
+        self.on_resize_annotation_list()
 
         return True
+
+
+    def calc_color(self, f, t, offset):
+        s = lambda c: ( c.red, c.green, c.blue, c.alpha )
+        c = lambda s, g: s + (g - s) * offset
+        return Gdk.RGBA(*map(c, s(f), s(t)))
+
+
+    def update_color(self):
+        if not self.est_time == 0:
+            color = None
+
+            offset = self.est_time - self.delta
+            if offset <= 300: # less than 5 minutes left
+                if offset >= 0:
+                    of = lambda max: (max - offset)/float(max)
+                    color = self.calc_color(self.label_color_default, self.label_color_ett_reached, of(300))
+                elif offset >= -150:
+                    of = lambda max: offset/float(max)
+                    color = self.calc_color(self.label_color_ett_reached, self.label_color_ett_info, of(-150))
+                elif offset >= -300:
+                    of = lambda max: (offset + 150)/float(max)
+                    color = self.calc_color(self.label_color_ett_info, self.label_color_ett_warn, of(-150))
+                else:
+                    color = self.label_color_ett_warn
+
+            if color:
+                self.label_time.override_color(Gtk.StateType.NORMAL, color)
+
+            if (
+                (offset <= 0 and offset > -5) or
+                (offset <= -300 and offset > -310)
+            ):
+                self.label_time.get_style_context().add_class("time-warn")
+            else:
+                self.label_time.get_style_context().remove_class("time-warn")
 
 
     def switch_pause(self, widget=None, event=None):
@@ -977,7 +1301,18 @@ class UI:
            disabled; otherwise it will be enabled
         :type  must_disable: boolean
         """
-        if os.name == 'posix':
+        if IS_MAC_OS:
+            # On Mac OS X we can use caffeinate to prevent the display from sleeping
+            if must_disable:
+                if self.dpms_was_enabled == None or self.dpms_was_enabled.poll():
+                    self.dpms_was_enabled = subprocess.Popen(['caffeinate', '-d', '-w', str(os.getpid())])
+            else:
+                if self.dpms_was_enabled and not self.dpms_was_enabled.poll():
+                    self.dpms_was_enabled.kill()
+                    self.dpms_was_enabled.poll()
+                    self.dpms_was_enabled = None
+
+        elif IS_POSIX:
             # On Linux, set screensaver with xdg-screensaver
             # (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
             cmd = "suspend" if must_disable else "resume"
@@ -1011,7 +1346,7 @@ class UI:
                 if status != 0:
                     print("Warning: Could not enable DPMS screen blanking: got status "+str(status), file=sys.stderr)
 
-        elif os.name == 'nt':
+        elif IS_WINDOWS:
             with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Control Panel\Desktop') as key:
                 if must_disable:
                     (keytype,self.screensaver_was_enabled) = winreg.QueryValueEx(key, "ScreenSaveActive")
@@ -1035,21 +1370,34 @@ class UI:
         Screensaver will be disabled when entering fullscreen mode, and enabled
         when leaving fullscreen mode.
         """
-        if self.fullscreen:
-            self.c_win.unfullscreen()
-            self.fullscreen = False
+        if isinstance(widget, Gtk.Action):
+            # Called from menu -> use c_win
+            widget = self.c_win
+            fullscreen = self.c_win_fullscreen
+        elif widget == self.c_win:
+            fullscreen = self.c_win_fullscreen
+        elif widget == self.p_win:
+            fullscreen = self.p_win_fullscreen
         else:
-            self.c_win.fullscreen()
-            self.fullscreen = True
+            print ("Unknow widget " + str(widget) + " to be fullscreened, aborting.", file=sys.stderr)
+            return
 
-        self.set_screensaver(self.fullscreen)
+        if fullscreen:
+            widget.unfullscreen()
+        else:
+            widget.fullscreen()
 
 
-    def track_pwin_maximized(self, widget, event, user_data=None):
+    def on_window_state_event(self, widget, event, user_data=None):
         """
         Track whether the preview window is maximized
         """
-        self.p_win_maximized = (Gdk.WindowState.MAXIMIZED & event.new_window_state) != 0
+        if widget.get_name() == self.p_win.get_name():
+            self.p_win_maximized = (Gdk.WindowState.MAXIMIZED & event.new_window_state) != 0
+            self.p_win_fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
+        elif widget.get_name() == self.c_win.get_name():
+            self.c_win_fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
+            self.set_screensaver(self.c_win_fullscreen)
 
 
     def update_frame_position(self, widget=None, user_data=None):
@@ -1097,35 +1445,40 @@ class UI:
         """
         Swap the monitors on which each window is displayed (if there are 2 monitors at least)
         """
+        c_win_was_fullscreen = self.c_win_fullscreen
+        p_win_was_fullscreen = self.p_win_fullscreen
+        p_win_was_maximized  = self.p_win_maximized
+        if c_win_was_fullscreen:
+            self.c_win.unfullscreen()
+        if p_win_was_fullscreen:
+            self.p_win.unfullscreen()
+        if p_win_was_maximized:
+            self.p_win.unmaximize()
+
         screen = self.p_win.get_screen()
         if screen.get_n_monitors() > 1:
-            cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
-            px, py, pw, ph = self.p_win.get_position() + self.p_win.get_size()
-            p_monitor = screen.get_monitor_at_point(px + pw / 2, py + ph / 2)
-            c_monitor = screen.get_monitor_at_point(cx + cw / 2, cy + ch / 2)
-
-            if p_monitor == c_monitor:
-                return
+            c_monitor = self.config.getint('content', 'monitor')
+            p_monitor = self.config.getint('presenter', 'monitor')
 
             p_monitor, c_monitor = (c_monitor, p_monitor)
 
-            p_bounds = screen.get_monitor_geometry(p_monitor)
-            if self.p_win_maximized:
-                self.p_win.unmaximize()
-                self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
-                self.p_win.maximize()
-            else:
-                self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
+            self.config.set('presenter', 'monitor', str(p_monitor))
+            self.config.set('content', 'monitor', str(c_monitor))
 
+            cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
+            px, py, pw, ph = self.p_win.get_position() + self.p_win.get_size()
             c_bounds = screen.get_monitor_geometry(c_monitor)
-            if self.fullscreen:
-                self.c_win.unfullscreen()
-                self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
-                self.c_win.fullscreen()
-            else:
-                self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
+            p_bounds = screen.get_monitor_geometry(p_monitor)
+            self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
+            self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
 
-        self.on_page_change(False)
+            if p_win_was_fullscreen:
+                self.p_win.fullscreen()
+            elif p_win_was_maximized:
+                self.p_win.maximize()
+
+            if c_win_was_fullscreen:
+                self.c_win.fullscreen()
 
 
 
@@ -1141,10 +1494,25 @@ class UI:
         """
         Switch the blanked mode of the main screen
         """
-        if self.config.getboolean('presenter', 'start_blanked'):
-            self.config.set('presenter', 'start_blanked', 'off')
+        if self.config.getboolean('content', 'start_blanked'):
+            self.config.set('content', 'start_blanked', 'off')
         else:
-            self.config.set('presenter', 'start_blanked', 'on')
+            self.config.set('content', 'start_blanked', 'on')
+
+
+    def switch_start_fullscreen(self, widget=None):
+        """
+        Switch the blanked mode of the main screen
+        """
+        if widget.get_name() == 'Start content fullscreen':
+            target = 'content'
+        else:
+            target = 'presenter'
+
+        if self.config.getboolean(target, 'start_fullscreen'):
+            self.config.set(target, 'start_fullscreen', 'off')
+        else:
+            self.config.set(target, 'start_fullscreen', 'on')
 
 
     def switch_mode(self, widget=None, event=None):

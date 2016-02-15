@@ -35,9 +35,7 @@ import pkg_resources
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GObject
+from gi.repository import Gtk, Gdk, GObject
 
 class SlideSelector(Gtk.SpinButton):
     ui = None
@@ -66,11 +64,11 @@ class SlideSelector(Gtk.SpinButton):
 
     def done(self, *args):
         self.ui.restore_current_label()
-        self.ui.doc.goto(self.get_page())
+        self.ui.doc.goto(self.get_page(), False)
 
     def cancel(self, *args):
         self.ui.restore_current_label()
-        self.ui.on_page_change()
+        self.ui.on_page_change(False)
 
     def on_changed(self, *args):
         self.ui.page_preview(self.get_page())

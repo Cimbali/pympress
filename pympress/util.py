@@ -26,15 +26,34 @@ from __future__ import print_function
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
-from gi.repository import GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf
 import pkg_resources
 import os, os.path, sys
+
+IS_POSIX = os.name == 'posix'
+IS_MAC_OS = sys.platform == "darwin"
+IS_WINDOWS = os.name == 'nt'
 
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
+
+def get_style_provider():
+    if IS_MAC_OS:
+        name = "macos.css"
+    else:
+        name = "default.css"
+
+    if getattr(sys, 'frozen', False):
+        css_fn = os.path.join(os.path.dirname(sys.executable), "share", "css", name)
+    else:
+        req = pkg_resources.Requirement.parse("pympress")
+        css_fn = pkg_resources.resource_filename(req, os.path.join("share", "css", name))
+
+    style_provider = Gtk.CssProvider()
+    style_provider.load_from_path(css_fn)
+    return style_provider
 
 def get_icon_pixbuf(name):
     if getattr(sys, 'frozen', False):
@@ -74,7 +93,7 @@ def load_icons():
 
 
 def path_to_config():
-    if os.name == 'posix':
+    if IS_POSIX:
         conf_dir=os.path.expanduser("~/.config")
         conf_file_nodir=os.path.expanduser("~/.pympress")
         conf_file_indir=os.path.expanduser("~/.config/pympress")
@@ -108,11 +127,23 @@ def load_config():
     if not config.has_option('content', 'yalign'):
         config.set('content', 'yalign', '0.50')
 
+    if not config.has_option('content', 'monitor'):
+        config.set('content', 'monitor', '0')
+
+    if not config.has_option('content', 'start_blanked'):
+        config.set('content', 'start_blanked', 'off')
+
+    if not config.has_option('content', 'start_fullscreen'):
+        config.set('content', 'start_fullscreen', 'on')
+
     if not config.has_option('presenter', 'slide_ratio'):
         config.set('presenter', 'slide_ratio', '0.75')
 
-    if not config.has_option('presenter', 'start_blanked'):
-        config.set('presenter', 'start_blanked', 'off')
+    if not config.has_option('presenter', 'monitor'):
+        config.set('presenter', 'monitor', '1')
+
+    if not config.has_option('presenter', 'start_fullscreen'):
+        config.set('presenter', 'start_fullscreen', 'off')
 
     return config
 
