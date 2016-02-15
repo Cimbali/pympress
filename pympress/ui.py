@@ -1497,6 +1497,9 @@ class UI:
 
         screen = self.p_win.get_screen()
         if screen.get_n_monitors() > 1:
+            # temporarily remove the annotations' list size so it won't hinder p_frame_next size adjustment
+            self.scrollable_treelist.set_size_request(-1,  100)
+
             # Though Gtk.Window is a Gtk.Widget get_parent_window() actually returns None on self.{c,p}_win
             p_monitor = screen.get_monitor_at_window(self.p_frame_cur.get_parent_window())
             c_monitor = screen.get_monitor_at_window(self.c_frame.get_parent_window())
