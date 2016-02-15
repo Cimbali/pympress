@@ -1543,10 +1543,14 @@ class UI:
     def switch_start_fullscreen(self, widget=None):
         """ Switch the blanked mode of the main screen.
         """
-        if widget.get_name() == 'Start content fullscreen':
+        name_words=widget.get_name().lower().split()
+        if 'content' in name_words:
             target = 'content'
-        else:
+        elif 'presenter' in name_words:
             target = 'presenter'
+        else:
+            print("ERROR Unknown widget to start fullscreen: {}".format(widget.get_name()))
+            return
 
         if self.config.getboolean(target, 'start_fullscreen'):
             self.config.set(target, 'start_fullscreen', 'off')
