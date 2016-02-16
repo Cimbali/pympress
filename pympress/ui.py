@@ -546,7 +546,8 @@ class UI:
         self.label_ett.get_style_context().add_class("info-label")
         self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
         self.eb_ett.set_visible_window(False)
-        self.eb_ett.connect("event", self.on_label_ett_event)
+        self.eb_ett.connect("button-press-event", self.on_label_ett_event)
+        self.eb_ett.connect("key-press-event", self.on_label_ett_event)
         self.eb_ett.add(self.label_ett)
         self.entry_ett.set_alignment(0.5)
         frame = Gtk.Frame()
@@ -575,6 +576,7 @@ class UI:
           <menu action="Presentation">
             <menuitem action="Pause timer"/>
             <menuitem action="Reset timer"/>
+            <menuitem action="Set talk time"/>
             <menuitem action="Fullscreen"/>
             <menuitem action="Swap screens"/>
             <menuitem action="Notes mode"/>
@@ -615,6 +617,7 @@ class UI:
 
             ('Quit',         Gtk.STOCK_QUIT, '_Quit',        'q',     None, self.save_and_quit),
             ('Reset timer',  None,           '_Reset timer', 'r',     None, self.reset_timer),
+            ('Set talk time',None,           'Set talk _Time','t',    None, self.on_label_ett_event),
             ('About',        None,           '_About',       None,    None, self.menu_about),
             ('Swap screens', None,           '_Swap screens','s',     None, self.swap_screens),
             ('Align content',None,           '_Align content',None,   None, self.adjust_frame_position),
@@ -1005,6 +1008,8 @@ class UI:
                         self.switch_fullscreen(self.c_win)
                 elif name.upper() == 'G':
                     self.on_label_event(self.eb_cur, True)
+                elif name.upper() == 'T':
+                    self.on_label_ett_event(self.eb_ett, True)
                 elif name.upper() == 'B':
                     self.switch_blanked()
                 else:
@@ -1090,14 +1095,14 @@ class UI:
         :type  event: :class:`Gdk.Event`
         """
 
-        event=args[-1]
+        event = args[-1]
+
+        # we can come manually or through a menu action as well
+        alt_start_editing = (type(event) == bool and event is True or type(event) == Gtk.Action)
+        event_type = None if alt_start_editing else event.type
 
         # Click in label-mode
-        if (
-            (type(event) == bool and event is True) or # forced manually
-            (type(event) == Gtk.Action) or # menu action
-            (type(event) == Gdk.Event and event.type == Gdk.EventType.BUTTON_PRESS) # click
-        ):
+        if alt_start_editing or event.type == Gdk.EventType.BUTTON_PRESS: # click
             if self.editing_cur_ett:
                 self.restore_current_label_ett()
 
@@ -1123,7 +1128,7 @@ class UI:
         return True
 
 
-    def on_label_ett_event(self, widget, event):
+    def on_label_ett_event(self, *args):
         """ Manage events on the current slide label/entry.
 
         This function replaces the label with an entry when clicked, replaces
@@ -1137,9 +1142,14 @@ class UI:
         """
 
         widget = self.eb_ett.get_child()
+        event = args[-1]
+
+        # we can come manually or through a menu action as well
+        alt_start_editing = (type(event) == bool and event is True or type(event) == Gtk.Action)
+        event_type = None if alt_start_editing else event.type
 
         # Click on the label
-        if widget is self.label_ett and event.type == Gdk.EventType.BUTTON_PRESS:
+        if widget is self.label_ett and (alt_start_editing or event_type == Gdk.EventType.BUTTON_PRESS):
             if self.editing_cur:
                 self.spin_cur.cancel()
 
@@ -1155,7 +1165,7 @@ class UI:
             self.editing_cur_ett = True
 
         # Key pressed in the entry
-        elif widget is self.entry_ett and event.type == Gdk.EventType.KEY_PRESS:
+        elif widget is self.entry_ett and event_type == Gdk.EventType.KEY_PRESS:
             name = Gdk.keyval_name(event.keyval)
 
             # Return key --> restore label and goto page
@@ -1297,7 +1307,7 @@ class UI:
 
             remaining = self.est_time - self.delta
             if remaining >= bounds[0]:
-                color = color[bounds[0]]
+                color = colors[bounds[0]]
             elif remaining <= bounds[-1]:
                 color = colors[bounds[-1]]
             else:
