@@ -21,17 +21,18 @@
 #       MA 02110-1301, USA.
 
 from setuptools import setup
-import glob, sys, importlib
+import glob, sys, os.path, importlib
 
 #get version
 pkg_meta = importlib.import_module('pympress.__init__')
-
+for pattern in [os.path.join('share', 'css', '*.css'), os.path.join('share', 'pixmaps', '*.png')]:
+    print(glob.glob(os.path.join('pympress', pattern)))
 setup(name='pympress',
       version=pkg_meta.__version__,
       description='A simple dual-screen PDF reader designed for presentations',
       author='Thomas Jost, Cimbali, Christof Rath',
       author_email='me@cimba.li',
-      url='http://www.pympress.org/',
+      url='https://github.com/Cimbali/pympress/',
       download_url='https://github.com/Cimbali/pympress/releases/latest',
       classifiers=[
           'Development Status :: 4 - Beta',
@@ -57,10 +58,9 @@ setup(name='pympress',
       install_requires=[
           'python-vlc',
       ],
-      data_files=[
-          ('share/pixmaps', glob.glob('share/pixmaps/pympress*')),
-          ('share/css', glob.glob('share/css/*')),
-      ],
+      package_data={
+        'pympress': [os.path.join('share', 'css', '*.css'), os.path.join('share', 'pixmaps', '*.png')]
+      },
 )
 
 ##

@@ -42,12 +42,24 @@ except ImportError:
 
 def get_resource_path(*path_parts):
     ''' Return the resource path based on whether its frozen or not.
+    Paths parts given should be relative to the pympress package dir.
     '''
     if getattr(sys, 'frozen', False):
         return os.path.join(os.path.dirname(sys.executable), *path_parts)
     else:
         req = pkg_resources.Requirement.parse('pympress')
-        return pkg_resources.resource_filename(req, os.path.join(*path_parts))
+        return pkg_resources.resource_filename(req, os.path.join('pympress', *path_parts))
+
+
+def get_resource_list(*path_parts):
+    ''' Return the list of elements in a directory based on whether its frozen or not.
+    Paths parts given should be relative to the pympress package dir.
+    '''
+    if getattr(sys, 'frozen', False):
+        return os.listdir(os.path.join(os.path.dirname(sys.executable), *path_parts))
+    else:
+        req = pkg_resources.Requirement.parse('pympress')
+        return pkg_resources.resource_listdir(req, os.path.join('pympress', *path_parts))
 
 
 def get_style_provider():
@@ -72,11 +84,7 @@ def get_icon_pixbuf(name):
 def list_icons():
     ''' List the icons from pympress' resources.
     '''
-    if getattr(sys, 'frozen', False):
-        icons = os.listdir(os.path.join(os.path.dirname(sys.executable), 'share', 'pixmaps'))
-    else:
-        req = pkg_resources.Requirement.parse('pympress')
-        icons = pkg_resources.resource_listdir(req, os.path.join('share', 'pixmaps'))
+    icons = get_resource_list('share', 'pixmaps')
 
     return [i for i in icons if os.path.splitext(i)[1].lower() == '.png' and i[:9] == 'pympress-']
 

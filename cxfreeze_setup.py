@@ -80,7 +80,7 @@ if IS_WINDOWS:
             break
 
 include_files += [(os.path.join(include_path, item), item) for item in libs_etc]
-include_files.append( ('share', 'share') )
+include_files.append( (os.path.join('pympress', 'share'), 'share') )
 
 buildOptions = dict(
     compressed = False,

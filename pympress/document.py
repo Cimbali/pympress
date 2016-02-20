@@ -87,7 +87,7 @@ class Link:
     #: Second y coordinate of the link rectangle, as a float number
     y2 = None
     #: Action to be perform to follow this link
-    follow = lambda: *args: print("ERROR no action defined for this link!")
+    follow = lambda *args: print("ERROR no action defined for this link!")
 
     def __init__(self, x1, y1, x2, y2, action):
         """
