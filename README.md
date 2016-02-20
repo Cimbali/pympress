@@ -15,6 +15,11 @@ This is now a fork of [Schnouki's original Pympress](https://github.com/Schnouki
 
 # Installing
 
+## Through pip (preferred way)
+
+Run the following command in your shell:
+`pip install -e git+https://github.com/Cimbali/pympress#egg=pympress`
+
 ## From source
 
 Grab [the latest source code](https://github.com/Cimbali/pympress/releases/latest), open a console where you extracted pympress, and type `python setup.py install`. See [the python documentation on installing](https://docs.python.org/3.5/install/#standard-build-and-install) for details. If it doesn't run, check that you have all [the dependencies](https://github.com/Cimbali/pympress#dependencies).
