@@ -28,7 +28,6 @@ IS_POSIX = os.name == 'posix'
 IS_MAC_OS = sys.platform == 'darwin'
 IS_WINDOWS = os.name == 'nt'
 
-
 install_dir, site_dir = site.getsitepackages()[:2]
 
 include_path = None
@@ -103,14 +102,14 @@ if include_vlc == 'y':
         import vlc
         buildOptions['packages'].append('vlc')
         print('Found VLC at '+vlc.plugin_path)
-        
+
         for f in glob.glob(os.path.join(vlc.plugin_path, '*.txt')):
             base, ext = os.path.splitext(os.path.basename(f))
             include_files.append((f, base + '_VLC' + ext))
-        
+
         for f in glob.glob(os.path.join(vlc.plugin_path, '*.dll')):
             include_files.append((f, os.path.basename(f)))
-            
+
         include_files.append((os.path.join(vlc.plugin_path, 'plugins'), ('plugins')))
     except ImportError:
         print('ERROR: VLC python module not available!')
@@ -127,7 +126,7 @@ setup(name='pympress',
       description='A simple dual-screen PDF reader designed for presentations',
       author='Thomas Jost, Cimbali',
       author_email='me@cimba.li',
-      url='http://www.pympress.org/',
+      url='http://www.pympress.xyz/',
       download_url='https://github.com/Cimbali/pympress/releases/latest',
       classifiers=[
           'Development Status :: 4 - Beta',

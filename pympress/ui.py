@@ -761,7 +761,7 @@ class UI:
         about.set_copyright('(c) 2009-2016 Thomas Jost, Cimbali, Christof Rath')
         about.set_comments('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n'
                          + 'Some preferences are saved in ' + pympress.util.path_to_config())
-        about.set_website('https://github.com/Cimbali/pympress/')
+        about.set_website('http://www.pympress.xyz/')
         try:
             about.set_logo(pympress.util.get_icon_pixbuf('pympress-128.png'))
         except Exception:
