@@ -57,7 +57,7 @@ A few of the fancier functionalities are listed here:
 # Hacking
 
 Feel free to clone this repo and use it, modify it, redistribute it, etc, under the GPLv2+.
-Pympress has inline sphinx (rst syntax) documentation, and the gh-pages branch hosts [an online documentation generated from it](https://cimbali.github.io/pympress/pympress.html).
+Pympress has inline sphinx (rst syntax) documentation, and the gh-pages branch hosts [an online documentation generated from it](https://cimbali.github.io/pympress/index.html).
 
 ## Dependencies
 

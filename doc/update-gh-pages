@@ -2,12 +2,13 @@
 
 # should not be in local dir
 TEMPFILE=/tmp/pympress-gh-pages.tar
+DOC="$(dirname $0)"
+TOP=$(cd "$DOC" && git rev-parse --show-toplevel)
 
-pushd $(dirname $0)
-rm -rf _build
+pushd "$TOP"
 
-make clean && make $TEMPFILE && \
-cd .. && git checkout gh-pages && git clean -fdx && \
+make -C "$DOC" clean && make -C "$DOC" $TEMPFILE && make -C "$DOC" clean &&
+git checkout gh-pages && git clean -fdx && \
 rm -fr *.html *.js *.inv _sources/* _static/* && \
 tar xf $TEMPFILE && touch .nojekyll
 
