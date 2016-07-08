@@ -24,7 +24,7 @@ from __future__ import print_function
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject
+from gi.repository import Gtk, Gdk, GObject, GLib
 
 try:
     gi.require_version('GdkX11', '3.0')
@@ -111,9 +111,9 @@ class VLCVideo(Gtk.VBox):
         tb.set_style(Gtk.ToolbarStyle.ICONS)
         tb.modify_bg(Gtk.StateType.NORMAL, Gdk.Color(0, 0, 0))
         for text, tooltip, stock, callback in (
-            ('Play', 'Play', Gtk.STOCK_MEDIA_PLAY, lambda b: self.player.play()),
-            ('Pause', 'Pause', Gtk.STOCK_MEDIA_PAUSE, lambda b: self.player.pause()),
-            ('Stop', 'Stop', Gtk.STOCK_MEDIA_STOP, lambda b: self.player.stop()),
+            ('Play', 'Play', Gtk.STOCK_MEDIA_PLAY, lambda b: self.play()),
+            ('Pause', 'Pause', Gtk.STOCK_MEDIA_PAUSE, lambda b: self.pause()),
+            ('Stop', 'Stop', Gtk.STOCK_MEDIA_STOP, lambda b: self.hide()),
         ):
             b=Gtk.ToolButton(stock)
             b.set_tooltip_text(tooltip)
@@ -134,7 +134,7 @@ class VLCVideo(Gtk.VBox):
     def set_file(self, filepath):
         ''' Sets the media file to be played bu the widget.
         '''
-        self.player.set_media(instance.media_new(filepath))
+        GLib.idle_add(self.player.set_media, instance.media_new(filepath))
 
     def play(self):
         ''' Start playing the media file.
@@ -145,9 +145,7 @@ class VLCVideo(Gtk.VBox):
             self.overlay.add_overlay(self)
             self.resize()
             self.overlay.show_all()
-        if self.player.get_state() == vlc.State.Ended:
-            self.player.stop()
-        self.player.play()
+        GLib.idle_add(self.player.play)
 
     def on_click(self, widget, event):
         ''' React to click events by playing or pausing the media.
@@ -155,24 +153,16 @@ class VLCVideo(Gtk.VBox):
         if not self.get_parent():
             # How was this even clicked on?
             return
-        if event.type == Gdk.EventType.BUTTON_PRESS:
-            if self.player.is_playing():
-                self.player.pause()
-            else:
-                self.play()
-        elif event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
-            self.player.set_time(0) # en ms
 
-    def stop_and_remove(self):
-        ''' Stop playing and remove widget from overlays.
-        '''
-        if self.player.is_playing():
-            self.player.stop()
-        self.hide()
+        if event.type == Gdk.EventType.BUTTON_PRESS:
+            GLib.idle_add(lambda p: p.pause() if p.is_playing() else p.play(), self.player)
+        elif event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
+            GLib.idle_add(self.player.set_time, 0) # in ms
 
     def hide(self, *args):
         ''' Remove widget from overlays.
         '''
+        GLib.idle_add(lambda p: p.stop(), self.player)
         self.movie_zone.hide()
         if self.get_parent():
             self.overlay.remove(self)
