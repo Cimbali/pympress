@@ -126,6 +126,13 @@ class UI:
     p_frame_next = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
     #: :class:`~Gtk.DrawingArea` for the next slide in the Presenter window.
     p_da_next = Gtk.DrawingArea()
+    #: :class:`~Gtk.AspectFrame` for the current slide copy in the Presenter window.
+    p_frame_pres = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
+    #: :class:`~Gtk.DrawingArea` for the current slide copy in the Presenter window.
+    p_da_pres = Gtk.DrawingArea()
+
+    #: :class:`~Gtk.AspectFrame` for the annotations in the Presenter window.
+    p_frame_annot = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
 
     #: Elapsed time :class:`~Gtk.Label`.
     label_time = Gtk.Label()
@@ -149,6 +156,9 @@ class UI:
 
     #: Whether to use notes mode or not
     notes_mode = False
+
+    #: Whether to display annotations or not
+    annotation_mode = True
 
     #: number of page currently displayed in Controller window's miniatures
     page_preview_nb = 0
@@ -234,6 +244,11 @@ class UI:
         self.c_da.queue_draw()
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
+        self.p_da_pres.queue_draw()
+
+        # Necessary to hide the "current slide" thumbnail when not in notes mode
+        if not self.notes_mode:
+            self.p_frame_pres.set_visible(False)
 
         self.label_color_default = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
 
@@ -320,6 +335,8 @@ class UI:
         self.p_da_cur.connect("configure-event", self.on_configure_da)
         self.p_da_next.connect("draw", self.on_draw)
         self.p_da_next.connect("configure-event", self.on_configure_da)
+        self.p_da_pres.connect("draw", self.on_draw)
+        self.p_da_pres.connect("configure-event", self.on_configure_da)
 
         self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
         self.p_win.connect("key-press-event", self.on_navigation)
@@ -358,7 +375,7 @@ class UI:
         hpaned.set_margin_left(5)
         hpaned.set_margin_right(5)
 
-        # "Current slide" frame
+        # "Current slide" frame or "Notes" frame
         self.p_frame_cur.set_label("Current slide")
         self.p_frame_cur.get_label_widget().get_style_context().add_class("frame-label")
         self.p_frame_cur.set_margin_right(5)
@@ -378,6 +395,15 @@ class UI:
         right_pane.set_homogeneous(False)
         right_pane.set_name('right pane')
 
+        # "Current slide" frame (note mode)
+        self.p_frame_pres.set_label("Current slide")
+        self.p_frame_pres.get_label_widget().get_style_context().add_class("frame-label")
+        self.p_da_pres.set_name("p_da_pres")
+        self.cache.add_widget("p_da_pres", PDF_CONTENT_PAGE)
+        self.p_frame_pres.add(self.p_da_pres)
+
+        right_pane.pack_start(self.p_frame_pres, True, True, 0)
+
         # "Next slide" frame
         self.p_frame_next.set_label("Next slide")
         self.p_frame_next.get_label_widget().get_style_context().add_class("frame-label")
@@ -394,7 +420,7 @@ class UI:
         self.annotation_renderer = Gtk.CellRendererText()
         self.annotation_renderer.props.wrap_mode = Pango.WrapMode.WORD_CHAR
 
-        column = Gtk.TreeViewColumn("Annotations", self.annotation_renderer, text=0)
+        column = Gtk.TreeViewColumn(None, self.annotation_renderer, text=0)
         column.props.sizing = Gtk.TreeViewColumnSizing.AUTOSIZE
         column.set_fixed_width(1)
 
@@ -409,7 +435,12 @@ class UI:
         self.scrollable_treelist.set_hexpand(True)
         self.scrollable_treelist.add(self.scrolled_window)
 
-        right_pane.pack_end(self.scrollable_treelist, False, False, 0)
+        self.p_frame_annot.set_label("Annotations")
+        self.p_frame_annot.get_label_widget().get_style_context().add_class("frame-label")
+        self.p_frame_annot.add(self.scrollable_treelist)
+
+        #right_pane.pack_end(self.scrollable_treelist, False, False, 0)
+        right_pane.pack_end(self.p_frame_annot, False, False, 0)
 
         hpaned.pack2(right_pane, True, True)
 
@@ -580,6 +611,7 @@ class UI:
             <menuitem action="Fullscreen"/>
             <menuitem action="Swap screens"/>
             <menuitem action="Notes mode"/>
+            <menuitem action="Show annotations"/>
             <menuitem action="Blank screen"/>
             <menuitem action="Align content"/>
           </menu>
@@ -632,6 +664,7 @@ class UI:
             ('Pause timer',  None,           '_Pause timer', 'p',     None, self.switch_pause,         True),
             ('Fullscreen',   None,           '_Fullscreen',  'f',     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
             ('Notes mode',   None,           '_Note mode',   'n',     None, self.switch_mode,          self.notes_mode),
+            ('Show annotations',   None,           '_Show annotations',   'a',     None, self.switch_annotations,          self.annotation_mode),
             ('Blank screen', None,           '_Blank screen','b',     None, self.switch_blanked,       self.blanked),
             ('Content blanked',      None,   'Content blanked',       None, None, self.switch_start_blanked,    self.config.getboolean('content', 'start_blanked')),
             ('Content fullscreen',   None,   'Content fullscreen',    None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
@@ -758,6 +791,7 @@ class UI:
         # queue redraws
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
+        self.p_da_pres.queue_draw()
 
         self.add_annotations(page_cur.get_annotations())
 
@@ -801,6 +835,7 @@ class UI:
         self.c_da.queue_draw()
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
+        self.p_da_pres.queue_draw()
 
 
         # Start counter if needed
@@ -872,7 +907,7 @@ class UI:
             if self.blanked:
                 return
             page = self.doc.page(self.doc.current_page().number())
-        elif widget is self.p_da_cur:
+        elif widget is self.p_da_cur or widget is self.p_da_pres:
             # Current page 'preview'
             page = self.doc.page(self.page_preview_nb)
         else:
@@ -999,6 +1034,8 @@ class UI:
                     self.switch_pause()
                 elif name.upper() == 'N':
                     self.switch_mode()
+                elif name.upper() == 'A':
+                    self.switch_annotations()
                 elif name.upper() == 'S':
                     self.swap_screens()
                 elif name.upper() == 'F':
@@ -1579,11 +1616,26 @@ class UI:
             self.cache.set_widget_type("c_da", PDF_REGULAR)
             self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
+            self.p_frame_pres.set_visible(False)
         else:
             self.notes_mode = True
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_cur", PDF_NOTES_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
+            self.p_frame_pres.set_visible(True)
+
+        self.on_page_change(False)
+
+
+    def switch_annotations(self, widget=None, event=None):
+        """ Switch the display to show annotations or to hide them.
+        """
+        if self.annotation_mode:
+            self.annotation_mode = False
+            self.p_frame_annot.set_visible(False)
+        else:
+            self.annotation_mode = True
+            self.p_frame_annot.set_visible(True)
 
         self.on_page_change(False)
 
