@@ -30,7 +30,7 @@ for pattern in [os.path.join('share', 'css', '*.css'), os.path.join('share', 'pi
 setup(name='pympress',
       version=pkg_meta.__version__,
       description='A simple dual-screen PDF reader designed for presentations',
-      author='Thomas Jost, Cimbali, Christof Rath',
+      author='Thomas Jost, Cimbali, Christof Rath, Epithumia',
       author_email='me@cimba.li',
       url='https://github.com/Cimbali/pympress/',
       download_url='https://github.com/Cimbali/pympress/releases/latest',

@@ -1,6 +1,7 @@
 #       util.py
 #
 #       Copyright 2009, 2010 Thomas Jost <thomas.jost@gmail.com>
+#       Copyright 2015 Cimbali <me@cimba.li>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -173,14 +174,6 @@ def save_config(config):
     '''
     with open(path_to_config(), 'w') as configfile:
         config.write(configfile)
-
-def set_video():
-    
-    try:
-        import pympress.vlcvideo
-        vlc_enabled = 'vlc'
-    except:
-        vlc_enabled = False
 
 ##
 # Local Variables:

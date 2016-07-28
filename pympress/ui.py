@@ -1,5 +1,7 @@
-# -*- coding: utf-8 -*-
+#       ui.py
+#
 #       Copyright 2010 Thomas Jost <thomas.jost@gmail.com>
+#       Copyright 2015 Cimbali <me@cimba.li>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -57,7 +59,7 @@ try:
     vlc_enabled = True
 except:
     vlc_enabled = False
-    print("Warning: video support is disabled")
+    print(_("Warning: video support is disabled"))
 
 from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 
@@ -262,7 +264,7 @@ class UI:
 
         # Content window
         self.c_win.set_name('ContentWindow')
-        self.c_win.set_title("pympress content")
+        self.c_win.set_title(_("pympress content"))
         self.c_win.set_default_size(1067, 600)
         self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
         self.c_win.add(self.c_frame)
@@ -295,7 +297,7 @@ class UI:
         """
         # Presenter window
         self.p_win.set_name('PresenterWindow')
-        self.p_win.set_title("pympress presenter")
+        self.p_win.set_title(_("pympress presenter"))
         self.p_win.set_default_size(1067, 600)
         self.p_win.set_position(Gtk.WindowPosition.CENTER)
 
@@ -380,9 +382,9 @@ class UI:
 
         # "Current slide" frame or "Notes" frame
         if self.notes_mode:
-            self.p_frame_cur.set_label("Notes")
+            self.p_frame_cur.set_label(_("Notes"))
         else:
-            self.p_frame_cur.set_label("Current slide")
+            self.p_frame_cur.set_label(_("Current slide"))
         self.p_frame_cur.get_label_widget().get_style_context().add_class("frame-label")
         self.p_frame_cur.set_margin_right(5)
 
@@ -399,10 +401,10 @@ class UI:
         #right_pane.set_halign(Gtk.Align.FILL)
         right_pane.set_margin_left(5)
         right_pane.set_homogeneous(False)
-        right_pane.set_name('right pane')
+        right_pane.set_name('RightPane')
 
         # "Current slide" frame (note mode)
-        self.p_frame_pres.set_label("Current slide")
+        self.p_frame_pres.set_label(_("Current slide"))
         self.p_frame_pres.get_label_widget().get_style_context().add_class("frame-label")
         self.p_da_pres.set_name("p_da_pres")
         self.cache.add_widget("p_da_pres", PDF_CONTENT_PAGE, self.notes_mode)
@@ -411,7 +413,7 @@ class UI:
         right_pane.pack_start(self.p_frame_pres, True, True, 0)
 
         # "Next slide" frame
-        self.p_frame_next.set_label("Next slide")
+        self.p_frame_next.set_label(_("Next slide"))
         self.p_frame_next.get_label_widget().get_style_context().add_class("frame-label")
         self.p_da_next.set_name("p_da_next")
         if self.notes_mode:
@@ -441,7 +443,7 @@ class UI:
         self.scrollable_treelist.set_hexpand(True)
         self.scrollable_treelist.add(self.scrolled_window)
 
-        self.p_frame_annot.set_label("Annotations")
+        self.p_frame_annot.set_label(_("Annotations"))
         self.p_frame_annot.get_label_widget().get_style_context().add_class("frame-label")
         self.p_frame_annot.add(self.scrollable_treelist)
 
@@ -481,7 +483,7 @@ class UI:
             c_full = self.config.getboolean('content', 'start_fullscreen')
 
             if c_monitor == p_monitor and (c_full or p_full):
-                print("Warning: Content and presenter window must not be on the same monitor if you start full screen!", file=sys.stderr)
+                print(_("Warning: Content and presenter window must not be on the same monitor if you start full screen!"), file=sys.stderr)
                 p_monitor = 0 if c_monitor > 0 else 1
 
             p_bounds = screen.get_monitor_geometry(p_monitor)
@@ -525,7 +527,7 @@ class UI:
         self.eb_cur.set_visible_window(False)
         self.eb_cur.connect("event", self.on_label_event)
         frame = Gtk.Frame()
-        frame.set_label("Slide number")
+        frame.set_label(_("Slide number"))
         frame.get_label_widget().get_style_context().add_class("frame-label")
         frame.set_size_request(200, 0)
         frame.add(self.eb_cur)
@@ -536,7 +538,7 @@ class UI:
         """ Make "Clock" frame, that will display the time.
         """
         frame = Gtk.Frame()
-        frame.set_label("Clock")
+        frame.set_label(_("Clock"))
         frame.set_size_request(170, 0)
         frame.get_label_widget().get_style_context().add_class("frame-label")
         frame.add(self.label_clock)
@@ -550,7 +552,7 @@ class UI:
         This label may change styles depending on the talk duration estimate.
         """
         frame = Gtk.Frame()
-        frame.set_label("Time elapsed")
+        frame.set_label(_("Time elapsed"))
         frame.set_size_request(170, 0)
         frame.get_label_widget().get_style_context().add_class("frame-label")
         self.label_time.set_name("LTimeElapsed")
@@ -587,7 +589,7 @@ class UI:
         self.eb_ett.add(self.label_ett)
         self.entry_ett.set_alignment(0.5)
         frame = Gtk.Frame()
-        frame.set_label("Time estimation")
+        frame.set_label(_("Time estimation"))
         frame.get_label_widget().get_style_context().add_class("frame-label")
         frame.set_size_request(170, 0)
         frame.add(self.eb_ett)
@@ -646,34 +648,34 @@ class UI:
         action_group = Gtk.ActionGroup('MenuBar')
         # Name, stock id, label, accelerator, tooltip, action [, is_active]
         action_group.add_actions([
-            ('File',         None,           '_File'),
-            ('Presentation', None,           '_Presentation'),
-            ('Navigation',   None,           '_Navigation'),
-            ('Starting Configuration', None, '_Starting Configuration'),
-            ('Help',         None,           '_Help'),
+            ('File',         None,           _('_File')),
+            ('Presentation', None,           _('_Presentation')),
+            ('Navigation',   None,           _('_Navigation')),
+            ('Starting Configuration', None, _('_Starting Configuration')),
+            ('Help',         None,           _('_Help')),
 
-            ('Quit',         Gtk.STOCK_QUIT, '_Quit',        'q',     None, self.save_and_quit),
-            ('Reset timer',  None,           '_Reset timer', 'r',     None, self.reset_timer),
-            ('Set talk time',None,           'Set talk _Time','t',    None, self.on_label_ett_event),
-            ('About',        None,           '_About',       None,    None, self.menu_about),
-            ('Swap screens', None,           '_Swap screens','s',     None, self.swap_screens),
-            ('Align content',None,           '_Align content',None,   None, self.adjust_frame_position),
+            ('Quit',         Gtk.STOCK_QUIT, _('_Quit'),        'q',     None, self.save_and_quit),
+            ('Reset timer',  None,           _('_Reset timer'), 'r',     None, self.reset_timer),
+            ('Set talk time',None,           _('Set talk _Time'),'t',    None, self.on_label_ett_event),
+            ('About',        None,           _('_About'),       None,    None, self.menu_about),
+            ('Swap screens', None,           _('_Swap screens'),'s',     None, self.swap_screens),
+            ('Align content',None,           _('_Align content'),None,   None, self.adjust_frame_position),
 
-            ('Next',         None,           '_Next',        'Right', None, self.doc.goto_next),
-            ('Previous',     None,           '_Previous',    'Left',  None, self.doc.goto_prev),
-            ('First',        None,           '_First',       'Home',  None, self.doc.goto_home),
-            ('Last',         None,           '_Last',        'End',   None, self.doc.goto_end),
-            ('Go to...',     None,           '_Go to...',    'g',     None, self.on_label_event),
+            ('Next',         None,           _('_Next'),        'Right', None, self.doc.goto_next),
+            ('Previous',     None,           _('_Previous'),    'Left',  None, self.doc.goto_prev),
+            ('First',        None,           _('_First'),       'Home',  None, self.doc.goto_home),
+            ('Last',         None,           _('_Last'),        'End',   None, self.doc.goto_end),
+            ('Go to...',     None,           _('_Go to...'),    'g',     None, self.on_label_event),
         ])
         action_group.add_toggle_actions([
-            ('Pause timer',  None,           '_Pause timer', 'p',     None, self.switch_pause,         True),
-            ('Fullscreen',   None,           '_Fullscreen',  'f',     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
-            ('Notes mode',   None,           '_Note mode',   'n',     None, self.switch_mode,          self.notes_mode),
-            ('Annotations',  None,           '_Annotations', 'a',     None, self.switch_annotations,   self.show_annotations),
-            ('Blank screen', None,           '_Blank screen','b',     None, self.switch_blanked,       self.blanked),
-            ('Content blanked',      None,   'Content blanked',       None, None, self.switch_start_blanked,    self.config.getboolean('content', 'start_blanked')),
-            ('Content fullscreen',   None,   'Content fullscreen',    None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
-            ('Presenter fullscreen', None,   'Presenter fullscreen',  None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
+            ('Pause timer',  None,           _('_Pause timer'), 'p',     None, self.switch_pause,         True),
+            ('Fullscreen',   None,           _('_Fullscreen'),  'f',     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
+            ('Notes mode',   None,           _('_Note mode'),   'n',     None, self.switch_mode,          self.notes_mode),
+            ('Annotations',  None,           _('_Annotations'), 'a',     None, self.switch_annotations,   self.show_annotations),
+            ('Blank screen', None,           _('_Blank screen'),'b',     None, self.switch_blanked,       self.blanked),
+            ('Content blanked',      None,   _('Content blanked'),       None, None, self.switch_start_blanked,    self.config.getboolean('content', 'start_blanked')),
+            ('Content fullscreen',   None,   _('Content fullscreen'),    None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
+            ('Presenter fullscreen', None,   _('Presenter fullscreen'),  None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -717,20 +719,20 @@ class UI:
         """ Ask the user which file he means to open.
         """
         # Use a GTK file dialog to choose file
-        dialog = Gtk.FileChooserDialog('Open...', self.p_win,
+        dialog = Gtk.FileChooserDialog(_('Open...'), self.p_win,
                                        Gtk.FileChooserAction.OPEN,
                                        (Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_position(Gtk.WindowPosition.CENTER)
 
         filter = Gtk.FileFilter()
-        filter.set_name('PDF files')
+        filter.set_name(_('PDF files'))
         filter.add_mime_type('application/pdf')
         filter.add_pattern('*.pdf')
         dialog.add_filter(filter)
 
         filter = Gtk.FileFilter()
-        filter.set_name('All files')
+        filter.set_name(_('All files'))
         filter.add_pattern('*')
         dialog.add_filter(filter)
 
@@ -743,7 +745,7 @@ class UI:
             dialog.destroy()
 
             # Use a GTK dialog to tell we need a file
-            msg="""No file selected!\n\nYou can specify the PDF file to open on the command line if you don't want to use the "Open File" dialog."""
+            msg=_("""No file selected!\n\nYou can specify the PDF file to open on the command line if you don't want to use the "Open File" dialog.""")
             dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg, parent=self.p_win)
             dialog.set_position(Gtk.WindowPosition.CENTER)
             dialog.run()
@@ -758,14 +760,14 @@ class UI:
         about = Gtk.AboutDialog()
         about.set_program_name('pympress')
         about.set_version(pympress.__version__)
-        about.set_copyright('(c) 2009-2016 Thomas Jost, Cimbali, Christof Rath')
-        about.set_comments('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n'
-                         + 'Some preferences are saved in ' + pympress.util.path_to_config())
+        about.set_copyright(_('Contributors:') + '\n' + pympress.__copyright__)
+        about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n')
+                         + _('Some preferences are saved in ') + pympress.util.path_to_config())
         about.set_website('http://www.pympress.xyz/')
         try:
             about.set_logo(pympress.util.get_icon_pixbuf('pympress-128.png'))
         except Exception:
-            print('Error loading icon for about window')
+            print(_('Error loading icon for about window'))
         about.run()
         about.destroy()
 
@@ -873,7 +875,7 @@ class UI:
         if not vlc_enabled:
             return
 
-        self.c_overlay.foreach(lambda child, *ignored: child.stop_and_remove() and self.c_overlay.remove(child) if child is not self.c_da else None, None)
+        self.c_overlay.foreach(lambda child, *ignored: child.hide() if child is not self.c_da else None, None)
 
         page_cur = self.doc.current_page()
         pw, ph = page_cur.get_size()
@@ -1127,7 +1129,7 @@ class UI:
                 widget.get_window().set_cursor(None)
 
         else:
-            print("Unknown event {}".format(event.type))
+            print(_("Unknown event {}").format(event.type))
 
 
     def on_label_event(self, *args):
@@ -1226,7 +1228,7 @@ class UI:
                     m = int(t[0])
                     s = int(t[1])
                 except ValueError:
-                    print("Invalid time (mm or mm:ss expected), got \"{}\"".format(text))
+                    print(_("Invalid time (mm or mm:ss expected), got \"{}\"").format(text))
                     return True
                 except IndexError:
                     s = 0
@@ -1311,7 +1313,7 @@ class UI:
             self.delta = time.time() - self.start_time
         elapsed = "{:02}:{:02}".format(*divmod(int(self.delta), 60))
         if self.paused:
-            elapsed += " (paused)"
+            elapsed += _(" (paused)")
 
         self.label_time.set_text(elapsed)
         self.label_clock.set_text(clock)
@@ -1418,7 +1420,7 @@ class UI:
             cmd = "suspend" if must_disable else "resume"
             status = os.system("xdg-screensaver {} {}".format(cmd, self.c_win.get_window().get_xid()))
             if status != 0:
-                print("Warning: Could not set screensaver status: got status "+str(status), file=sys.stderr)
+                print(_("Warning: Could not set screensaver status: got status ")+str(status), file=sys.stderr)
 
             # Also manage screen blanking via DPMS
             if must_disable:
@@ -1436,7 +1438,7 @@ class UI:
                     self.dpms_was_enabled = True
                     status = os.system("xset -dpms")
                     if status != 0:
-                        print("Warning: Could not disable DPMS screen blanking: got status "+str(status), file=sys.stderr)
+                        print(_("Warning: Could not disable DPMS screen blanking: got status ")+str(status), file=sys.stderr)
                 else:
                     self.dpms_was_enabled = False
 
@@ -1444,7 +1446,7 @@ class UI:
                 # Re-enable DPMS
                 status = os.system("xset +dpms")
                 if status != 0:
-                    print("Warning: Could not enable DPMS screen blanking: got status "+str(status), file=sys.stderr)
+                    print(_("Warning: Could not enable DPMS screen blanking: got status ")+str(status), file=sys.stderr)
 
         elif IS_WINDOWS:
             try:
@@ -1458,9 +1460,9 @@ class UI:
                     elif self.dpms_was_enabled:
                         winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "1")
             except (OSError, PermissionError):
-                print("Error: access denied when trying to access screen saver settings in registry!")
+                print(_("Error: access denied when trying to access screen saver settings in registry!"))
         else:
-            print("Warning: Unsupported OS: can't enable/disable screensaver", file=sys.stderr)
+            print(_("Warning: Unsupported OS: can't enable/disable screensaver"), file=sys.stderr)
 
 
     def switch_fullscreen(self, widget=None, event=None):
@@ -1479,7 +1481,7 @@ class UI:
         elif widget == self.p_win:
             fullscreen = self.p_win_fullscreen
         else:
-            print ("Unknow widget " + str(widget) + " to be fullscreened, aborting.", file=sys.stderr)
+            print (_("Unknow widget {} to be fullscreened, aborting.").format(widget), file=sys.stderr)
             return
 
         if fullscreen:
@@ -1524,7 +1526,7 @@ class UI:
         button.set_value(val)
         button.connect("value-changed", self.update_frame_position, prop)
 
-        popup = Gtk.Dialog("Adjust alignment of slides in projector screen", self.p_win, 0,
+        popup = Gtk.Dialog(_("Adjust alignment of slides in projector screen"), self.p_win, 0,
                 (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
                  Gtk.STOCK_OK, Gtk.ResponseType.OK))
 
@@ -1611,7 +1613,7 @@ class UI:
         elif 'presenter' in name_words:
             target = 'presenter'
         else:
-            print("ERROR Unknown widget to start fullscreen: {}".format(widget.get_name()))
+            print(_("ERROR Unknown widget to start fullscreen: {}").format(widget.get_name()))
             return
 
         if self.config.getboolean(target, 'start_fullscreen'):
@@ -1629,7 +1631,7 @@ class UI:
             self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
             self.cache.disable_prerender("p_da_pres")
-            self.p_frame_cur.set_label("Current slide")
+            self.p_frame_cur.set_label(_("Current slide"))
             self.p_frame_pres.set_visible(False)
         else:
             self.notes_mode = True
@@ -1637,7 +1639,7 @@ class UI:
             self.cache.set_widget_type("p_da_cur", PDF_NOTES_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
             self.cache.enable_prerender("p_da_pres")
-            self.p_frame_cur.set_label("Notes")
+            self.p_frame_cur.set_label(_("Notes"))
             self.p_frame_pres.set_visible(True)
 
         # show/hide annotations, in opposite of nodes'

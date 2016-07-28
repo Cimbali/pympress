@@ -14,6 +14,9 @@
 import sys, os
 import subprocess
 
+#get version
+pkg_meta = importlib.import_module('pympress.__init__')
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -42,14 +45,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Pympress'
-copyright = '2009-2011, Thomas Jost'
+copyright = '2009-2011, Thomas Jost; 2015-2016 Cimbali'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '0.4'
+version=pkg_meta.__version__
 # The full version, including alpha/beta/rc tags.
 release = str(subprocess.check_output(["git", "describe"])[1:].strip())
 
@@ -184,8 +187,7 @@ htmlhelp_basename = 'pympressdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'pympress.tex', u'pympress Documentation',
-   u'Thomas Jost', 'manual'),
+  ('index', 'pympress.tex', u'pympress documentation', u'Thomas Jost, Cimbali', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -217,6 +219,5 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'pympress', u'pympress Documentation',
-     [u'Thomas Jost'], 1)
+    ('index', 'pympress', u'pympress documentation', [u'Thomas Jost, Cimbali'], 1)
 ]

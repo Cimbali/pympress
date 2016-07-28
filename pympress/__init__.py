@@ -1,6 +1,6 @@
 #       __init__.py
 #
-#       Copyright 2009, 2010 Thomas Jost <thomas.jost@gmail.com>
+#       Copyright 2015 Cimbali <me@cimba.li>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -22,5 +22,10 @@
 #
 
 __version__ = '0.6'
+__copyright__= """2009, 2010 Thomas Jost <thomas.jost@gmail.com>
+2015, 2016 Cimbali <me@cimba.li>
+2016 Christoph Rath <christof.rath@iaik.tugraz.at>
+2016 Epithumia <endless@airelle.info>
+"""
 
 __all__ = ['document', 'surfacecache', 'ui', 'util', 'slideselector']

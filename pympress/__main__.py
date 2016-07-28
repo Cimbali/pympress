@@ -3,6 +3,7 @@
 #       pympress
 #
 #       Copyright 2009, 2010 Thomas Jost <thomas.jost@gmail.com>
+#       Copyright 2015 Cimbali <me@cimba.li>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -23,19 +24,23 @@ import os.path
 import sys
 import getopt
 import signal
+import gettext
 
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
 
+import pympress.util
+gettext.install('pympress', pympress.util.get_resource_path('share', 'locale'))
+
 import pympress.ui
 
 def usage():
-    print("Usage: {} [options] <presentation_file>".format(sys.argv[0]))
+    print(_("Usage: {} [options] <presentation_file>").format(sys.argv[0]))
     print("")
-    print("Options:")
-    print("    -h, --help: This help")
-    print("    -t xx, --talk-time=xx: The estimated (intended) talk time in minutes")
+    print(_("Options:"))
+    print("    -h, --help: " + _("This help"))
+    print("    -t xx, --talk-time=xx: " + _("The estimated (intended) talk time in minutes"))
     print("")
 
 def main(argv = sys.argv[1:]):
@@ -57,7 +62,7 @@ def main(argv = sys.argv[1:]):
                 m = int(t[0])
                 s = int(t[1])
             except ValueError:
-                print("Invalid time (mm or mm:ss expected), got \"{}\"".format(text))
+                print(_("Invalid time (mm or mm:ss expected), got \"{}\"").format(text))
                 usage()
                 sys.exit(2)
             except IndexError:
@@ -71,7 +76,7 @@ def main(argv = sys.argv[1:]):
 
         # Check if the path is valid
         if not os.path.exists(name):
-            msg="Could not find the file \"{}\"".format(name)
+            msg=_("Could not find the file \"{}\"").format(name)
             dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg)
             dialog.set_position(Gtk.WindowPosition.CENTER)
             dialog.run()

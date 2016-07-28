@@ -1,6 +1,7 @@
 #       surfacecache.py
 #
 #       Copyright 2010 Thomas Jost <thomas.jost@gmail.com>
+#       Copyright 2015 Cimbali <me@cimba.li>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by

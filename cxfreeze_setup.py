@@ -2,7 +2,6 @@
 #
 #       cxfreeze_setup.py
 #
-#       Copyright 2009 Thomas Jost <thomas.jost@gmail.com>
 #       Copyright 2015 Cimbali <me@cimba.li>
 #
 #       This program is free software; you can redistribute it and/or modify
@@ -124,7 +123,7 @@ executable = Executable(os.path.join('pympress', '__main__.py'), targetName='pym
 setup(name='pympress',
       version=pkg_meta.__version__,
       description='A simple dual-screen PDF reader designed for presentations',
-      author='Thomas Jost, Cimbali',
+      author='Thomas Jost, Cimbali, Christof Rath, Epithumia',
       author_email='me@cimba.li',
       url='http://www.pympress.xyz/',
       download_url='https://github.com/Cimbali/pympress/releases/latest',

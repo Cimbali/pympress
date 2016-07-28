@@ -1,6 +1,7 @@
 #       document.py
 #
 #       Copyright 2009, 2010 Thomas Jost <thomas.jost@gmail.com>
+#       Copyright 2015 Cimbali <me@cimba.li>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -87,7 +88,7 @@ class Link:
     #: Second y coordinate of the link rectangle, as a float number
     y2 = None
     #: Action to be perform to follow this link
-    follow = lambda *args: print("ERROR no action defined for this link!")
+    follow = lambda *args: print(_("ERROR no action defined for this link!"))
 
     def __init__(self, x1, y1, x2, y2, action):
         """
@@ -192,7 +193,7 @@ class Page:
                     self.medias.append(media)
                     action = lambda: pympress.ui.UI.play_media(hash(media))
                 else:
-                    print("Pympress can not find file " + movie.get_filename())
+                    print(_("Pympress can not find file ") + movie.get_filename())
                     continue
             elif annot_type == Poppler.AnnotType.SCREEN:
                 action_obj = annotation.annot.get_action()
@@ -208,7 +209,7 @@ class Page:
                 # Poppler already renders annotation of this type
                 continue
             else:
-                print("Pympress can not interpret annotation of type: {} ".format(annot_type))
+                print(_("Pympress can not interpret annotation of type:") + " {} ".format(annot_type))
                 continue
 
             my_annotation = Link(annotation.area.x1, annotation.area.y1, annotation.area.x2, annotation.area.y2, action)
@@ -220,7 +221,7 @@ class Page:
         # Poppler.ActionType.RENDITION should only appear in annotations, right? Otherwise how do we know
         # where to render it? Any documentation on which action types are admissible in links vs in annots
         # is very welcome. For now, link is fallback to annot so contains all action types.
-        fun = lambda: print("No action was defined for this link")
+        fun = lambda: print(_("No action was defined for this link"))
 
         if link_type == Poppler.ActionType.NONE:
             fun = None
@@ -237,20 +238,20 @@ class Page:
                 fun = lambda: self.parent.goto(dest.page_num)
             elif dest_name == "GoBack":
                 #TODO make a history of visited pages, use this action to jump back in history
-                fun = lambda: print("Pympress does not yet support link type \"{}\" to \"{}\"".format(link_type, dest_name))
+                fun = lambda: print(_("Pympress does not yet support link type \"{}\" to \"{}\"").format(link_type, dest_name))
             elif dest_name == "GoForward":
                 #TODO make a history of visited pages, use this action to jump forward in history
-                fun = lambda: print("Pympress does not yet support link type \"{}\" to \"{}\"".format(link_type, dest_name))
+                fun = lambda: print(_("Pympress does not yet support link type \"{}\" to \"{}\"").format(link_type, dest_name))
             elif dest_name == "GoToPage":
                 #TODO connect this to the "G" action which allows to pick a page to jump to
-                fun = lambda: print("Pympress does not yet support link type \"{}\" to \"{}\"".format(link_type, dest_name))
+                fun = lambda: print(_("Pympress does not yet support link type \"{}\" to \"{}\"").format(link_type, dest_name))
             elif dest_name == "Find":
                 #TODO popup a text box and search results with Page.find_text
                 # http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text
-                fun = lambda: print("Pympress does not yet support link type \"{}\" to \"{}\"".format(link_type, dest_name))
+                fun = lambda: print(_("Pympress does not yet support link type \"{}\" to \"{}\"").format(link_type, dest_name))
             else:
                 #TODO find out other possible named actions?
-                fun = lambda: print("Pympress does not recognize link type \"{}\" to \"{}\"".format(link_type, dest_name))
+                fun = lambda: print(_("Pympress does not recognize link type \"{}\" to \"{}\"").format(link_type, dest_name))
 
         elif link_type == Poppler.ActionType.LAUNCH:
             launch = action.launch
@@ -265,21 +266,21 @@ class Page:
                 fun = lambda: fileopen(filepath)
 
         elif link_type == Poppler.ActionType.RENDITION: # Poppler 0.22
-            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+            fun = lambda: print(_("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.MOVIE: # Poppler 0.20
-            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+            fun = lambda: print(_("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.URI:
             fun = lambda: webbrowser.open_new_tab(action.uri.uri)
         elif link_type == Poppler.ActionType.GOTO_REMOTE:
-            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+            fun = lambda: print(_("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.OCG_STATE:
-            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+            fun = lambda: print(_("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.JAVSCRIPT:
-            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+            fun = lambda: print(_("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.UNKNOWN:
-            fun = lambda: print("Pympress does not yet support link type \"{}\"".format(link_type))
+            fun = lambda: print(_("Pympress does not yet support link type \"{}\"").format(link_type))
         else:
-            fun = lambda: print("Pympress does not recognize link type \"{}\"".format(link_type))
+            fun = lambda: print(_("Pympress does not recognize link type \"{}\"").format(link_type))
 
         return fun
 
@@ -294,12 +295,12 @@ class Page:
                     # now the file name is shotgunned
                     filename=f.name
                 if not media.save(filename):
-                    print("Pympress can not extract embedded media")
+                    print(_("Pympress can not extract embedded media"))
                     return None
             else:
                 filename = self.parent.get_full_path(media.get_filename())
                 if not filename:
-                    print("Pympress can not find file "+media.get_filename())
+                    print(_("Pympress can not find file ")+media.get_filename())
                     return None
 
             # TODO grab the show_controls, autoplay, repeat
