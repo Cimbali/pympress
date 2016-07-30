@@ -689,7 +689,7 @@ class UI:
         list_annot = Gtk.ListStore(str)
 
         for annot in annotations:
-            list_annot.append(('• '+annot,))
+            list_annot.append(('\xe2\x97\x8f '+annot,))
 
         self.scrolled_window.set_model(list_annot)
         self.resize_annotation_list
