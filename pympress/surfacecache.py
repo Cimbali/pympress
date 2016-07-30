@@ -84,6 +84,9 @@ class SurfaceCache:
     #: :attr:`doc`.
     doc_lock = None
 
+    #: Set of active widgets
+    active_widgets = set()
+
     #: maximum number fo pages we keep in cache
     max_pages = 200
 
@@ -96,7 +99,7 @@ class SurfaceCache:
         self.doc = doc
         self.doc_lock = threading.Lock()
 
-    def add_widget(self, widget_name, wtype):
+    def add_widget(self, widget_name, wtype, start_enabled = True):
         """ Add a widget to the list of widgets that have to be managed (for caching
         and prerendering).
 
@@ -108,11 +111,32 @@ class SurfaceCache:
         :type  widget_name: string
         :param wtype: type of document handled by the widget (see :attr:`surface_type`)
         :type  wtype: integer
+        :param start_enabled: whether this widget is initially in the list of widgets to prerender
+        :type  start_enabled: boolean
         """
         self.surface_cache[widget_name] = OrderedDict()
         self.surface_size[widget_name] = (-1, -1)
         self.surface_type[widget_name] = wtype
         self.locks[widget_name] = threading.Lock()
+        if start_enabled:
+            self.enable_prerender(widget_name)
+
+
+    def disable_prerender(self, widget_name):
+        """ Remove a widget from the ones to be prerendered.
+
+        :param widget_name: string used to identify a widget
+        :type  widget_name: string
+        """
+        self.active_widgets.discard(widget_name)
+
+    def enable_prerender(self, widget_name):
+        """ Add a widget to the ones to be prerendered.
+
+        :param widget_name: string used to identify a widget
+        :type  widget_name: string
+        """
+        self.active_widgets.add(widget_name)
 
     def set_widget_type(self, widget_name, wtype):
         """ Set the document type of a widget.
@@ -196,7 +220,7 @@ class SurfaceCache:
         :param page_nb: number of the page to be prerendered
         :type  page_nb: integer
         """
-        for name in self.locks:
+        for name in self.active_widgets:
             GLib.idle_add(self.renderer, name, page_nb)
 
     def renderer(self, widget_name, page_nb):
@@ -222,6 +246,10 @@ class SurfaceCache:
                 return False
             ww, wh = self.surface_size[widget_name]
             wtype = self.surface_type[widget_name]
+
+        if ww < 0 or wh < 0:
+            print(widget_name)
+            return
 
         with self.doc_lock:
             page = self.doc.page(page_nb)

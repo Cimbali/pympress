@@ -39,7 +39,7 @@ import pkg_resources
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import GObject, Gtk, Gdk, Pango
+from gi.repository import GObject, Gtk, Gdk, Pango, GLib
 
 #: "Regular" PDF file (without notes)
 PDF_REGULAR      = 0
@@ -131,8 +131,8 @@ class UI:
     #: :class:`~Gtk.DrawingArea` for the current slide copy in the Presenter window.
     p_da_pres = Gtk.DrawingArea()
 
-    #: :class:`~Gtk.AspectFrame` for the annotations in the Presenter window.
-    p_frame_annot = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
+    #: :class:`~Gtk.Frame` for the annotations in the Presenter window.
+    p_frame_annot = Gtk.Frame()
 
     #: Elapsed time :class:`~Gtk.Label`.
     label_time = Gtk.Label()
@@ -158,7 +158,7 @@ class UI:
     notes_mode = False
 
     #: Whether to display annotations or not
-    annotation_mode = True
+    show_annotations = True
 
     #: number of page currently displayed in Controller window's miniatures
     page_preview_nb = 0
@@ -212,6 +212,7 @@ class UI:
 
         # Use notes mode by default if the document has notes
         self.notes_mode = self.doc.has_notes()
+        self.show_annotations = not self.notes_mode
 
         # Surface cache
         self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
@@ -244,11 +245,12 @@ class UI:
         self.c_da.queue_draw()
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
-        self.p_da_pres.queue_draw()
+        if self.notes_mode:
+            self.p_da_pres.queue_draw()
 
-        # Necessary to hide the "current slide" thumbnail when not in notes mode
-        if not self.notes_mode:
-            self.p_frame_pres.set_visible(False)
+        # Adjust default visibility of items
+        self.p_frame_annot.set_visible(self.show_annotations)
+        self.p_frame_pres.set_visible(self.notes_mode)
 
         self.label_color_default = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
 
@@ -319,6 +321,7 @@ class UI:
         avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
         hpaned.set_position(int(round(pane_size * avail_size)))
         self.on_page_change(False)
+        GLib.idle_add(self.resize_annotation_list)
 
 
     def add_events(self):
@@ -376,7 +379,10 @@ class UI:
         hpaned.set_margin_right(5)
 
         # "Current slide" frame or "Notes" frame
-        self.p_frame_cur.set_label("Current slide")
+        if self.notes_mode:
+            self.p_frame_cur.set_label("Notes")
+        else:
+            self.p_frame_cur.set_label("Current slide")
         self.p_frame_cur.get_label_widget().get_style_context().add_class("frame-label")
         self.p_frame_cur.set_margin_right(5)
 
@@ -390,7 +396,7 @@ class UI:
 
         # Righthand side container
         right_pane = Gtk.VBox(False, 15)
-        right_pane.set_halign(Gtk.Align.FILL)
+        #right_pane.set_halign(Gtk.Align.FILL)
         right_pane.set_margin_left(5)
         right_pane.set_homogeneous(False)
         right_pane.set_name('right pane')
@@ -399,7 +405,7 @@ class UI:
         self.p_frame_pres.set_label("Current slide")
         self.p_frame_pres.get_label_widget().get_style_context().add_class("frame-label")
         self.p_da_pres.set_name("p_da_pres")
-        self.cache.add_widget("p_da_pres", PDF_CONTENT_PAGE)
+        self.cache.add_widget("p_da_pres", PDF_CONTENT_PAGE, self.notes_mode)
         self.p_frame_pres.add(self.p_da_pres)
 
         right_pane.pack_start(self.p_frame_pres, True, True, 0)
@@ -439,7 +445,6 @@ class UI:
         self.p_frame_annot.get_label_widget().get_style_context().add_class("frame-label")
         self.p_frame_annot.add(self.scrollable_treelist)
 
-        #right_pane.pack_end(self.scrollable_treelist, False, False, 0)
         right_pane.pack_end(self.p_frame_annot, False, False, 0)
 
         hpaned.pack2(right_pane, True, True)
@@ -611,7 +616,7 @@ class UI:
             <menuitem action="Fullscreen"/>
             <menuitem action="Swap screens"/>
             <menuitem action="Notes mode"/>
-            <menuitem action="Show annotations"/>
+            <menuitem action="Annotations"/>
             <menuitem action="Blank screen"/>
             <menuitem action="Align content"/>
           </menu>
@@ -664,7 +669,7 @@ class UI:
             ('Pause timer',  None,           '_Pause timer', 'p',     None, self.switch_pause,         True),
             ('Fullscreen',   None,           '_Fullscreen',  'f',     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
             ('Notes mode',   None,           '_Note mode',   'n',     None, self.switch_mode,          self.notes_mode),
-            ('Show annotations',   None,           '_Show annotations',   'a',     None, self.switch_annotations,          self.annotation_mode),
+            ('Annotations',  None,           '_Annotations', 'a',     None, self.switch_annotations,   self.show_annotations),
             ('Blank screen', None,           '_Blank screen','b',     None, self.switch_blanked,       self.blanked),
             ('Content blanked',      None,   'Content blanked',       None, None, self.switch_start_blanked,    self.config.getboolean('content', 'start_blanked')),
             ('Content fullscreen',   None,   'Content fullscreen',    None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
@@ -687,7 +692,7 @@ class UI:
             list_annot.append(('• '+annot,))
 
         self.scrolled_window.set_model(list_annot)
-        self.resize_annotation_list()
+        self.resize_annotation_list
 
 
     def run(self):
@@ -784,6 +789,9 @@ class UI:
         pr = page_cur.get_aspect_ratio(self.notes_mode)
         self.p_frame_cur.set_property('ratio', pr)
 
+        if self.notes_mode:
+            self.p_frame_pres.set_property('ratio', pr)
+
         if page_next is not None:
             pr = page_next.get_aspect_ratio(self.notes_mode)
             self.p_frame_next.set_property('ratio', pr)
@@ -826,6 +834,9 @@ class UI:
         pr = page_cur.get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property('ratio', pr)
         self.p_frame_cur.set_property('ratio', pr)
+
+        if self.notes_mode:
+            self.p_frame_pres.set_property('ratio', pr)
 
         if page_next is not None:
             pr = page_next.get_aspect_ratio(self.notes_mode)
@@ -1237,13 +1248,14 @@ class UI:
 
     def resize_annotation_list(self):
         """ Readjust the annotation list's scroll window
-        so it won't compete for space with the next slide frame
+        so it won't compete for space with the slide frame(s) above
         """
         r = self.p_frame_next.props.ratio
         w = self.p_frame_next.props.parent.get_allocated_width()
-        h = self.p_frame_next.props.parent.props.parent.get_allocated_height() - 30
+        h = self.p_frame_next.props.parent.props.parent.get_allocated_height()
+        n = 2 if self.notes_mode else 1
         self.annotation_renderer.props.wrap_width = w - 10
-        self.scrollable_treelist.set_size_request(-1, max(h - w / r, 100))
+        self.p_frame_annot.set_size_request(-1, max(h - n * 1.2 * (w / r), 100))
         self.scrolled_window.get_column(0).queue_resize()
         self.scrollable_treelist.queue_resize()
 
@@ -1616,13 +1628,21 @@ class UI:
             self.cache.set_widget_type("c_da", PDF_REGULAR)
             self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
+            self.cache.disable_prerender("p_da_pres")
+            self.p_frame_cur.set_label("Current slide")
             self.p_frame_pres.set_visible(False)
         else:
             self.notes_mode = True
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_cur", PDF_NOTES_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
+            self.cache.enable_prerender("p_da_pres")
+            self.p_frame_cur.set_label("Notes")
             self.p_frame_pres.set_visible(True)
+
+        # show/hide annotations, in opposite of nodes'
+        if self.show_annotations == self.notes_mode:
+            self.switch_annotations(widget, event)
 
         self.on_page_change(False)
 
@@ -1630,11 +1650,11 @@ class UI:
     def switch_annotations(self, widget=None, event=None):
         """ Switch the display to show annotations or to hide them.
         """
-        if self.annotation_mode:
-            self.annotation_mode = False
+        if self.show_annotations:
+            self.show_annotations = False
             self.p_frame_annot.set_visible(False)
         else:
-            self.annotation_mode = True
+            self.show_annotations = True
             self.p_frame_annot.set_visible(True)
 
         self.on_page_change(False)
