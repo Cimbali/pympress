@@ -72,3 +72,8 @@ On windows, both GTK+3 and Poppler are shipped in [the PyGi installer](https://s
 On other platforms they are often installed by default, or easily available through your package or software manager.
 
 Sometimes you might need to make sure that the introspection bindings for poppler are shipped as well. On OpenSuse for example the packages `python3-gobject` and `typelib-1_0-Poppler-0_18` are needed.
+
+## Translations
+
+If you want to add a translation, check if pympress/share/locale/<language>/pympress.po already exists. If not, take [this file](https://github.com/Cimbali/pympress/tree/master/pympress/share/locale/pympress.pot) as input and translate all the strings, then add it to the repo in pympress/share/locale/<language>/pympress.po .
+Finally pass this .po file to msgfmt and add the output to the repo at pympress/share/locale/<language>/LC_MESSAGES/pympress.mo
