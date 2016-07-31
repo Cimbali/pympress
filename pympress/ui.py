@@ -1081,6 +1081,12 @@ class UI:
             elif name.upper() == 'R':
                 self.reset_timer()
 
+            if self.scribbling_mode:
+                if name.upper() == 'Z' and ctrl_pressed:
+                    self.pop_scribble()
+                elif name == 'Escape':
+                    self.switch_scribbling()
+
             # Some key events are already handled by toggle actions in the
             # presenter window, so we must handle them in the content window
             # only to prevent them from double-firing
@@ -1718,8 +1724,15 @@ class UI:
     def track_scribble(self, widget=None, event=None):
         """ Track events defining drawings by user, on top of current slide
         """
-        print("Found event {}".format(event))
-        # append to self.scribble_list
+        if event.get_event_type() is Gdk.EventType.BUTTON_PRESS:
+            self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
+
+        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+        ex, ey = event.get_coords()
+        self.scribble_list[-1][2].append((ex / ww, ey / wh))
+
+        self.scribble_c_da.queue_draw()
+        self.scribble_p_da.queue_draw()
 
 
     def draw_scribble(self, widget, cairo_context):
@@ -1738,24 +1751,18 @@ class UI:
             cairo_context.set_source_surface(pb, 0, 0)
             cairo_context.paint()
 
-        for color, points in self.scribble_list:
-            pass
-
-        cairo_context.set_source_rgb(1, 1, 0)
-        cairo_context.arc(ww * 0.320, wh * 0.240, ww * .1, 0, 2*3.141592653589793)
-        cairo_context.fill_preserve()
-
-        cairo_context.set_source_rgb(0, 0, 0)
-        cairo_context.stroke()
-
-        cairo_context.arc(ww * 0.280, wh * 0.210, ww * .02, 0, 2*3.141592653589793)
-        cairo_context.arc(ww * 0.360, wh * 0.210, ww * .02, 0, 2*3.141592653589793)
-        cairo_context.fill()
-
-        cairo_context.set_line_width(10)
         cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
-        cairo_context.arc(ww * 0.320, wh * 0.240, ww * .06, 3.141592653589793/4, 3.141592653589793*3/4)
-        cairo_context.stroke()
+
+        for color, width, points in self.scribble_list:
+            points = [(p[0] * ww, p[1] * wh) for p in points]
+
+            cairo_context.set_source_rgba(*color)
+            cairo_context.set_line_width(width)
+            cairo_context.move_to(*points[0])
+
+            for p in points[1:]:
+                cairo_context.line_to(*p)
+            cairo_context.stroke()
 
 
     def update_color(self, widget = None):
@@ -1763,31 +1770,55 @@ class UI:
         """
         if widget:
             self.scribble_color = widget.get_rgba()
-            self.config.set('content', 'scribble_color', self.scribble_color.to_string())
+            self.config.set('scribble', 'color', self.scribble_color.to_string())
+
+
+    def update_width(self, widget = None, event = None, value = None):
+        """ Callback for the width chooser slider, to set scribbling width
+        """
+        if widget:
+            self.scribble_width = int(value)
+            self.config.set('scribble', 'width', str(self.scribble_width))
+
+
+    def pop_scribble(self, widget = None):
+        """ Callback for the scribble undo button, to undo the last scribble
+        """
+        if self.scribble_list:
+            self.scribble_list.pop()
+
+        self.scribble_c_da.queue_draw()
+        self.scribble_p_da.queue_draw()
 
 
     def setup_scribbling(self):
         """ Setup all the necessary for scribbling
         """
         self.scribble_color = Gdk.RGBA()
-        self.scribble_color.parse(self.config.get('content', 'scribble_color'))
+        self.scribble_color.parse(self.config.get('scribble', 'color'))
+        self.scribble_width = self.config.getint('scribble', 'width')
 
-        da = Gtk.DrawingArea()
-        da.connect("button-press-event", self.track_scribble)
-        da.connect("motion-notify-event", self.track_scribble)
-        da.connect("draw", self.draw_scribble)
-
+        self.scribble_p_da = Gtk.DrawingArea()
         self.scribble_p_frame = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
-        self.scribble_p_frame.add(da)
 
-        close=Gtk.Button(stock=Gtk.STOCK_CANCEL)
-        undo=Gtk.Button(stock=Gtk.STOCK_UNDO)
-        color=Gtk.ColorButton()
+        self.scribble_p_eb = Gtk.EventBox()
+        self.scribble_p_frame.add(self.scribble_p_eb)
+        self.scribble_p_eb.add(self.scribble_p_da)
+
+        close = Gtk.Button(stock=Gtk.STOCK_CANCEL)
+        undo = Gtk.Button(stock=Gtk.STOCK_UNDO)
+        color = Gtk.ColorButton()
+        width = Gtk.HScale.new_with_range(2,20,1)
+
         color.set_rgba(self.scribble_color)
+        color.set_use_alpha(True)
+        width.set_value(self.scribble_width)
+        width.set_draw_value(False)
 
-        color.connect("color-set", self.update_color)
         close.connect("clicked", self.switch_scribbling)
-        undo.connect("clicked", lambda: self.scribble_list.pop() if len(self.scribble_list) else None)
+        undo.connect("clicked", self.pop_scribble)
+        color.connect("color-set", self.update_color)
+        width.connect("change-value", self.update_width)
 
         close.set_size_request(80, 80)
         undo.set_size_request(80, 80)
@@ -1797,6 +1828,7 @@ class UI:
         tools.pack_start(close, False, False, 5)
         tools.pack_start(undo, False, False, 5)
         tools.pack_start(color, False, False, 5)
+        tools.pack_start(width, False, False, 5)
 
         self.scribbleOverlay = Gtk.HBox()
         self.scribbleOverlay.set_name("ScribbleOverlay")
@@ -1806,12 +1838,21 @@ class UI:
         self.scribble_c_da = Gtk.DrawingArea()
         self.scribble_c_da.set_halign(Gtk.Align.FILL)
         self.scribble_c_da.set_valign(Gtk.Align.FILL)
-        self.scribble_c_da.connect("button-press-event", self.track_scribble)
-        self.scribble_c_da.connect("motion-notify-event", self.track_scribble)
+
+        self.scribble_c_eb = Gtk.EventBox()
+        self.scribble_c_eb.add(self.scribble_c_da)
+
+        self.scribble_p_da.connect("draw", self.draw_scribble)
         self.scribble_c_da.connect("draw", self.draw_scribble)
 
-        self.scribbleOverlay.connect("button-press-event", self.track_scribble)
-        self.scribbleOverlay.connect("motion-notify-event", self.track_scribble)
+        self.scribble_c_eb.connect("button-press-event", self.track_scribble)
+        self.scribble_p_eb.connect("button-press-event", self.track_scribble)
+
+        self.scribble_c_eb.connect("button-release-event", self.track_scribble)
+        self.scribble_p_eb.connect("button-release-event", self.track_scribble)
+
+        self.scribble_c_eb.connect("motion-notify-event", self.track_scribble)
+        self.scribble_p_eb.connect("motion-notify-event", self.track_scribble)
 
 
     def switch_scribbling(self, widget=None, event=None):
@@ -1820,7 +1861,7 @@ class UI:
         del self.scribble_list[:]
 
         if self.scribbling_mode:
-            self.c_overlay.remove(self.scribble_c_da)
+            self.c_overlay.remove(self.scribble_c_eb)
             self.p_overlay.remove(self.scribbleOverlay)
             self.scribbling_mode = False
 
@@ -1828,10 +1869,10 @@ class UI:
             pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
             self.scribble_p_frame.set_property('ratio', pr)
 
-            self.c_overlay.add_overlay(self.scribble_c_da)
+            self.c_overlay.add_overlay(self.scribble_c_eb)
             self.p_overlay.add_overlay(self.scribbleOverlay)
 
-            self.scribble_c_da.show()
+            self.scribble_c_eb.show_all()
             self.scribbleOverlay.show_all()
 
             self.c_overlay.queue_draw()
