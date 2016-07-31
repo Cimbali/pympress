@@ -170,6 +170,8 @@ class UI:
     prev_button = None
     #: :class:`Gtk.ToolButton` big button for touch screens, go to next slide
     next_button = None
+    #: :class:`Gtk.ToolButton` big button for touch screens, go to scribble on screen
+    highlight_button = None
 
     #: number of page currently displayed in Controller window's miniatures
     page_preview_nb = 0
@@ -204,9 +206,22 @@ class UI:
     scribbling_mode = None
     #: list of scribbles to be drawn, as pairs of  :class:`Gdk.RGBA`
     scribble_list = []
-    #: :class:`Gdk.RGBA` representing the current color of the scribbling tool
+    #: :class:`Gdk.RGBA` current color of the scribbling tool
     scribble_color = None
-
+    #: `int` current stroke width of the scribbling tool
+    scribble_width = 1
+    #: :class:`~Gtk.Overlay` that is added or removed when scribbling is toggled, contains buttons and scribble drawing area
+    scribble_overlay = None
+    #: :class:`~Gtk.DrawingArea` for the scribbling in the Presenter window. Actually redraws the slide.
+    scribble_c_da = None
+    #: :class:`~Gtk.DrawingArea` for the scribbles in the Content window. On top of existing overlays and slide.
+    scribble_p_da = None
+    #: :class:`~Gtk.EventBox` for the scribbling in the Presenter window, captures freehand drawing
+    scribble_c_eb = None
+    #: :class:`~Gtk.EventBox` for the scribbling in the Content window, captures freehand drawing
+    scribble_p_eb = None
+    #: :class:`~Gtk.AspectFrame` for the slide in the Presenter's highlight mode
+    scribble_p_frame = None
 
     def __init__(self, docpath = None, ett = 0):
         """
@@ -272,6 +287,7 @@ class UI:
         self.p_frame_pres.set_visible(self.notes_mode)
         self.prev_button.set_visible(self.show_bigbuttons)
         self.next_button.set_visible(self.show_bigbuttons)
+        self.highlight_button.set_visible(self.show_bigbuttons)
 
         self.label_color_default = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
 
@@ -484,12 +500,12 @@ class UI:
         :rtype: :class:`Gtk.HBox`
         """
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
-        prev_icon = Gtk.Image.new_from_icon_name("go-previous", Gtk.IconSize.LARGE_TOOLBAR)
-        next_icon = Gtk.Image.new_from_icon_name("go-next", Gtk.IconSize.LARGE_TOOLBAR)
-        self.prev_button = Gtk.ToolButton(icon_widget=prev_icon, margin_top=10)
-        self.next_button = Gtk.ToolButton(icon_widget=next_icon, margin_top=10)
+        self.prev_button = Gtk.Button(stock=Gtk.STOCK_MEDIA_PREVIOUS, margin_top=10)
+        self.next_button = Gtk.Button(stock=Gtk.STOCK_MEDIA_NEXT, margin_top=10)
+        self.highlight_button = Gtk.Button(label=_("Highlight"), margin_top=10)
         self.prev_button.connect("clicked", self.doc.goto_prev)
         self.next_button.connect("clicked", self.doc.goto_next)
+        self.highlight_button.connect("clicked", self.switch_scribbling)
 
         hbox = Gtk.HBox(False, 0)
         hbox.set_margin_right(5)
@@ -497,6 +513,7 @@ class UI:
         hbox.pack_start(self.prev_button, True, True, 2)
         hbox.pack_start(self.make_frame_slidenum(), True, True, 0)
         hbox.pack_start(self.next_button, True, True, 2)
+        hbox.pack_start(self.highlight_button, True, True, 2)
         hbox.pack_start(self.make_frame_time(), True, True, 0)
         hbox.pack_start(self.make_frame_ett(), False, True, 0)
         hbox.pack_start(self.make_frame_clock(), False, True, 0)
@@ -655,7 +672,7 @@ class UI:
             <menuitem action="Align content"/>
             <menuitem action="Annotations"/>
             <menuitem action="Big buttons"/>
-            <menuitem action="Write on screen"/>
+            <menuitem action="Highlight"/>
           </menu>
           <menu action="Navigation">
             <menuitem action="Next"/>
@@ -712,7 +729,7 @@ class UI:
             ('Presenter fullscreen', None,   _('Presenter fullscreen'),  None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
             ('Annotations',  None,           _('_Annotations'), 'a',     None, self.switch_annotations,   self.show_annotations),
             ('Big buttons',  None,           _('Big buttons'),   None,   None, self.switch_bigbuttons,    self.config.getboolean('presenter', 'show_bigbuttons')),
-            ('Write on screen',None,         _('_Write on screen'),'w',  None, self.switch_scribbling,    False),
+            ('Highlight',    None,           _('_Highlight'),   'h',     None, self.switch_scribbling,    False),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -1110,7 +1127,7 @@ class UI:
                     self.on_label_ett_event(self.eb_ett, True)
                 elif name.upper() == 'B':
                     self.switch_blanked()
-                elif name.upper() == 'W':
+                elif name.upper() == 'H':
                     self.switch_scribbling()
                 else:
                     return False
@@ -1718,6 +1735,7 @@ class UI:
 
         self.prev_button.set_visible(self.show_bigbuttons)
         self.next_button.set_visible(self.show_bigbuttons)
+        self.highlight_button.set_visible(self.show_bigbuttons)
         self.config.set('presenter', 'show_bigbuttons', 'on' if self.show_bigbuttons else 'off')
 
 
@@ -1830,10 +1848,10 @@ class UI:
         tools.pack_start(color, False, False, 5)
         tools.pack_start(width, False, False, 5)
 
-        self.scribbleOverlay = Gtk.HBox()
-        self.scribbleOverlay.set_name("ScribbleOverlay")
-        self.scribbleOverlay.pack_start(self.scribble_p_frame, True, True, 0)
-        self.scribbleOverlay.pack_start(tools, False, True, 0)
+        self.scribble_overlay = Gtk.HBox()
+        self.scribble_overlay.set_name("ScribbleOverlay")
+        self.scribble_overlay.pack_start(self.scribble_p_frame, True, True, 0)
+        self.scribble_overlay.pack_start(tools, False, True, 0)
 
         self.scribble_c_da = Gtk.DrawingArea()
         self.scribble_c_da.set_halign(Gtk.Align.FILL)
@@ -1862,7 +1880,7 @@ class UI:
 
         if self.scribbling_mode:
             self.c_overlay.remove(self.scribble_c_eb)
-            self.p_overlay.remove(self.scribbleOverlay)
+            self.p_overlay.remove(self.scribble_overlay)
             self.scribbling_mode = False
 
         else:
@@ -1870,10 +1888,10 @@ class UI:
             self.scribble_p_frame.set_property('ratio', pr)
 
             self.c_overlay.add_overlay(self.scribble_c_eb)
-            self.p_overlay.add_overlay(self.scribbleOverlay)
+            self.p_overlay.add_overlay(self.scribble_overlay)
 
             self.scribble_c_eb.show_all()
-            self.scribbleOverlay.show_all()
+            self.scribble_overlay.show_all()
 
             self.c_overlay.queue_draw()
             self.p_overlay.queue_draw()
