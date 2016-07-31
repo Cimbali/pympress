@@ -166,6 +166,9 @@ def load_config():
     if not config.has_option('presenter', 'start_fullscreen'):
         config.set('presenter', 'start_fullscreen', 'off')
 
+    if not config.has_option('presenter', 'show_bigbuttons'):
+        config.set('presenter', 'show_bigbuttons', 'off')
+
     return config
 
 

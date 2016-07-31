@@ -162,6 +162,13 @@ class UI:
     #: Whether to display annotations or not
     show_annotations = True
 
+    #: Whether to display big buttons or not
+    show_bigbuttons = True
+    #: :class:`Gtk.ToolButton` big button for touch screens, go to previous slide
+    prev_button = None
+    #: :class:`Gtk.ToolButton` big button for touch screens, go to next slide
+    next_button = None
+
     #: number of page currently displayed in Controller window's miniatures
     page_preview_nb = 0
 
@@ -253,6 +260,8 @@ class UI:
         # Adjust default visibility of items
         self.p_frame_annot.set_visible(self.show_annotations)
         self.p_frame_pres.set_visible(self.notes_mode)
+        self.prev_button.set_visible(self.show_bigbuttons)
+        self.next_button.set_visible(self.show_bigbuttons)
 
         self.label_color_default = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
 
@@ -460,10 +469,20 @@ class UI:
         :return: the preview panes with current and next slide
         :rtype: :class:`Gtk.HBox`
         """
+        self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
+        prevIcon = Gtk.Image.new_from_icon_name("go-previous", Gtk.IconSize.LARGE_TOOLBAR)
+        nextIcon = Gtk.Image.new_from_icon_name("go-next", Gtk.IconSize.LARGE_TOOLBAR)
+        self.prev_button = Gtk.ToolButton(icon_widget=prevIcon, margin_top=10)
+        self.next_button = Gtk.ToolButton(icon_widget=nextIcon, margin_top=10)
+        self.prev_button.connect("clicked", self.doc.goto_prev)
+        self.next_button.connect("clicked", self.doc.goto_next)
+
         hbox = Gtk.HBox(False, 0)
         hbox.set_margin_right(5)
         hbox.set_halign(Gtk.Align.FILL)
+        hbox.pack_start(self.prev_button, True, True, 2)
         hbox.pack_start(self.make_frame_slidenum(), True, True, 0)
+        hbox.pack_start(self.next_button, True, True, 2)
         hbox.pack_start(self.make_frame_time(), True, True, 0)
         hbox.pack_start(self.make_frame_ett(), False, True, 0)
         hbox.pack_start(self.make_frame_clock(), False, True, 0)
@@ -618,9 +637,10 @@ class UI:
             <menuitem action="Fullscreen"/>
             <menuitem action="Swap screens"/>
             <menuitem action="Notes mode"/>
-            <menuitem action="Annotations"/>
             <menuitem action="Blank screen"/>
             <menuitem action="Align content"/>
+            <menuitem action="Annotations"/>
+            <menuitem action="Big buttons"/>
           </menu>
           <menu action="Navigation">
             <menuitem action="Next"/>
@@ -671,11 +691,12 @@ class UI:
             ('Pause timer',  None,           _('_Pause timer'), 'p',     None, self.switch_pause,         True),
             ('Fullscreen',   None,           _('_Fullscreen'),  'f',     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
             ('Notes mode',   None,           _('_Note mode'),   'n',     None, self.switch_mode,          self.notes_mode),
-            ('Annotations',  None,           _('_Annotations'), 'a',     None, self.switch_annotations,   self.show_annotations),
             ('Blank screen', None,           _('_Blank screen'),'b',     None, self.switch_blanked,       self.blanked),
             ('Content blanked',      None,   _('Content blanked'),       None, None, self.switch_start_blanked,    self.config.getboolean('content', 'start_blanked')),
             ('Content fullscreen',   None,   _('Content fullscreen'),    None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
             ('Presenter fullscreen', None,   _('Presenter fullscreen'),  None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
+            ('Annotations',  None,           _('_Annotations'), 'a',     None, self.switch_annotations,   self.show_annotations),
+            ('Big buttons',  None,           _('Big buttons'),   None,   None, self.switch_bigbuttons,    self.config.getboolean('presenter', 'show_bigbuttons')),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -1661,6 +1682,14 @@ class UI:
 
         self.on_page_change(False)
 
+    def switch_bigbuttons(self, widget=None, event=None):
+        """ Toggle the display of big buttons (nice for touch screens)
+        """
+        self.show_bigbuttons = not self.show_bigbuttons
+
+        self.prev_button.set_visible(self.show_bigbuttons)
+        self.next_button.set_visible(self.show_bigbuttons)
+        self.config.set('presenter', 'show_bigbuttons', 'on' if self.show_bigbuttons else 'off')
 
 ##
 # Local Variables:
