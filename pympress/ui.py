@@ -1696,6 +1696,7 @@ class UI:
             self.cache.set_widget_type("c_da", PDF_REGULAR)
             self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
+            self.cache.add_widget("scribble_c_da", PDF_REGULAR)
             self.cache.disable_prerender("p_da_pres")
             self.p_frame_cur.set_label(_("Current slide"))
             self.p_frame_pres.set_visible(False)
@@ -1704,6 +1705,7 @@ class UI:
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_cur", PDF_NOTES_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
+            self.cache.add_widget("scribble_c_da", PDF_CONTENT_PAGE)
             self.cache.enable_prerender("p_da_pres")
             self.p_frame_cur.set_label(_("Notes"))
             self.p_frame_pres.set_visible(True)
@@ -1760,14 +1762,25 @@ class UI:
 
         if widget is not self.scribble_c_da:
             page = self.doc.current_page()
-            wtype = PDF_NOTES_PAGE if self.notes_mode else PDF_REGULAR
-            pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
+            nb = page.number()
+            pb = self.cache.get("scribble_c_da", nb)
 
-            cairo_prerender = cairo.Context(pb)
-            page.render_cairo(cairo_prerender, ww, wh, wtype)
+            if pb is None:
+                # Cache miss: render the page, and save it to the cache
+                pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
+                wtype = PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR
 
-            cairo_context.set_source_surface(pb, 0, 0)
-            cairo_context.paint()
+                cairo_prerender = cairo.Context(pb)
+                page.render_cairo(cairo_prerender, ww, wh, wtype)
+
+                cairo_context.set_source_surface(pb, 0, 0)
+                cairo_context.paint()
+
+                self.cache.set("scribble_c_da", nb, pb)
+            else:
+                # Cache hit: draw the surface from the cache to the widget
+                cairo_context.set_source_surface(pb, 0, 0)
+                cairo_context.paint()
 
         cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
 
@@ -1815,6 +1828,7 @@ class UI:
         self.scribble_color = Gdk.RGBA()
         self.scribble_color.parse(self.config.get('scribble', 'color'))
         self.scribble_width = self.config.getint('scribble', 'width')
+        self.cache.add_widget("scribble_c_da", PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR, False)
 
         self.scribble_p_da = Gtk.DrawingArea()
         self.scribble_p_frame = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
@@ -1897,6 +1911,10 @@ class UI:
             self.p_overlay.queue_draw()
 
             self.scribbling_mode = True
+
+            self.cache.resize_widget("scribble_c_da",
+                self.scribble_c_da.get_allocated_width(),
+                self.scribble_c_da.get_allocated_height())
 
 
 ##
