@@ -732,6 +732,8 @@ class UI:
         ratio = float(cur_pane_size) / (cur_pane_size + next_pane_size)
         self.config.set('presenter', 'slide_ratio', "{0:.2f}".format(ratio))
 
+        self.doc.cleanup_media_files()
+
         pympress.util.save_config(self.config)
         Gtk.main_quit()
 
