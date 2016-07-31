@@ -84,6 +84,9 @@ class VLCVideo(Gtk.VBox):
         self.movie_zone = Gtk.DrawingArea()
         self.pack_start(self.movie_zone, True, True, 0)
 
+        self.set_halign(Gtk.Align.FILL)
+        self.set_valign(Gtk.Align.FILL)
+
         if show_controls:
             self.pack_end(self.get_player_control_toolbar(), False, False, 0)
 
@@ -144,6 +147,8 @@ class VLCVideo(Gtk.VBox):
         self.movie_zone.show()
         if not self.get_parent():
             self.overlay.add_overlay(self)
+            self.set_halign(Gtk.Align.FILL)
+            self.set_valign(Gtk.Align.FILL)
             self.resize()
             self.overlay.show_all()
         GLib.idle_add(self.player.play)

@@ -99,8 +99,10 @@ class UI:
     #: :class:`~Gtk.DrawingArea` for the Content window.
     c_da = Gtk.DrawingArea()
 
-    #: Presentation window, as a :class:`Gtk.Window` instance.
+    #: Presenter window, as a :class:`Gtk.Window` instance.
     p_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
+    #: :class:`~Gtk.Overlay` for the Presenter window.
+    p_overlay = Gtk.Overlay()
     #: :class:`~Gtk.AspectFrame` for the current slide in the Presenter window.
     p_frame_cur = Gtk.AspectFrame(xalign=0, yalign=0, ratio=4./3., obey_child=False)
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
@@ -184,19 +186,26 @@ class UI:
     #: track whether we blank the screen
     blanked = False
 
-    #: The default color of the info labels
+    #: :class:`Gdk.RGBA` The default color of the info labels
     label_color_default = None
-    #: The color of the elapsed time label if the estimated talk time is reached
+    #: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is reached
     label_color_ett_reached = None
-    #: The color of the elapsed time label if the estimated talk time is exceeded by 2:30 minutes
+    #: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is exceeded by 2:30 minutes
     label_color_ett_info = None
-    #: The color of the elapsed time label if the estimated talk time is exceeded by 5 minutes
+    #: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is exceeded by 5 minutes
     label_color_ett_warn = None
 
     #: The containing widget for the annotations
     scrolled_window = None
     #: Making the annotations list scroll if it's too long
     scrollable_treelist = Gtk.ScrolledWindow()
+
+    #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
+    scribbling_mode = None
+    #: list of scribbles to be drawn, as pairs of  :class:`Gdk.RGBA`
+    scribble_list = []
+    #: :class:`Gdk.RGBA` representing the current color of the scribbling tool
+    scribble_color = None
 
 
     def __init__(self, docpath = None, ett = 0):
@@ -248,6 +257,7 @@ class UI:
 
         # Add media
         self.replace_media_overlays()
+        self.setup_scribbling()
 
         # Queue some redraws
         self.c_overlay.queue_draw()
@@ -317,9 +327,13 @@ class UI:
         # make & get menu
         bigvbox.pack_start(self.make_menubar(), False, False, 0)
 
+        # overlay
+        self.p_overlay.props.margin = 0
+        bigvbox.pack_start(self.p_overlay, True, True, 0)
+
         # panes
         hpaned = self.make_pwin_panes()
-        bigvbox.pack_start(hpaned, True, True, 0)
+        self.p_overlay.add(hpaned)
 
         # bottom row
         bigvbox.pack_start(self.make_pwin_bottom(), False, False, 0)
@@ -470,10 +484,10 @@ class UI:
         :rtype: :class:`Gtk.HBox`
         """
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
-        prevIcon = Gtk.Image.new_from_icon_name("go-previous", Gtk.IconSize.LARGE_TOOLBAR)
-        nextIcon = Gtk.Image.new_from_icon_name("go-next", Gtk.IconSize.LARGE_TOOLBAR)
-        self.prev_button = Gtk.ToolButton(icon_widget=prevIcon, margin_top=10)
-        self.next_button = Gtk.ToolButton(icon_widget=nextIcon, margin_top=10)
+        prev_icon = Gtk.Image.new_from_icon_name("go-previous", Gtk.IconSize.LARGE_TOOLBAR)
+        next_icon = Gtk.Image.new_from_icon_name("go-next", Gtk.IconSize.LARGE_TOOLBAR)
+        self.prev_button = Gtk.ToolButton(icon_widget=prev_icon, margin_top=10)
+        self.next_button = Gtk.ToolButton(icon_widget=next_icon, margin_top=10)
         self.prev_button.connect("clicked", self.doc.goto_prev)
         self.next_button.connect("clicked", self.doc.goto_next)
 
@@ -641,6 +655,7 @@ class UI:
             <menuitem action="Align content"/>
             <menuitem action="Annotations"/>
             <menuitem action="Big buttons"/>
+            <menuitem action="Write on screen"/>
           </menu>
           <menu action="Navigation">
             <menuitem action="Next"/>
@@ -697,6 +712,7 @@ class UI:
             ('Presenter fullscreen', None,   _('Presenter fullscreen'),  None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
             ('Annotations',  None,           _('_Annotations'), 'a',     None, self.switch_annotations,   self.show_annotations),
             ('Big buttons',  None,           _('Big buttons'),   None,   None, self.switch_bigbuttons,    self.config.getboolean('presenter', 'show_bigbuttons')),
+            ('Write on screen',None,         _('_Write on screen'),'w',  None, self.switch_scribbling,    False),
         ])
         ui_manager.insert_action_group(action_group)
 
@@ -867,12 +883,15 @@ class UI:
             pr = page_next.get_aspect_ratio(self.notes_mode)
             self.p_frame_next.set_property('ratio', pr)
 
+        # Remove scribbling if ongoing
+        if self.scribbling_mode:
+            self.switch_scribbling()
+
         # Queue redraws
         self.c_da.queue_draw()
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
         self.p_da_pres.queue_draw()
-
 
         # Start counter if needed
         if unpause:
@@ -995,7 +1014,7 @@ class UI:
         self.cache.resize_widget(widget.get_name(), event.width, event.height)
 
         if widget is self.c_da:
-            self.c_overlay.foreach(lambda child, *ignored: child.resize() if child is not self.c_da else None, None)
+            self.c_overlay.foreach(lambda child, *ignored: child.resize() if type(child) is pympress.vlcvideo.VLCVideo else None, None)
         elif widget is self.p_da_next:
             self.resize_annotation_list()
 
@@ -1085,6 +1104,8 @@ class UI:
                     self.on_label_ett_event(self.eb_ett, True)
                 elif name.upper() == 'B':
                     self.switch_blanked()
+                elif name.upper() == 'W':
+                    self.switch_scribbling()
                 else:
                     return False
 
@@ -1610,7 +1631,6 @@ class UI:
                 self.c_win.fullscreen()
 
 
-
     def switch_blanked(self, widget=None, event=None):
         """ Switch the blanked mode of the main screen.
         """
@@ -1684,6 +1704,7 @@ class UI:
 
         self.on_page_change(False)
 
+
     def switch_bigbuttons(self, widget=None, event=None):
         """ Toggle the display of big buttons (nice for touch screens)
         """
@@ -1692,6 +1713,132 @@ class UI:
         self.prev_button.set_visible(self.show_bigbuttons)
         self.next_button.set_visible(self.show_bigbuttons)
         self.config.set('presenter', 'show_bigbuttons', 'on' if self.show_bigbuttons else 'off')
+
+
+    def track_scribble(self, widget=None, event=None):
+        """ Track events defining drawings by user, on top of current slide
+        """
+        print("Found event {}".format(event))
+        # append to self.scribble_list
+
+
+    def draw_scribble(self, widget, cairo_context):
+        """ Drawings by user
+        """
+        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+
+        if widget is not self.scribble_c_da:
+            page = self.doc.current_page()
+            wtype = PDF_NOTES_PAGE if self.notes_mode else PDF_REGULAR
+            pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
+
+            cairo_prerender = cairo.Context(pb)
+            page.render_cairo(cairo_prerender, ww, wh, wtype)
+
+            cairo_context.set_source_surface(pb, 0, 0)
+            cairo_context.paint()
+
+        for color, points in self.scribble_list:
+            pass
+
+        cairo_context.set_source_rgb(1, 1, 0)
+        cairo_context.arc(ww * 0.320, wh * 0.240, ww * .1, 0, 2*3.141592653589793)
+        cairo_context.fill_preserve()
+
+        cairo_context.set_source_rgb(0, 0, 0)
+        cairo_context.stroke()
+
+        cairo_context.arc(ww * 0.280, wh * 0.210, ww * .02, 0, 2*3.141592653589793)
+        cairo_context.arc(ww * 0.360, wh * 0.210, ww * .02, 0, 2*3.141592653589793)
+        cairo_context.fill()
+
+        cairo_context.set_line_width(10)
+        cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
+        cairo_context.arc(ww * 0.320, wh * 0.240, ww * .06, 3.141592653589793/4, 3.141592653589793*3/4)
+        cairo_context.stroke()
+
+
+    def update_color(self, widget = None):
+        """ Callback for the color chooser button, to set scribbling color
+        """
+        if widget:
+            self.scribble_color = widget.get_rgba()
+            self.config.set('content', 'scribble_color', self.scribble_color.to_string())
+
+
+    def setup_scribbling(self):
+        """ Setup all the necessary for scribbling
+        """
+        self.scribble_color = Gdk.RGBA()
+        self.scribble_color.parse(self.config.get('content', 'scribble_color'))
+
+        da = Gtk.DrawingArea()
+        da.connect("button-press-event", self.track_scribble)
+        da.connect("motion-notify-event", self.track_scribble)
+        da.connect("draw", self.draw_scribble)
+
+        self.scribble_p_frame = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
+        self.scribble_p_frame.add(da)
+
+        close=Gtk.Button(stock=Gtk.STOCK_CANCEL)
+        undo=Gtk.Button(stock=Gtk.STOCK_UNDO)
+        color=Gtk.ColorButton()
+        color.set_rgba(self.scribble_color)
+
+        color.connect("color-set", self.update_color)
+        close.connect("clicked", self.switch_scribbling)
+        undo.connect("clicked", lambda: self.scribble_list.pop() if len(self.scribble_list) else None)
+
+        close.set_size_request(80, 80)
+        undo.set_size_request(80, 80)
+        color.set_size_request(80, 80)
+
+        tools = Gtk.VBox()
+        tools.pack_start(close, False, False, 5)
+        tools.pack_start(undo, False, False, 5)
+        tools.pack_start(color, False, False, 5)
+
+        self.scribbleOverlay = Gtk.HBox()
+        self.scribbleOverlay.set_name("ScribbleOverlay")
+        self.scribbleOverlay.pack_start(self.scribble_p_frame, True, True, 0)
+        self.scribbleOverlay.pack_start(tools, False, True, 0)
+
+        self.scribble_c_da = Gtk.DrawingArea()
+        self.scribble_c_da.set_halign(Gtk.Align.FILL)
+        self.scribble_c_da.set_valign(Gtk.Align.FILL)
+        self.scribble_c_da.connect("button-press-event", self.track_scribble)
+        self.scribble_c_da.connect("motion-notify-event", self.track_scribble)
+        self.scribble_c_da.connect("draw", self.draw_scribble)
+
+        self.scribbleOverlay.connect("button-press-event", self.track_scribble)
+        self.scribbleOverlay.connect("motion-notify-event", self.track_scribble)
+
+
+    def switch_scribbling(self, widget=None, event=None):
+        """ Starts the mode where one can read on top of the screen
+        """
+        del self.scribble_list[:]
+
+        if self.scribbling_mode:
+            self.c_overlay.remove(self.scribble_c_da)
+            self.p_overlay.remove(self.scribbleOverlay)
+            self.scribbling_mode = False
+
+        else:
+            pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
+            self.scribble_p_frame.set_property('ratio', pr)
+
+            self.c_overlay.add_overlay(self.scribble_c_da)
+            self.p_overlay.add_overlay(self.scribbleOverlay)
+
+            self.scribble_c_da.show()
+            self.scribbleOverlay.show_all()
+
+            self.c_overlay.queue_draw()
+            self.p_overlay.queue_draw()
+
+            self.scribbling_mode = True
+
 
 ##
 # Local Variables:

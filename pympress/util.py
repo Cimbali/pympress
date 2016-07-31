@@ -27,7 +27,7 @@ from __future__ import print_function
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, Gdk, GdkPixbuf
 import pkg_resources
 import os, os.path, sys
 
@@ -156,6 +156,9 @@ def load_config():
 
     if not config.has_option('content', 'start_fullscreen'):
         config.set('content', 'start_fullscreen', 'on')
+
+    if not config.has_option('content', 'scribble_color'):
+        config.set('content', 'scribble_color', Gdk.RGBA(1., 0., 0., 1.).to_string())
 
     if not config.has_option('presenter', 'slide_ratio'):
         config.set('presenter', 'slide_ratio', '0.75')
