@@ -25,9 +25,7 @@ import glob, sys, os.path, importlib
 
 #get version
 pkg_meta = importlib.import_module('pympress.__init__')
-for pattern in [os.path.join('share', 'css', '*.css'), os.path.join('share', 'pixmaps', '*.png')]:
-    print(glob.glob(os.path.join('pympress', pattern)))
-languages=[
+
 setup(name='pympress',
       version=pkg_meta.__version__,
       description='A simple dual-screen PDF reader designed for presentations',
@@ -61,7 +59,7 @@ setup(name='pympress',
       ],
       package_data={
         'pympress': [os.path.join('share', 'css', '*.css'), os.path.join('share', 'pixmaps', '*.png')]
-        + glob.glob(os.path.join('share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo')
+        + glob.glob(os.path.join('share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))
       },
 )
 
