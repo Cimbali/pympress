@@ -445,7 +445,7 @@ class Document:
     #: Callback function to signal whenever we change pages
     on_page_change = None
     #: Files that are temporary and need to be removed
-    temp_files = []
+    temp_files = set()
 
     def __init__(self, page_change_callback, pop_doc, path, page=0):
         """
@@ -606,13 +606,14 @@ class Document:
     def remove_on_exit(self, filename):
         """ Remember a temporary file to delete later
         """
-        self.temp_files.append(filename)
+        self.temp_files.add(filename)
 
     def cleanup_media_files(self):
         """ Removes all files that were extracted from the pdf into the filesystem
         """
         for f in self.temp_files:
             os.remove(f)
+        self.temp_files.clear()
 
 ##
 # Local Variables:
