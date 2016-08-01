@@ -18,7 +18,7 @@ This is now a fork of [Schnouki's original Pympress](https://github.com/Schnouki
 ## Through pip (preferred way)
 
 Run the following command in your shell:
-`pip install -e git+https://github.com/Cimbali/pympress#egg=pympress`
+`pip install git+https://github.com/Cimbali/pympress#egg=pympress`
 
 ## From source
 
