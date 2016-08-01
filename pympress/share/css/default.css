@@ -20,7 +20,7 @@
 }
 
 #ScribbleOverlay {
-  background: @bg_color
+  background: @theme_bg_color
 }
 
 .frame-label {

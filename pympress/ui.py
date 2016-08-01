@@ -1031,7 +1031,7 @@ class UI:
         """
         self.cache.resize_widget(widget.get_name(), event.width, event.height)
 
-        if widget is self.c_da:
+        if widget is self.c_da and vlc_enabled:
             self.c_overlay.foreach(lambda child, *ignored: child.resize() if type(child) is pympress.vlcvideo.VLCVideo else None, None)
         elif widget is self.p_da_next:
             self.resize_annotation_list()
