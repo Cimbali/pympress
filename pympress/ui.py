@@ -903,6 +903,7 @@ class UI:
         # Remove scribbling if ongoing
         if self.scribbling_mode:
             self.switch_scribbling()
+        del self.scribble_list[:]
 
         # Queue redraws
         self.c_da.queue_draw()
@@ -1696,7 +1697,7 @@ class UI:
             self.cache.set_widget_type("c_da", PDF_REGULAR)
             self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
-            self.cache.add_widget("scribble_c_da", PDF_REGULAR)
+            self.cache.add_widget("scribble_p_da", PDF_REGULAR)
             self.cache.disable_prerender("p_da_pres")
             self.p_frame_cur.set_label(_("Current slide"))
             self.p_frame_pres.set_visible(False)
@@ -1705,7 +1706,7 @@ class UI:
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_cur", PDF_NOTES_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
-            self.cache.add_widget("scribble_c_da", PDF_CONTENT_PAGE)
+            self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE)
             self.cache.enable_prerender("p_da_pres")
             self.p_frame_cur.set_label(_("Notes"))
             self.p_frame_pres.set_visible(True)
@@ -1744,6 +1745,9 @@ class UI:
     def track_scribble(self, widget=None, event=None):
         """ Track events defining drawings by user, on top of current slide
         """
+        if not self.scribbling_mode:
+            return False
+
         if event.get_event_type() is Gdk.EventType.BUTTON_PRESS:
             self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
 
@@ -1763,7 +1767,7 @@ class UI:
         if widget is not self.scribble_c_da:
             page = self.doc.current_page()
             nb = page.number()
-            pb = self.cache.get("scribble_c_da", nb)
+            pb = self.cache.get("scribble_p_da", nb)
 
             if pb is None:
                 # Cache miss: render the page, and save it to the cache
@@ -1776,7 +1780,7 @@ class UI:
                 cairo_context.set_source_surface(pb, 0, 0)
                 cairo_context.paint()
 
-                self.cache.set("scribble_c_da", nb, pb)
+                self.cache.set("scribble_p_da", nb, pb)
             else:
                 # Cache hit: draw the surface from the cache to the widget
                 cairo_context.set_source_surface(pb, 0, 0)
@@ -1812,6 +1816,15 @@ class UI:
             self.config.set('scribble', 'width', str(self.scribble_width))
 
 
+    def clear_scribble(self, widget = None):
+        """ Callback for the scribble undo button, to undo the last scribble
+        """
+        del self.scribble_list[:]
+
+        self.scribble_c_da.queue_draw()
+        self.scribble_p_da.queue_draw()
+
+
     def pop_scribble(self, widget = None):
         """ Callback for the scribble undo button, to undo the last scribble
         """
@@ -1828,36 +1841,44 @@ class UI:
         self.scribble_color = Gdk.RGBA()
         self.scribble_color.parse(self.config.get('scribble', 'color'))
         self.scribble_width = self.config.getint('scribble', 'width')
-        self.cache.add_widget("scribble_c_da", PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR, False)
+        self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR, False)
 
         self.scribble_p_da = Gtk.DrawingArea()
+        self.scribble_p_da.set_name("scribble_p_da")
         self.scribble_p_frame = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
 
         self.scribble_p_eb = Gtk.EventBox()
         self.scribble_p_frame.add(self.scribble_p_eb)
         self.scribble_p_eb.add(self.scribble_p_da)
 
-        close = Gtk.Button(stock=Gtk.STOCK_CANCEL)
+        close = Gtk.Button(stock=Gtk.STOCK_CLOSE)
+        clear = Gtk.Button(stock=Gtk.STOCK_CLEAR)
         undo = Gtk.Button(stock=Gtk.STOCK_UNDO)
         color = Gtk.ColorButton()
-        width = Gtk.HScale.new_with_range(2,20,1)
+        width = Gtk.Scale.new_with_range(Gtk.Orientation.VERTICAL, 2,30,1)
 
         color.set_rgba(self.scribble_color)
         color.set_use_alpha(True)
         width.set_value(self.scribble_width)
         width.set_draw_value(False)
+        width.set_show_fill_level(False)
+        width.set_has_origin(True)
 
         close.connect("clicked", self.switch_scribbling)
+        clear.connect("clicked", self.clear_scribble)
         undo.connect("clicked", self.pop_scribble)
         color.connect("color-set", self.update_color)
         width.connect("change-value", self.update_width)
 
         close.set_size_request(80, 80)
+        clear.set_size_request(80, 80)
         undo.set_size_request(80, 80)
         color.set_size_request(80, 80)
+        width.set_size_request(80, 160)
 
         tools = Gtk.VBox()
         tools.pack_start(close, False, False, 5)
+        tools.pack_start(clear, False, False, 5)
         tools.pack_start(undo, False, False, 5)
         tools.pack_start(color, False, False, 5)
         tools.pack_start(width, False, False, 5)
@@ -1873,6 +1894,9 @@ class UI:
 
         self.scribble_c_eb = Gtk.EventBox()
         self.scribble_c_eb.add(self.scribble_c_da)
+        self.c_overlay.add_overlay(self.scribble_c_eb)
+        self.c_overlay.reorder_overlay(self.scribble_c_eb, 1)
+        self.scribble_c_eb.show_all()
 
         self.scribble_p_da.connect("draw", self.draw_scribble)
         self.scribble_c_da.connect("draw", self.draw_scribble)
@@ -1886,14 +1910,14 @@ class UI:
         self.scribble_c_eb.connect("motion-notify-event", self.track_scribble)
         self.scribble_p_eb.connect("motion-notify-event", self.track_scribble)
 
+        self.scribble_p_da.connect("configure-event", self.on_configure_da)
+
 
     def switch_scribbling(self, widget=None, event=None):
         """ Starts the mode where one can read on top of the screen
         """
-        del self.scribble_list[:]
 
         if self.scribbling_mode:
-            self.c_overlay.remove(self.scribble_c_eb)
             self.p_overlay.remove(self.scribble_overlay)
             self.scribbling_mode = False
 
@@ -1901,20 +1925,15 @@ class UI:
             pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
             self.scribble_p_frame.set_property('ratio', pr)
 
-            self.c_overlay.add_overlay(self.scribble_c_eb)
             self.p_overlay.add_overlay(self.scribble_overlay)
-
-            self.scribble_c_eb.show_all()
             self.scribble_overlay.show_all()
-
-            self.c_overlay.queue_draw()
             self.p_overlay.queue_draw()
 
             self.scribbling_mode = True
 
-            self.cache.resize_widget("scribble_c_da",
-                self.scribble_c_da.get_allocated_width(),
-                self.scribble_c_da.get_allocated_height())
+            self.cache.resize_widget("scribble_p_da",
+                self.scribble_p_da.get_allocated_width(),
+                self.scribble_p_da.get_allocated_height())
 
 
 ##

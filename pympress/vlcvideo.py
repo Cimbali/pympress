@@ -92,7 +92,7 @@ class VLCVideo(Gtk.VBox):
 
         self.player = instance.media_player_new()
         event_manager = self.player.event_manager()
-        event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self.hide)
+        event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.hide))
 
         def handle_embed(*args):
             # Do we need to be on the main thread? (especially for the mess from the win32 window handle)
@@ -117,7 +117,7 @@ class VLCVideo(Gtk.VBox):
         for text, tooltip, stock, callback in (
             ('Play', 'Play', Gtk.STOCK_MEDIA_PLAY, lambda b: self.play()),
             ('Pause', 'Pause', Gtk.STOCK_MEDIA_PAUSE, lambda b: self.pause()),
-            ('Stop', 'Stop', Gtk.STOCK_MEDIA_STOP, lambda b: self.hide()),
+            ('Stop', 'Stop', Gtk.STOCK_MEDIA_STOP, lambda b: GLib.idle_add(self.hide)),
         ):
             b=Gtk.ToolButton(stock)
             b.set_tooltip_text(tooltip)
@@ -147,6 +147,7 @@ class VLCVideo(Gtk.VBox):
         self.movie_zone.show()
         if not self.get_parent():
             self.overlay.add_overlay(self)
+            self.overlay.reorder_overlay(self, 2)
             self.set_halign(Gtk.Align.FILL)
             self.set_valign(Gtk.Align.FILL)
             self.resize()
@@ -166,10 +167,11 @@ class VLCVideo(Gtk.VBox):
             GLib.idle_add(self.player.set_time, 0) # in ms
 
     def hide(self, *args):
-        ''' Remove widget from overlays.
+        ''' Remove widget from overlays. Needs to be callded via GLib.idle_add
         '''
-        GLib.idle_add(lambda p: p.stop(), self.player)
+        self.player.stop()
         self.movie_zone.hide()
+
         if self.get_parent():
             self.overlay.remove(self)
 
