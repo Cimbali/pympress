@@ -1087,8 +1087,7 @@ class UI:
             elif name.upper() == 'F11' or name == 'F' \
                 or (name == 'Return' and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
                 or (name.upper() == 'L' and ctrl_pressed) \
-                or (name.upper() == 'F5' and not self.c_win_fullscreen) \
-                or (name == 'Escape' and self.c_win_fullscreen):
+                or (name.upper() == 'F5' and not self.c_win_fullscreen):
                 self.switch_fullscreen(self.c_win)
             elif name.upper() == 'F' and ctrl_pressed:
                 self.switch_fullscreen(self.p_win)
