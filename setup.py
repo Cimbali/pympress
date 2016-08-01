@@ -59,7 +59,7 @@ setup(name='pympress',
       ],
       package_data={
         'pympress': [os.path.join('share', 'css', '*.css'), os.path.join('share', 'pixmaps', '*.png')]
-        + glob.glob(os.path.join('share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))
+        + [f.split(os.path.sep, 1)[1] for f in glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))]
       },
 )
 

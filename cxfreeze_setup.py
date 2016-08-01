@@ -80,8 +80,7 @@ if IS_WINDOWS:
 include_files += [(os.path.join(include_path, item), item) for item in libs_etc]
 include_files.append( (os.path.join('pympress', 'share', 'css'), os.path.join('share', 'css')) )
 include_files.append( (os.path.join('pympress', 'share', 'pixmaps'), os.path.join('share', 'pixmaps')) )
-for f in glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo')):
-    include_files.append( (f,  f[f.index(os.path.sep)+1:] ) )
+include_files += [(f,  f.split(os.path.sep, 1)[1]) for f in glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))]
 
 buildOptions = dict(
     compressed = False,
