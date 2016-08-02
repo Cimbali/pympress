@@ -15,17 +15,20 @@ This is now a fork of [Schnouki's original Pympress](https://github.com/Schnouki
 
 # Installing
 
-## Through pip (preferred way)
+## If you have python
 
 Run the following command in your shell:
-`pip install git+https://github.com/Cimbali/pympress#egg=pympress`
+`python3 -m pip install git+https://github.com/Cimbali/pympress#egg=pympress` (or replace `python3 -m pip` with `python -m pip` or just `pip`).
 
-## From source
+If you don't have pip, see [the python documentation on installing](https://docs.python.org/3.5/installing/index.html). If after installing pympress doesn't run, check that you have all [the dependencies](https://github.com/Cimbali/pympress#dependencies).
 
-Grab [the latest source code](https://github.com/Cimbali/pympress/releases/latest), open a console where you extracted pympress, and type `python setup.py install`. See [the python documentation on installing](https://docs.python.org/3.5/install/#standard-build-and-install) for details. If it doesn't run, check that you have all [the dependencies](https://github.com/Cimbali/pympress#dependencies).
+### From source
+
+If you also want the source code, you can clone this repo or grab [the latest releases' source](https://github.com/Cimbali/pympress/releases/latest), open a console where you put the code, and type `python3 -m pip install .` (or, if you plan on modifying that code, `python3 -m pip install -e .`). Same remarks as above apply.
 
 ## Binary install
 
+If you don't want to know about source code or dependencies, this is for you.
 Grab [the latest installer for your platform](https://github.com/Cimbali/pympress/releases/latest) and execute it. You're done!
 
 Currently binaries are only available for windows (.msi files). Choose packages with 'amd64' in the name if you have a 64 bit machine, 'x86' if you have a 32 bit machine. The 'vlc' suffix indicates that this installer ships VLC as well to support video, so try it if the other version fails to read videos.
@@ -75,5 +78,5 @@ Sometimes you might need to make sure that the introspection bindings for popple
 
 ## Translations
 
-If you want to add a translation, check if pympress/share/locale/<language>/pympress.po already exists. If not, take [this file](https://github.com/Cimbali/pympress/tree/master/pympress/share/locale/pympress.pot) as input and translate all the strings, then add it to the repo in pympress/share/locale/<language>/pympress.po .
-Finally pass this .po file to msgfmt and add the output to the repo at pympress/share/locale/<language>/LC_MESSAGES/pympress.mo
+If you want to add a translation, check if pympress/share/locale/&lt;language&gt;/pympress.po already exists. If not, take [this file](https://github.com/Cimbali/pympress/tree/master/pympress/share/locale/pympress.pot) as input and translate all the strings, then add it to the repo in pympress/share/locale/&lt;language&gt;/pympress.po .
+Finally pass this .po file to msgfmt and add the output to the repo at pympress/share/locale/&lt;language&gt;/LC_MESSAGES/pympress.mo
