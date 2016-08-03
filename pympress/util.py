@@ -27,7 +27,7 @@ from __future__ import print_function
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, Gdk, GdkPixbuf
 import pkg_resources
 import os, os.path, sys
 
@@ -136,6 +136,7 @@ def load_config():
     config.add_section('content')
     config.add_section('presenter')
     config.add_section('cache')
+    config.add_section('scribble')
 
     config.read(path_to_config())
 
@@ -168,6 +169,12 @@ def load_config():
 
     if not config.has_option('presenter', 'show_bigbuttons'):
         config.set('presenter', 'show_bigbuttons', 'off')
+
+    if not config.has_option('scribble', 'color'):
+        config.set('scribble', 'color', Gdk.RGBA(1., 0., 0., 1.).to_string())
+
+    if not config.has_option('scribble', 'width'):
+        config.set('scribble', 'width', '8')
 
     return config
 

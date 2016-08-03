@@ -19,6 +19,10 @@
     font-size: 22pt;
 }
 
+#ScribbleOverlay {
+  background: @theme_bg_color
+}
+
 .frame-label {
 }
 
