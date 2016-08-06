@@ -198,9 +198,9 @@ class UI:
     label_color_ett_warn = None
 
     #: The containing widget for the annotations
-    scrolled_window = None
+    scrollable_treelist = None
     #: Making the annotations list scroll if it's too long
-    scrollable_treelist = Gtk.ScrolledWindow()
+    scrolled_window = Gtk.ScrolledWindow()
 
     #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
     scribbling_mode = None
@@ -384,8 +384,8 @@ class UI:
 
 
         # Annotations
-        self.scrollable_treelist = builder.get_object("scrolled_window")
-        self.scrolled_window = builder.get_object("scrollable_treelist")
+        self.scrolled_window = builder.get_object("scrolled_window")
+        self.scrollable_treelist = builder.get_object("scrollable_treelist")
         self.annotation_renderer = Gtk.CellRendererText()
         self.annotation_renderer.props.wrap_mode = Pango.WrapMode.WORD_CHAR
 
@@ -393,15 +393,10 @@ class UI:
         column.props.sizing = Gtk.TreeViewColumnSizing.AUTOSIZE
         column.set_fixed_width(1)
 
-        self.scrolled_window.set_model(Gtk.ListStore(str))
-        #self.scrolled_window.set_headers_visible(False)
-        #self.scrolled_window.props.fixed_height_mode = False
-        #self.scrolled_window.props.enable_search = False
-        #self.scrolled_window.get_selection().set_mode(Gtk.SelectionMode.NONE)
-        self.scrolled_window.append_column(column)
-        #self.scrolled_window.set_size_request(0, 0)
+        self.scrollable_treelist.set_model(Gtk.ListStore(str))
+        self.scrollable_treelist.append_column(column)
 
-        self.scrollable_treelist.set_hexpand(True)
+        self.scrolled_window.set_hexpand(True)
 
         # Load color from CSS
         style_context = self.label_time.get_style_context()
@@ -683,7 +678,7 @@ class UI:
         for annot in annotations:
             list_annot.append(('\xe2\x97\x8f '+annot,))
 
-        self.scrolled_window.set_model(list_annot)
+        self.scrollable_treelist.set_model(list_annot)
         self.resize_annotation_list
 
 
@@ -1083,7 +1078,7 @@ class UI:
             elif event.direction is Gdk.ScrollDirection.SMOOTH:
                 return False
             else:
-                adj = self.scrollable_treelist.get_vadjustment()
+                adj = self.scrolled_window.get_vadjustment()
                 if event.direction == Gdk.ScrollDirection.UP:
                     adj.set_value(adj.get_value() - adj.get_step_increment())
                 elif event.direction == Gdk.ScrollDirection.DOWN:
@@ -1261,8 +1256,8 @@ class UI:
         n = 2 if self.notes_mode else 1
         self.annotation_renderer.props.wrap_width = w - 10
         self.p_frame_annot.set_size_request(-1, max(h - n * 1.2 * (w / r), 100))
-        self.scrolled_window.get_column(0).queue_resize()
-        self.scrollable_treelist.queue_resize()
+        self.scrollable_treelist.get_column(0).queue_resize()
+        self.scrolled_window.queue_resize()
 
 
     def restore_current_label(self):
@@ -1562,7 +1557,7 @@ class UI:
         screen = self.p_win.get_screen()
         if screen.get_n_monitors() > 1:
             # temporarily remove the annotations' list size so it won't hinder p_frame_next size adjustment
-            self.scrollable_treelist.set_size_request(-1,  100)
+            self.scrolled_window.set_size_request(-1,  100)
 
             # Though Gtk.Window is a Gtk.Widget get_parent_window() actually returns None on self.{c,p}_win
             p_monitor = screen.get_monitor_at_window(self.p_frame_cur.get_parent_window())
