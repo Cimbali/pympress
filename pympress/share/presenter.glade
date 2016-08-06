@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkWindow" id="p_win">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">pympress presenter</property>
+    <property name="window_position">center</property>
+    <property name="default_width">1067</property>
+    <signal name="destroy" handler="save_and_quit" swapped="no"/>
+    <signal name="window-state-event" handler="on_window_state_event" swapped="no"/>
+    <signal name="configure-event" handler="on_configure_win" swapped="no"/>
+    <signal name="key-press-event" handler="on_navigation" swapped="no"/>
+    <signal name="delete-event" handler="save_and_quit" swapped="no"/>
+    <child>
+      <object class="GtkBox" id="bigvbox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkOverlay" id="p_overlay">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkPaned" id="hpaned">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="margin_left">5</property>
+                <property name="margin_right">5</property>
+                <property name="margin_top">5</property>
+                <property name="margin_bottom">5</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="position">600</property>
+                <property name="position_set">True</property>
+                <child>
+                  <object class="GtkAspectFrame" id="p_frame_cur">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_right">5</property>
+                    <property name="label_xalign">0</property>
+                    <property name="shadow_type">in</property>
+                    <property name="ratio">1.3300000429153442</property>
+                    <property name="obey_child">False</property>
+                    <child>
+                      <object class="GtkDrawingArea" id="p_da_cur">
+                        <property name="visible">True</property>
+                        <property name="app_paintable">True</property>
+                        <property name="can_focus">False</property>
+                        <signal name="draw" handler="on_draw" swapped="no"/>
+                        <signal name="button-press-event" handler="on_link" swapped="no"/>
+                        <signal name="configure-event" handler="on_configure_da" swapped="no"/>
+                        <signal name="motion-notify-event" handler="on_link" swapped="no"/>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel" id="label422">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Current slide</property>
+                        <property name="use_markup">True</property>
+                        <style>
+                          <class name="frame-label"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="resize">True</property>
+                    <property name="shrink">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="right_pane">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_left">5</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkAspectFrame" id="p_frame_pres">
+                        <property name="height_request">200</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">in</property>
+                        <property name="yalign">0</property>
+                        <property name="ratio">1.3300000429153442</property>
+                        <property name="obey_child">False</property>
+                        <child>
+                          <object class="GtkDrawingArea" id="p_da_pres">
+                            <property name="visible">True</property>
+                            <property name="app_paintable">True</property>
+                            <property name="can_focus">False</property>
+                            <signal name="draw" handler="on_draw" swapped="no"/>
+                            <signal name="configure-event" handler="on_configure_da" swapped="no"/>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label420">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Current slide</property>
+                            <property name="use_markup">True</property>
+                            <style>
+                              <class name="frame-label"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkAspectFrame" id="p_frame_next">
+                        <property name="height_request">200</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">in</property>
+                        <property name="yalign">0</property>
+                        <property name="ratio">1.3300000429153442</property>
+                        <property name="obey_child">False</property>
+                        <child>
+                          <object class="GtkDrawingArea" id="p_da_next">
+                            <property name="visible">True</property>
+                            <property name="app_paintable">True</property>
+                            <property name="can_focus">False</property>
+                            <signal name="draw" handler="on_draw" swapped="no"/>
+                            <signal name="configure-event" handler="on_configure_da" swapped="no"/>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label421">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Next slide</property>
+                            <property name="use_markup">True</property>
+                            <style>
+                              <class name="frame-label"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFrame" id="p_frame_annot">
+                        <property name="height_request">250</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="valign">start</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">in</property>
+                        <child>
+                          <object class="GtkScrolledWindow" id="scrolled_window">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <child>
+                              <object class="GtkTreeView" id="scrollable_treelist">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="headers_visible">False</property>
+                                <property name="headers_clickable">False</property>
+                                <property name="enable_search">False</property>
+                                <property name="show_expanders">False</property>
+                                <child internal-child="selection">
+                                  <object class="GtkTreeSelection" id="treeview-selection1">
+                                    <property name="mode">none</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label4">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Annotations</property>
+                            <property name="use_markup">True</property>
+                            <style>
+                              <class name="frame-label"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="pack_type">end</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="resize">True</property>
+                    <property name="shrink">True</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="padding">1</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="bottom">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkButton" id="prev_button">
+                <property name="label">gtk-go-back</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="margin_top">10</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="goto_prev" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="padding">2</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFrame" id="frame_cur">
+                <property name="width_request">200</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">out</property>
+                <child>
+                  <object class="GtkEventBox" id="eb_cur">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="receives_default">True</property>
+                    <signal name="event" handler="on_label_event" swapped="no"/>
+                    <child>
+                      <object class="GtkBox" id="hb_cur">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="homogeneous">True</property>
+                        <child>
+                          <object class="GtkLabel" id="label_cur">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">1</property>
+                            <property name="label" translatable="yes">0</property>
+                            <property name="justify">right</property>
+                            <style>
+                              <class name="info-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label_last">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">/0</property>
+                            <property name="track_visited_links">False</property>
+                            <style>
+                              <class name="info-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child type="label">
+                  <object class="GtkLabel" id="slide_number">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Slide number</property>
+                    <property name="use_markup">True</property>
+                    <style>
+                      <class name="frame-label"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="next_button">
+                <property name="label">gtk-go-forward</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="margin_top">10</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="goto_next" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="padding">2</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="highlight_button">
+                <property name="label" translatable="yes">Highlight</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="margin_top">10</property>
+                <signal name="clicked" handler="switch_scribbling" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="padding">2</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFrame" id="frame_time">
+                <property name="width_request">170</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_left">1</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">in</property>
+                <style>
+                  <class name="info-label"/>
+                </style>
+                <child>
+                  <object class="GtkLabel" id="label_time">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label">00:00</property>
+                    <style>
+                      <class name="info-label"/>
+                    </style>
+                  </object>
+                </child>
+                <child type="label">
+                  <object class="GtkLabel" id="framelabel_time">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Time elapsed</property>
+                    <property name="use_markup">True</property>
+                    <style>
+                      <class name="frame-label"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFrame" id="frame_ett">
+                <property name="width_request">170</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">in</property>
+                <style>
+                  <class name="info-label"/>
+                </style>
+                <child>
+                  <object class="GtkEventBox" id="eb_ett">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <signal name="button-press-event" handler="on_label_ett_event" swapped="no"/>
+                    <signal name="key-press-event" handler="on_label_ett_event" swapped="no"/>
+                    <child>
+                      <object class="GtkLabel" id="label_ett">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label">00:00</property>
+                        <style>
+                          <class name="info-label"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child type="label">
+                  <object class="GtkLabel" id="framelabel_ett">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Time estimation</property>
+                    <property name="use_markup">True</property>
+                    <style>
+                      <class name="frame-label"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFrame" id="frame_clock">
+                <property name="width_request">170</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">in</property>
+                <style>
+                  <class name="info-label"/>
+                </style>
+                <child>
+                  <object class="GtkLabel" id="label_clock">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label">00:00</property>
+                    <style>
+                      <class name="info-label"/>
+                    </style>
+                  </object>
+                </child>
+                <child type="label">
+                  <object class="GtkLabel" id="framlabel_clock">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Clock</property>
+                    <property name="use_markup">True</property>
+                    <style>
+                      <class name="frame-label"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">6</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkSizeGroup" id="previews_sizegroup"/>
+</interface>

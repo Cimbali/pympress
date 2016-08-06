@@ -1,27 +1,27 @@
-#PresenterWindow {
+#p_win {
     background-color: #444;
 }
 
-#PresenterWindow GtkPaned .pane-separator {
+#p_win GtkPaned .pane-separator {
     background-color: #aaa;
     border-radius: 2px;
 }
 
-#PresenterWindow GtkFrame {
+#p_win GtkFrame {
 }
 
-#PresenterWindow GtkTreeView {
+#p_win GtkTreeView {
     border-style: none;
     background-color: transparent;
     color: #aaa;
     font-size: 16pt;
 }
 
-#PresenterWindow GtkEntry {
+#p_win GtkEntry {
     font-size: 22pt;
 }
 
-#ScribbleOverlay {
+#scribble_overlay {
   background: @theme_bg_color
 }
 

@@ -326,36 +326,104 @@ class UI:
         pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
 
+    def goto_prev(self, *args):
+        self.doc.goto_prev()
+
+    def goto_next(self, *args):
+        self.doc.goto_next()
 
     def make_pwin(self):
         """ Creates and initializes the presenter window.
         """
+        builder = Gtk.Builder()
+        builder.add_from_file(os.path.join("share", "presenter.glade"))
+        builder.connect_signals(self)
         # Presenter window
-        self.p_win.set_name('PresenterWindow')
-        self.p_win.set_title(_("pympress presenter"))
-        self.p_win.set_default_size(1067, 600)
-        self.p_win.set_position(Gtk.WindowPosition.CENTER)
+        self.p_win = builder.get_object("p_win")
 
-        # Put Menu and Table in VBox
-        bigvbox = Gtk.VBox(False, 2)
-        self.p_win.add(bigvbox)
+        bigvbox = builder.get_object("bigvbox")
+        menubar = self.make_menubar()
+        bigvbox.pack_start(menubar, False, False, 0)
+        bigvbox.reorder_child(menubar, 0)
+        hpaned = builder.get_object("hpaned")
+        self.p_frame_cur = builder.get_object("p_frame_cur")
+        self.p_frame_pres = builder.get_object("p_frame_pres")
+        self.p_da_cur = builder.get_object("p_da_cur")
+        self.p_da_pres = builder.get_object("p_da_pres")
+        self.p_da_next = builder.get_object("p_da_next")
+        self.p_da_cur.set_name("p_da_cur")
+        self.p_da_pres.set_name("p_da_pres")
+        self.p_da_next.set_name("p_da_next")
+        self.p_frame_next = builder.get_object("p_frame_next")
+        self.p_frame_annot = builder.get_object("p_frame_annot")
+        self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
+        self.prev_button = builder.get_object("prev_button")
+        self.next_button = builder.get_object("next_button")
+        self.highlight_button = builder.get_object("highlight_button")
+        self.label_cur = builder.get_object("label_cur")
+        self.label_last = builder.get_object("label_last")
+        self.hb_cur = builder.get_object("hb_cur")
+        self.eb_cur = builder.get_object("eb_cur")
+        self.label_time = builder.get_object("label_time")
+        self.label_ett = builder.get_object("label_ett")
+        self.eb_ett = builder.get_object("eb_ett")
+        self.label_clock = builder.get_object("label_clock")
+        self.p_overlay = builder.get_object("p_overlay")
+        
+        self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
+        self.spin_cur.set_alignment(0.5)
 
-        # make & get menu
-        bigvbox.pack_start(self.make_menubar(), False, False, 0)
+        if self.notes_mode:
+            self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
+            self.cache.add_widget("p_da_pres", PDF_CONTENT_PAGE, True)
+            self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
+        else:
+            self.cache.add_widget("p_da_cur", PDF_REGULAR)
+            self.cache.add_widget("p_da_next", PDF_REGULAR)
+            self.cache.add_widget("p_da_pres", PDF_REGULAR, False)
 
-        # overlay
-        self.p_overlay.props.margin = 0
-        bigvbox.pack_start(self.p_overlay, True, True, 0)
 
-        # panes
-        hpaned = self.make_pwin_panes()
-        self.p_overlay.add(hpaned)
+        # Annotations
+        self.scrollable_treelist = builder.get_object("scrolled_window")
+        self.scrolled_window = builder.get_object("scrollable_treelist")
+        self.annotation_renderer = Gtk.CellRendererText()
+        self.annotation_renderer.props.wrap_mode = Pango.WrapMode.WORD_CHAR
 
-        # bottom row
-        bigvbox.pack_start(self.make_pwin_bottom(), False, False, 0)
+        column = Gtk.TreeViewColumn(None, self.annotation_renderer, text=0)
+        column.props.sizing = Gtk.TreeViewColumnSizing.AUTOSIZE
+        column.set_fixed_width(1)
 
-        # Set relative pane sizes
-        # dynamic computation requires to have p_win already visible
+        self.scrolled_window.set_model(Gtk.ListStore(str))
+        #self.scrolled_window.set_headers_visible(False)
+        #self.scrolled_window.props.fixed_height_mode = False
+        #self.scrolled_window.props.enable_search = False
+        #self.scrolled_window.get_selection().set_mode(Gtk.SelectionMode.NONE)
+        self.scrolled_window.append_column(column)
+        #self.scrolled_window.set_size_request(0, 0)
+
+        self.scrollable_treelist.set_hexpand(True)
+
+        # Load color from CSS
+        style_context = self.label_time.get_style_context()
+        style_context.add_class("ett-reached")
+        self.label_time.show();
+        self.label_color_ett_reached = style_context.get_color(Gtk.StateType.NORMAL)
+        style_context.remove_class("ett-reached")
+        style_context.add_class("ett-info")
+        self.label_time.show();
+        self.label_color_ett_info = style_context.get_color(Gtk.StateType.NORMAL)
+        style_context.remove_class("ett-info")
+        style_context.add_class("ett-warn")
+        self.label_time.show();
+        self.label_color_ett_warn = style_context.get_color(Gtk.StateType.NORMAL)
+        style_context.remove_class("ett-warn")
+        style_context.add_class("info-label")
+        self.label_time.show();
+
+        # set default values
+        self.label_last.set_text("/{}".format(self.doc.pages_number()))
+        self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
+
         self.p_win.show_all()
 
         pane_size = self.config.getfloat('presenter', 'slide_ratio')
@@ -558,11 +626,11 @@ class UI:
 
         The left label may be replaced by a spinner to choose which slide to jump to.
         """
-        self.label_cur.set_name("LSlideCur")
+        self.label_cur.set_name("label_cur")
         self.label_cur.get_style_context().add_class("info-label")
         self.label_cur.props.halign = Gtk.Align.END
         self.label_cur.set_use_markup(True)
-        self.label_last.set_name("LSlideLast")
+        self.label_last.set_name("label_last")
         self.label_last.get_style_context().add_class("info-label")
         self.label_last.props.halign = Gtk.Align.START
         self.label_last.set_text("/{}".format(self.doc.pages_number()))
@@ -605,7 +673,7 @@ class UI:
         frame.set_label(_("Time elapsed"))
         frame.set_size_request(170, 0)
         frame.get_label_widget().get_style_context().add_class("frame-label")
-        self.label_time.set_name("LTimeElapsed")
+        self.label_time.set_name("label_time")
 
         # Load color from CSS
         style_context = self.label_time.get_style_context()
@@ -1883,7 +1951,7 @@ class UI:
         tools.pack_start(width, False, False, 5)
 
         self.scribble_overlay = Gtk.HBox()
-        self.scribble_overlay.set_name("ScribbleOverlay")
+        self.scribble_overlay.set_name("scribble_overlay")
         self.scribble_overlay.pack_start(self.scribble_p_frame, True, True, 0)
         self.scribble_overlay.pack_start(tools, False, True, 0)
 
