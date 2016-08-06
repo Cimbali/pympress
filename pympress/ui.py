@@ -101,8 +101,10 @@ class UI:
 
     #: Presenter window, as a :class:`Gtk.Window` instance.
     p_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
-    #: :class:`~Gtk.Overlay` for the Presenter window.
-    p_overlay = Gtk.Overlay()
+    #: :class:`~Gtk.Box` for the Presenter window.
+    p_central = Gtk.Box()
+    #: :class:`~Gtk.Paned` containg current/notes slide on one side, current/next slide/annotations
+    hpaned = Gtk.Paned()
     #: :class:`~Gtk.AspectFrame` for the current slide in the Presenter window.
     p_frame_cur = Gtk.AspectFrame(xalign=0, yalign=0, ratio=4./3., obey_child=False)
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
@@ -345,7 +347,8 @@ class UI:
         menubar = self.make_menubar()
         bigvbox.pack_start(menubar, False, False, 0)
         bigvbox.reorder_child(menubar, 0)
-        hpaned = builder.get_object("hpaned")
+
+        self.hpaned = builder.get_object("hpaned")
         self.p_frame_cur = builder.get_object("p_frame_cur")
         self.p_frame_pres = builder.get_object("p_frame_pres")
         self.p_da_cur = builder.get_object("p_da_cur")
@@ -368,7 +371,7 @@ class UI:
         self.label_ett = builder.get_object("label_ett")
         self.eb_ett = builder.get_object("eb_ett")
         self.label_clock = builder.get_object("label_clock")
-        self.p_overlay = builder.get_object("p_overlay")
+        self.p_central = builder.get_object("p_central")
         
         self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
         self.spin_cur.set_alignment(0.5)
@@ -421,9 +424,10 @@ class UI:
 
         self.p_win.show_all()
 
+        if gi.version_info >= (3,16): self.hpaned.set_wide_handle(True)
         pane_size = self.config.getfloat('presenter', 'slide_ratio')
         avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
-        hpaned.set_position(int(round(pane_size * avail_size)))
+        self.hpaned.set_position(int(round(pane_size * avail_size)))
         self.on_page_change(False)
         GLib.idle_add(self.resize_annotation_list)
 
@@ -1826,7 +1830,7 @@ class UI:
         self.scribble_c_eb.add(self.scribble_c_da)
         self.c_overlay.add_overlay(self.scribble_c_eb)
         self.c_overlay.reorder_overlay(self.scribble_c_eb, 1)
-        self.scribble_c_eb.show_all()
+        self.scribble_overlay.show_all()
 
         self.scribble_p_da.connect("draw", self.draw_scribble)
         self.scribble_c_da.connect("draw", self.draw_scribble)
@@ -1848,16 +1852,18 @@ class UI:
         """
 
         if self.scribbling_mode:
-            self.p_overlay.remove(self.scribble_overlay)
+            self.p_central.remove(self.scribble_overlay)
+            self.p_central.pack_start(self.hpaned, True, True, 0)
             self.scribbling_mode = False
 
         else:
             pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
             self.scribble_p_frame.set_property('ratio', pr)
 
-            self.p_overlay.add_overlay(self.scribble_overlay)
-            self.scribble_overlay.show_all()
-            self.p_overlay.queue_draw()
+            self.p_central.remove(self.hpaned)
+            self.p_central.pack_start(self.scribble_overlay, True, True, 0)
+
+            self.p_central.queue_draw()
 
             self.scribbling_mode = True
 

@@ -17,7 +17,7 @@
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkOverlay" id="p_overlay">
+          <object class="GtkBox" id="p_central">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
