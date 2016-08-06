@@ -436,31 +436,17 @@ class UI:
     def add_events(self):
         """ Connects the events we want to the different widgets.
         """
-        self.p_win.connect("destroy", self.save_and_quit)
         self.c_win.connect("destroy", self.save_and_quit)
-        self.p_win.connect("delete-event", self.save_and_quit)
         self.c_win.connect("delete-event", self.save_and_quit)
 
         self.c_da.connect("draw", self.on_draw)
         self.c_da.connect("configure-event", self.on_configure_da)
-        self.p_da_cur.connect("draw", self.on_draw)
-        self.p_da_cur.connect("configure-event", self.on_configure_da)
-        self.p_da_next.connect("draw", self.on_draw)
-        self.p_da_next.connect("configure-event", self.on_configure_da)
-        self.p_da_pres.connect("draw", self.on_draw)
-        self.p_da_pres.connect("configure-event", self.on_configure_da)
 
         self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
-        self.p_win.connect("key-press-event", self.on_navigation)
-        self.p_win.connect("scroll-event", self.on_navigation)
         self.c_win.connect("window-state-event", self.on_window_state_event)
-        self.p_win.connect("window-state-event", self.on_window_state_event)
         self.c_win.connect("configure-event", self.on_configure_win)
-        self.p_win.connect("configure-event", self.on_configure_win)
 
         self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
-        self.c_win.connect("key-press-event", self.on_navigation)
-        self.c_win.connect("scroll-event", self.on_navigation)
 
         # Hyperlinks
         self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
@@ -468,125 +454,7 @@ class UI:
         self.c_da.connect("motion-notify-event", self.on_link)
 
         self.p_da_cur.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-        self.p_da_cur.connect("button-press-event", self.on_link)
-        self.p_da_cur.connect("motion-notify-event", self.on_link)
 
-
-    def make_pwin_panes(self):
-        """ Creates and initializes the presenter window's panes.
-
-        :return: the preview panes with current and next slide
-        :rtype: :class:`Gtk.Paned`
-        """
-        # Panes
-        hpaned = Gtk.Paned()
-        hpaned.set_orientation(Gtk.Orientation.HORIZONTAL)
-        if gi.version_info >= (3,16): hpaned.set_wide_handle(True)
-        hpaned.set_margin_top(5)
-        hpaned.set_margin_bottom(5)
-        hpaned.set_margin_left(5)
-        hpaned.set_margin_right(5)
-
-        # "Current slide" frame or "Notes" frame
-        if self.notes_mode:
-            self.p_frame_cur.set_label(_("Notes"))
-        else:
-            self.p_frame_cur.set_label(_("Current slide"))
-        self.p_frame_cur.get_label_widget().get_style_context().add_class("frame-label")
-        self.p_frame_cur.set_margin_right(5)
-
-        hpaned.pack1(self.p_frame_cur, True, True)
-        self.p_da_cur.set_name("p_da_cur")
-        if self.notes_mode:
-            self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
-        else:
-            self.cache.add_widget("p_da_cur", PDF_REGULAR)
-        self.p_frame_cur.add(self.p_da_cur)
-
-        # Righthand side container
-        right_pane = Gtk.VBox(False, 15)
-        #right_pane.set_halign(Gtk.Align.FILL)
-        right_pane.set_margin_left(5)
-        right_pane.set_homogeneous(False)
-        right_pane.set_name('RightPane')
-
-        # "Current slide" frame (note mode)
-        self.p_frame_pres.set_label(_("Current slide"))
-        self.p_frame_pres.get_label_widget().get_style_context().add_class("frame-label")
-        self.p_da_pres.set_name("p_da_pres")
-        self.cache.add_widget("p_da_pres", PDF_CONTENT_PAGE, self.notes_mode)
-        self.p_frame_pres.add(self.p_da_pres)
-
-        right_pane.pack_start(self.p_frame_pres, True, True, 0)
-
-        # "Next slide" frame
-        self.p_frame_next.set_label(_("Next slide"))
-        self.p_frame_next.get_label_widget().get_style_context().add_class("frame-label")
-        self.p_da_next.set_name("p_da_next")
-        if self.notes_mode:
-            self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
-        else:
-            self.cache.add_widget("p_da_next", PDF_REGULAR)
-        self.p_frame_next.add(self.p_da_next)
-
-        right_pane.pack_start(self.p_frame_next, True, True, 0)
-
-        # Annotations
-        self.annotation_renderer = Gtk.CellRendererText()
-        self.annotation_renderer.props.wrap_mode = Pango.WrapMode.WORD_CHAR
-
-        column = Gtk.TreeViewColumn(None, self.annotation_renderer, text=0)
-        column.props.sizing = Gtk.TreeViewColumnSizing.AUTOSIZE
-        column.set_fixed_width(1)
-
-        self.scrolled_window = Gtk.TreeView.new_with_model(Gtk.ListStore(str))
-        self.scrolled_window.set_headers_visible(False)
-        self.scrolled_window.props.fixed_height_mode = False
-        self.scrolled_window.props.enable_search = False
-        self.scrolled_window.get_selection().set_mode(Gtk.SelectionMode.NONE)
-        self.scrolled_window.append_column(column)
-        self.scrolled_window.set_size_request(0, 0)
-
-        self.scrollable_treelist.set_hexpand(True)
-        self.scrollable_treelist.add(self.scrolled_window)
-
-        self.p_frame_annot.set_label(_("Annotations"))
-        self.p_frame_annot.get_label_widget().get_style_context().add_class("frame-label")
-        self.p_frame_annot.add(self.scrollable_treelist)
-
-        right_pane.pack_end(self.p_frame_annot, False, False, 0)
-
-        hpaned.pack2(right_pane, True, True)
-
-        return hpaned
-
-
-    def make_pwin_bottom(self):
-        """ Creates and initializes the presenter window's bottom row of numerical displays
-
-        :return: the preview panes with current and next slide
-        :rtype: :class:`Gtk.HBox`
-        """
-        self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
-        self.prev_button = Gtk.Button(stock=Gtk.STOCK_MEDIA_PREVIOUS, margin_top=10)
-        self.next_button = Gtk.Button(stock=Gtk.STOCK_MEDIA_NEXT, margin_top=10)
-        self.highlight_button = Gtk.Button(label=_("Highlight"), margin_top=10)
-        self.prev_button.connect("clicked", self.doc.goto_prev)
-        self.next_button.connect("clicked", self.doc.goto_next)
-        self.highlight_button.connect("clicked", self.switch_scribbling)
-
-        hbox = Gtk.HBox(False, 0)
-        hbox.set_margin_right(5)
-        hbox.set_halign(Gtk.Align.FILL)
-        hbox.pack_start(self.prev_button, True, True, 2)
-        hbox.pack_start(self.make_frame_slidenum(), True, True, 0)
-        hbox.pack_start(self.next_button, True, True, 2)
-        hbox.pack_start(self.highlight_button, True, True, 2)
-        hbox.pack_start(self.make_frame_time(), True, True, 0)
-        hbox.pack_start(self.make_frame_ett(), False, True, 0)
-        hbox.pack_start(self.make_frame_clock(), False, True, 0)
-
-        return hbox
 
 
     def setup_screens(self):
