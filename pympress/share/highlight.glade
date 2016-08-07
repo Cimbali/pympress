@@ -19,6 +19,7 @@
               <object class="GtkEventBox" id="scribble_p_eb">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                 <signal name="button-press-event" handler="track_scribble" swapped="no"/>
                 <signal name="button-release-event" handler="track_scribble" swapped="no"/>
                 <signal name="motion-notify-event" handler="track_scribble" swapped="no"/>
@@ -121,9 +122,8 @@
                 <property name="orientation">vertical</property>
                 <property name="adjustment">scribble_width_adjust</property>
                 <property name="inverted">True</property>
-                <property name="show_fill_level">False</property>
-                <property name="draw_value">False</property>
                 <property name="digits">0</property>
+                <property name="draw_value">False</property>
                 <property name="value_pos">bottom</property>
                 <signal name="change-value" handler="update_width" swapped="no"/>
               </object>

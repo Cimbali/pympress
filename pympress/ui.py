@@ -328,7 +328,6 @@ class UI:
         self.scribble_c_eb = Gtk.EventBox()
         self.scribble_c_eb.add(self.scribble_c_da)
         self.c_overlay.add_overlay(self.scribble_c_eb)
-        self.c_overlay.reorder_overlay(self.scribble_c_eb, 1)
 
         self.c_da.props.expand = True
         self.c_da.props.halign = Gtk.Align.FILL
@@ -341,8 +340,6 @@ class UI:
 
         pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
-        self.scribble_c_eb.show_all()
-        self.c_overlay.show_all()
 
     def make_pwin(self):
         """ Creates and initializes the presenter window.
@@ -445,10 +442,6 @@ class UI:
     def add_events(self):
         """ Connects the events we want to the different widgets.
         """
-        #  TODO the following block should find its way into xml somehow
-        self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
-        self.p_da_cur.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-
         self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
         self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
 
@@ -1633,10 +1626,10 @@ class UI:
         if not self.scribbling_mode:
             return self.on_link(widget, event)
 
-        if event.get_event_type() is Gdk.EventType.BUTTON_PRESS:
+        if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
             self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
             self.scribble_drawing = True
-        elif event.get_event_type() is Gdk.EventType.BUTTON_RELEASE:
+        elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
             self.scribble_drawing = False
 
         if self.scribble_drawing:
@@ -1746,9 +1739,6 @@ class UI:
         self.scribble_p_da.set_name("scribble_p_da")
         self.off_render.show_all() # maybe set size request first?
 
-        # TODO next line should be inside xml
-        self.scribble_p_eb.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-
 
     def switch_scribbling(self, widget=None, event=None):
         """ Starts the mode where one can read on top of the screen
@@ -1774,11 +1764,11 @@ class UI:
 
             self.p_central.queue_draw()
 
-            self.scribbling_mode = True
+            # Also make sure our overlay on Content window is visible
+            self.c_overlay.reorder_overlay(self.scribble_c_eb, 1)
+            self.c_overlay.show_all()
 
-            self.cache.resize_widget("scribble_p_da",
-                self.scribble_p_da.get_allocated_width(),
-                self.scribble_p_da.get_allocated_height())
+            self.scribbling_mode = True
 
 
 ##
