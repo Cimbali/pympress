@@ -446,6 +446,8 @@ class UI:
         self.c_win.connect("configure-event", self.on_configure_win)
 
         self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
+        self.c_win.connect("key-press-event", self.on_navigation)
+        self.c_win.connect("scroll-event", self.on_navigation)
 
         # Hyperlinks
         self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
