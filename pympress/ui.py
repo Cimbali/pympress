@@ -90,6 +90,9 @@ class UI:
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
     cache = None
 
+    #: :class:`~Gtk.Builder` to read XML descriptions of GUIs and load them.
+    builder = Gtk.Builder()
+
     #: Content window, as a :class:`Gtk.Window` instance.
     c_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
     #: :class:`~Gtk.AspectFrame` for the Content window.
@@ -214,7 +217,7 @@ class UI:
     scribble_color = None
     #: `int` current stroke width of the scribbling tool
     scribble_width = 1
-    #: :class:`~Gtk.Overlay` that is added or removed when scribbling is toggled, contains buttons and scribble drawing area
+    #: :class:`~Gtk.HBox` that is replaces normal panes when scribbling is toggled, contains buttons and scribble drawing area
     scribble_overlay = None
     #: :class:`~Gtk.DrawingArea` for the scribbling in the Presenter window. Actually redraws the slide.
     scribble_c_da = None
@@ -318,6 +321,15 @@ class UI:
         self.c_frame.props.border_width = 0
         self.c_overlay.add(self.c_da)
 
+        self.scribble_c_da = Gtk.DrawingArea()
+        self.scribble_c_da.set_halign(Gtk.Align.FILL)
+        self.scribble_c_da.set_valign(Gtk.Align.FILL)
+
+        self.scribble_c_eb = Gtk.EventBox()
+        self.scribble_c_eb.add(self.scribble_c_da)
+        self.c_overlay.add_overlay(self.scribble_c_eb)
+        self.c_overlay.reorder_overlay(self.scribble_c_eb, 1)
+
         self.c_da.props.expand = True
         self.c_da.props.halign = Gtk.Align.FILL
         self.c_da.props.valign = Gtk.Align.FILL
@@ -329,6 +341,8 @@ class UI:
 
         pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
+        self.scribble_c_eb.show_all()
+        self.c_overlay.show_all()
 
     def goto_prev(self, *args):
         self.doc.goto_prev()
@@ -339,7 +353,6 @@ class UI:
     def make_pwin(self):
         """ Creates and initializes the presenter window.
         """
-        self.builder = Gtk.Builder()
         self.builder.add_from_file(os.path.join("share", "presenter.glade"))
         self.builder.add_from_file(os.path.join("share", "highlight.glade"))
         self.builder.connect_signals(self)
@@ -456,6 +469,11 @@ class UI:
 
         self.c_win.connect("key-press-event", self.on_navigation)
         self.c_win.connect("scroll-event", self.on_navigation)
+
+        self.scribble_c_da.connect("draw", self.draw_scribble)
+        self.scribble_c_eb.connect("button-press-event", self.track_scribble)
+        self.scribble_c_eb.connect("button-release-event", self.track_scribble)
+        self.scribble_c_eb.connect("motion-notify-event", self.track_scribble)
 
         # Hyperlinks
         self.c_da.connect("button-press-event", self.on_link)
@@ -1696,24 +1714,6 @@ class UI:
         self.scribble_color.parse(self.config.get('scribble', 'color'))
         self.scribble_width = self.config.getint('scribble', 'width')
         self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR, False)
-
-        # Content-side setup
-        self.scribble_c_da = Gtk.DrawingArea()
-        self.scribble_c_da.set_halign(Gtk.Align.FILL)
-        self.scribble_c_da.set_valign(Gtk.Align.FILL)
-
-        self.scribble_c_eb = Gtk.EventBox()
-        self.scribble_c_eb.add(self.scribble_c_da)
-        self.c_overlay.add_overlay(self.scribble_c_eb)
-        self.c_overlay.reorder_overlay(self.scribble_c_eb, 1)
-        self.scribble_c_eb.show_all()
-        self.c_overlay.show_all()
-
-        self.scribble_c_da.connect("draw", self.draw_scribble)
-        self.scribble_c_eb.connect("button-press-event", self.track_scribble)
-        self.scribble_c_eb.connect("button-release-event", self.track_scribble)
-        self.scribble_c_eb.connect("motion-notify-event", self.track_scribble)
-
 
         # Presenter-size setup
         self.scribble_p_da = self.builder.get_object("scribble_p_da")
