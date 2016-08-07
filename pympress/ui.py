@@ -205,9 +205,11 @@ class UI:
     scrolled_window = Gtk.ScrolledWindow()
 
     #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
-    scribbling_mode = None
+    scribbling_mode = False
     #: list of scribbles to be drawn, as pairs of  :class:`Gdk.RGBA`
     scribble_list = []
+    #: Whether the current mouse movements are drawing strokes or should be ignored
+    scribble_drawing = False
     #: :class:`Gdk.RGBA` current color of the scribbling tool
     scribble_color = None
     #: `int` current stroke width of the scribbling tool
@@ -337,42 +339,43 @@ class UI:
     def make_pwin(self):
         """ Creates and initializes the presenter window.
         """
-        builder = Gtk.Builder()
-        builder.add_from_file(os.path.join("share", "presenter.glade"))
-        builder.connect_signals(self)
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file(os.path.join("share", "presenter.glade"))
+        self.builder.add_from_file(os.path.join("share", "highlight.glade"))
+        self.builder.connect_signals(self)
         # Presenter window
-        self.p_win = builder.get_object("p_win")
+        self.p_win = self.builder.get_object("p_win")
 
-        bigvbox = builder.get_object("bigvbox")
+        bigvbox = self.builder.get_object("bigvbox")
         menubar = self.make_menubar()
         bigvbox.pack_start(menubar, False, False, 0)
         bigvbox.reorder_child(menubar, 0)
 
-        self.hpaned = builder.get_object("hpaned")
-        self.p_frame_cur = builder.get_object("p_frame_cur")
-        self.p_frame_pres = builder.get_object("p_frame_pres")
-        self.p_da_cur = builder.get_object("p_da_cur")
-        self.p_da_pres = builder.get_object("p_da_pres")
-        self.p_da_next = builder.get_object("p_da_next")
+        self.hpaned = self.builder.get_object("hpaned")
+        self.p_frame_cur = self.builder.get_object("p_frame_cur")
+        self.p_frame_pres = self.builder.get_object("p_frame_pres")
+        self.p_da_cur = self.builder.get_object("p_da_cur")
+        self.p_da_pres = self.builder.get_object("p_da_pres")
+        self.p_da_next = self.builder.get_object("p_da_next")
         self.p_da_cur.set_name("p_da_cur")
         self.p_da_pres.set_name("p_da_pres")
         self.p_da_next.set_name("p_da_next")
-        self.p_frame_next = builder.get_object("p_frame_next")
-        self.p_frame_annot = builder.get_object("p_frame_annot")
+        self.p_frame_next = self.builder.get_object("p_frame_next")
+        self.p_frame_annot = self.builder.get_object("p_frame_annot")
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
-        self.prev_button = builder.get_object("prev_button")
-        self.next_button = builder.get_object("next_button")
-        self.highlight_button = builder.get_object("highlight_button")
-        self.label_cur = builder.get_object("label_cur")
-        self.label_last = builder.get_object("label_last")
-        self.hb_cur = builder.get_object("hb_cur")
-        self.eb_cur = builder.get_object("eb_cur")
-        self.label_time = builder.get_object("label_time")
-        self.label_ett = builder.get_object("label_ett")
-        self.eb_ett = builder.get_object("eb_ett")
-        self.label_clock = builder.get_object("label_clock")
-        self.p_central = builder.get_object("p_central")
-        
+        self.prev_button = self.builder.get_object("prev_button")
+        self.next_button = self.builder.get_object("next_button")
+        self.highlight_button = self.builder.get_object("highlight_button")
+        self.label_cur = self.builder.get_object("label_cur")
+        self.label_last = self.builder.get_object("label_last")
+        self.hb_cur = self.builder.get_object("hb_cur")
+        self.eb_cur = self.builder.get_object("eb_cur")
+        self.label_time = self.builder.get_object("label_time")
+        self.label_ett = self.builder.get_object("label_ett")
+        self.eb_ett = self.builder.get_object("eb_ett")
+        self.label_clock = self.builder.get_object("label_clock")
+        self.p_central = self.builder.get_object("p_central")
+
         self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
         self.spin_cur.set_alignment(0.5)
 
@@ -387,8 +390,8 @@ class UI:
 
 
         # Annotations
-        self.scrolled_window = builder.get_object("scrolled_window")
-        self.scrollable_treelist = builder.get_object("scrollable_treelist")
+        self.scrolled_window = self.builder.get_object("scrolled_window")
+        self.scrollable_treelist = self.builder.get_object("scrollable_treelist")
         self.annotation_renderer = Gtk.CellRendererText()
         self.annotation_renderer.props.wrap_mode = Pango.WrapMode.WORD_CHAR
 
@@ -435,27 +438,28 @@ class UI:
     def add_events(self):
         """ Connects the events we want to the different widgets.
         """
+        #  TODO the following block should find its way into xml somehow
+        self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
+        self.p_da_cur.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
+
+        self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
+        self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
+
         self.c_win.connect("destroy", self.save_and_quit)
         self.c_win.connect("delete-event", self.save_and_quit)
 
         self.c_da.connect("draw", self.on_draw)
         self.c_da.connect("configure-event", self.on_configure_da)
 
-        self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
         self.c_win.connect("window-state-event", self.on_window_state_event)
         self.c_win.connect("configure-event", self.on_configure_win)
 
-        self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
         self.c_win.connect("key-press-event", self.on_navigation)
         self.c_win.connect("scroll-event", self.on_navigation)
 
         # Hyperlinks
-        self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
         self.c_da.connect("button-press-event", self.on_link)
         self.c_da.connect("motion-notify-event", self.on_link)
-
-        self.p_da_cur.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-
 
 
     def setup_screens(self):
@@ -889,6 +893,9 @@ class UI:
         if widget is self.p_win:
             p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_frame_cur.get_parent_window())
             self.config.set('presenter', 'monitor', str(p_monitor))
+            cw = self.p_central.get_allocated_width()
+            ch = self.p_central.get_allocated_height()
+            self.off_render.set_size_request(cw, ch)
         elif widget is self.c_win:
             c_monitor = self.c_win.get_screen().get_monitor_at_window(self.c_frame.get_parent_window())
             self.config.set('content', 'monitor', str(c_monitor))
@@ -1008,6 +1015,9 @@ class UI:
         :param event: the event that occured
         :type  event: :class:`Gdk.Event`
         """
+
+        if event.type == Gdk.EventType.BUTTON_RELEASE:
+            return False
 
         # Where did the event occur?
         if widget is self.p_da_next:
@@ -1585,18 +1595,23 @@ class UI:
         """ Track events defining drawings by user, on top of current slide
         """
         if not self.scribbling_mode:
-            return False
+            return self.on_link(widget, event)
 
         if event.get_event_type() is Gdk.EventType.BUTTON_PRESS:
             self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
+            self.scribble_drawing = True
+        elif event.get_event_type() is Gdk.EventType.BUTTON_RELEASE:
+            self.scribble_drawing = False
 
-        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
-        ex, ey = event.get_coords()
-        self.scribble_list[-1][2].append((ex / ww, ey / wh))
+        if self.scribble_drawing:
+            ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+            ex, ey = event.get_coords()
+            self.scribble_list[-1][2].append((ex / ww, ey / wh))
 
-        self.scribble_c_da.queue_draw()
-        self.scribble_p_da.queue_draw()
-
+            self.scribble_c_da.queue_draw()
+            self.scribble_p_da.queue_draw()
+        else:
+            return self.on_link(widget, event)
 
     def draw_scribble(self, widget, cairo_context):
         """ Drawings by user
@@ -1682,51 +1697,7 @@ class UI:
         self.scribble_width = self.config.getint('scribble', 'width')
         self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR, False)
 
-        self.scribble_p_da = Gtk.DrawingArea()
-        self.scribble_p_da.set_name("scribble_p_da")
-        self.scribble_p_frame = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
-
-        self.scribble_p_eb = Gtk.EventBox()
-        self.scribble_p_frame.add(self.scribble_p_eb)
-        self.scribble_p_eb.add(self.scribble_p_da)
-
-        close = Gtk.Button(stock=Gtk.STOCK_CLOSE)
-        clear = Gtk.Button(stock=Gtk.STOCK_CLEAR)
-        undo = Gtk.Button(stock=Gtk.STOCK_UNDO)
-        color = Gtk.ColorButton()
-        width = Gtk.Scale.new_with_range(Gtk.Orientation.VERTICAL, 2,30,1)
-
-        color.set_rgba(self.scribble_color)
-        color.set_use_alpha(True)
-        width.set_value(self.scribble_width)
-        width.set_draw_value(False)
-        width.set_show_fill_level(False)
-        width.set_has_origin(True)
-
-        close.connect("clicked", self.switch_scribbling)
-        clear.connect("clicked", self.clear_scribble)
-        undo.connect("clicked", self.pop_scribble)
-        color.connect("color-set", self.update_color)
-        width.connect("change-value", self.update_width)
-
-        close.set_size_request(80, 80)
-        clear.set_size_request(80, 80)
-        undo.set_size_request(80, 80)
-        color.set_size_request(80, 80)
-        width.set_size_request(80, 160)
-
-        tools = Gtk.VBox()
-        tools.pack_start(close, False, False, 5)
-        tools.pack_start(clear, False, False, 5)
-        tools.pack_start(undo, False, False, 5)
-        tools.pack_start(color, False, False, 5)
-        tools.pack_start(width, False, False, 5)
-
-        self.scribble_overlay = Gtk.HBox()
-        self.scribble_overlay.set_name("scribble_overlay")
-        self.scribble_overlay.pack_start(self.scribble_p_frame, True, True, 0)
-        self.scribble_overlay.pack_start(tools, False, True, 0)
-
+        # Content-side setup
         self.scribble_c_da = Gtk.DrawingArea()
         self.scribble_c_da.set_halign(Gtk.Align.FILL)
         self.scribble_c_da.set_valign(Gtk.Align.FILL)
@@ -1735,21 +1706,30 @@ class UI:
         self.scribble_c_eb.add(self.scribble_c_da)
         self.c_overlay.add_overlay(self.scribble_c_eb)
         self.c_overlay.reorder_overlay(self.scribble_c_eb, 1)
-        self.scribble_overlay.show_all()
+        self.scribble_c_eb.show_all()
+        self.c_overlay.show_all()
 
-        self.scribble_p_da.connect("draw", self.draw_scribble)
         self.scribble_c_da.connect("draw", self.draw_scribble)
-
         self.scribble_c_eb.connect("button-press-event", self.track_scribble)
-        self.scribble_p_eb.connect("button-press-event", self.track_scribble)
-
         self.scribble_c_eb.connect("button-release-event", self.track_scribble)
-        self.scribble_p_eb.connect("button-release-event", self.track_scribble)
-
         self.scribble_c_eb.connect("motion-notify-event", self.track_scribble)
-        self.scribble_p_eb.connect("motion-notify-event", self.track_scribble)
 
-        self.scribble_p_da.connect("configure-event", self.on_configure_da)
+
+        # Presenter-size setup
+        self.scribble_p_da = self.builder.get_object("scribble_p_da")
+        self.scribble_p_frame = self.builder.get_object("scribble_p_frame")
+        self.scribble_p_eb = self.builder.get_object("scribble_p_eb")
+        self.scribble_overlay = self.builder.get_object("scribble_overlay")
+        self.scribble_overlay.set_name("scribble_overlay")
+        self.off_render = self.builder.get_object("off_render")
+
+        self.builder.get_object("scribble_color").set_rgba(self.scribble_color)
+        self.builder.get_object("scribble_width").set_value(self.scribble_width)
+        self.scribble_p_da.set_name("scribble_p_da")
+        self.off_render.show_all() # maybe set size request first?
+
+        # TODO next line should be inside xml
+        self.scribble_p_eb.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
 
 
     def switch_scribbling(self, widget=None, event=None):
@@ -1758,6 +1738,9 @@ class UI:
 
         if self.scribbling_mode:
             self.p_central.remove(self.scribble_overlay)
+            self.off_render.remove(self.hpaned)
+
+            self.off_render.add(self.scribble_overlay)
             self.p_central.pack_start(self.hpaned, True, True, 0)
             self.scribbling_mode = False
 
@@ -1766,7 +1749,10 @@ class UI:
             self.scribble_p_frame.set_property('ratio', pr)
 
             self.p_central.remove(self.hpaned)
+            self.off_render.remove(self.scribble_overlay)
+
             self.p_central.pack_start(self.scribble_overlay, True, True, 0)
+            self.off_render.add(self.hpaned)
 
             self.p_central.queue_draw()
 
