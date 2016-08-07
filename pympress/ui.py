@@ -344,12 +344,6 @@ class UI:
         self.scribble_c_eb.show_all()
         self.c_overlay.show_all()
 
-    def goto_prev(self, *args):
-        self.doc.goto_prev()
-
-    def goto_next(self, *args):
-        self.doc.goto_next()
-
     def make_pwin(self):
         """ Creates and initializes the presenter window.
         """
@@ -575,10 +569,10 @@ class UI:
             ('Swap screens', None,           _('_Swap screens'),'s',     None, self.swap_screens),
             ('Align content',None,           _('_Align content'),None,   None, self.adjust_frame_position),
 
-            ('Next',         None,           _('_Next'),        'Right', None, self.doc.goto_next),
-            ('Previous',     None,           _('_Previous'),    'Left',  None, self.doc.goto_prev),
-            ('First',        None,           _('_First'),       'Home',  None, self.doc.goto_home),
-            ('Last',         None,           _('_Last'),        'End',   None, self.doc.goto_end),
+            ('Next',         None,           _('_Next'),        'Right', None, self.goto_next),
+            ('Previous',     None,           _('_Previous'),    'Left',  None, self.goto_prev),
+            ('First',        None,           _('_First'),       'Home',  None, self.goto_home),
+            ('Last',         None,           _('_Last'),        'End',   None, self.goto_end),
             ('Go to...',     None,           _('_Go to...'),    'g',     None, self.on_label_event),
         ])
         action_group.add_toggle_actions([
@@ -631,6 +625,30 @@ class UI:
 
         pympress.util.save_config(self.config)
         Gtk.main_quit()
+
+
+    def goto_prev(self, *args):
+        """ Wrapper around eponymous function of current document
+        """
+        self.doc.goto_prev()
+
+
+    def goto_next(self, *args):
+        """ Wrapper around eponymous function of current document
+        """
+        self.doc.goto_next()
+
+
+    def goto_home(self, *args):
+        """ Wrapper around eponymous function of current document
+        """
+        self.doc.goto_home()
+
+
+    def goto_end(self, *args):
+        """ Wrapper around eponymous function of current document
+        """
+        self.doc.goto_end()
 
 
     def pick_file(self):
@@ -941,13 +959,13 @@ class UI:
             if self.paused and name == 'space':
                 self.switch_pause()
             elif name in ['Right', 'Down', 'Page_Down', 'space']:
-                self.doc.goto_next()
+                self.goto_next()
             elif name in ['Left', 'Up', 'Page_Up', 'BackSpace']:
-                self.doc.goto_prev()
+                self.goto_prev()
             elif name == 'Home':
-                self.doc.goto_home()
+                self.goto_home()
             elif name == 'End':
-                self.doc.goto_end()
+                self.goto_end()
             # sic - accelerator recognizes f not F
             elif name.upper() == 'F11' or name == 'F' \
                 or (name == 'Return' and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
