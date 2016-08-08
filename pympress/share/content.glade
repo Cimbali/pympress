@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkWindow" id="c_win">
+    <property name="width_request">1067</property>
+    <property name="height_request">600</property>
+    <property name="can_focus">True</property>
+    <property name="events">GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
+    <property name="title" translatable="yes">Pympress Content</property>
+    <property name="window_position">center</property>
+    <property name="deletable">False</property>
+    <signal name="destroy" handler="save_and_quit" swapped="no"/>
+    <signal name="window-state-event" handler="on_window_state_event" swapped="no"/>
+    <signal name="configure-event" handler="on_configure_win" swapped="no"/>
+    <signal name="key-press-event" handler="on_navigation" swapped="no"/>
+    <signal name="delete-event" handler="save_and_quit" swapped="no"/>
+    <signal name="scroll-event" handler="on_navigation" swapped="no"/>
+    <child>
+      <object class="GtkAspectFrame" id="c_frame">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label_xalign">0</property>
+        <property name="shadow_type">none</property>
+        <property name="ratio">1.3300000429153442</property>
+        <property name="obey_child">False</property>
+        <child>
+          <object class="GtkOverlay" id="c_overlay">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkDrawingArea" id="c_da">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+                <signal name="draw" handler="on_draw" swapped="no"/>
+                <signal name="button-press-event" handler="on_link" swapped="no"/>
+                <signal name="configure-event" handler="on_configure_da" swapped="no"/>
+                <signal name="motion-notify-event" handler="on_link" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child type="overlay">
+              <object class="GtkEventBox" id="scribble_c_eb">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <signal name="button-press-event" handler="track_scribble" swapped="no"/>
+                <signal name="button-release-event" handler="track_scribble" swapped="no"/>
+                <signal name="motion-notify-event" handler="track_scribble" swapped="no"/>
+                <child>
+                  <object class="GtkDrawingArea" id="scribble_c_da">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <signal name="draw" handler="draw_scribble" swapped="no"/>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

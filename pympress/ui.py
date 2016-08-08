@@ -258,6 +258,9 @@ class UI:
         self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
 
         # Make and populate windows
+        self.builder.add_from_file(os.path.join("share", "presenter.glade"))
+        self.builder.add_from_file(os.path.join("share", "highlight.glade"))
+        self.builder.add_from_file(os.path.join("share", "content.glade"))
         self.make_cwin()
         self.make_pwin()
         self.setup_screens()
@@ -269,9 +272,6 @@ class UI:
 
         # Setup timer
         GObject.timeout_add(250, self.update_time)
-
-        # Connect events
-        self.add_events()
 
         # Show all windows
         self.c_win.show_all()
@@ -304,34 +304,19 @@ class UI:
         """
         black = Gdk.Color(0, 0, 0)
 
-        # Content window
-        self.c_win.set_name('ContentWindow')
-        self.c_win.set_title(_("pympress content"))
-        self.c_win.set_default_size(1067, 600)
-        self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
-        self.c_win.add(self.c_frame)
+        self.c_win = self.builder.get_object("c_win")
+        self.c_frame = self.builder.get_object("c_frame")
+        self.c_overlay = self.builder.get_object("c_overlay")
+        self.c_da = self.builder.get_object("c_da")
+        self.scribble_c_da = self.builder.get_object("scribble_c_da")
+        self.scribble_c_eb = self.builder.get_object("scribble_c_eb")
 
+        # TODO next 2 lines from CSS
+        self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
         self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
-        self.c_frame.set_shadow_type(Gtk.ShadowType.NONE)
+
         self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
         self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
-        self.c_frame.add(self.c_overlay)
-
-        self.c_overlay.props.margin = 0
-        self.c_frame.props.border_width = 0
-        self.c_overlay.add(self.c_da)
-
-        self.scribble_c_da = Gtk.DrawingArea()
-        self.scribble_c_da.set_halign(Gtk.Align.FILL)
-        self.scribble_c_da.set_valign(Gtk.Align.FILL)
-
-        self.scribble_c_eb = Gtk.EventBox()
-        self.scribble_c_eb.add(self.scribble_c_da)
-        self.c_overlay.add_overlay(self.scribble_c_eb)
-
-        self.c_da.props.expand = True
-        self.c_da.props.halign = Gtk.Align.FILL
-        self.c_da.props.valign = Gtk.Align.FILL
         self.c_da.set_name("c_da")
         if self.notes_mode:
             self.cache.add_widget("c_da", pympress.document.PDF_CONTENT_PAGE)
@@ -344,8 +329,6 @@ class UI:
     def make_pwin(self):
         """ Creates and initializes the presenter window.
         """
-        self.builder.add_from_file(os.path.join("share", "presenter.glade"))
-        self.builder.add_from_file(os.path.join("share", "highlight.glade"))
         self.builder.connect_signals(self)
         # Presenter window
         self.p_win = self.builder.get_object("p_win")
@@ -442,6 +425,7 @@ class UI:
     def add_events(self):
         """ Connects the events we want to the different widgets.
         """
+        return
         self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
         self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
 
