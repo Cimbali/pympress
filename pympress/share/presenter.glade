@@ -34,6 +34,7 @@
                 <property name="vexpand">True</property>
                 <property name="position">600</property>
                 <property name="position_set">True</property>
+                <property name="wide_handle">True</property>
                 <child>
                   <object class="GtkAspectFrame" id="p_frame_cur">
                     <property name="visible">True</property>

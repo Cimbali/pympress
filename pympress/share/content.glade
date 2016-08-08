@@ -39,11 +39,6 @@
                 <signal name="configure-event" handler="on_configure_da" swapped="no"/>
                 <signal name="motion-notify-event" handler="on_link" swapped="no"/>
               </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child type="overlay">
               <object class="GtkEventBox" id="scribble_c_eb">
@@ -60,11 +55,6 @@
                   </object>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
             </child>
           </object>
         </child>

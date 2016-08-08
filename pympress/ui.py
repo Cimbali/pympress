@@ -414,7 +414,6 @@ class UI:
 
         self.p_win.show_all()
 
-        if gi.version_info >= (3,16): self.hpaned.set_wide_handle(True)
         pane_size = self.config.getfloat('presenter', 'slide_ratio')
         avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
         self.hpaned.set_position(int(round(pane_size * avail_size)))
