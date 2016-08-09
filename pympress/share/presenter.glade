@@ -1,18 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.0 -->
 <interface>
-  <!-- interface-requires gtk+ 3.2 -->
+  <requires lib="gtk+" version="3.2"/>
+  <object class="GtkSizeGroup" id="previews_sizegroup"/>
+  <object class="GtkAdjustment" id="spin_adjust">
+    <property name="lower">1</property>
+    <property name="upper">1</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">1</property>
+  </object>
   <object class="GtkWindow" id="p_win">
     <property name="can_focus">False</property>
-    <property name="events">GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+    <property name="events">GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
     <property name="title" translatable="yes">pympress presenter</property>
     <property name="window_position">center</property>
     <property name="default_width">1067</property>
-    <signal name="destroy" handler="save_and_quit" swapped="no"/>
-    <signal name="window-state-event" handler="on_window_state_event" swapped="no"/>
     <signal name="configure-event" handler="on_configure_win" swapped="no"/>
-    <signal name="key-press-event" handler="on_navigation" swapped="no"/>
     <signal name="delete-event" handler="save_and_quit" swapped="no"/>
+    <signal name="destroy" handler="save_and_quit" swapped="no"/>
+    <signal name="key-press-event" handler="on_navigation" swapped="no"/>
     <signal name="scroll-event" handler="on_navigation" swapped="no"/>
+    <signal name="window-state-event" handler="on_window_state_event" swapped="no"/>
     <child>
       <object class="GtkBox" id="bigvbox">
         <property name="visible">True</property>
@@ -50,9 +58,9 @@
                         <property name="app_paintable">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
-                        <signal name="draw" handler="on_draw" swapped="no"/>
                         <signal name="button-press-event" handler="on_link" swapped="no"/>
                         <signal name="configure-event" handler="on_configure_da" swapped="no"/>
+                        <signal name="draw" handler="on_draw" swapped="no"/>
                         <signal name="motion-notify-event" handler="on_link" swapped="no"/>
                       </object>
                     </child>
@@ -93,8 +101,8 @@
                             <property name="visible">True</property>
                             <property name="app_paintable">True</property>
                             <property name="can_focus">False</property>
-                            <signal name="draw" handler="on_draw" swapped="no"/>
                             <signal name="configure-event" handler="on_configure_da" swapped="no"/>
+                            <signal name="draw" handler="on_draw" swapped="no"/>
                           </object>
                         </child>
                         <child type="label">
@@ -130,8 +138,8 @@
                             <property name="visible">True</property>
                             <property name="app_paintable">True</property>
                             <property name="can_focus">False</property>
-                            <signal name="draw" handler="on_draw" swapped="no"/>
                             <signal name="configure-event" handler="on_configure_da" swapped="no"/>
+                            <signal name="draw" handler="on_draw" swapped="no"/>
                           </object>
                         </child>
                         <child type="label">
@@ -261,12 +269,19 @@
                         <property name="can_focus">False</property>
                         <property name="homogeneous">True</property>
                         <child>
-                          <object class="GtkLabel" id="label_cur">
+                          <object class="GtkSpinButton" id="spin_cur">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="xalign">1</property>
-                            <property name="label" translatable="yes">0</property>
-                            <property name="justify">right</property>
+                            <property name="adjustment">spin_adjust</property>
+                            <property name="climb_rate">1</property>
+                            <property name="snap_to_ticks">True</property>
+                            <property name="numeric">True</property>
+                            <property name="update_policy">if-valid</property>
+                            <signal name="changed" handler="page_preview" swapped="no"/>
+                            <signal name="insert-text" handler="page_preview" swapped="no"/>
+                            <signal name="key-press-event" handler="on_spin_nav" swapped="no"/>
+                            <signal name="key-release-event" handler="on_spin_nav" swapped="no"/>
                             <style>
                               <class name="info-label"/>
                             </style>
@@ -278,11 +293,13 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="label_last">
+                          <object class="GtkLabel" id="label_cur">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">/0</property>
+                            <property name="halign">end</property>
+                            <property name="label">0</property>
+                            <property name="justify">right</property>
+                            <property name="single_line_mode">True</property>
                             <property name="track_visited_links">False</property>
                             <style>
                               <class name="info-label"/>
@@ -292,6 +309,23 @@
                             <property name="expand">True</property>
                             <property name="fill">True</property>
                             <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label_last">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="label">/0</property>
+                            <property name="track_visited_links">False</property>
+                            <style>
+                              <class name="info-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
@@ -309,6 +343,9 @@
                     </style>
                   </object>
                 </child>
+                <style>
+                  <class name="info-label"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -357,9 +394,6 @@
                 <property name="margin_left">1</property>
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">in</property>
-                <style>
-                  <class name="info-label"/>
-                </style>
                 <child>
                   <object class="GtkLabel" id="label_time">
                     <property name="visible">True</property>
@@ -381,6 +415,9 @@
                     </style>
                   </object>
                 </child>
+                <style>
+                  <class name="info-label"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -395,9 +432,6 @@
                 <property name="can_focus">False</property>
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">in</property>
-                <style>
-                  <class name="info-label"/>
-                </style>
                 <child>
                   <object class="GtkEventBox" id="eb_ett">
                     <property name="visible">True</property>
@@ -427,6 +461,9 @@
                     </style>
                   </object>
                 </child>
+                <style>
+                  <class name="info-label"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -441,9 +478,6 @@
                 <property name="can_focus">False</property>
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">in</property>
-                <style>
-                  <class name="info-label"/>
-                </style>
                 <child>
                   <object class="GtkLabel" id="label_clock">
                     <property name="visible">True</property>
@@ -465,6 +499,9 @@
                     </style>
                   </object>
                 </child>
+                <style>
+                  <class name="info-label"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -482,5 +519,4 @@
       </object>
     </child>
   </object>
-  <object class="GtkSizeGroup" id="previews_sizegroup"/>
 </interface>

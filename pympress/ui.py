@@ -53,7 +53,6 @@ PDF_NOTES_PAGE   = 2
 import pympress.document
 import pympress.surfacecache
 import pympress.util
-import pympress.slideselector
 try:
     import pympress.vlcvideo
     vlc_enabled = True
@@ -347,8 +346,8 @@ class UI:
         self.p_da_next.set_name("p_da_next")
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
 
-        self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
-        self.spin_cur.set_alignment(0.5)
+        self.spin_cur.get_adjustment().set_upper(self.doc.pages_number())
+        self.hb_cur.remove(self.spin_cur)
 
         if self.notes_mode:
             self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
@@ -401,35 +400,6 @@ class UI:
         self.hpaned.set_position(int(round(pane_size * avail_size)))
         self.on_page_change(False)
         GLib.idle_add(self.resize_annotation_list)
-
-
-    def add_events(self):
-        """ Connects the events we want to the different widgets.
-        """
-        return
-        self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
-        self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-
-        self.c_win.connect("destroy", self.save_and_quit)
-        self.c_win.connect("delete-event", self.save_and_quit)
-
-        self.c_da.connect("draw", self.on_draw)
-        self.c_da.connect("configure-event", self.on_configure_da)
-
-        self.c_win.connect("window-state-event", self.on_window_state_event)
-        self.c_win.connect("configure-event", self.on_configure_win)
-
-        self.c_win.connect("key-press-event", self.on_navigation)
-        self.c_win.connect("scroll-event", self.on_navigation)
-
-        self.scribble_c_da.connect("draw", self.draw_scribble)
-        self.scribble_c_eb.connect("button-press-event", self.track_scribble)
-        self.scribble_c_eb.connect("button-release-event", self.track_scribble)
-        self.scribble_c_eb.connect("motion-notify-event", self.track_scribble)
-
-        # Hyperlinks
-        self.c_da.connect("button-press-event", self.on_link)
-        self.c_da.connect("motion-notify-event", self.on_link)
 
 
     def setup_screens(self):
@@ -666,7 +636,7 @@ class UI:
         about.destroy()
 
 
-    def page_preview(self, page_nb):
+    def page_preview(self, widget, *args):
         """ Switch to another page and display it.
 
         This is a kind of event which is supposed to be called only from the
@@ -676,6 +646,14 @@ class UI:
            ``False`` otherwise
         :type  unpause: boolean
         """
+        try:
+            page_nb = int(widget.get_buffer().get_text()) - 1
+        except:
+            return
+
+        if page_nb >= self.doc.pages_number() or page_nb < 0:
+            return
+
         page_cur = self.doc.page(page_nb)
         page_next = self.doc.page(page_nb+1)
 
@@ -909,7 +887,7 @@ class UI:
             ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
 
             # send all to spinner if it is active to avoid key problems
-            if self.editing_cur and self.spin_cur.on_keypress(widget, event):
+            if self.editing_cur and self.on_spin_nav(widget, event):
                 return True
             # send all to entry field if it is active to avoid key problems
             if self.editing_cur_ett and self.on_label_ett_event(widget, event):
@@ -983,8 +961,8 @@ class UI:
         elif event.type == Gdk.EventType.SCROLL:
 
             # send all to spinner if it is active to avoid key problems
-            if self.editing_cur and self.spin_cur.on_keypress(widget, event):
-                return True
+            if self.editing_cur and Gtk.SpinButton.do_scroll_event(self.spin_cur, event):
+                pass
 
             elif event.direction is Gdk.ScrollDirection.SMOOTH:
                 return False
@@ -996,6 +974,46 @@ class UI:
                     adj.set_value(adj.get_value() + adj.get_step_increment())
                 else:
                     return False
+
+            return True
+
+        return False
+
+
+    def on_spin_nav(self, widget, event):
+        """ Manage key presses, for validating or navigating input, or cancelling navigation.
+
+        :param widget: the widget which has received the key stroke.
+        :type  widget: :class:`Gtk.Widget`
+        :param event: the GTK event, which contains the ket stroke information.
+        :type  event: :class:`Gdk.Event`
+        """
+        if event.type == Gdk.EventType.KEY_PRESS:
+            name = Gdk.keyval_name(event.keyval).lower().replace('kp_', '')
+
+            if name == 'return' or name == 'enter':
+                try:
+                    page_nb = int(self.spin_cur.get_value()) - 1
+
+                    if page_nb < self.doc.pages_number() and page_nb >= 0:
+                        self.doc.goto(page_nb)
+                except:
+                    pass
+
+            if name in ['escape', 'return', 'enter']:
+                self.restore_current_label()
+            elif name == 'home':
+                self.spin_cur.set_value(1)
+            elif name == 'end':
+                self.spin_cur.set_value(self.doc.pages_number())
+            elif name == 'left':
+                self.spin_cur.set_value(self.spin_cur.get_value() - 1)
+            elif name == 'right':
+                self.spin_cur.set_value(self.spin_cur.get_value() + 1)
+            elif name in 'a0123456789'  or name in ['up', 'left', 'right', 'down', 'backspace']:
+                return Gtk.SpinButton.do_key_press_event(self.spin_cur, event)
+            else:
+                return False
 
             return True
 
