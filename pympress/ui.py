@@ -118,6 +118,8 @@ class UI:
     label_last = None
     #: :class:`~Gtk.EventBox` associated with the slide counter label in the Presenter window.
     eb_cur = None
+    #: :class:`~Gtk.HBox` containing the slide counter label in the Presenter window.
+    hb_cur = None
     #: forward keystrokes to the Content window even if the window manager puts Presenter on top
     editing_cur = False
     #: :class:`~Gtk.SpinButton` used to switch to another slide by typing its number.
@@ -230,6 +232,9 @@ class UI:
     #: :class:`~Gtk.AspectFrame` for the slide in the Presenter's highlight mode
     scribble_p_frame = None
 
+    #: A :class:`Gtk.OffscreenWindow` where we render the scirbbling interface when it's not shown
+    off_render = None
+
     def __init__(self, docpath = None, ett = 0):
         """
         :param docpath: the path to the document to open
@@ -261,8 +266,17 @@ class UI:
         self.builder.add_from_file(pympress.util.get_resource_path("share", "presenter.glade"))
         self.builder.add_from_file(pympress.util.get_resource_path("share", "highlight.glade"))
         self.builder.add_from_file(pympress.util.get_resource_path("share", "content.glade"))
+
+        # Introspectively load all missing elements from builder
+        # This means that all attributes that are None at this time must exist under the same name in the builder
+        for n in (attr for attr in dir(self) if getattr(self, attr) is None):
+            setattr(self, n, self.builder.get_object(n))
+
+        # Initialize windows and screens
         self.make_cwin()
         self.make_pwin()
+        self.setup_scribbling()
+
         self.setup_screens()
 
         # Common to both windows
@@ -270,7 +284,7 @@ class UI:
         self.c_win.set_icon_list(icon_list)
         self.p_win.set_icon_list(icon_list)
 
-        # Setup timer
+        # Setup timer for clocks
         GObject.timeout_add(250, self.update_time)
 
         # Show all windows
@@ -279,7 +293,6 @@ class UI:
 
         # Add media
         self.replace_media_overlays()
-        self.setup_scribbling()
 
         # Queue some redraws
         self.c_overlay.queue_draw()
@@ -296,20 +309,12 @@ class UI:
         self.next_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
 
-        self.label_color_default = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
-
 
     def make_cwin(self):
-        """ Creates and initializes the content window.
+        """ Initializes the content window.
         """
         black = Gdk.Color(0, 0, 0)
 
-        self.c_win = self.builder.get_object("c_win")
-        self.c_frame = self.builder.get_object("c_frame")
-        self.c_overlay = self.builder.get_object("c_overlay")
-        self.c_da = self.builder.get_object("c_da")
-        self.scribble_c_da = self.builder.get_object("scribble_c_da")
-        self.scribble_c_eb = self.builder.get_object("scribble_c_eb")
 
         # TODO next 2 lines from CSS
         self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
@@ -327,41 +332,20 @@ class UI:
         self.c_frame.set_property("ratio", pr)
 
     def make_pwin(self):
-        """ Creates and initializes the presenter window.
+        """ Initializes the presenter window.
         """
         self.builder.connect_signals(self)
         # Presenter window
-        self.p_win = self.builder.get_object("p_win")
 
         bigvbox = self.builder.get_object("bigvbox")
         menubar = self.make_menubar()
         bigvbox.pack_start(menubar, False, False, 0)
         bigvbox.reorder_child(menubar, 0)
 
-        self.hpaned = self.builder.get_object("hpaned")
-        self.p_frame_cur = self.builder.get_object("p_frame_cur")
-        self.p_frame_pres = self.builder.get_object("p_frame_pres")
-        self.p_da_cur = self.builder.get_object("p_da_cur")
-        self.p_da_pres = self.builder.get_object("p_da_pres")
-        self.p_da_next = self.builder.get_object("p_da_next")
         self.p_da_cur.set_name("p_da_cur")
         self.p_da_pres.set_name("p_da_pres")
         self.p_da_next.set_name("p_da_next")
-        self.p_frame_next = self.builder.get_object("p_frame_next")
-        self.p_frame_annot = self.builder.get_object("p_frame_annot")
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
-        self.prev_button = self.builder.get_object("prev_button")
-        self.next_button = self.builder.get_object("next_button")
-        self.highlight_button = self.builder.get_object("highlight_button")
-        self.label_cur = self.builder.get_object("label_cur")
-        self.label_last = self.builder.get_object("label_last")
-        self.hb_cur = self.builder.get_object("hb_cur")
-        self.eb_cur = self.builder.get_object("eb_cur")
-        self.label_time = self.builder.get_object("label_time")
-        self.label_ett = self.builder.get_object("label_ett")
-        self.eb_ett = self.builder.get_object("eb_ett")
-        self.label_clock = self.builder.get_object("label_clock")
-        self.p_central = self.builder.get_object("p_central")
 
         self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
         self.spin_cur.set_alignment(0.5)
@@ -377,8 +361,6 @@ class UI:
 
 
         # Annotations
-        self.scrolled_window = self.builder.get_object("scrolled_window")
-        self.scrollable_treelist = self.builder.get_object("scrollable_treelist")
         self.annotation_renderer = Gtk.CellRendererText()
         self.annotation_renderer.props.wrap_mode = Pango.WrapMode.WORD_CHAR
 
@@ -405,8 +387,8 @@ class UI:
         self.label_time.show();
         self.label_color_ett_warn = style_context.get_color(Gtk.StateType.NORMAL)
         style_context.remove_class("ett-warn")
-        style_context.add_class("info-label")
         self.label_time.show();
+        self.label_color_default = style_context.get_color(Gtk.StateType.NORMAL)
 
         # set default values
         self.label_last.set_text("/{}".format(self.doc.pages_number()))
@@ -748,6 +730,7 @@ class UI:
         pr = page_cur.get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property('ratio', pr)
         self.p_frame_cur.set_property('ratio', pr)
+        self.scribble_p_frame.set_property('ratio', pr)
 
         if self.notes_mode:
             self.p_frame_pres.set_property('ratio', pr)
@@ -1710,17 +1693,11 @@ class UI:
         self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR, False)
 
         # Presenter-size setup
-        self.scribble_p_da = self.builder.get_object("scribble_p_da")
-        self.scribble_p_frame = self.builder.get_object("scribble_p_frame")
-        self.scribble_p_eb = self.builder.get_object("scribble_p_eb")
-        self.scribble_overlay = self.builder.get_object("scribble_overlay")
         self.scribble_overlay.set_name("scribble_overlay")
-        self.off_render = self.builder.get_object("off_render")
 
         self.builder.get_object("scribble_color").set_rgba(self.scribble_color)
         self.builder.get_object("scribble_width").set_value(self.scribble_width)
         self.scribble_p_da.set_name("scribble_p_da")
-        self.off_render.show_all() # maybe set size request first?
 
 
     def switch_scribbling(self, widget=None, event=None):
