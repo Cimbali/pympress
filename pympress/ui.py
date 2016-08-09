@@ -130,7 +130,7 @@ class UI:
     #: :class:`~gtk.EventBox` associated with the estimated talk time.
     eb_ett = None
     #: :class:`~gtk.Entry` used to set the estimated talk time.
-    entry_ett = None
+    entry_ett = Gtk.Entry()
 
     #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
     p_frame_next = None
