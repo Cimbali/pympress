@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <!-- interface-requires gtk+ 3.2 -->
   <object class="GtkWindow" id="c_win">
     <property name="width_request">1067</property>
     <property name="height_request">600</property>

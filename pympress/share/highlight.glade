@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <!-- interface-requires gtk+ 3.2 -->
   <object class="GtkOffscreenWindow" id="off_render">
     <property name="can_focus">False</property>
     <child>
