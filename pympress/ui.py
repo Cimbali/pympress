@@ -94,30 +94,30 @@ class UI:
     builder = Gtk.Builder()
 
     #: Content window, as a :class:`Gtk.Window` instance.
-    c_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
+    c_win = None
     #: :class:`~Gtk.AspectFrame` for the Content window.
-    c_frame = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
+    c_frame = None
     #: :class:`~Gtk.Overlay` for the Content window.
-    c_overlay = Gtk.Overlay()
+    c_overlay = None
     #: :class:`~Gtk.DrawingArea` for the Content window.
-    c_da = Gtk.DrawingArea()
+    c_da = None
 
     #: Presenter window, as a :class:`Gtk.Window` instance.
-    p_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
+    p_win = None
     #: :class:`~Gtk.Box` for the Presenter window.
-    p_central = Gtk.Box()
+    p_central = None
     #: :class:`~Gtk.Paned` containg current/notes slide on one side, current/next slide/annotations
-    hpaned = Gtk.Paned()
+    hpaned = None
     #: :class:`~Gtk.AspectFrame` for the current slide in the Presenter window.
-    p_frame_cur = Gtk.AspectFrame(xalign=0, yalign=0, ratio=4./3., obey_child=False)
+    p_frame_cur = None
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
-    p_da_cur = Gtk.DrawingArea()
+    p_da_cur = None
     #: Slide counter :class:`~Gtk.Label` for the current slide.
-    label_cur = Gtk.Label()
+    label_cur = None
     #: Slide counter :class:`~Gtk.Label` for the last slide.
-    label_last = Gtk.Label()
+    label_last = None
     #: :class:`~Gtk.EventBox` associated with the slide counter label in the Presenter window.
-    eb_cur = Gtk.EventBox()
+    eb_cur = None
     #: forward keystrokes to the Content window even if the window manager puts Presenter on top
     editing_cur = False
     #: :class:`~Gtk.SpinButton` used to switch to another slide by typing its number.
@@ -125,28 +125,28 @@ class UI:
     #: forward keystrokes to the Content window even if the window manager puts Presenter on top
     editing_cur_ett = False
     #: Estimated talk time :class:`~gtk.Label` for the talk.
-    label_ett = Gtk.Label()
+    label_ett = None
     #: :class:`~gtk.EventBox` associated with the estimated talk time.
-    eb_ett = Gtk.EventBox()
+    eb_ett = None
     #: :class:`~gtk.Entry` used to set the estimated talk time.
-    entry_ett = Gtk.Entry()
+    entry_ett = None
 
     #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
-    p_frame_next = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
+    p_frame_next = None
     #: :class:`~Gtk.DrawingArea` for the next slide in the Presenter window.
-    p_da_next = Gtk.DrawingArea()
+    p_da_next = None
     #: :class:`~Gtk.AspectFrame` for the current slide copy in the Presenter window.
-    p_frame_pres = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
+    p_frame_pres = None
     #: :class:`~Gtk.DrawingArea` for the current slide copy in the Presenter window.
-    p_da_pres = Gtk.DrawingArea()
+    p_da_pres = None
 
     #: :class:`~Gtk.Frame` for the annotations in the Presenter window.
-    p_frame_annot = Gtk.Frame()
+    p_frame_annot = None
 
     #: Elapsed time :class:`~Gtk.Label`.
-    label_time = Gtk.Label()
+    label_time = None
     #: Clock :class:`~Gtk.Label`.
-    label_clock = Gtk.Label()
+    label_clock = None
 
     #: Time at which the counter was started.
     start_time = 0
@@ -205,7 +205,7 @@ class UI:
     #: The containing widget for the annotations
     scrollable_treelist = None
     #: Making the annotations list scroll if it's too long
-    scrolled_window = Gtk.ScrolledWindow()
+    scrolled_window = None
 
     #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
     scribbling_mode = False
