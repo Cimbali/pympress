@@ -277,6 +277,7 @@ class UI:
         self.setup_scribbling()
 
         self.setup_screens()
+        self.builder.connect_signals(self)
 
         # Common to both windows
         icon_list = pympress.util.load_icons()
@@ -312,10 +313,10 @@ class UI:
     def make_cwin(self):
         """ Initializes the content window.
         """
+        self.c_win.set_name("c_win")
+
+        # TODO next 3 lines from CSS
         black = Gdk.Color(0, 0, 0)
-
-
-        # TODO next 2 lines from CSS
         self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
         self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
 
@@ -333,8 +334,8 @@ class UI:
     def make_pwin(self):
         """ Initializes the presenter window.
         """
-        self.builder.connect_signals(self)
         # Presenter window
+        self.p_win.set_name("p_win")
 
         bigvbox = self.builder.get_object("bigvbox")
         menubar = self.make_menubar()
