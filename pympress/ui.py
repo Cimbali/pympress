@@ -268,7 +268,7 @@ class UI:
 
         # Introspectively load all missing elements from builder
         # This means that all attributes that are None at this time must exist under the same name in the builder
-        for n in (attr for attr in dir(self) if getattr(self, attr) is None):
+        for n in (attr for attr in dir(self) if getattr(self, attr) is None and attr[:2] + attr[-2:] != '____'):
             setattr(self, n, self.builder.get_object(n))
 
         # Initialize windows and screens
