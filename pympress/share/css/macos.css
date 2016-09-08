@@ -1,28 +1,15 @@
+@import url("default.css");
+
 #p_win {
     background-color: #444;
 }
 
 #p_win GtkPaned .pane-separator {
     background-color: #aaa;
-    border-radius: 2px;
-}
-
-#p_win GtkFrame {
 }
 
 #p_win GtkTreeView {
-    border-style: none;
-    background-color: transparent;
     color: #aaa;
-    font-size: 16pt;
-}
-
-#p_win GtkEntry {
-    font-size: 22pt;
-}
-
-#scribble_overlay {
-  background: @theme_bg_color
 }
 
 .frame-label {
@@ -33,25 +20,11 @@
 
 .info-label {
     color: #aaa;
-    opacity: 1;
     font-size: 32pt;
 }
 
-.ett-reached {
-    color: #64c864;
-}
 .ett-info {
     color: #FFEA09;
-}
-.ett-warn {
-    color: #FF0000;
-}
-.time-warn {
-    animation: blinker 250ms cubic-bezier(.5, 0, 1, 1) infinite alternate;
-}
-@keyframes blinker {
-  from { opacity: 1; }
-  to { opacity: 0; }
 }
 
 #MenuBar,
