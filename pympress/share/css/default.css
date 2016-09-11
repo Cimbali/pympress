@@ -16,7 +16,7 @@
 }
 
 #p_win GtkEntry {
-    font-size: 22pt;
+    font-size: 2.1em;
 }
 
 #scribble_overlay {
@@ -24,10 +24,14 @@
 }
 
 .frame-label {
+    font-size:1.2em;
 }
 
-.info-label {
+info-label {
     opacity: 1;
+}
+
+GtkLabel.info-label {
     font-size: 20pt;
 }
 

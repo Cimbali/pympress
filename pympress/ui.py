@@ -533,7 +533,7 @@ class UI:
             list_annot.append(('\xe2\x97\x8f '+annot,))
 
         self.scrollable_treelist.set_model(list_annot)
-        self.resize_annotation_list
+        self.resize_annotation_list()
 
 
     def run(self):

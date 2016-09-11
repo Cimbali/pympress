@@ -53,6 +53,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="always_show_image">True</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="switch_scribbling" swapped="no"/>
               </object>
@@ -70,6 +71,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="always_show_image">True</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="clear_scribble" swapped="no"/>
               </object>
@@ -87,6 +89,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="always_show_image">True</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="pop_scribble" swapped="no"/>
               </object>
@@ -104,6 +107,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
+                <property name="always_show_image">True</property>
                 <property name="use_alpha">True</property>
                 <signal name="color-set" handler="update_color" swapped="no"/>
               </object>

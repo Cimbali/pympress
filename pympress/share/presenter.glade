@@ -86,6 +86,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_left">5</property>
+                    <property name="homogeneous">False</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkAspectFrame" id="p_frame_pres">
@@ -241,6 +242,7 @@
                 <property name="receives_default">True</property>
                 <property name="margin_top">10</property>
                 <property name="use_stock">True</property>
+                <property name="always_show_image">True</property>
                 <signal name="clicked" handler="goto_prev" swapped="no"/>
               </object>
               <packing>
@@ -361,6 +363,7 @@
                 <property name="receives_default">True</property>
                 <property name="margin_top">10</property>
                 <property name="use_stock">True</property>
+                <property name="always_show_image">True</property>
                 <signal name="clicked" handler="goto_next" swapped="no"/>
               </object>
               <packing>
@@ -377,6 +380,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="margin_top">10</property>
+                <property name="always_show_image">True</property>
                 <signal name="clicked" handler="switch_scribbling" swapped="no"/>
               </object>
               <packing>
@@ -489,7 +493,7 @@
                   </object>
                 </child>
                 <child type="label">
-                  <object class="GtkLabel" id="framlabel_clock">
+                  <object class="GtkLabel" id="framelabel_clock">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Clock</property>
