@@ -315,11 +315,6 @@ class UI:
         """
         self.c_win.set_name("c_win")
 
-        # TODO next 3 lines from CSS
-        black = Gdk.Color(0, 0, 0)
-        self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
-        self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
-
         self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
         self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
         self.c_da.set_name("c_da")
