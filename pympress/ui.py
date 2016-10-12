@@ -1183,7 +1183,7 @@ class UI:
         h = self.p_frame_next.props.parent.props.parent.get_allocated_height()
         n = 2 if self.notes_mode else 1
         self.annotation_renderer.props.wrap_width = w - 10
-        self.p_frame_annot.set_size_request(-1, max(h - n * 1.2 * (w / r), 100))
+        self.p_frame_annot.set_size_request(-1, min(h - 200, max(h - 20 - n * (w / r), 100)))
         self.scrollable_treelist.get_column(0).queue_resize()
         self.scrolled_window.queue_resize()
 
