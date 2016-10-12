@@ -161,6 +161,11 @@ class UI:
     #: Fullscreen toggle. By config value, start in fullscreen mode.
     c_win_fullscreen = False
 
+    #: Indicates whether we should delay redraws on some drawing areas to fluidify resizing hpaned
+    resize_hpaned = False
+    #: Tracks return values of GLib.timeout_add to cancel hpaned's redraw callbacks
+    redraw_timeout = 0
+
     #: Current :class:`~pympress.document.Document` instance.
     doc = None
 
@@ -297,10 +302,7 @@ class UI:
         # Queue some redraws
         self.c_overlay.queue_draw()
         self.c_da.queue_draw()
-        self.p_da_cur.queue_draw()
-        self.p_da_next.queue_draw()
-        if self.notes_mode:
-            self.p_da_pres.queue_draw()
+        GLib.idle_add(self.redraw_hpaned)
 
         # Adjust default visibility of items
         self.p_frame_annot.set_visible(self.show_annotations)
@@ -774,6 +776,33 @@ class UI:
             media_overlays[media_id].play()
 
 
+    def redraw_hpaned(self):
+        """ Callback to redraw hpaned's drawing areas, used for delayed drawing events
+        """
+        self.resize_hpaned = False
+        self.p_da_cur.queue_draw()
+        self.p_da_next.queue_draw()
+        if self.notes_mode:
+            self.p_da_pres.queue_draw()
+        if self.redraw_timeout:
+            self.redraw_timeout = 0
+
+
+    def on_pane_event(self, widget, evt):
+        """ Signal handler for hpaned events
+
+        This function allows to delay drawing events when resizing, and to speed up redrawing when
+        moving the middle pane is done (which happens at the end of a mouse resize)
+        """
+        if type(evt) == Gdk.EventButton and evt.type ==  Gdk.EventType.BUTTON_RELEASE:
+            self.redraw_hpaned()
+        elif type(evt) == GObject.GParamSpec and evt.name == "position":
+            self.resize_hpaned = True
+            if self.redraw_timeout:
+                GLib.Source.remove(self.redraw_timeout)
+            self.redraw_timeout = GLib.timeout_add(200, self.redraw_hpaned)
+
+
     def on_draw(self, widget, cairo_context):
         """ Manage draw events for both windows.
 
@@ -810,6 +839,10 @@ class UI:
         wtype = self.cache.get_widget_type(name)
 
         if pb is None:
+            if self.resize_hpaned and widget in [self.p_da_next, self.p_da_pres, self.p_da_cur]:
+                # too slow to render here when resize_hpaned things
+                return
+
             # Cache miss: render the page, and save it to the cache
             ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
             pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)

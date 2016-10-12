@@ -34,6 +34,7 @@
               <object class="GtkPaned" id="hpaned">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="events">GDK_BUTTON_RELEASE_MASK</property>
                 <property name="margin_left">5</property>
                 <property name="margin_right">5</property>
                 <property name="margin_top">5</property>
@@ -42,6 +43,8 @@
                 <property name="vexpand">True</property>
                 <property name="position">600</property>
                 <property name="position_set">True</property>
+                <signal name="notify::position" handler="on_pane_event" swapped="no"/>
+                <signal name="button-release-event" handler="on_pane_event" swapped="no"/>
                 <property name="wide_handle">True</property>
                 <child>
                   <object class="GtkAspectFrame" id="p_frame_cur">
