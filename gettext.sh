@@ -19,3 +19,7 @@ sed '/^"#-#-#-#-#  pympress\.pot (Pympress v\S\+)  #-#-#-#-#\\n"$/d;/^"#-#-#-#-#
 for t in $translated; do
 	msgmerge -U $opts $t $pot
 done
+
+# then after updating translations:
+# (cd `dirname $t` && msgfmt pympress.po -o LC_MESSAGES/pympress.mo )
+
