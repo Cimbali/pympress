@@ -1,299 +1,240 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Pympress package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2016-07-30 19:31+0200\n"
+"Project-Id-Version: Pympress v0.6\n"
+"Report-Msgid-Bugs-To: me@cimba.li\n"
+"POT-Creation-Date: 2016-10-24 15:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: pygettext.py 1.5\n"
 
-
-#: pympress/__main__.py:39
 msgid "Usage: {} [options] <presentation_file>"
 msgstr ""
 
-#: pympress/__main__.py:41
 msgid "Options:"
 msgstr ""
 
-#: pympress/__main__.py:42
 msgid "This help"
 msgstr ""
 
-#: pympress/__main__.py:43
 msgid "The estimated (intended) talk time in minutes"
 msgstr ""
 
-#: pympress/__main__.py:65 pympress/ui.py:1231
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr ""
 
-#: pympress/__main__.py:79
 msgid "Could not find the file \"{}\""
 msgstr ""
 
-#: pympress/document.py:91
 msgid "ERROR no action defined for this link!"
 msgstr ""
 
-#: pympress/document.py:196 pympress/document.py:303
 msgid "Pympress can not find file "
 msgstr ""
 
-#: pympress/document.py:212
 msgid "Pympress can not interpret annotation of type:"
 msgstr ""
 
-#: pympress/document.py:224
 msgid "No action was defined for this link"
 msgstr ""
 
-#: pympress/document.py:241 pympress/document.py:244 pympress/document.py:247
-#: pympress/document.py:251
 msgid "Pympress does not yet support link type \"{}\" to \"{}\""
 msgstr ""
 
-#: pympress/document.py:254
 msgid "Pympress does not recognize link type \"{}\" to \"{}\""
 msgstr ""
 
-#: pympress/document.py:269 pympress/document.py:271 pympress/document.py:275
-#: pympress/document.py:277 pympress/document.py:279 pympress/document.py:281
 msgid "Pympress does not yet support link type \"{}\""
 msgstr ""
 
-#: pympress/document.py:283
 msgid "Pympress does not recognize link type \"{}\""
 msgstr ""
 
-#: pympress/document.py:298
 msgid "Pympress can not extract embedded media"
 msgstr ""
 
-#: pympress/ui.py:62
 msgid "Warning: video support is disabled"
 msgstr ""
 
-#: pympress/ui.py:267
 msgid "pympress content"
 msgstr ""
 
-#: pympress/ui.py:300
 msgid "pympress presenter"
 msgstr ""
 
-#: pympress/ui.py:385 pympress/ui.py:1642
 msgid "Notes"
 msgstr ""
 
-#: pympress/ui.py:387 pympress/ui.py:407 pympress/ui.py:1634
 msgid "Current slide"
 msgstr ""
 
-#: pympress/ui.py:416
 msgid "Next slide"
 msgstr ""
 
-#: pympress/ui.py:446
 msgid "Annotations"
 msgstr ""
 
-#: pympress/ui.py:486
 msgid "Warning: Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr ""
 
-#: pympress/ui.py:530
 msgid "Slide number"
 msgstr ""
 
-#: pympress/ui.py:541
 msgid "Clock"
 msgstr ""
 
-#: pympress/ui.py:555
 msgid "Time elapsed"
 msgstr ""
 
-#: pympress/ui.py:592
 msgid "Time estimation"
 msgstr ""
 
-#: pympress/ui.py:651
 msgid "_File"
 msgstr ""
 
-#: pympress/ui.py:652
 msgid "_Presentation"
 msgstr ""
 
-#: pympress/ui.py:653
 msgid "_Navigation"
 msgstr ""
 
-#: pympress/ui.py:654
 msgid "_Starting Configuration"
 msgstr ""
 
-#: pympress/ui.py:655
 msgid "_Help"
 msgstr ""
 
-#: pympress/ui.py:657
 msgid "_Quit"
 msgstr ""
 
-#: pympress/ui.py:658
 msgid "_Reset timer"
 msgstr ""
 
-#: pympress/ui.py:659
 msgid "Set talk _Time"
 msgstr ""
 
-#: pympress/ui.py:660
 msgid "_About"
 msgstr ""
 
-#: pympress/ui.py:661
 msgid "_Swap screens"
 msgstr ""
 
-#: pympress/ui.py:662
 msgid "_Align content"
 msgstr ""
 
-#: pympress/ui.py:664
 msgid "_Next"
 msgstr ""
 
-#: pympress/ui.py:665
 msgid "_Previous"
 msgstr ""
 
-#: pympress/ui.py:666
 msgid "_First"
 msgstr ""
 
-#: pympress/ui.py:667
 msgid "_Last"
 msgstr ""
 
-#: pympress/ui.py:668
 msgid "_Go to..."
 msgstr ""
 
-#: pympress/ui.py:671
 msgid "_Pause timer"
 msgstr ""
 
-#: pympress/ui.py:672
 msgid "_Fullscreen"
 msgstr ""
 
-#: pympress/ui.py:673
 msgid "_Note mode"
 msgstr ""
 
-#: pympress/ui.py:674
 msgid "_Annotations"
 msgstr ""
 
-#: pympress/ui.py:675
 msgid "_Blank screen"
 msgstr ""
 
-#: pympress/ui.py:676
 msgid "Content blanked"
 msgstr ""
 
-#: pympress/ui.py:677
 msgid "Content fullscreen"
 msgstr ""
 
-#: pympress/ui.py:678
 msgid "Presenter fullscreen"
 msgstr ""
 
-#: pympress/ui.py:722
 msgid "Open..."
 msgstr ""
 
-#: pympress/ui.py:729
 msgid "PDF files"
 msgstr ""
 
-#: pympress/ui.py:735
 msgid "All files"
 msgstr ""
 
-#: pympress/ui.py:748
 msgid ""
 "No file selected!\n"
 "\n"
 "You can specify the PDF file to open on the command line if you don't want to use the \"Open File\" dialog."
 msgstr ""
 
-#: pympress/ui.py:763
 msgid "Contributors:"
 msgstr ""
 
-#: pympress/ui.py:764
-msgid ""
-"pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
+msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr ""
 
-#: pympress/ui.py:765
 msgid "Some preferences are saved in "
 msgstr ""
 
-#: pympress/ui.py:770
 msgid "Error loading icon for about window"
 msgstr ""
 
-#: pympress/ui.py:1132
 msgid "Unknown event {}"
 msgstr ""
 
-#: pympress/ui.py:1316
 msgid " (paused)"
 msgstr ""
 
-#: pympress/ui.py:1423
 msgid "Warning: Could not set screensaver status: got status "
 msgstr ""
 
-#: pympress/ui.py:1441
 msgid "Warning: Could not disable DPMS screen blanking: got status "
 msgstr ""
 
-#: pympress/ui.py:1449
 msgid "Warning: Could not enable DPMS screen blanking: got status "
 msgstr ""
 
-#: pympress/ui.py:1463
 msgid "Error: access denied when trying to access screen saver settings in registry!"
 msgstr ""
 
-#: pympress/ui.py:1465
 msgid "Warning: Unsupported OS: can't enable/disable screensaver"
 msgstr ""
 
-#: pympress/ui.py:1484
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr ""
 
-#: pympress/ui.py:1529
 msgid "Adjust alignment of slides in projector screen"
 msgstr ""
 
-#: pympress/ui.py:1616
 msgid "ERROR Unknown widget to start fullscreen: {}"
 msgstr ""
 
+msgid "Big buttons"
+msgstr ""
+
+msgid "_Highlight"
+msgstr ""
+
+msgid "Pympress Content"
+msgstr ""
+
+msgid "Highlight"
+msgstr ""
