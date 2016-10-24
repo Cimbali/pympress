@@ -35,6 +35,7 @@ from __future__ import print_function
 import os, os.path, subprocess
 import sys
 import time
+from locale import gettext as _
 
 import pkg_resources
 
@@ -267,6 +268,7 @@ class UI:
         self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
 
         # Make and populate windows
+        self.builder.set_translation_domain('pympress')
         self.builder.add_from_file(pympress.util.get_resource_path("share", "presenter.glade"))
         self.builder.add_from_file(pympress.util.get_resource_path("share", "highlight.glade"))
         self.builder.add_from_file(pympress.util.get_resource_path("share", "content.glade"))

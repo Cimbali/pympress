@@ -41,6 +41,7 @@ import subprocess
 import tempfile
 import mimetypes
 import webbrowser
+from locale import gettext as _
 
 import gi
 gi.require_version('Poppler', '0.18')
