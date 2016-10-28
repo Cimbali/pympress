@@ -66,7 +66,8 @@ if IS_WINDOWS:
     'libjpeg-8.dll', 'liblcms2-2.dll', 'libopenjp2.dll', 'libpango-1.0-0.dll',
     'libpangocairo-1.0-0.dll', 'libpangoft2-1.0-0.dll', 'libpangowin32-1.0-0.dll',
     'libpng16-16.dll', 'libpoppler-glib-8.dll', 'librsvg-2-2.dll', 'libstdc++.dll',
-    'libtiff-5.dll', 'libwebp-5.dll', 'libwinpthread-1.dll', 'libxmlxpat.dll', 'libzzz.dll']
+    'libtiff-5.dll', 'libwebp-5.dll', 'libwinpthread-1.dll', 'libxmlxpat.dll', 'libzzz.dll',
+    'libintl-8.dll']
 
     python_dll='python{}{}.dll'.format(sys.version_info.major, sys.version_info.minor)
     for d in [install_dir, include_path, os.environ['SYSTEMROOT'],
