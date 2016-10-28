@@ -24,16 +24,14 @@ import os.path
 import sys
 import getopt
 import signal
-import locale
-from locale import gettext as _
+import gettext
 
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
 
 import pympress.util
-locale.bindtextdomain('pympress', pympress.util.get_resource_path('share', 'locale'))
-locale.textdomain('pympress')
+gettext.install('pympress', pympress.util.get_resource_path('share', 'locale'))
 
 import pympress.ui
 
