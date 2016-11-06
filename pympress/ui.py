@@ -53,7 +53,6 @@ PDF_NOTES_PAGE   = 2
 import pympress.document
 import pympress.surfacecache
 import pympress.util
-import pympress.slideselector
 try:
     import pympress.vlcvideo
     vlc_enabled = True
@@ -90,29 +89,36 @@ class UI:
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
     cache = None
 
+    #: :class:`~Gtk.Builder` to read XML descriptions of GUIs and load them.
+    builder = Gtk.Builder()
+
     #: Content window, as a :class:`Gtk.Window` instance.
-    c_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
+    c_win = None
     #: :class:`~Gtk.AspectFrame` for the Content window.
-    c_frame = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
+    c_frame = None
     #: :class:`~Gtk.Overlay` for the Content window.
-    c_overlay = Gtk.Overlay()
+    c_overlay = None
     #: :class:`~Gtk.DrawingArea` for the Content window.
-    c_da = Gtk.DrawingArea()
+    c_da = None
 
     #: Presenter window, as a :class:`Gtk.Window` instance.
-    p_win = Gtk.Window(Gtk.WindowType.TOPLEVEL)
-    #: :class:`~Gtk.Overlay` for the Presenter window.
-    p_overlay = Gtk.Overlay()
+    p_win = None
+    #: :class:`~Gtk.Box` for the Presenter window.
+    p_central = None
+    #: :class:`~Gtk.Paned` containg current/notes slide on one side, current/next slide/annotations
+    hpaned = None
     #: :class:`~Gtk.AspectFrame` for the current slide in the Presenter window.
-    p_frame_cur = Gtk.AspectFrame(xalign=0, yalign=0, ratio=4./3., obey_child=False)
+    p_frame_cur = None
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
-    p_da_cur = Gtk.DrawingArea()
+    p_da_cur = None
     #: Slide counter :class:`~Gtk.Label` for the current slide.
-    label_cur = Gtk.Label()
+    label_cur = None
     #: Slide counter :class:`~Gtk.Label` for the last slide.
-    label_last = Gtk.Label()
+    label_last = None
     #: :class:`~Gtk.EventBox` associated with the slide counter label in the Presenter window.
-    eb_cur = Gtk.EventBox()
+    eb_cur = None
+    #: :class:`~Gtk.HBox` containing the slide counter label in the Presenter window.
+    hb_cur = None
     #: forward keystrokes to the Content window even if the window manager puts Presenter on top
     editing_cur = False
     #: :class:`~Gtk.SpinButton` used to switch to another slide by typing its number.
@@ -120,28 +126,28 @@ class UI:
     #: forward keystrokes to the Content window even if the window manager puts Presenter on top
     editing_cur_ett = False
     #: Estimated talk time :class:`~gtk.Label` for the talk.
-    label_ett = Gtk.Label()
+    label_ett = None
     #: :class:`~gtk.EventBox` associated with the estimated talk time.
-    eb_ett = Gtk.EventBox()
+    eb_ett = None
     #: :class:`~gtk.Entry` used to set the estimated talk time.
     entry_ett = Gtk.Entry()
 
     #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
-    p_frame_next = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
+    p_frame_next = None
     #: :class:`~Gtk.DrawingArea` for the next slide in the Presenter window.
-    p_da_next = Gtk.DrawingArea()
+    p_da_next = None
     #: :class:`~Gtk.AspectFrame` for the current slide copy in the Presenter window.
-    p_frame_pres = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
+    p_frame_pres = None
     #: :class:`~Gtk.DrawingArea` for the current slide copy in the Presenter window.
-    p_da_pres = Gtk.DrawingArea()
+    p_da_pres = None
 
     #: :class:`~Gtk.Frame` for the annotations in the Presenter window.
-    p_frame_annot = Gtk.Frame()
+    p_frame_annot = None
 
     #: Elapsed time :class:`~Gtk.Label`.
-    label_time = Gtk.Label()
+    label_time = None
     #: Clock :class:`~Gtk.Label`.
-    label_clock = Gtk.Label()
+    label_clock = None
 
     #: Time at which the counter was started.
     start_time = 0
@@ -154,6 +160,11 @@ class UI:
 
     #: Fullscreen toggle. By config value, start in fullscreen mode.
     c_win_fullscreen = False
+
+    #: Indicates whether we should delay redraws on some drawing areas to fluidify resizing hpaned
+    resize_hpaned = False
+    #: Tracks return values of GLib.timeout_add to cancel hpaned's redraw callbacks
+    redraw_timeout = 0
 
     #: Current :class:`~pympress.document.Document` instance.
     doc = None
@@ -198,19 +209,21 @@ class UI:
     label_color_ett_warn = None
 
     #: The containing widget for the annotations
-    scrolled_window = None
+    scrollable_treelist = None
     #: Making the annotations list scroll if it's too long
-    scrollable_treelist = Gtk.ScrolledWindow()
+    scrolled_window = None
 
     #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
-    scribbling_mode = None
+    scribbling_mode = False
     #: list of scribbles to be drawn, as pairs of  :class:`Gdk.RGBA`
     scribble_list = []
+    #: Whether the current mouse movements are drawing strokes or should be ignored
+    scribble_drawing = False
     #: :class:`Gdk.RGBA` current color of the scribbling tool
     scribble_color = None
     #: `int` current stroke width of the scribbling tool
     scribble_width = 1
-    #: :class:`~Gtk.Overlay` that is added or removed when scribbling is toggled, contains buttons and scribble drawing area
+    #: :class:`~Gtk.HBox` that is replaces normal panes when scribbling is toggled, contains buttons and scribble drawing area
     scribble_overlay = None
     #: :class:`~Gtk.DrawingArea` for the scribbling in the Presenter window. Actually redraws the slide.
     scribble_c_da = None
@@ -222,6 +235,9 @@ class UI:
     scribble_p_eb = None
     #: :class:`~Gtk.AspectFrame` for the slide in the Presenter's highlight mode
     scribble_p_frame = None
+
+    #: A :class:`Gtk.OffscreenWindow` where we render the scirbbling interface when it's not shown
+    off_render = None
 
     def __init__(self, docpath = None, ett = 0):
         """
@@ -251,20 +267,30 @@ class UI:
         self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
 
         # Make and populate windows
+        self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'presenter.glade'))
+        self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'highlight.glade'))
+        self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'content.glade'))
+
+        # Introspectively load all missing elements from builder
+        # This means that all attributes that are None at this time must exist under the same name in the builder
+        for n in (attr for attr in dir(self) if getattr(self, attr) is None and attr[:2] + attr[-2:] != '____'):
+            setattr(self, n, self.builder.get_object(n))
+
+        # Initialize windows and screens
         self.make_cwin()
         self.make_pwin()
+        self.setup_scribbling()
+
         self.setup_screens()
+        self.builder.connect_signals(self)
 
         # Common to both windows
         icon_list = pympress.util.load_icons()
         self.c_win.set_icon_list(icon_list)
         self.p_win.set_icon_list(icon_list)
 
-        # Setup timer
+        # Setup timer for clocks
         GObject.timeout_add(250, self.update_time)
-
-        # Connect events
-        self.add_events()
 
         # Show all windows
         self.c_win.show_all()
@@ -272,15 +298,11 @@ class UI:
 
         # Add media
         self.replace_media_overlays()
-        self.setup_scribbling()
 
         # Queue some redraws
         self.c_overlay.queue_draw()
         self.c_da.queue_draw()
-        self.p_da_cur.queue_draw()
-        self.p_da_next.queue_draw()
-        if self.notes_mode:
-            self.p_da_pres.queue_draw()
+        GLib.idle_add(self.redraw_hpaned)
 
         # Adjust default visibility of items
         self.p_frame_annot.set_visible(self.show_annotations)
@@ -289,34 +311,14 @@ class UI:
         self.next_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
 
-        self.label_color_default = self.label_time.get_style_context().get_color(Gtk.StateType.NORMAL)
-
 
     def make_cwin(self):
-        """ Creates and initializes the content window.
+        """ Initializes the content window.
         """
-        black = Gdk.Color(0, 0, 0)
+        self.c_win.set_name("c_win")
 
-        # Content window
-        self.c_win.set_name('ContentWindow')
-        self.c_win.set_title(_("pympress content"))
-        self.c_win.set_default_size(1067, 600)
-        self.c_win.modify_bg(Gtk.StateType.NORMAL, black)
-        self.c_win.add(self.c_frame)
-
-        self.c_frame.modify_bg(Gtk.StateType.NORMAL, black)
-        self.c_frame.set_shadow_type(Gtk.ShadowType.NONE)
         self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
         self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
-        self.c_frame.add(self.c_overlay)
-
-        self.c_overlay.props.margin = 0
-        self.c_frame.props.border_width = 0
-        self.c_overlay.add(self.c_da)
-
-        self.c_da.props.expand = True
-        self.c_da.props.halign = Gtk.Align.FILL
-        self.c_da.props.valign = Gtk.Align.FILL
         self.c_da.set_name("c_da")
         if self.notes_mode:
             self.cache.add_widget("c_da", pympress.document.PDF_CONTENT_PAGE)
@@ -326,142 +328,34 @@ class UI:
         pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
 
-
     def make_pwin(self):
-        """ Creates and initializes the presenter window.
+        """ Initializes the presenter window.
         """
         # Presenter window
-        self.p_win.set_name('PresenterWindow')
-        self.p_win.set_title(_("pympress presenter"))
-        self.p_win.set_default_size(1067, 600)
-        self.p_win.set_position(Gtk.WindowPosition.CENTER)
+        self.p_win.set_name("p_win")
 
-        # Put Menu and Table in VBox
-        bigvbox = Gtk.VBox(False, 2)
-        self.p_win.add(bigvbox)
+        bigvbox = self.builder.get_object("bigvbox")
+        menubar = self.make_menubar()
+        bigvbox.pack_start(menubar, False, False, 0)
+        bigvbox.reorder_child(menubar, 0)
 
-        # make & get menu
-        bigvbox.pack_start(self.make_menubar(), False, False, 0)
-
-        # overlay
-        self.p_overlay.props.margin = 0
-        bigvbox.pack_start(self.p_overlay, True, True, 0)
-
-        # panes
-        hpaned = self.make_pwin_panes()
-        self.p_overlay.add(hpaned)
-
-        # bottom row
-        bigvbox.pack_start(self.make_pwin_bottom(), False, False, 0)
-
-        # Set relative pane sizes
-        # dynamic computation requires to have p_win already visible
-        self.p_win.show_all()
-
-        pane_size = self.config.getfloat('presenter', 'slide_ratio')
-        avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
-        hpaned.set_position(int(round(pane_size * avail_size)))
-        self.on_page_change(False)
-        GLib.idle_add(self.resize_annotation_list)
-
-
-    def add_events(self):
-        """ Connects the events we want to the different widgets.
-        """
-        self.p_win.connect("destroy", self.save_and_quit)
-        self.c_win.connect("destroy", self.save_and_quit)
-        self.p_win.connect("delete-event", self.save_and_quit)
-        self.c_win.connect("delete-event", self.save_and_quit)
-
-        self.c_da.connect("draw", self.on_draw)
-        self.c_da.connect("configure-event", self.on_configure_da)
-        self.p_da_cur.connect("draw", self.on_draw)
-        self.p_da_cur.connect("configure-event", self.on_configure_da)
-        self.p_da_next.connect("draw", self.on_draw)
-        self.p_da_next.connect("configure-event", self.on_configure_da)
-        self.p_da_pres.connect("draw", self.on_draw)
-        self.p_da_pres.connect("configure-event", self.on_configure_da)
-
-        self.p_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
-        self.p_win.connect("key-press-event", self.on_navigation)
-        self.p_win.connect("scroll-event", self.on_navigation)
-        self.c_win.connect("window-state-event", self.on_window_state_event)
-        self.p_win.connect("window-state-event", self.on_window_state_event)
-        self.c_win.connect("configure-event", self.on_configure_win)
-        self.p_win.connect("configure-event", self.on_configure_win)
-
-        self.c_win.add_events(Gdk.EventMask.KEY_PRESS_MASK | Gdk.EventMask.SCROLL_MASK)
-        self.c_win.connect("key-press-event", self.on_navigation)
-        self.c_win.connect("scroll-event", self.on_navigation)
-
-        # Hyperlinks
-        self.c_da.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-        self.c_da.connect("button-press-event", self.on_link)
-        self.c_da.connect("motion-notify-event", self.on_link)
-
-        self.p_da_cur.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
-        self.p_da_cur.connect("button-press-event", self.on_link)
-        self.p_da_cur.connect("motion-notify-event", self.on_link)
-
-
-    def make_pwin_panes(self):
-        """ Creates and initializes the presenter window's panes.
-
-        :return: the preview panes with current and next slide
-        :rtype: :class:`Gtk.Paned`
-        """
-        # Panes
-        hpaned = Gtk.Paned()
-        hpaned.set_orientation(Gtk.Orientation.HORIZONTAL)
-        if gi.version_info >= (3,16): hpaned.set_wide_handle(True)
-        hpaned.set_margin_top(5)
-        hpaned.set_margin_bottom(5)
-        hpaned.set_margin_left(5)
-        hpaned.set_margin_right(5)
-
-        # "Current slide" frame or "Notes" frame
-        if self.notes_mode:
-            self.p_frame_cur.set_label(_("Notes"))
-        else:
-            self.p_frame_cur.set_label(_("Current slide"))
-        self.p_frame_cur.get_label_widget().get_style_context().add_class("frame-label")
-        self.p_frame_cur.set_margin_right(5)
-
-        hpaned.pack1(self.p_frame_cur, True, True)
         self.p_da_cur.set_name("p_da_cur")
+        self.p_da_pres.set_name("p_da_pres")
+        self.p_da_next.set_name("p_da_next")
+        self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
+
+        self.spin_cur.get_adjustment().set_upper(self.doc.pages_number())
+        self.hb_cur.remove(self.spin_cur)
+
         if self.notes_mode:
             self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
-        else:
-            self.cache.add_widget("p_da_cur", PDF_REGULAR)
-        self.p_frame_cur.add(self.p_da_cur)
-
-        # Righthand side container
-        right_pane = Gtk.VBox(False, 15)
-        #right_pane.set_halign(Gtk.Align.FILL)
-        right_pane.set_margin_left(5)
-        right_pane.set_homogeneous(False)
-        right_pane.set_name('RightPane')
-
-        # "Current slide" frame (note mode)
-        self.p_frame_pres.set_label(_("Current slide"))
-        self.p_frame_pres.get_label_widget().get_style_context().add_class("frame-label")
-        self.p_da_pres.set_name("p_da_pres")
-        self.cache.add_widget("p_da_pres", PDF_CONTENT_PAGE, self.notes_mode)
-        self.p_frame_pres.add(self.p_da_pres)
-
-        right_pane.pack_start(self.p_frame_pres, True, True, 0)
-
-        # "Next slide" frame
-        self.p_frame_next.set_label(_("Next slide"))
-        self.p_frame_next.get_label_widget().get_style_context().add_class("frame-label")
-        self.p_da_next.set_name("p_da_next")
-        if self.notes_mode:
+            self.cache.add_widget("p_da_pres", PDF_CONTENT_PAGE, True)
             self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
         else:
+            self.cache.add_widget("p_da_cur", PDF_REGULAR)
             self.cache.add_widget("p_da_next", PDF_REGULAR)
-        self.p_frame_next.add(self.p_da_next)
+            self.cache.add_widget("p_da_pres", PDF_REGULAR, False)
 
-        right_pane.pack_start(self.p_frame_next, True, True, 0)
 
         # Annotations
         self.annotation_renderer = Gtk.CellRendererText()
@@ -471,54 +365,39 @@ class UI:
         column.props.sizing = Gtk.TreeViewColumnSizing.AUTOSIZE
         column.set_fixed_width(1)
 
-        self.scrolled_window = Gtk.TreeView.new_with_model(Gtk.ListStore(str))
-        self.scrolled_window.set_headers_visible(False)
-        self.scrolled_window.props.fixed_height_mode = False
-        self.scrolled_window.props.enable_search = False
-        self.scrolled_window.get_selection().set_mode(Gtk.SelectionMode.NONE)
-        self.scrolled_window.append_column(column)
-        self.scrolled_window.set_size_request(0, 0)
+        self.scrollable_treelist.set_model(Gtk.ListStore(str))
+        self.scrollable_treelist.append_column(column)
 
-        self.scrollable_treelist.set_hexpand(True)
-        self.scrollable_treelist.add(self.scrolled_window)
+        self.scrolled_window.set_hexpand(True)
 
-        self.p_frame_annot.set_label(_("Annotations"))
-        self.p_frame_annot.get_label_widget().get_style_context().add_class("frame-label")
-        self.p_frame_annot.add(self.scrollable_treelist)
+        # Load color from CSS
+        style_context = self.label_time.get_style_context()
+        style_context.add_class("ett-reached")
+        self.label_time.show();
+        self.label_color_ett_reached = style_context.get_color(Gtk.StateType.NORMAL)
+        style_context.remove_class("ett-reached")
+        style_context.add_class("ett-info")
+        self.label_time.show();
+        self.label_color_ett_info = style_context.get_color(Gtk.StateType.NORMAL)
+        style_context.remove_class("ett-info")
+        style_context.add_class("ett-warn")
+        self.label_time.show();
+        self.label_color_ett_warn = style_context.get_color(Gtk.StateType.NORMAL)
+        style_context.remove_class("ett-warn")
+        self.label_time.show();
+        self.label_color_default = style_context.get_color(Gtk.StateType.NORMAL)
 
-        right_pane.pack_end(self.p_frame_annot, False, False, 0)
+        # set default values
+        self.label_last.set_text("/{}".format(self.doc.pages_number()))
+        self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
 
-        hpaned.pack2(right_pane, True, True)
+        self.p_win.show_all()
 
-        return hpaned
-
-
-    def make_pwin_bottom(self):
-        """ Creates and initializes the presenter window's bottom row of numerical displays
-
-        :return: the preview panes with current and next slide
-        :rtype: :class:`Gtk.HBox`
-        """
-        self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
-        self.prev_button = Gtk.Button(stock=Gtk.STOCK_MEDIA_PREVIOUS, margin_top=10)
-        self.next_button = Gtk.Button(stock=Gtk.STOCK_MEDIA_NEXT, margin_top=10)
-        self.highlight_button = Gtk.Button(label=_("Highlight"), margin_top=10)
-        self.prev_button.connect("clicked", self.doc.goto_prev)
-        self.next_button.connect("clicked", self.doc.goto_next)
-        self.highlight_button.connect("clicked", self.switch_scribbling)
-
-        hbox = Gtk.HBox(False, 0)
-        hbox.set_margin_right(5)
-        hbox.set_halign(Gtk.Align.FILL)
-        hbox.pack_start(self.prev_button, True, True, 2)
-        hbox.pack_start(self.make_frame_slidenum(), True, True, 0)
-        hbox.pack_start(self.next_button, True, True, 2)
-        hbox.pack_start(self.highlight_button, True, True, 2)
-        hbox.pack_start(self.make_frame_time(), True, True, 0)
-        hbox.pack_start(self.make_frame_ett(), False, True, 0)
-        hbox.pack_start(self.make_frame_clock(), False, True, 0)
-
-        return hbox
+        pane_size = self.config.getfloat('presenter', 'slide_ratio')
+        avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
+        self.hpaned.set_position(int(round(pane_size * avail_size)))
+        self.on_page_change(False)
+        GLib.idle_add(self.resize_annotation_list)
 
 
     def setup_screens(self):
@@ -547,103 +426,6 @@ class UI:
             self.c_win.move(c_bounds.x, c_bounds.y)
             if c_full:
                 self.c_win.fullscreen()
-
-
-    def make_frame_slidenum(self):
-        """ Make "Current slide" label and entry.
-
-        The left part is a label that shows the current slide number.
-        The right part is a label that shows the total number of slides.
-        Both parts are within an event box that gets all events on the whole.
-
-        The left label may be replaced by a spinner to choose which slide to jump to.
-        """
-        self.label_cur.set_name("LSlideCur")
-        self.label_cur.get_style_context().add_class("info-label")
-        self.label_cur.props.halign = Gtk.Align.END
-        self.label_cur.set_use_markup(True)
-        self.label_last.set_name("LSlideLast")
-        self.label_last.get_style_context().add_class("info-label")
-        self.label_last.props.halign = Gtk.Align.START
-        self.label_last.set_text("/{}".format(self.doc.pages_number()))
-
-        self.hb_cur=Gtk.HBox()
-        self.hb_cur.pack_start(self.label_cur, True, True, 0)
-        self.hb_cur.pack_start(self.label_last, True, True, 0)
-        self.eb_cur.add(self.hb_cur)
-        self.spin_cur = pympress.slideselector.SlideSelector(self, self.doc.pages_number())
-        self.spin_cur.set_alignment(0.5)
-
-        self.eb_cur.set_visible_window(False)
-        self.eb_cur.connect("event", self.on_label_event)
-        frame = Gtk.Frame()
-        frame.set_label(_("Slide number"))
-        frame.get_label_widget().get_style_context().add_class("frame-label")
-        frame.set_size_request(200, 0)
-        frame.add(self.eb_cur)
-        return frame
-
-
-    def make_frame_clock(self):
-        """ Make "Clock" frame, that will display the time.
-        """
-        frame = Gtk.Frame()
-        frame.set_label(_("Clock"))
-        frame.set_size_request(170, 0)
-        frame.get_label_widget().get_style_context().add_class("frame-label")
-        frame.add(self.label_clock)
-        self.label_clock.set_name("LClock")
-        self.label_clock.get_style_context().add_class("info-label")
-        return frame
-
-
-    def make_frame_time(self):
-        """ Make "Time elapsed" frame that shows how much time spent in presentation.
-        This label may change styles depending on the talk duration estimate.
-        """
-        frame = Gtk.Frame()
-        frame.set_label(_("Time elapsed"))
-        frame.set_size_request(170, 0)
-        frame.get_label_widget().get_style_context().add_class("frame-label")
-        self.label_time.set_name("LTimeElapsed")
-
-        # Load color from CSS
-        style_context = self.label_time.get_style_context()
-        style_context.add_class("ett-reached")
-        self.label_time.show();
-        self.label_color_ett_reached = style_context.get_color(Gtk.StateType.NORMAL)
-        style_context.remove_class("ett-reached")
-        style_context.add_class("ett-info")
-        self.label_time.show();
-        self.label_color_ett_info = style_context.get_color(Gtk.StateType.NORMAL)
-        style_context.remove_class("ett-info")
-        style_context.add_class("ett-warn")
-        self.label_time.show();
-        self.label_color_ett_warn = style_context.get_color(Gtk.StateType.NORMAL)
-        style_context.remove_class("ett-warn")
-        style_context.add_class("info-label")
-        self.label_time.show();
-        frame.add(self.label_time)
-        return frame
-
-
-    def make_frame_ett(self):
-        """ Make "Time estimation" frame that shows the time allocated for the talk.
-        """
-        self.label_ett.set_name("LEstTalkTime")
-        self.label_ett.get_style_context().add_class("info-label")
-        self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
-        self.eb_ett.set_visible_window(False)
-        self.eb_ett.connect("button-press-event", self.on_label_ett_event)
-        self.eb_ett.connect("key-press-event", self.on_label_ett_event)
-        self.eb_ett.add(self.label_ett)
-        self.entry_ett.set_alignment(0.5)
-        frame = Gtk.Frame()
-        frame.set_label(_("Time estimation"))
-        frame.get_label_widget().get_style_context().add_class("frame-label")
-        frame.set_size_request(170, 0)
-        frame.add(self.eb_ett)
-        return frame
 
 
     def make_menubar(self):
@@ -713,10 +495,10 @@ class UI:
             ('Swap screens', None,           _('_Swap screens'),'s',     None, self.swap_screens),
             ('Align content',None,           _('_Align content'),None,   None, self.adjust_frame_position),
 
-            ('Next',         None,           _('_Next'),        'Right', None, self.doc.goto_next),
-            ('Previous',     None,           _('_Previous'),    'Left',  None, self.doc.goto_prev),
-            ('First',        None,           _('_First'),       'Home',  None, self.doc.goto_home),
-            ('Last',         None,           _('_Last'),        'End',   None, self.doc.goto_end),
+            ('Next',         None,           _('_Next'),        'Right', None, self.goto_next),
+            ('Previous',     None,           _('_Previous'),    'Left',  None, self.goto_prev),
+            ('First',        None,           _('_First'),       'Home',  None, self.goto_home),
+            ('Last',         None,           _('_Last'),        'End',   None, self.goto_end),
             ('Go to...',     None,           _('_Go to...'),    'g',     None, self.on_label_event),
         ])
         action_group.add_toggle_actions([
@@ -747,8 +529,8 @@ class UI:
         for annot in annotations:
             list_annot.append(('\xe2\x97\x8f '+annot,))
 
-        self.scrolled_window.set_model(list_annot)
-        self.resize_annotation_list
+        self.scrollable_treelist.set_model(list_annot)
+        self.resize_annotation_list()
 
 
     def run(self):
@@ -769,6 +551,30 @@ class UI:
 
         pympress.util.save_config(self.config)
         Gtk.main_quit()
+
+
+    def goto_prev(self, *args):
+        """ Wrapper around eponymous function of current document
+        """
+        self.doc.goto_prev()
+
+
+    def goto_next(self, *args):
+        """ Wrapper around eponymous function of current document
+        """
+        self.doc.goto_next()
+
+
+    def goto_home(self, *args):
+        """ Wrapper around eponymous function of current document
+        """
+        self.doc.goto_home()
+
+
+    def goto_end(self, *args):
+        """ Wrapper around eponymous function of current document
+        """
+        self.doc.goto_end()
 
 
     def pick_file(self):
@@ -828,7 +634,7 @@ class UI:
         about.destroy()
 
 
-    def page_preview(self, page_nb):
+    def page_preview(self, widget, *args):
         """ Switch to another page and display it.
 
         This is a kind of event which is supposed to be called only from the
@@ -838,6 +644,14 @@ class UI:
            ``False`` otherwise
         :type  unpause: boolean
         """
+        try:
+            page_nb = int(widget.get_buffer().get_text()) - 1
+        except:
+            return
+
+        if page_nb >= self.doc.pages_number() or page_nb < 0:
+            return
+
         page_cur = self.doc.page(page_nb)
         page_next = self.doc.page(page_nb+1)
 
@@ -892,6 +706,7 @@ class UI:
         pr = page_cur.get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property('ratio', pr)
         self.p_frame_cur.set_property('ratio', pr)
+        self.scribble_p_frame.set_property('ratio', pr)
 
         if self.notes_mode:
             self.p_frame_pres.set_property('ratio', pr)
@@ -961,6 +776,33 @@ class UI:
             media_overlays[media_id].play()
 
 
+    def redraw_hpaned(self):
+        """ Callback to redraw hpaned's drawing areas, used for delayed drawing events
+        """
+        self.resize_hpaned = False
+        self.p_da_cur.queue_draw()
+        self.p_da_next.queue_draw()
+        if self.notes_mode:
+            self.p_da_pres.queue_draw()
+        if self.redraw_timeout:
+            self.redraw_timeout = 0
+
+
+    def on_pane_event(self, widget, evt):
+        """ Signal handler for hpaned events
+
+        This function allows to delay drawing events when resizing, and to speed up redrawing when
+        moving the middle pane is done (which happens at the end of a mouse resize)
+        """
+        if type(evt) == Gdk.EventButton and evt.type ==  Gdk.EventType.BUTTON_RELEASE:
+            self.redraw_hpaned()
+        elif type(evt) == GObject.GParamSpec and evt.name == "position":
+            self.resize_hpaned = True
+            if self.redraw_timeout:
+                GLib.Source.remove(self.redraw_timeout)
+            self.redraw_timeout = GLib.timeout_add(200, self.redraw_hpaned)
+
+
     def on_draw(self, widget, cairo_context):
         """ Manage draw events for both windows.
 
@@ -997,6 +839,10 @@ class UI:
         wtype = self.cache.get_widget_type(name)
 
         if pb is None:
+            if self.resize_hpaned and widget in [self.p_da_next, self.p_da_pres, self.p_da_cur]:
+                # too slow to render here when resize_hpaned things
+                return
+
             # Cache miss: render the page, and save it to the cache
             ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
             pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
@@ -1049,6 +895,9 @@ class UI:
         if widget is self.p_win:
             p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_frame_cur.get_parent_window())
             self.config.set('presenter', 'monitor', str(p_monitor))
+            cw = self.p_central.get_allocated_width()
+            ch = self.p_central.get_allocated_height()
+            self.off_render.set_size_request(cw, ch)
         elif widget is self.c_win:
             c_monitor = self.c_win.get_screen().get_monitor_at_window(self.c_frame.get_parent_window())
             self.config.set('content', 'monitor', str(c_monitor))
@@ -1067,7 +916,7 @@ class UI:
             ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
 
             # send all to spinner if it is active to avoid key problems
-            if self.editing_cur and self.spin_cur.on_keypress(widget, event):
+            if self.editing_cur and self.on_spin_nav(widget, event):
                 return True
             # send all to entry field if it is active to avoid key problems
             if self.editing_cur_ett and self.on_label_ett_event(widget, event):
@@ -1076,13 +925,13 @@ class UI:
             if self.paused and name == 'space':
                 self.switch_pause()
             elif name in ['Right', 'Down', 'Page_Down', 'space']:
-                self.doc.goto_next()
+                self.goto_next()
             elif name in ['Left', 'Up', 'Page_Up', 'BackSpace']:
-                self.doc.goto_prev()
+                self.goto_prev()
             elif name == 'Home':
-                self.doc.goto_home()
+                self.goto_home()
             elif name == 'End':
-                self.doc.goto_end()
+                self.goto_end()
             # sic - accelerator recognizes f not F
             elif name.upper() == 'F11' or name == 'F' \
                 or (name == 'Return' and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
@@ -1141,19 +990,59 @@ class UI:
         elif event.type == Gdk.EventType.SCROLL:
 
             # send all to spinner if it is active to avoid key problems
-            if self.editing_cur and self.spin_cur.on_keypress(widget, event):
-                return True
+            if self.editing_cur and Gtk.SpinButton.do_scroll_event(self.spin_cur, event):
+                pass
 
             elif event.direction is Gdk.ScrollDirection.SMOOTH:
                 return False
             else:
-                adj = self.scrollable_treelist.get_vadjustment()
+                adj = self.scrolled_window.get_vadjustment()
                 if event.direction == Gdk.ScrollDirection.UP:
                     adj.set_value(adj.get_value() - adj.get_step_increment())
                 elif event.direction == Gdk.ScrollDirection.DOWN:
                     adj.set_value(adj.get_value() + adj.get_step_increment())
                 else:
                     return False
+
+            return True
+
+        return False
+
+
+    def on_spin_nav(self, widget, event):
+        """ Manage key presses, for validating or navigating input, or cancelling navigation.
+
+        :param widget: the widget which has received the key stroke.
+        :type  widget: :class:`Gtk.Widget`
+        :param event: the GTK event, which contains the ket stroke information.
+        :type  event: :class:`Gdk.Event`
+        """
+        if event.type == Gdk.EventType.KEY_PRESS:
+            name = Gdk.keyval_name(event.keyval).lower().replace('kp_', '')
+
+            if name == 'return' or name == 'enter':
+                try:
+                    page_nb = int(self.spin_cur.get_value()) - 1
+
+                    if page_nb < self.doc.pages_number() and page_nb >= 0:
+                        self.doc.goto(page_nb)
+                except:
+                    pass
+
+            if name in ['escape', 'return', 'enter']:
+                self.restore_current_label()
+            elif name == 'home':
+                self.spin_cur.set_value(1)
+            elif name == 'end':
+                self.spin_cur.set_value(self.doc.pages_number())
+            elif name == 'left':
+                self.spin_cur.set_value(self.spin_cur.get_value() - 1)
+            elif name == 'right':
+                self.spin_cur.set_value(self.spin_cur.get_value() + 1)
+            elif name in 'a0123456789'  or name in ['up', 'left', 'right', 'down', 'backspace']:
+                return Gtk.SpinButton.do_key_press_event(self.spin_cur, event)
+            else:
+                return False
 
             return True
 
@@ -1168,6 +1057,9 @@ class UI:
         :param event: the event that occured
         :type  event: :class:`Gdk.Event`
         """
+
+        if event.type == Gdk.EventType.BUTTON_RELEASE:
+            return False
 
         # Where did the event occur?
         if widget is self.p_da_next:
@@ -1324,9 +1216,9 @@ class UI:
         h = self.p_frame_next.props.parent.props.parent.get_allocated_height()
         n = 2 if self.notes_mode else 1
         self.annotation_renderer.props.wrap_width = w - 10
-        self.p_frame_annot.set_size_request(-1, max(h - n * 1.2 * (w / r), 100))
-        self.scrolled_window.get_column(0).queue_resize()
-        self.scrollable_treelist.queue_resize()
+        self.p_frame_annot.set_size_request(-1, min(h - 200, max(h - n * (20 + w / r), 100)))
+        self.scrollable_treelist.get_column(0).queue_resize()
+        self.scrolled_window.queue_resize()
 
 
     def restore_current_label(self):
@@ -1626,7 +1518,7 @@ class UI:
         screen = self.p_win.get_screen()
         if screen.get_n_monitors() > 1:
             # temporarily remove the annotations' list size so it won't hinder p_frame_next size adjustment
-            self.scrollable_treelist.set_size_request(-1,  100)
+            self.scrolled_window.set_size_request(-1,  100)
 
             # Though Gtk.Window is a Gtk.Widget get_parent_window() actually returns None on self.{c,p}_win
             p_monitor = screen.get_monitor_at_window(self.p_frame_cur.get_parent_window())
@@ -1745,18 +1637,23 @@ class UI:
         """ Track events defining drawings by user, on top of current slide
         """
         if not self.scribbling_mode:
-            return False
+            return self.on_link(widget, event)
 
-        if event.get_event_type() is Gdk.EventType.BUTTON_PRESS:
+        if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
             self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
+            self.scribble_drawing = True
+        elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
+            self.scribble_drawing = False
 
-        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
-        ex, ey = event.get_coords()
-        self.scribble_list[-1][2].append((ex / ww, ey / wh))
+        if self.scribble_drawing:
+            ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+            ex, ey = event.get_coords()
+            self.scribble_list[-1][2].append((ex / ww, ey / wh))
 
-        self.scribble_c_da.queue_draw()
-        self.scribble_p_da.queue_draw()
-
+            self.scribble_c_da.queue_draw()
+            self.scribble_p_da.queue_draw()
+        else:
+            return self.on_link(widget, event)
 
     def draw_scribble(self, widget, cairo_context):
         """ Drawings by user
@@ -1842,74 +1739,12 @@ class UI:
         self.scribble_width = self.config.getint('scribble', 'width')
         self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR, False)
 
-        self.scribble_p_da = Gtk.DrawingArea()
+        # Presenter-size setup
+        self.scribble_overlay.set_name("scribble_overlay")
+
+        self.builder.get_object("scribble_color").set_rgba(self.scribble_color)
+        self.builder.get_object("scribble_width").set_value(self.scribble_width)
         self.scribble_p_da.set_name("scribble_p_da")
-        self.scribble_p_frame = Gtk.AspectFrame(yalign=0, ratio=4./3., obey_child=False)
-
-        self.scribble_p_eb = Gtk.EventBox()
-        self.scribble_p_frame.add(self.scribble_p_eb)
-        self.scribble_p_eb.add(self.scribble_p_da)
-
-        close = Gtk.Button(stock=Gtk.STOCK_CLOSE)
-        clear = Gtk.Button(stock=Gtk.STOCK_CLEAR)
-        undo = Gtk.Button(stock=Gtk.STOCK_UNDO)
-        color = Gtk.ColorButton()
-        width = Gtk.Scale.new_with_range(Gtk.Orientation.VERTICAL, 2,30,1)
-
-        color.set_rgba(self.scribble_color)
-        color.set_use_alpha(True)
-        width.set_value(self.scribble_width)
-        width.set_draw_value(False)
-        width.set_show_fill_level(False)
-        width.set_has_origin(True)
-
-        close.connect("clicked", self.switch_scribbling)
-        clear.connect("clicked", self.clear_scribble)
-        undo.connect("clicked", self.pop_scribble)
-        color.connect("color-set", self.update_color)
-        width.connect("change-value", self.update_width)
-
-        close.set_size_request(80, 80)
-        clear.set_size_request(80, 80)
-        undo.set_size_request(80, 80)
-        color.set_size_request(80, 80)
-        width.set_size_request(80, 160)
-
-        tools = Gtk.VBox()
-        tools.pack_start(close, False, False, 5)
-        tools.pack_start(clear, False, False, 5)
-        tools.pack_start(undo, False, False, 5)
-        tools.pack_start(color, False, False, 5)
-        tools.pack_start(width, False, False, 5)
-
-        self.scribble_overlay = Gtk.HBox()
-        self.scribble_overlay.set_name("ScribbleOverlay")
-        self.scribble_overlay.pack_start(self.scribble_p_frame, True, True, 0)
-        self.scribble_overlay.pack_start(tools, False, True, 0)
-
-        self.scribble_c_da = Gtk.DrawingArea()
-        self.scribble_c_da.set_halign(Gtk.Align.FILL)
-        self.scribble_c_da.set_valign(Gtk.Align.FILL)
-
-        self.scribble_c_eb = Gtk.EventBox()
-        self.scribble_c_eb.add(self.scribble_c_da)
-        self.c_overlay.add_overlay(self.scribble_c_eb)
-        self.c_overlay.reorder_overlay(self.scribble_c_eb, 1)
-        self.scribble_c_eb.show_all()
-
-        self.scribble_p_da.connect("draw", self.draw_scribble)
-        self.scribble_c_da.connect("draw", self.draw_scribble)
-
-        self.scribble_c_eb.connect("button-press-event", self.track_scribble)
-        self.scribble_p_eb.connect("button-press-event", self.track_scribble)
-
-        self.scribble_c_eb.connect("button-release-event", self.track_scribble)
-        self.scribble_p_eb.connect("button-release-event", self.track_scribble)
-
-        self.scribble_c_eb.connect("motion-notify-event", self.track_scribble)
-        self.scribble_p_eb.connect("motion-notify-event", self.track_scribble)
-
-        self.scribble_p_da.connect("configure-event", self.on_configure_da)
 
 
     def switch_scribbling(self, widget=None, event=None):
@@ -1917,22 +1752,30 @@ class UI:
         """
 
         if self.scribbling_mode:
-            self.p_overlay.remove(self.scribble_overlay)
+            self.p_central.remove(self.scribble_overlay)
+            self.off_render.remove(self.hpaned)
+
+            self.off_render.add(self.scribble_overlay)
+            self.p_central.pack_start(self.hpaned, True, True, 0)
             self.scribbling_mode = False
 
         else:
             pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
             self.scribble_p_frame.set_property('ratio', pr)
 
-            self.p_overlay.add_overlay(self.scribble_overlay)
-            self.scribble_overlay.show_all()
-            self.p_overlay.queue_draw()
+            self.p_central.remove(self.hpaned)
+            self.off_render.remove(self.scribble_overlay)
+
+            self.p_central.pack_start(self.scribble_overlay, True, True, 0)
+            self.off_render.add(self.hpaned)
+
+            self.p_central.queue_draw()
+
+            # Also make sure our overlay on Content window is visible
+            self.c_overlay.reorder_overlay(self.scribble_c_eb, 1)
+            self.c_overlay.show_all()
 
             self.scribbling_mode = True
-
-            self.cache.resize_widget("scribble_p_da",
-                self.scribble_p_da.get_allocated_width(),
-                self.scribble_p_da.get_allocated_height())
 
 
 ##

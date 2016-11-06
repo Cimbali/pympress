@@ -24,7 +24,9 @@ import os.path
 import sys
 import getopt
 import signal
+import locale
 import gettext
+import ctypes
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -32,6 +34,17 @@ from gi.repository import Gtk, Gdk
 
 import pympress.util
 gettext.install('pympress', pympress.util.get_resource_path('share', 'locale'))
+
+if pympress.util.IS_WINDOWS:
+    if os.getenv('LANG') is None:
+        lang, enc = locale.getdefaultlocale()
+        os.environ['LANG'] = lang
+    libintl = ctypes.cdll.LoadLibrary('libintl-8.dll')
+    libintl.bindtextdomain('pympress', pympress.util.get_resource_path('share', 'locale'))
+    libintl.bind_textdomain_codeset('pympress', 'UTF-8')
+else:
+    locale.bindtextdomain('pympress', pympress.util.get_resource_path('share', 'locale'))
+    locale.textdomain('pympress')
 
 import pympress.ui
 

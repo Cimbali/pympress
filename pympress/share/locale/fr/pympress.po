@@ -4,8 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Pympress 0.6\n"
-"POT-Creation-Date: 2016-07-30 19:31+0200\n"
+"Project-Id-Version: Pympress v0.6\n"
+"Report-Msgid-Bugs-To: me@cimba.li\n"
+"POT-Creation-Date: 2016-10-24 15:45+0200\n"
 "PO-Revision-Date: 2016-07-30 19:34+0200\n"
 "Last-Translator: Cimbali <me@cimba.li>\n"
 "MIME-Version: 1.0\n"
@@ -13,290 +14,224 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
+msgid " (paused)"
+msgstr " (en pause)"
 
-#: pympress/__main__.py:39
-msgid "Usage: {} [options] <presentation_file>"
-msgstr "Usage: {} [options] <fichier de présentation>"
+msgid "Adjust alignment of slides in projector screen"
+msgstr "Ajuster l'alignement des diapos sur l'écran du projecteur"
 
-#: pympress/__main__.py:41
-msgid "Options:"
-msgstr "Otions:"
-
-#: pympress/__main__.py:42
-msgid "This help"
-msgstr "Ce message d'aide"
-
-#: pympress/__main__.py:43
-msgid "The estimated (intended) talk time in minutes"
-msgstr "Durée estimée (prévue) de la présentation, en minutes"
-
-#: pympress/__main__.py:65 pympress/ui.py:1231
-msgid "Invalid time (mm or mm:ss expected), got \"{}\""
-msgstr "Templs invalude (mm ou mm:ss attendu), \"{}\" reçu"
-
-#: pympress/__main__.py:79
-msgid "Could not find the file \"{}\""
-msgstr "Impossible d'ouvrir le fichier \"{}\""
-
-#: pympress/document.py:91
-msgid "ERROR no action defined for this link!"
-msgstr "ERREUR pas d'action définie pour ce lien !"
-
-#: pympress/document.py:196 pympress/document.py:303
-msgid "Pympress can not find file "
-msgstr "Pympress ne peut pas trouver le fichier "
-
-#: pympress/document.py:212
-msgid "Pympress can not interpret annotation of type:"
-msgstr "Pympress ne peut pas interpréter d'annotation de type: "
-
-#: pympress/document.py:224
-msgid "No action was defined for this link"
-msgstr "Pas d'action définie pour ce lien"
-
-#: pympress/document.py:241 pympress/document.py:244 pympress/document.py:247
-#: pympress/document.py:251
-msgid "Pympress does not yet support link type \"{}\" to \"{}\""
-msgstr "Pympress ne prend pas encore en charge les liens de type \"{}\" vers \"{}\""
-
-#: pympress/document.py:254
-msgid "Pympress does not recognize link type \"{}\" to \"{}\""
-msgstr "Pympress ne reconnaît pas les liens de type \"{}\" vers \"{}\""
-
-#: pympress/document.py:269 pympress/document.py:271 pympress/document.py:275
-#: pympress/document.py:277 pympress/document.py:279 pympress/document.py:281
-msgid "Pympress does not yet support link type \"{}\""
-msgstr "Pympress ne prend pas encore en charge les liens de type \"{}\""
-
-#: pympress/document.py:283
-msgid "Pympress does not recognize link type \"{}\""
-msgstr "Pympress ne reconnaît pas les liens de type \"{}\""
-
-#: pympress/document.py:298
-msgid "Pympress can not extract embedded media"
-msgstr "Pympress ne peut extraire le média intégré"
-
-#: pympress/ui.py:62
-msgid "Warning: video support is disabled"
-msgstr "Attention: la prise en charge vidéo est désactivée"
-
-#: pympress/ui.py:267
-msgid "pympress content"
-msgstr "pympress contenu"
-
-#: pympress/ui.py:300
-msgid "pympress presenter"
-msgstr "pympress présenteur"
-
-#: pympress/ui.py:385 pympress/ui.py:1642
-msgid "Notes"
-msgstr "Notes"
-
-#: pympress/ui.py:387 pympress/ui.py:407 pympress/ui.py:1634
-msgid "Current slide"
-msgstr "Diapo actuelle"
-
-#: pympress/ui.py:416
-msgid "Next slide"
-msgstr "Prochaine diapo"
-
-#: pympress/ui.py:446
-msgid "Annotations"
-msgstr "Notes"
-
-#: pympress/ui.py:486
-msgid "Warning: Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Attention: La fenêtre de contenu et de présenteur ne peuvent être sur le même écran pour démarrer en plein écran !"
-
-#: pympress/ui.py:530
-msgid "Slide number"
-msgstr "Diapo numéro"
-
-#: pympress/ui.py:541
-msgid "Clock"
-msgstr "Horloge"
-
-#: pympress/ui.py:555
-msgid "Time elapsed"
-msgstr "Temps écoulé"
-
-#: pympress/ui.py:592
-msgid "Time estimation"
-msgstr "Temps estimé"
-
-#: pympress/ui.py:651
-msgid "_File"
-msgstr "_Fichier"
-
-#: pympress/ui.py:652
-msgid "_Presentation"
-msgstr "_Présentation"
-
-#: pympress/ui.py:653
-msgid "_Navigation"
-msgstr "_Navigation"
-
-#: pympress/ui.py:654
-msgid "_Starting Configuration"
-msgstr "Configuration de démarrage"
-
-#: pympress/ui.py:655
-msgid "_Help"
-msgstr "Aide"
-
-#: pympress/ui.py:657
-msgid "_Quit"
-msgstr "_Quitter"
-
-#: pympress/ui.py:658
-msgid "_Reset timer"
-msgstr "_Réinitialier le minuteur"
-
-#: pympress/ui.py:659
-msgid "Set talk _Time"
-msgstr "Paramé_trer la durée de la présentation"
-
-#: pympress/ui.py:660
-msgid "_About"
-msgstr "_À propos"
-
-#: pympress/ui.py:661
-msgid "_Swap screens"
-msgstr "Échanger les écran_s"
-
-#: pympress/ui.py:662
-msgid "_Align content"
-msgstr "_Aligner le contenu"
-
-#: pympress/ui.py:664
-msgid "_Next"
-msgstr "_Suivant"
-
-#: pympress/ui.py:665
-msgid "_Previous"
-msgstr "_Précédent"
-
-#: pympress/ui.py:666
-msgid "_First"
-msgstr "_Premier"
-
-#: pympress/ui.py:667
-msgid "_Last"
-msgstr "_Dernier"
-
-#: pympress/ui.py:668
-msgid "_Go to..."
-msgstr "_Aller à..."
-
-#: pympress/ui.py:671
-msgid "_Pause timer"
-msgstr "Mettre le minuteur en _pause"
-
-#: pympress/ui.py:672
-msgid "_Fullscreen"
-msgstr "Plein écran"
-
-#: pympress/ui.py:673
-msgid "_Note mode"
-msgstr "Mode _note"
-
-#: pympress/ui.py:674
-msgid "_Annotations"
-msgstr "_Annotations"
-
-#: pympress/ui.py:675
-msgid "_Blank screen"
-msgstr "Masquer l'écran"
-
-#: pympress/ui.py:676
-msgid "Content blanked"
-msgstr "Contenu masqué"
-
-#: pympress/ui.py:677
-msgid "Content fullscreen"
-msgstr "Contenu en plein écran"
-
-#: pympress/ui.py:678
-msgid "Presenter fullscreen"
-msgstr "Présenteur en plein écran"
-
-#: pympress/ui.py:722
-msgid "Open..."
-msgstr "Ouvrir..."
-
-#: pympress/ui.py:729
-msgid "PDF files"
-msgstr "Fichiers PDF"
-
-#: pympress/ui.py:735
 msgid "All files"
 msgstr "Tous fichiers"
 
-#: pympress/ui.py:748
+msgid "Annotations"
+msgstr "Notes"
+
+msgid "Big buttons"
+msgstr "Gros boutons"
+
+msgid "Clock"
+msgstr "Horloge"
+
+msgid "Content blanked"
+msgstr "Contenu masqué"
+
+msgid "Content fullscreen"
+msgstr "Contenu en plein écran"
+
+msgid "Contributors:"
+msgstr "Contributeurs"
+
+msgid "Could not find the file \"{}\""
+msgstr "Impossible d'ouvrir le fichier \"{}\""
+
+msgid "Current slide"
+msgstr "Diapo actuelle"
+
+msgid "ERROR Unknown widget to start fullscreen: {}"
+msgstr "ERREUR élement visuel inconnu à mettre en plein écran: {}"
+
+msgid "ERROR no action defined for this link!"
+msgstr "ERREUR pas d'action définie pour ce lien !"
+
+msgid "Error loading icon for about window"
+msgstr "Erreur de chargement des icônes"
+
+msgid "Error: access denied when trying to access screen saver settings in registry!"
+msgstr "Erreur: accès refusé lors de la modification des paramètres d'économiseur d'écran dans le registre !"
+
+msgid "Highlight"
+msgstr "Feutre"
+
+msgid "Invalid time (mm or mm:ss expected), got \"{}\""
+msgstr "Templs invalude (mm ou mm:ss attendu), \"{}\" reçu"
+
+msgid "Next slide"
+msgstr "Prochaine diapo"
+
+msgid "No action was defined for this link"
+msgstr "Pas d'action définie pour ce lien"
+
 msgid ""
 "No file selected!\n"
 "\n"
 "You can specify the PDF file to open on the command line if you don't want to use the \"Open File\" dialog."
 msgstr ""
-"Pas de fichier sélectionné !"
-"\n"
+"Pas de fichier sélectionné !\n"
 "Vous pouvez indiquer le fichier PDF à ouvrir en ligne de commande si vous ne voulez pas utiliser la boîte de dialogue \"Ouvrir un fichier\""
 
-#: pympress/ui.py:763
-msgid "Contributors:"
-msgstr "Contributeurs"
+msgid "Notes"
+msgstr "Notes"
 
-#: pympress/ui.py:764
-msgid ""
-"pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
-msgstr ""
-"pympress est un lecteur de PDF léger écrit en Python, utilisant Poppler pour afficher les PDF et GTK pour l'interface graphique"
+msgid "Open..."
+msgstr "Ouvrir..."
 
-#: pympress/ui.py:765
+msgid "Options:"
+msgstr "Otions:"
+
+msgid "PDF files"
+msgstr "Fichiers PDF"
+
+msgid "Presenter fullscreen"
+msgstr "Présenteur en plein écran"
+
+#, fuzzy
+msgid "Pympress Content"
+msgstr "pympress contenu"
+
+msgid "Pympress can not extract embedded media"
+msgstr "Pympress ne peut extraire le média intégré"
+
+msgid "Pympress can not find file "
+msgstr "Pympress ne peut pas trouver le fichier "
+
+msgid "Pympress can not interpret annotation of type:"
+msgstr "Pympress ne peut pas interpréter d'annotation de type: "
+
+msgid "Pympress does not recognize link type \"{}\""
+msgstr "Pympress ne reconnaît pas les liens de type \"{}\""
+
+msgid "Pympress does not recognize link type \"{}\" to \"{}\""
+msgstr "Pympress ne reconnaît pas les liens de type \"{}\" vers \"{}\""
+
+msgid "Pympress does not yet support link type \"{}\""
+msgstr "Pympress ne prend pas encore en charge les liens de type \"{}\""
+
+msgid "Pympress does not yet support link type \"{}\" to \"{}\""
+msgstr "Pympress ne prend pas encore en charge les liens de type \"{}\" vers \"{}\""
+
+msgid "Set talk _Time"
+msgstr "Paramé_trer la durée de la présentation"
+
+msgid "Slide number"
+msgstr "Diapo numéro"
+
 msgid "Some preferences are saved in "
 msgstr "Certaines préférences sont sauvegardées dans"
 
-#: pympress/ui.py:770
-msgid "Error loading icon for about window"
-msgstr "Erreur de chargement des icônes"
+msgid "The estimated (intended) talk time in minutes"
+msgstr "Durée estimée (prévue) de la présentation, en minutes"
 
-#: pympress/ui.py:1132
-msgid "Unknown event {}"
-msgstr "Évément inconnu {}"
+msgid "This help"
+msgstr "Ce message d'aide"
 
-#: pympress/ui.py:1316
-msgid " (paused)"
-msgstr " (en pause)"
+msgid "Time elapsed"
+msgstr "Temps écoulé"
 
-#: pympress/ui.py:1423
-msgid "Warning: Could not set screensaver status: got status "
-msgstr "Attention: Impossible de récupérer l'état de l'économiseur d'écran: "
+msgid "Time estimation"
+msgstr "Temps estimé"
 
-#: pympress/ui.py:1441
-msgid "Warning: Could not disable DPMS screen blanking: got status "
-msgstr "Attention: Impossible de désactiver l'extinction d'écran DPMS: "
-
-#: pympress/ui.py:1449
-msgid "Warning: Could not enable DPMS screen blanking: got status "
-msgstr "Attention: Impossible d'activer l'extinction d'écran DPMS: "
-
-#: pympress/ui.py:1463
-msgid "Error: access denied when trying to access screen saver settings in registry!"
-msgstr "Erreur: accès refusé lors de la modification des paramètres d'économiseur d'écran dans le registre !"
-
-#: pympress/ui.py:1465
-msgid "Warning: Unsupported OS: can't enable/disable screensaver"
-msgstr "Attention: Système d'exploitation non pris en charge: impossible d'activer/désactiver l'économiseur d'écran"
-
-#: pympress/ui.py:1484
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr "Élement visuel {} inconnu à mettre en plein écran, abandonnée."
 
-#: pympress/ui.py:1529
-msgid "Adjust alignment of slides in projector screen"
-msgstr "Ajuster l'alignement des diapos sur l'écran du projecteur"
+msgid "Unknown event {}"
+msgstr "Évément inconnu {}"
 
-#: pympress/ui.py:1616
-msgid "ERROR Unknown widget to start fullscreen: {}"
-msgstr "ERREUR élement visuel inconnu à mettre en plein écran: {}"
+msgid "Usage: {} [options] <presentation_file>"
+msgstr "Usage: {} [options] <fichier de présentation>"
 
+msgid "Warning: Content and presenter window must not be on the same monitor if you start full screen!"
+msgstr "Attention: La fenêtre de contenu et de présenteur ne peuvent être sur le même écran pour démarrer en plein écran !"
+
+msgid "Warning: Could not disable DPMS screen blanking: got status "
+msgstr "Attention: Impossible de désactiver l'extinction d'écran DPMS: "
+
+msgid "Warning: Could not enable DPMS screen blanking: got status "
+msgstr "Attention: Impossible d'activer l'extinction d'écran DPMS: "
+
+msgid "Warning: Could not set screensaver status: got status "
+msgstr "Attention: Impossible de récupérer l'état de l'économiseur d'écran: "
+
+msgid "Warning: Unsupported OS: can't enable/disable screensaver"
+msgstr "Attention: Système d'exploitation non pris en charge: impossible d'activer/désactiver l'économiseur d'écran"
+
+msgid "Warning: video support is disabled"
+msgstr "Attention: la prise en charge vidéo est désactivée"
+
+msgid "_About"
+msgstr "_À propos"
+
+msgid "_Align content"
+msgstr "_Aligner le contenu"
+
+msgid "_Annotations"
+msgstr "_Annotations"
+
+msgid "_Blank screen"
+msgstr "Masquer l'écran"
+
+msgid "_File"
+msgstr "_Fichier"
+
+msgid "_First"
+msgstr "_Premier"
+
+msgid "_Fullscreen"
+msgstr "Plein écran"
+
+msgid "_Go to..."
+msgstr "_Aller à..."
+
+msgid "_Help"
+msgstr "Aide"
+
+msgid "_Highlight"
+msgstr "Feutre"
+
+msgid "_Last"
+msgstr "_Dernier"
+
+msgid "_Navigation"
+msgstr "_Navigation"
+
+msgid "_Next"
+msgstr "_Suivant"
+
+msgid "_Note mode"
+msgstr "Mode _note"
+
+msgid "_Pause timer"
+msgstr "Mettre le minuteur en _pause"
+
+msgid "_Presentation"
+msgstr "_Présentation"
+
+msgid "_Previous"
+msgstr "_Précédent"
+
+msgid "_Quit"
+msgstr "_Quitter"
+
+msgid "_Reset timer"
+msgstr "_Réinitialier le minuteur"
+
+msgid "_Starting Configuration"
+msgstr "Configuration de démarrage"
+
+msgid "_Swap screens"
+msgstr "Échanger les écran_s"
+
+msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
+msgstr "pympress est un lecteur de PDF léger écrit en Python, utilisant Poppler pour afficher les PDF et GTK pour l'interface graphique.\n"
+
+msgid "pympress presenter"
+msgstr "pympress présenteur"

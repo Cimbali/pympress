@@ -66,7 +66,8 @@ if IS_WINDOWS:
     'libjpeg-8.dll', 'liblcms2-2.dll', 'libopenjp2.dll', 'libpango-1.0-0.dll',
     'libpangocairo-1.0-0.dll', 'libpangoft2-1.0-0.dll', 'libpangowin32-1.0-0.dll',
     'libpng16-16.dll', 'libpoppler-glib-8.dll', 'librsvg-2-2.dll', 'libstdc++.dll',
-    'libtiff-5.dll', 'libwebp-5.dll', 'libwinpthread-1.dll', 'libxmlxpat.dll', 'libzzz.dll']
+    'libtiff-5.dll', 'libwebp-5.dll', 'libwinpthread-1.dll', 'libxmlxpat.dll', 'libzzz.dll',
+    'libintl-8.dll']
 
     python_dll='python{}{}.dll'.format(sys.version_info.major, sys.version_info.minor)
     for d in [install_dir, include_path, os.environ['SYSTEMROOT'],
@@ -78,6 +79,7 @@ if IS_WINDOWS:
             break
 
 include_files += [(os.path.join(include_path, item), item) for item in libs_etc]
+include_files.append( (os.path.join('pympress', 'share', 'xml'), os.path.join('share', 'xml')) )
 include_files.append( (os.path.join('pympress', 'share', 'css'), os.path.join('share', 'css')) )
 include_files.append( (os.path.join('pympress', 'share', 'pixmaps'), os.path.join('share', 'pixmaps')) )
 include_files += [(f,  f.split(os.path.sep, 1)[1]) for f in glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))]
