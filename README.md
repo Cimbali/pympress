@@ -17,10 +17,11 @@ This is now a fork of [Schnouki's original Pympress](https://github.com/Schnouki
 
 ## If you have python
 
-Run the following command in your shell:
-`python3 -m pip install git+https://github.com/Cimbali/pympress#egg=pympress` (or replace `python3 -m pip` with `python -m pip` or just `pip`).
+Run the following command in your shell (or replace `python3 -m pip` with `python -m pip` or just `pip`):
 
-If you don't have pip, see [the python documentation on installing](https://docs.python.org/3.5/installing/index.html). If after installing pympress doesn't run, check that you have all [the dependencies](https://github.com/Cimbali/pympress#dependencies).
+    python3 -m pip install git+https://github.com/Cimbali/pympress#egg=pympress
+
+If you don't have pip, see [the python documentation on installing](https://docs.python.org/3.5/installing/index.html). You may also want to check that you have all [the dependencies](https://github.com/Cimbali/pympress#dependencies).
 
 ### From source
 
@@ -67,6 +68,7 @@ Pympress has inline sphinx (rst syntax) documentation, and the gh-pages branch h
 Pympress relies on:
 * Python, 3.x or 2.7 (with [setuptools](https://pypi.python.org/pypi/setuptools), which is usually shipped by default with python).
 * [Poppler](http://poppler.freedesktop.org/), the PDF rendering library.
+* [Cairo](https://www.cairographics.org/) (and python bindings for cairo), the graphics library which to pre-render and draw over PDF pages.
 * [Gtk+ 3](http://www.gtk.org/), a toolkit for creating graphical user interfaces.
 * [PyGi, the python bindings for Gtk+3](https://wiki.gnome.org/Projects/PyGObject). PyGi is also known as *pygobject3*, just *pygobject* or *python3-gi*.
   * Introspection bindings for poppler may be shipped separately, ensure you have those as well (`typelib-1_0-Poppler-0_18` on OpenSUSE, `gir1.2-poppler-0.18` on Ubuntu)
@@ -75,7 +77,13 @@ Pympress relies on:
 On windows GTK+3, Poppler and their python bindings are all shipped together in [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/). *Be sure to check the supported Python versions (up to 3.4 at the time of writing)*, they appear in the FEATURES list in the linked page.
 
 On other platforms they are often installed by default, or easily available through your package or software manager.
+For example, on ubuntu, you can run the following as root to make sure you have all the prerequisites:
 
+    apt-get install python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gi python3-cairo gir1.2-gtk-3.0 gir1.2-poppler-0.18
+
+Different distributions might have different package naming conventions, for example the equivalent on OpenSUSE would be:
+
+    zypper in python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gobject python3-gobject-Gdk python3-cairo typelib-1_0-GdkPixbuf-2_0 typelib-1_0-Gtk-3_0 typelib-1_0-Poppler-0_18
 
 ## Translations
 
