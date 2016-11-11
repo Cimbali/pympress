@@ -69,12 +69,13 @@ Pympress relies on:
 * [Poppler](http://poppler.freedesktop.org/), the PDF rendering library.
 * [Gtk+ 3](http://www.gtk.org/), a toolkit for creating graphical user interfaces.
 * [PyGi, the python bindings for Gtk+3](https://wiki.gnome.org/Projects/PyGObject). PyGi is also known as *pygobject3*, just *pygobject* or *python3-gi*.
+  * Introspection bindings for poppler may be shipped separately, ensure you have those as well (`typelib-1_0-Poppler-0_18` on OpenSUSE, `gir1.2-poppler-0.18` on Ubuntu)
 * optionally VLC, to play videos (with the same bitness as Python)
 
-On windows, both GTK+3 and Poppler are shipped in [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/).
+On windows GTK+3, Poppler and their python bindings are all shipped together in [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/). *Be sure to check the supported Python versions (up to 3.4 at the time of writing)*, they appear in the FEATURES list in the linked page.
+
 On other platforms they are often installed by default, or easily available through your package or software manager.
 
-Sometimes you might need to make sure that the introspection bindings for poppler are shipped as well. On OpenSuse for example the packages `python3-gobject` and `typelib-1_0-Poppler-0_18` are needed.
 
 ## Translations
 
