@@ -77,7 +77,7 @@ Pympress relies on:
 On windows GTK+3, Poppler and their python bindings are all shipped together in [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/). *Be sure to check the supported Python versions (up to 3.4 at the time of writing)*, they appear in the FEATURES list in the linked page.
 
 On other platforms they are often installed by default, or easily available through your package or software manager.
-For example, on ubuntu, you can run the following as root to make sure you have all the prerequisites:
+For example, on ubuntu, you can run the following as root to make sure you have all the prerequisites *assuming you use python3*:
 
     apt-get install python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gi python3-cairo gir1.2-gtk-3.0 gir1.2-poppler-0.18
 
