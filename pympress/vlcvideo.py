@@ -21,6 +21,11 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 #
 
+"""
+:mod:`pympress.vlcvideo` -- widget to play videos with VLC backend
+------------------------------------------------------------------
+"""
+
 from __future__ import print_function
 
 import gi

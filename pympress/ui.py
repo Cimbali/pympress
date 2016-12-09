@@ -241,10 +241,9 @@ class UI:
 
     def __init__(self, docpath = None, ett = 0):
         """
-        :param docpath: the path to the document to open
-        :type  docpath: string
-        :param ett: the estimated (intended) talk time
-        :type  ett: int
+        Args:
+            docpath (string):  the path to the document to open
+            ett (int):  the estimated (intended) talk time
         """
         self.est_time = ett
         self.config = pympress.util.load_config()
@@ -431,8 +430,8 @@ class UI:
     def make_menubar(self):
         """ Creates and initializes the menu bar.
 
-        :return: the menu bar
-        :rtype: :class:`Gtk.Widget`
+        Returns:
+            :class:`Gtk.Widget`: the menu bar
         """
         # UI Manager for menu
         ui_manager = Gtk.UIManager()
@@ -640,9 +639,8 @@ class UI:
         This is a kind of event which is supposed to be called only from the
         :class:`~pympress.document.Document` class.
 
-        :param unpause: ``True`` if the page change should unpause the timer,
-           ``False`` otherwise
-        :type  unpause: boolean
+        Args:
+            unpause (boolean):  ``True`` if the page change should unpause the timer, ``False`` otherwise
         """
         try:
             page_nb = int(widget.get_buffer().get_text()) - 1
@@ -690,9 +688,8 @@ class UI:
         This is a kind of event which is supposed to be called only from the
         :class:`~pympress.document.Document` class.
 
-        :param unpause: ``True`` if the page change should unpause the timer,
-           ``False`` otherwise
-        :type  unpause: boolean
+        Args:
+            unpause (boolean):  ``True`` if the page change should unpause the timer, ``False`` otherwise
         """
         page_cur = self.doc.current_page()
         page_next = self.doc.next_page()
@@ -811,10 +808,9 @@ class UI:
         be updated, and updates it, using the
         :class:`~pympress.surfacecache.SurfaceCache` if possible.
 
-        :param widget: the widget to update
-        :type  widget: :class:`Gtk.Widget`
-        :param cairo_context: the Cairo context (or ``None`` if called directly)
-        :type  cairo_context: :class:`cairo.Context`
+        Args:
+            widget (:class:`Gtk.Widget`):  the widget to update
+            cairo_context (:class:`cairo.Context`):  the Cairo context (or ``None`` if called directly)
         """
 
         if widget is self.c_da:
@@ -869,11 +865,9 @@ class UI:
         instance about it, so that it can invalidate its internal cache for the
         specified widget and pre-render next pages at a correct size.
 
-        :param widget: the widget which has been resized
-        :type  widget: :class:`Gtk.Widget`
-        :param event: the GTK event, which contains the new dimensions of the
-           widget
-        :type  event: :class:`Gdk.Event`
+        Args:
+            widget (:class:`Gtk.Widget`):  the widget which has been resized
+            event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
         self.cache.resize_widget(widget.get_name(), event.width, event.height)
 
@@ -886,10 +880,9 @@ class UI:
     def on_configure_win(self, widget, event):
         """ Manage "configure" events for both window widgets.
 
-        :param widget: the window which has been moved or resized
-        :type  widget: :class:`Gtk.Widget`
-        :param event: the GTK event, which contains the new dimensions of the widget
-        :type  event: :class:`Gdk.Event`
+        Args:
+            widget (:class:`Gtk.Widget`):  the window which has been moved or resized
+            event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
 
         if widget is self.p_win:
@@ -906,10 +899,9 @@ class UI:
     def on_navigation(self, widget, event):
         """ Manage events as mouse scroll or clicks for both windows.
 
-        :param widget: the widget in which the event occured (ignored)
-        :type  widget: :class:`Gtk.Widget`
-        :param event: the event that occured
-        :type  event: :class:`Gdk.Event`
+        Args:
+            widget (:class:`Gtk.Widget`):  the widget in which the event occured (ignored)
+            event (:class:`Gdk.Event`):  the event that occured
         """
         if event.type == Gdk.EventType.KEY_PRESS:
             name = Gdk.keyval_name(event.keyval)
@@ -1012,10 +1004,9 @@ class UI:
     def on_spin_nav(self, widget, event):
         """ Manage key presses, for validating or navigating input, or cancelling navigation.
 
-        :param widget: the widget which has received the key stroke.
-        :type  widget: :class:`Gtk.Widget`
-        :param event: the GTK event, which contains the ket stroke information.
-        :type  event: :class:`Gdk.Event`
+        Args:
+            widget (:class:`Gtk.Widget`):  the widget which has received the key stroke.
+            event (:class:`Gdk.Event`):  the GTK event, which contains the ket stroke information.
         """
         if event.type == Gdk.EventType.KEY_PRESS:
             name = Gdk.keyval_name(event.keyval).lower().replace('kp_', '')
@@ -1052,10 +1043,9 @@ class UI:
     def on_link(self, widget, event):
         """ Manage events related to hyperlinks.
 
-        :param widget: the widget in which the event occured
-        :type  widget: :class:`Gtk.Widget`
-        :param event: the event that occured
-        :type  event: :class:`Gdk.Event`
+        Args:
+            widget (:class:`Gtk.Widget`):  the widget in which the event occured
+            event (:class:`Gdk.Event`):  the event that occured
         """
 
         if event.type == Gdk.EventType.BUTTON_RELEASE:
@@ -1098,10 +1088,9 @@ class UI:
         the entry with a label when needed, etc. The nasty stuff it does is an
         ancient kind of dark magic that should be avoided as much as possible...
 
-        :param widget: the widget in which the event occured
-        :type  widget: :class:`Gtk.Widget`
-        :param event: the event that occured
-        :type  event: :class:`Gdk.Event`
+        Args:
+            widget (:class:`Gtk.Widget`):  the widget in which the event occured
+            event (:class:`Gdk.Event`):  the event that occured
         """
 
         event = args[-1]
@@ -1144,10 +1133,9 @@ class UI:
         the entry with a label when needed, etc. The nasty stuff it does is an
         ancient kind of dark magic that should be avoided as much as possible...
 
-        :param widget: the widget in which the event occured
-        :type  widget: :class:`gtk.Widget`
-        :param event: the event that occured
-        :type  event: :class:`gtk.gdk.Event`
+        Args:
+            widget (:class:`gtk.Widget`):  the widget in which the event occured
+            event (:class:`gtk.gdk.Event`):  the event that occured
         """
 
         widget = self.eb_ett.get_child()
@@ -1260,8 +1248,8 @@ class UI:
     def update_time(self):
         """ Update the timer and clock labels.
 
-        :return: ``True`` (to prevent the timer from stopping)
-        :rtype: boolean
+        Returns:
+            boolean: ``True`` (to prevent the timer from stopping)
         """
 
         # Current time
@@ -1285,14 +1273,13 @@ class UI:
     def calc_color(self, from_color, to_color, position):
         """ Compute the interpolation between two colors.
 
-        :param from_color: the color when position = 0
-        :type  from_color: :class:`Gdk.RGBA`
-        :param to_color: the color when position = 1
-        :type  to_color: :class:`Gdk.RGBA`
-        :param position: A floating point value in the interval [0.0, 1.0]
-        :type  position: float
-        :return: The color that is between from_color and to_color
-        :rtype: :class:`Gdk.RGBA`
+        Args:
+            from_color (:class:`Gdk.RGBA`):  the color when position = 0
+            to_color (:class:`Gdk.RGBA`):  the color when position = 1
+            position (float):  A floating point value in the interval [0.0, 1.0]
+
+        Returns:
+            :class:`Gdk.RGBA`: The color that is between from_color and to_color
         """
         color_tuple = lambda color: ( color.red, color.green, color.blue, color.alpha )
         interpolate = lambda start, end: start + (end - start) * position
@@ -1358,9 +1345,8 @@ class UI:
     def set_screensaver(self, must_disable):
         """ Enable or disable the screensaver.
 
-        :param must_disable: if ``True``, indicates that the screensaver must be
-           disabled; otherwise it will be enabled
-        :type  must_disable: boolean
+        Args:
+            must_disable (boolean):  if ``True``, indicates that the screensaver must be disabled; otherwise it will be enabled
         """
         if IS_MAC_OS:
             # On Mac OS X we can use caffeinate to prevent the display from sleeping

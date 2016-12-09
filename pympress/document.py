@@ -92,16 +92,13 @@ class Link:
 
     def __init__(self, x1, y1, x2, y2, action):
         """
-        :param x1: first x coordinate of the link rectangle
-        :type  x1: float
-        :param y1: first y coordinate of the link rectangle
-        :type  y1: float
-        :param x2: second x coordinate of the link rectangle
-        :type  x2: float
-        :param y2: second y coordinate of the link rectangle
-        :type  y2: float
-        :param action: action to perform when the link is clicked
-        :type  action: function
+
+        Args:
+            x1 (float):  first x coordinate of the link rectangle
+            y1 (float):  first y coordinate of the link rectangle
+            x2 (float):  second x coordinate of the link rectangle
+            y2 (float):  second y coordinate of the link rectangle
+            action (function):  action to perform when the link is clicked
         """
         self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
         self.follow = action
@@ -109,13 +106,12 @@ class Link:
     def is_over(self, x, y):
         """ Tell if the input coordinates are on the link rectangle.
 
-        :param x: input x coordinate
-        :type  x: float
-        :param y: input y coordinate
-        :type  y: float
-        :return: ``True`` if the input coordinates are within the link
-           rectangle, ``False`` otherwise
-        :rtype: boolean
+        Args:
+            x (float):  input x coordinate
+            y (float):  input y coordinate
+
+        Returns:
+            boolean: ``True`` if the input coordinates are within the link rectangle, ``False`` otherwise
         """
         return ( (self.x1 <= x) and (x <= self.x2) and (self.y1 <= y) and (y <= self.y2) )
 
@@ -150,12 +146,10 @@ class Page:
 
     def __init__(self, page, number, parent):
         """
-        :param doc: the poppler object around the page
-        :type  doc: :class:`Poppler.Page`
-        :param number: number of the page to fetch in the document
-        :type  number: integer
-        :param parent: the parent Document class
-        :type  parent: :class:`pympress.document.Document`
+        Args:
+            doc (:class:`Poppler.Page`):  the poppler object around the page
+            number (integer):  number of the page to fetch in the document
+            parent (:class:`pympress.document.Document`):  the parent Document class
         """
         self.page = page
         self.page_nb = number
@@ -327,13 +321,13 @@ class Page:
         """ Get the :class:`~pympress.document.Link` corresponding to the given
         position, or ``None`` if there is no link at this position.
 
-        :param x: horizontal coordinate
-        :type  x: float
-        :param y: vertical coordinate
-        :type  y: float
-        :return: the link at the given coordinates if one exists, ``None``
-           otherwise
-        :rtype: :class:`pympress.document.Link`
+        Args:
+            x (float):  horizontal coordinate
+            y (float):  vertical coordinate
+
+        Returns:
+            :class:`pympress.document.Link`: the link at the given coordinates
+            if one exists, ``None`` otherwise
         """
         xx = self.pw * x
         yy = self.ph * (1. - y)
@@ -347,10 +341,11 @@ class Page:
     def get_size(self, dtype=PDF_REGULAR):
         """ Get the page size.
 
-        :param dtype: the type of document to consider
-        :type  dtype: integer
-        :return: page size
-        :rtype: (float, float)
+        Args:
+            dtype (integer):  the type of document to consider
+
+        Returns:
+            (float, float): page size
         """
         if dtype == PDF_REGULAR:
             return (self.pw, self.ph)
@@ -360,10 +355,11 @@ class Page:
     def get_aspect_ratio(self, dtype=PDF_REGULAR):
         """ Get the page aspect ratio.
 
-        :param dtype: the type of document to consider
-        :type  dtype: integer
-        :return: page aspect ratio
-        :rtype: float
+        Args:
+            dtype (integer):  the type of document to consider
+
+        Returns:
+            float: page aspect ratio
         """
         if dtype == PDF_REGULAR:
             return self.pw / self.ph
@@ -373,30 +369,27 @@ class Page:
     def get_annotations(self):
         """ Get the list of text annotations on this page.
 
-        :return: page aspect ratio
-        :rtype: list of tuples of area and filenames
+        Returns:
+            list of tuples of area and filenames: page aspect ratio
         """
         return self.annotations
 
     def get_media(self):
         """ Get the list of medias this page might want to play.
 
-        :return: page aspect ratio
-        :rtype: list of tuples of area and filenames
+        Returns:
+            list of tuples of area and filenames: page aspect ratio
         """
         return self.medias
 
     def render_cairo(self, cr, ww, wh, dtype=PDF_REGULAR):
         """ Render the page on a Cairo surface.
 
-        :param cr: target surface
-        :type  cr: :class:`Gdk.CairoContext`
-        :param ww: target width in pixels
-        :type  ww: integer
-        :param wh: target height in pixels
-        :type  wh: integer
-        :param dtype: the type of document that should be rendered
-        :type  dtype: integer
+        Args:
+            cr (:class:`Gdk.CairoContext`):  target surface
+            ww (integer):  target width in pixels
+            wh (integer):  target height in pixels
+            dtype (integer):  the type of document that should be rendered
         """
 
         pw, ph = self.get_size(dtype)
@@ -449,14 +442,12 @@ class Document:
 
     def __init__(self, page_change_callback, pop_doc, path, page=0):
         """
-        :param page_change_callback: action to perform to signal we changed pages
-        :type  page_change_callback: function
-        :param pop_doc: Instance of the Poppler document at path that this class will wrap
-        :type  pop_doc: Poppler.Document
-        :param path: Absolute path to the PDF file to open
-        :type  path: string
-        :param page: page number to which the file should be opened
-        :type  page: integer
+
+        Args:
+            page_change_callback (function):  action to perform to signal we changed pages
+            pop_doc (Poppler.Document):  Instance of the Poppler document at path that this class will wrap
+            path (string):  Absolute path to the PDF file to open
+            page (integer):  page number to which the file should be opened
         """
 
         self.path = path
@@ -488,14 +479,13 @@ class Document:
     def create(page_change_callback, path, page=0):
         """ Initializes a Document by passing it a :class:`Poppler.Document`
 
-        :param page_change_callback: action to perform to signal we changed pages
-        :type  page_change_callback: function
-        :param path: Absolute path to the PDF file to open
-        :type  path: string
-        :param page: page number to which the file should be opened
-        :type  page: integer
-        :return: The initialized document
-        :rtype: Pympress.Document
+        Args:
+            page_change_callback (function):  action to perform to signal we changed pages
+            path (string):  Absolute path to the PDF file to open
+            page (integer):  page number to which the file should be opened
+
+        Returns:
+            Pympress.Document: The initialized document
         """
         poppler_doc = Poppler.Document.new_from_file(urljoin('file:', pathname2url(path)), None)
         return Document(page_change_callback, poppler_doc, path, page)
@@ -503,18 +493,19 @@ class Document:
     def has_notes(self):
         """ Get the document mode.
 
-        :return: ``True`` if the document has notes, ``False`` otherwise
-        :rtype: boolean
+        Returns:
+            boolean: ``True`` if the document has notes, ``False`` otherwise
         """
         return self.notes
 
     def page(self, number):
         """ Get the specified page.
 
-        :param number: number of the page to return
-        :type  number: integer
-        :return: the wanted page, or ``None`` if it does not exist
-        :rtype: :class:`pympress.document.Page`
+        Args:
+            number (integer):  number of the page to return
+
+        Returns:
+            :class:`pympress.document.Page`: the wanted page, or ``None`` if it does not exist
         """
         if number >= self.nb_pages or number < 0:
             return None
@@ -527,16 +518,16 @@ class Document:
     def current_page(self):
         """ Get the current page.
 
-        :return: the current page
-        :rtype: :class:`pympress.document.Page`
+        Returns:
+            :class:`pympress.document.Page`: the current page
         """
         return self.page(self.cur_page)
 
     def next_page(self):
         """ Get the next page.
 
-        :return: the next page, or ``None`` if this is the last page
-        :rtype: :class:`pympress.document.Page`
+        Returns:
+            :class:`pympress.document.Page`: the next page, or ``None`` if this is the last page
         """
         return self.page(self.cur_page + 1)
 
@@ -544,8 +535,8 @@ class Document:
     def pages_number(self):
         """ Get the number of pages in the document.
 
-        :return: the number of pages in the document
-        :rtype: integer
+        Returns:
+            integer: the number of pages in the document
         """
         return self.nb_pages
 
@@ -553,8 +544,8 @@ class Document:
     def goto(self, number, unpause = True):
         """ Switch to another page.
 
-        :param number: number of the destination page
-        :type  number: integer
+        Args:
+            number (integer):  number of the destination page
         """
         if number < 0:
             number = 0
@@ -589,10 +580,11 @@ class Document:
         """ Returns full path, extrapolated from a path relative to this document
         or to the current directory.
 
-        :param filename: Name of the file or relative path to it
-        :type  filename: string
-        :return: the full path to the file or None if it doesn't exist
-        :rtype: string
+        Args:
+            filename (string):  Name of the file or relative path to it
+
+        Returns:
+            string: the full path to the file or None if it doesn't exist
         """
         filepath = None
         if os.path.isabs(filename):

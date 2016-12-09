@@ -18,10 +18,10 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-'''
+"""
 :mod:`pympress.util` -- various utility functions
 -------------------------------------------------
-'''
+"""
 
 from __future__ import print_function
 
@@ -94,8 +94,8 @@ def load_icons():
     ''' Load pympress icons from the pixmaps directory (usually
     :file:`/usr/share/pixmaps` or something similar).
 
-    :return: loaded icons
-    :rtype: list of :class:`GdkPixbuf.Pixbuf`
+    Returns:
+        list of :class:`GdkPixbuf.Pixbuf`: loaded icons
     '''
     icons = []
     for icon_name in list_icons():

@@ -93,8 +93,8 @@ class SurfaceCache:
 
     def __init__(self, doc, max_pages):
         """
-        :param doc: the current document
-        :type  doc: :class:`pympress.document.Document`
+        Args:
+            doc (:class:`pympress.document.Document`):  the current document
         """
         self.max_pages = max_pages
         self.doc = doc
@@ -108,12 +108,10 @@ class SurfaceCache:
         structures, and creates a new thread for prerendering pages for this
         widget.
 
-        :param widget_name: string used to identify a widget
-        :type  widget_name: string
-        :param wtype: type of document handled by the widget (see :attr:`surface_type`)
-        :type  wtype: integer
-        :param start_enabled: whether this widget is initially in the list of widgets to prerender
-        :type  start_enabled: boolean
+        Args:
+            widget_name (string):  string used to identify a widget
+            wtype (integer):  type of document handled by the widget (see :attr:`surface_type`)
+            start_enabled (boolean):  whether this widget is initially in the list of widgets to prerender
         """
         self.surface_cache[widget_name] = OrderedDict()
         self.surface_size[widget_name] = (-1, -1)
@@ -126,26 +124,25 @@ class SurfaceCache:
     def disable_prerender(self, widget_name):
         """ Remove a widget from the ones to be prerendered.
 
-        :param widget_name: string used to identify a widget
-        :type  widget_name: string
+        Args:
+            widget_name (string):  string used to identify a widget
         """
         self.active_widgets.discard(widget_name)
 
     def enable_prerender(self, widget_name):
         """ Add a widget to the ones to be prerendered.
 
-        :param widget_name: string used to identify a widget
-        :type  widget_name: string
+        Args:
+            widget_name (string):  string used to identify a widget
         """
         self.active_widgets.add(widget_name)
 
     def set_widget_type(self, widget_name, wtype):
         """ Set the document type of a widget.
 
-        :param widget_name: string used to identify a widget
-        :type  widget_name: string
-        :param wtype: type of document handled by the widget (see :attr:`surface_type`)
-        :type  wtype: integer
+        Args:
+            widget_name (string):  string used to identify a widget
+            wtype (integer):  type of document handled by the widget (see :attr:`surface_type`)
         """
         with self.locks[widget_name]:
             if self.surface_type[widget_name] != wtype :
@@ -155,22 +152,21 @@ class SurfaceCache:
     def get_widget_type(self, widget_name):
         """ Get the document type of a widget.
 
-        :param widget_name: string used to identify a widget
-        :type  widget_name: string
-        :return: type of document handled by the widget (see :attr:`surface_type`)
-        :rtype: integer
+        Args:
+            widget_name (string):  string used to identify a widget
+
+        Returns:
+            integer: type of document handled by the widget (see :attr:`surface_type`)
         """
         return self.surface_type[widget_name]
 
     def resize_widget(self, widget_name, width, height):
         """ Change the size of a registered widget, thus invalidating all the cached pages.
 
-        :param widget_name: name of the widget that is resized
-        :type  widget_name: string
-        :param width: new width of the widget
-        :type  width: integer
-        :param height: new height of the widget
-        :type  height: integer
+        Args:
+            widget_name (string):  name of the widget that is resized
+            width (integer):  new width of the widget
+            height (integer):  new height of the widget
         """
         with self.locks[widget_name]:
             if (width, height) != self.surface_size[widget_name]:
@@ -180,12 +176,12 @@ class SurfaceCache:
     def get(self, widget_name, page_nb):
         """ Fetch a cached, prerendered page for the specified widget.
 
-        :param widget_name: name of the concerned widget
-        :type  widget_name: string
-        :param page_nb: number of the page to fetch in the cache
-        :type  page_nb: integer
-        :return: the cached page if available, or ``None`` otherwise
-        :rtype: :class:`cairo.ImageSurface`
+        Args:
+            widget_name (string):  name of the concerned widget
+            page_nb (integer):  number of the page to fetch in the cache
+
+        Returns:
+            :class:`cairo.ImageSurface`: the cached page if available, or ``None`` otherwise
         """
         with self.locks[widget_name]:
             pc = self.surface_cache[widget_name]
@@ -198,12 +194,10 @@ class SurfaceCache:
     def set(self, widget_name, page_nb, val):
         """ Store a rendered page in the cache.
 
-        :param widget_name: name of the concerned widget
-        :type  wdiget_name: string
-        :param page_nb: number of the page to store in the cache
-        :type  page_nb: integer
-        :param val: content to store in the cache
-        :type  val: :class:`cairo.ImageSurface`
+        Args:
+            widget_name (string):  name of the concerned widget
+            page_nb (integer):  number of the page to store in the cache
+            val (:class:`cairo.ImageSurface`):  content to store in the cache
         """
         with self.locks[widget_name]:
             pc = self.surface_cache[widget_name]
@@ -218,8 +212,8 @@ class SurfaceCache:
 
         The specified page will be prerendered for all the registered widgets.
 
-        :param page_nb: number of the page to be prerendered
-        :type  page_nb: integer
+        Args:
+            page_nb (integer):  number of the page to be prerendered
         """
         for name in self.active_widgets:
             GLib.idle_add(self.renderer, name, page_nb)
@@ -235,10 +229,9 @@ class SurfaceCache:
         - store it in the cache if it was not added there since the beginning of
           the process
 
-        :param widget_name: name of the concerned widget
-        :type  wdiget_name: string
-        :param page_nb: number of the page to store in the cache
-        :type  page_nb: integer
+        Args:
+            widget_name (string):  name of the concerned widget
+            page_nb (integer):  number of the page to store in the cache
         """
 
         with self.locks[widget_name]:
