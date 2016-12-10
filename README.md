@@ -17,11 +17,13 @@ This is now a fork of [Schnouki's original Pympress](https://github.com/Schnouki
 
 ## If you have python
 
+### Using pip
+
 Run the following command in your shell (or replace `python3 -m pip` with `python -m pip` or just `pip`):
 
     python3 -m pip install git+https://github.com/Cimbali/pympress#egg=pympress
 
-If you don't have pip, see [the python documentation on installing](https://docs.python.org/3.5/installing/index.html). You may also want to check that you have all [the dependencies](https://github.com/Cimbali/pympress#dependencies).
+If you don't have pip, see [the python documentation on installing](https://docs.python.org/3.5/installing/index.html). You may also want to check that you have all [the dependencies](#dependencies).
 
 ### From source
 
@@ -33,6 +35,28 @@ If you don't want to know about source code or dependencies, this is for you.
 Grab [the latest installer for your platform](https://github.com/Cimbali/pympress/releases/latest) and execute it. You're done!
 
 Currently binaries are only available for windows (.msi files). Choose packages with 'amd64' in the name if you have a 64 bit machine, 'x86' if you have a 32 bit machine. The 'vlc' suffix indicates that this installer ships VLC as well to support video, so try it if the other version fails to read videos.
+
+## Dependencies
+
+Pympress relies on:
+* Python, 3.x or 2.7 (with [setuptools](https://pypi.python.org/pypi/setuptools), which is usually shipped by default with python).
+* [Poppler](http://poppler.freedesktop.org/), the PDF rendering library.
+* [Cairo](https://www.cairographics.org/) (and python bindings for cairo), the graphics library which to pre-render and draw over PDF pages.
+* [Gtk+ 3](http://www.gtk.org/), a toolkit for creating graphical user interfaces.
+* [PyGi, the python bindings for Gtk+3](https://wiki.gnome.org/Projects/PyGObject). PyGi is also known as *pygobject3*, just *pygobject* or *python3-gi*.
+  * Introspection bindings for poppler may be shipped separately, ensure you have those as well (`typelib-1_0-Poppler-0_18` on OpenSUSE, `gir1.2-poppler-0.18` on Ubuntu)
+* optionally VLC, to play videos (with the same bitness as Python)
+
+On windows GTK+3, Poppler and their python bindings are all shipped together in [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/). *Be sure to check the supported Python versions (up to 3.4 at the time of writing)*, they appear in the FEATURES list in the linked page.
+
+On other platforms they are often installed by default, or easily available through your package or software manager.
+For example, on ubuntu, you can run the following as root to make sure you have all the prerequisites *assuming you use python3*:
+
+    apt-get install python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gi python3-cairo gir1.2-gtk-3.0 gir1.2-poppler-0.18
+
+Different distributions might have different package naming conventions, for example the equivalent on OpenSUSE would be:
+
+    zypper in python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gobject python3-gobject-Gdk python3-cairo typelib-1_0-GdkPixbuf-2_0 typelib-1_0-Gtk-3_0 typelib-1_0-Poppler-0_18
 
 # Usage
 
@@ -61,31 +85,11 @@ A few of the fancier functionalities are listed here:
 # Hacking
 
 Feel free to clone this repo and use it, modify it, redistribute it, etc, under the GPLv2+.
-Pympress has inline sphinx (rst syntax) documentation, and the gh-pages branch hosts [an online documentation generated from it](https://www.pympress.xyz).
-
-## Dependencies
-
-Pympress relies on:
-* Python, 3.x or 2.7 (with [setuptools](https://pypi.python.org/pypi/setuptools), which is usually shipped by default with python).
-* [Poppler](http://poppler.freedesktop.org/), the PDF rendering library.
-* [Cairo](https://www.cairographics.org/) (and python bindings for cairo), the graphics library which to pre-render and draw over PDF pages.
-* [Gtk+ 3](http://www.gtk.org/), a toolkit for creating graphical user interfaces.
-* [PyGi, the python bindings for Gtk+3](https://wiki.gnome.org/Projects/PyGObject). PyGi is also known as *pygobject3*, just *pygobject* or *python3-gi*.
-  * Introspection bindings for poppler may be shipped separately, ensure you have those as well (`typelib-1_0-Poppler-0_18` on OpenSUSE, `gir1.2-poppler-0.18` on Ubuntu)
-* optionally VLC, to play videos (with the same bitness as Python)
-
-On windows GTK+3, Poppler and their python bindings are all shipped together in [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/). *Be sure to check the supported Python versions (up to 3.4 at the time of writing)*, they appear in the FEATURES list in the linked page.
-
-On other platforms they are often installed by default, or easily available through your package or software manager.
-For example, on ubuntu, you can run the following as root to make sure you have all the prerequisites *assuming you use python3*:
-
-    apt-get install python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gi python3-cairo gir1.2-gtk-3.0 gir1.2-poppler-0.18
-
-Different distributions might have different package naming conventions, for example the equivalent on OpenSUSE would be:
-
-    zypper in python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gobject python3-gobject-Gdk python3-cairo typelib-1_0-GdkPixbuf-2_0 typelib-1_0-Gtk-3_0 typelib-1_0-Poppler-0_18
+Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.org/en/latest/ext/example_google.html), contains rst syntax), and the [docs folder](https://github.com/Cimbali/pympress/tree/master/docs/) contains the documentation generated from it, hosted on [the github pages of this repo](https://cimbali.github.io/pympress/pympress.html).
 
 ## Translations
 
-If you want to add a translation, check if pympress/share/locale/&lt;language&gt;/pympress.po already exists. If not, take [this file](https://github.com/Cimbali/pympress/tree/master/pympress/share/locale/pympress.pot) as input and translate all the strings, then add it to the repo in pympress/share/locale/&lt;language&gt;/pympress.po .
-Finally pass this .po file to msgfmt and add the output to the repo at pympress/share/locale/&lt;language&gt;/LC_MESSAGES/pympress.mo
+If you want to add a translation, check if `pympress/share/locale/<language>/pympress.po` already exists. If not, take [the template file](https://github.com/Cimbali/pympress/tree/master/pympress/share/locale/pympress.pot) as input and translate all the strings, then add it to the repo in `pympress/share/locale/<language>/pympress.po`.
+Finally pass this .po file to msgfmt and add the output to the repo at `pympress/share/locale/<language>/LC_MESSAGES/pympress.mo`.
+
+

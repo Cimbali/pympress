@@ -55,7 +55,7 @@ source_parsers = {
     '.md': CommonMarkParser,
 }
 
-github_doc_root = '../'
+github_doc_root = 'https://cimbali.github.io/pympress/'
 def setup(app):
     app.add_config_value('recommonmark_config', {
             'url_resolver': lambda url: github_doc_root + url,
@@ -150,6 +150,9 @@ todo_include_todos = True
 import sphinx_rtd_theme
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme_options = {
+    'collapse_navigation': True,
+}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
