@@ -1,0 +1,476 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pympress.surfacecache &mdash; Pympress developer documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Pympress developer documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Pympress
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#hacking">Hacking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Pympress</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>pympress.surfacecache</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pympress.surfacecache</h1><div class="highlight"><pre>
+<span></span><span class="c1">#       surfacecache.py</span>
+<span class="c1">#</span>
+<span class="c1">#       Copyright 2010 Thomas Jost &lt;thomas.jost@gmail.com&gt;</span>
+<span class="c1">#       Copyright 2015 Cimbali &lt;me@cimba.li&gt;</span>
+<span class="c1">#</span>
+<span class="c1">#       This program is free software; you can redistribute it and/or modify</span>
+<span class="c1">#       it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#       the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1">#       (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#       This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#       but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#       GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#       You should have received a copy of the GNU General Public License</span>
+<span class="c1">#       along with this program; if not, write to the Free Software</span>
+<span class="c1">#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,</span>
+<span class="c1">#       MA 02110-1301, USA.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:mod:`pympress.surfacecache` -- pages prerendering and caching</span>
+<span class="sd">--------------------------------------------------------------</span>
+
+<span class="sd">This modules contains stuff needed for caching pages and prerendering them. This</span>
+<span class="sd">is done by the :class:`~pympress.surfacecache.SurfaceCache` class, using several</span>
+<span class="sd">dictionaries of :class:`cairo.ImageSurface` for storing rendered pages.</span>
+
+<span class="sd">The problem is, neither Gtk+ nor Poppler are particularly threadsafe.</span>
+<span class="sd">Hence the prerendering isn&#39;t really done in parallel in another thread, but</span>
+<span class="sd">scheduled on the main thread at idle times using GLib.idle_add().</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">import</span> <span class="nn">gi</span>
+<span class="kn">import</span> <span class="nn">cairo</span>
+<span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GLib</span>
+
+
+<div class="viewcode-block" id="OrderedDict"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.OrderedDict">[docs]</a><span class="k">class</span> <span class="nc">OrderedDict</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; OrderedDict for python2 compatibility, adding move_to_end().</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="OrderedDict.move_to_end"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.OrderedDict.move_to_end">[docs]</a>    <span class="k">def</span> <span class="nf">move_to_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div></div>
+
+
+<div class="viewcode-block" id="SurfaceCache"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache">[docs]</a><span class="k">class</span> <span class="nc">SurfaceCache</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Pages caching and prerendering made (almost) easy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The actual cache. It is a dictionary of :class:`pympress.surfacecache.Cache`:</span>
+    <span class="c1">#: its keys are widget names and its values are dictionaries whose keys are</span>
+    <span class="c1">#: page numbers and values are instances of :class:`cairo.ImageSurface`.</span>
+    <span class="c1">#: In each :class:`pympress.surfacecache.Cache` keys are ordered by Least Recently</span>
+    <span class="c1">#: Used (get or set), when the size is beyond :attr:`max_pages`, pages are</span>
+    <span class="c1">#: popped from the start of the cache.</span>
+    <span class="n">surface_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1">#: Size of the different managed widgets, as a dictionary of tuples</span>
+    <span class="n">surface_size</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1">#: Type of document handled by each widget. It is a dictionary: its keys are</span>
+    <span class="c1">#: widget names and its values are document types</span>
+    <span class="c1">#: (:const:`~pympress.ui.PDF_REGULAR`, :const:`~pympress.ui.PDF_CONTENT_PAGE`</span>
+    <span class="c1">#: or :const:`~pympress.ui.PDF_NOTES_PAGE`).</span>
+    <span class="n">surface_type</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1">#: Dictionary of :class:`~threading.Lock`\ s used for managing conccurent</span>
+    <span class="c1">#: accesses to :attr:`surface_cache`, :attr:`surface_size`, and :attr:`jobs`.</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1">#: The current :class:`~pympress.document.Document`.</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: :class:`~threading.Lock` used to manage conccurent accesses to</span>
+    <span class="c1">#: :attr:`doc`.</span>
+    <span class="n">doc_lock</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: Set of active widgets</span>
+    <span class="n">active_widgets</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="c1">#: maximum number fo pages we keep in cache</span>
+    <span class="n">max_pages</span> <span class="o">=</span> <span class="mi">200</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">,</span> <span class="n">max_pages</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            doc (:class:`pympress.document.Document`):  the current document</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_pages</span> <span class="o">=</span> <span class="n">max_pages</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">doc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SurfaceCache.add_widget"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.add_widget">[docs]</a>    <span class="k">def</span> <span class="nf">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">,</span> <span class="n">wtype</span><span class="p">,</span> <span class="n">start_enabled</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add a widget to the list of widgets that have to be managed (for caching</span>
+<span class="sd">        and prerendering).</span>
+
+<span class="sd">        This creates new entries for ``widget_name`` in the needed internal data</span>
+<span class="sd">        structures, and creates a new thread for prerendering pages for this</span>
+<span class="sd">        widget.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget_name (string):  string used to identify a widget</span>
+<span class="sd">            wtype (integer):  type of document handled by the widget (see :attr:`surface_type`)</span>
+<span class="sd">            start_enabled (boolean):  whether this widget is initially in the list of widgets to prerender</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surface_cache</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surface_size</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surface_type</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">wtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">start_enabled</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enable_prerender</span><span class="p">(</span><span class="n">widget_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SurfaceCache.disable_prerender"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.disable_prerender">[docs]</a>    <span class="k">def</span> <span class="nf">disable_prerender</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Remove a widget from the ones to be prerendered.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget_name (string):  string used to identify a widget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_widgets</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">widget_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SurfaceCache.enable_prerender"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.enable_prerender">[docs]</a>    <span class="k">def</span> <span class="nf">enable_prerender</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add a widget to the ones to be prerendered.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget_name (string):  string used to identify a widget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_widgets</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">widget_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SurfaceCache.set_widget_type"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.set_widget_type">[docs]</a>    <span class="k">def</span> <span class="nf">set_widget_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">,</span> <span class="n">wtype</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set the document type of a widget.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget_name (string):  string used to identify a widget</span>
+<span class="sd">            wtype (integer):  type of document handled by the widget (see :attr:`surface_type`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_type</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">!=</span> <span class="n">wtype</span> <span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">surface_type</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">wtype</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">surface_cache</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SurfaceCache.get_widget_type"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.get_widget_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_widget_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the document type of a widget.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget_name (string):  string used to identify a widget</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            integer: type of document handled by the widget (see :attr:`surface_type`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_type</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SurfaceCache.resize_widget"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.resize_widget">[docs]</a>    <span class="k">def</span> <span class="nf">resize_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Change the size of a registered widget, thus invalidating all the cached pages.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget_name (string):  name of the widget that is resized</span>
+<span class="sd">            width (integer):  new width of the widget</span>
+<span class="sd">            height (integer):  new height of the widget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_size</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">surface_cache</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">surface_size</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SurfaceCache.get"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">,</span> <span class="n">page_nb</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Fetch a cached, prerendered page for the specified widget.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget_name (string):  name of the concerned widget</span>
+<span class="sd">            page_nb (integer):  number of the page to fetch in the cache</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`cairo.ImageSurface`: the cached page if available, or ``None`` otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]:</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_cache</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">page_nb</span> <span class="ow">in</span> <span class="n">pc</span><span class="p">:</span>
+                <span class="n">pc</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">page_nb</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">pc</span><span class="p">[</span><span class="n">page_nb</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="SurfaceCache.set"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">,</span> <span class="n">page_nb</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Store a rendered page in the cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget_name (string):  name of the concerned widget</span>
+<span class="sd">            page_nb (integer):  number of the page to store in the cache</span>
+<span class="sd">            val (:class:`cairo.ImageSurface`):  content to store in the cache</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]:</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_cache</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span>
+            <span class="n">pc</span><span class="p">[</span><span class="n">page_nb</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="n">pc</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">page_nb</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_pages</span><span class="p">:</span>
+                <span class="n">pc</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SurfaceCache.prerender"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.prerender">[docs]</a>    <span class="k">def</span> <span class="nf">prerender</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_nb</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Queue a page for prerendering.</span>
+
+<span class="sd">        The specified page will be prerendered for all the registered widgets.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            page_nb (integer):  number of the page to be prerendered</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_widgets</span><span class="p">:</span>
+            <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">renderer</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">page_nb</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SurfaceCache.renderer"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.renderer">[docs]</a>    <span class="k">def</span> <span class="nf">renderer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">,</span> <span class="n">page_nb</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Rendering thread.</span>
+
+<span class="sd">        This function is meant to be run in the prerendering thread. It runs</span>
+<span class="sd">        infinitely (until the program ends) and does the following steps:</span>
+
+<span class="sd">        - check if the job&#39;s result is not already available in the cache</span>
+<span class="sd">        - render it in a new :class:`~cairo.ImageSurface` if necessary</span>
+<span class="sd">        - store it in the cache if it was not added there since the beginning of</span>
+<span class="sd">          the process</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget_name (string):  name of the concerned widget</span>
+<span class="sd">            page_nb (integer):  number of the page to store in the cache</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">page_nb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_cache</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]:</span>
+                <span class="c1"># Already in cache</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_size</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span>
+            <span class="n">wtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_type</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">ww</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">wh</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">widget_name</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc_lock</span><span class="p">:</span>
+            <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">page_nb</span><span class="p">)</span>
+            <span class="n">pw</span><span class="p">,</span> <span class="n">ph</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">get_size</span><span class="p">(</span><span class="n">wtype</span><span class="p">)</span>
+
+        <span class="c1"># Render to a ImageSurface</span>
+        <span class="c1"># 32 to support alpha (needed with premultiplied values?)</span>
+        <span class="c1"># Anyway 24 uses 32-bit values with 8 unused</span>
+        <span class="n">surface</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">ImageSurface</span><span class="p">(</span><span class="n">cairo</span><span class="o">.</span><span class="n">FORMAT_ARGB32</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">Context</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+        <span class="n">page</span><span class="o">.</span><span class="n">render_cairo</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">,</span> <span class="n">wtype</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">context</span>
+
+        <span class="c1"># Save if possible and necessary</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]:</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_cache</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_size</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">page_nb</span> <span class="ow">in</span> <span class="n">pc</span><span class="p">:</span>
+                <span class="n">pc</span><span class="p">[</span><span class="n">page_nb</span><span class="p">]</span> <span class="o">=</span> <span class="n">surface</span>
+                <span class="n">pc</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">page_nb</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_pages</span><span class="p">:</span>
+                <span class="n">pc</span><span class="o">.</span><span class="n">popitem</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div></div>
+
+
+<span class="c1">##</span>
+<span class="c1"># Local Variables:</span>
+<span class="c1"># mode: python</span>
+<span class="c1"># indent-tabs-mode: nil</span>
+<span class="c1"># py-indent-offset: 4</span>
+<span class="c1"># fill-column: 80</span>
+<span class="c1"># end:</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2009-2011, Thomas Jost; 2015-2016 Cimbali.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'b&#39;0.6-76-g1f7afd9&#39;',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
