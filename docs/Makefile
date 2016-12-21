@@ -1,7 +1,7 @@
 
 .PHONY:update clean
 update:
-	@make -C source html
+	@cp ../README.md source/README.md && make -C source html && rm source/README.md
 
 clean:
 	@rm -rf source/_build _modules _sources _static
