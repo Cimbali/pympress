@@ -27,8 +27,17 @@
     font-size:1.2em;
 }
 
-.info-label {
+.big-info-label {
     font-size: 1.6em;
+}
+
+.info-label {
+    font-size: 1.4em;
+    opacity: 0.80;
+}
+
+.big-info-label > .frame-label {
+    font-size:0.7em;
 }
 
 .info-label > .frame-label {

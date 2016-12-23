@@ -247,6 +247,9 @@
                 <property name="use_stock">True</property>
                 <property name="always_show_image">True</property>
                 <signal name="clicked" handler="goto_prev" swapped="no"/>
+                <style>
+                  <class name="info-label"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -288,7 +291,7 @@
                             <signal name="key-press-event" handler="on_spin_nav" swapped="no"/>
                             <signal name="key-release-event" handler="on_spin_nav" swapped="no"/>
                             <style>
-                              <class name="info-label"/>
+                              <class name="big-info-label"/>
                             </style>
                           </object>
                           <packing>
@@ -307,7 +310,7 @@
                             <property name="single_line_mode">True</property>
                             <property name="track_visited_links">False</property>
                             <style>
-                              <class name="info-label"/>
+                              <class name="big-info-label"/>
                             </style>
                           </object>
                           <packing>
@@ -324,7 +327,7 @@
                             <property name="label">/0</property>
                             <property name="track_visited_links">False</property>
                             <style>
-                              <class name="info-label"/>
+                              <class name="big-info-label"/>
                             </style>
                           </object>
                           <packing>
@@ -349,7 +352,7 @@
                   </object>
                 </child>
                 <style>
-                  <class name="info-label"/>
+                  <class name="big-info-label"/>
                 </style>
               </object>
               <packing>
@@ -368,6 +371,9 @@
                 <property name="use_stock">True</property>
                 <property name="always_show_image">True</property>
                 <signal name="clicked" handler="goto_next" swapped="no"/>
+                <style>
+                  <class name="info-label"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -384,6 +390,9 @@
                 <property name="receives_default">True</property>
                 <property name="margin_top">10</property>
                 <property name="always_show_image">True</property>
+                <style>
+                  <class name="info-label"/>
+                </style>
                 <signal name="clicked" handler="switch_scribbling" swapped="no"/>
               </object>
               <packing>
@@ -407,7 +416,7 @@
                     <property name="can_focus">False</property>
                     <property name="label">00:00</property>
                     <style>
-                      <class name="info-label"/>
+                      <class name="big-info-label"/>
                     </style>
                   </object>
                 </child>
@@ -423,7 +432,7 @@
                   </object>
                 </child>
                 <style>
-                  <class name="info-label"/>
+                  <class name="big-info-label"/>
                 </style>
               </object>
               <packing>

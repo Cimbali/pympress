@@ -1253,7 +1253,7 @@ class UI:
         """
 
         # Current time
-        clock = time.strftime("%H:%M") #"%H:%M:%S"
+        clock = time.strftime("%X") #"%H:%M:%S"
 
         # Time elapsed since the beginning of the presentation
         if not self.paused:
