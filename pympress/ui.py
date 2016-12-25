@@ -327,6 +327,7 @@ class UI:
         pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
 
+
     def make_pwin(self):
         """ Initializes the presenter window.
         """
@@ -653,7 +654,7 @@ class UI:
             return
 
         page_cur = self.doc.page(page_nb)
-        page_next = self.doc.page(page_nb+1)
+        page_next = self.doc.page(page_nb + 1)
 
         self.page_preview_nb = page_nb
 
@@ -824,7 +825,7 @@ class UI:
             # Current page 'preview'
             page = self.doc.page(self.page_preview_nb)
         else:
-            page = self.doc.page(self.page_preview_nb+1)
+            page = self.doc.page(self.page_preview_nb + 1)
             # No next page: just return so we won't draw anything
             if page is None:
                 return
@@ -1123,7 +1124,7 @@ class UI:
                 self.spin_cur.grab_focus()
                 self.editing_cur = True
 
-                self.spin_cur.set_value(self.doc.current_page().number()+1)
+                self.spin_cur.set_value(self.doc.current_page().number() + 1)
                 self.spin_cur.select_region(0, -1)
 
             elif self.editing_cur:

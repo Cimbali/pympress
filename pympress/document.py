@@ -607,6 +607,7 @@ class Document:
             os.remove(f)
         self.temp_files.clear()
 
+
 ##
 # Local Variables:
 # mode: python
