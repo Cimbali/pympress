@@ -865,10 +865,18 @@ class UI:
         instance about it, so that it can invalidate its internal cache for the
         specified widget and pre-render next pages at a correct size.
 
+        Warning: Some not-explicitely sent signals contain wrong values! Just don't resize in that case,
+        since these always seem to happen after a correct signal that was sent explicitely.
+
         Args:
             widget (:class:`Gtk.Widget`):  the widget which has been resized
             event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
+
+        # Don't trust those
+        if not event.send_event:
+            return
+
         self.cache.resize_widget(widget.get_name(), event.width, event.height)
 
         if widget is self.c_da and vlc_enabled:
