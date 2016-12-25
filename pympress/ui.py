@@ -337,11 +337,8 @@ class UI:
     def make_cwin(self):
         """ Initializes the content window.
         """
-        self.c_win.set_name("c_win")
-
         self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
         self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
-        self.c_da.set_name("c_da")
         if self.notes_mode:
             self.cache.add_widget("c_da", pympress.document.PDF_CONTENT_PAGE)
         else:
@@ -355,16 +352,11 @@ class UI:
         """ Initializes the presenter window.
         """
         # Presenter window
-        self.p_win.set_name("p_win")
-
         bigvbox = self.builder.get_object("bigvbox")
         menubar = self.make_menubar()
         bigvbox.pack_start(menubar, False, False, 0)
         bigvbox.reorder_child(menubar, 0)
 
-        self.p_da_cur.set_name("p_da_cur")
-        self.p_da_pres.set_name("p_da_pres")
-        self.p_da_next.set_name("p_da_next")
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
 
         self.spin_cur.get_adjustment().set_upper(self.doc.pages_number())
@@ -1784,11 +1776,8 @@ class UI:
         self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR, False)
 
         # Presenter-size setup
-        self.scribble_overlay.set_name("scribble_overlay")
-
         self.builder.get_object("scribble_color").set_rgba(self.scribble_color)
         self.builder.get_object("scribble_width").set_value(self.scribble_width)
-        self.scribble_p_da.set_name("scribble_p_da")
 
 
     def switch_scribbling(self, widget=None, event=None):
