@@ -525,8 +525,10 @@ class UI:
         """
         list_annot = Gtk.ListStore(str)
 
+        bullet = b'\xe2\x97\x8f '.decode('utf-8') if sys.version_info > (3, 0) else '\xe2\x97\x8f '
+
         for annot in annotations:
-            list_annot.append(('\xe2\x97\x8f '+annot,))
+            list_annot.append((bullet + annot,))
 
         self.scrollable_treelist.set_model(list_annot)
         self.resize_annotation_list()
