@@ -256,7 +256,7 @@ class UI:
         )
 
         # Document
-        self.doc = pympress.document.Document.create(self.on_page_change, docpath or self.pick_file())
+        self.doc = pympress.document.Document.create(self.on_page_change, docpath)
 
         # Use notes mode by default if the document has notes
         self.notes_mode = self.doc.has_notes()
@@ -421,6 +421,9 @@ class UI:
         self.hpaned.set_position(int(round(pane_size * avail_size)))
         self.on_page_change(False)
         GLib.idle_add(self.resize_annotation_list)
+
+        # delayed check for a file, prompt which to open
+        GLib.idle_add(lambda: self.doc.pages_number() > 0 or self.pick_file())
 
 
     def setup_screens(self):
