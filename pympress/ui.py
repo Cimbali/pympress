@@ -414,6 +414,10 @@ class UI:
         self.label_last.set_text("/{}".format(self.doc.pages_number()))
         self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
 
+        # Enable dropping files onto the window
+        self.p_win.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
+        self.p_win.drag_dest_add_text_targets()
+
         self.p_win.show_all()
 
         pane_size = self.config.getfloat('presenter', 'slide_ratio')
@@ -549,6 +553,17 @@ class UI:
         h = ui_manager.get_widget('/MenuBar/Help')
         h.set_right_justified(True)
         return ui_manager.get_widget('/MenuBar')
+
+
+    def on_drag_drop(self, widget, drag_context, x, y, data,info, time):
+        """ Receive the drag-drops (as text only). If a file is dropped, open it.
+        """
+        received = data.get_text()
+        if received.startswith('file://'):
+            received = received[len('file://'):]
+
+        if os.path.isfile(received) and received.lower().endswith('.pdf'):
+            self.swap_document(os.path.abspath(received))
 
 
     def add_annotations(self, annotations):
