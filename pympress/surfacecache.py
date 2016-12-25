@@ -121,6 +121,23 @@ class SurfaceCache:
             self.enable_prerender(widget_name)
 
 
+    def swap_document(self, new_doc):
+        """ Replaces the current document for which to cache slides with a new one.
+
+        This function also clears the cached pages, since they now belong to an outdated document.
+
+        Args:
+            new_doc (:class:`pympress.document.Document`):  the new document
+        """
+
+        with self.doc_lock:
+            self.doc = new_doc
+
+        for widget_name in self.locks:
+            with self.locks[widget_name]:
+                self.surface_cache[widget_name].clear()
+
+
     def disable_prerender(self, widget_name):
         """ Remove a widget from the ones to be prerendered.
 

@@ -414,6 +414,12 @@ class Page:
         self.page.render(cr)
 
 
+    def can_render(self):
+        """ Informs that rendering *is* necessary (avoids checking the type)
+        """
+        return True
+
+
 class Document:
     """ This is the main document handling class.
 
@@ -487,8 +493,11 @@ class Document:
         Returns:
             Pympress.Document: The initialized document
         """
-        poppler_doc = Poppler.Document.new_from_file(urljoin('file:', pathname2url(path)), None)
-        return Document(page_change_callback, poppler_doc, path, page)
+        if path is None:
+            return EmptyDocument()
+        else:
+            poppler_doc = Poppler.Document.new_from_file(urljoin('file:', pathname2url(path)), None)
+            return Document(page_change_callback, poppler_doc, path, page)
 
     def has_notes(self):
         """ Get the document mode.
@@ -606,6 +615,63 @@ class Document:
         for f in self.temp_files:
             os.remove(f)
         self.temp_files.clear()
+
+
+class EmptyPage(Page):
+    """ A dummy page, placeholder for when there are no valid pages around.
+
+        This page is a non-notes page with an aspect ratio of 1.3 and nothing else inside.
+        Also, it has no "rendering" capability, and is made harmless by overriding its render function.
+    """
+
+    def __init__(self):
+        self.page = None
+        self.page_nb = -1
+        self.parent = None
+        self.links = []
+        self.medias = []
+        self.annotations = []
+
+        # by default, anything that will have a 1.3 asapect ratio
+        self.pw, self.ph = 1.3, 1.0
+
+
+    def render_cairo(self, cr, ww, wh, dtype=PDF_REGULAR):
+        """ Overriding this purely for safety: make sure we do not accidentally try to render
+
+        Args:
+            cr (:class:`Gdk.CairoContext`):  target surface
+            ww (integer):  target width in pixels
+            wh (integer):  target height in pixels
+            dtype (integer):  the type of document that should be rendered
+        """
+        pass
+
+
+    def can_render(self):
+        """ Informs that rendering is *not* necessary (avoids checking the type)
+        """
+        return False
+
+
+class EmptyDocument(Document):
+    """ A dummy document, placeholder for when no document is open.
+    """
+
+    def __init__(self):
+        self.path = None
+        self.doc = None
+        self.nb_pages = 0
+        self.cur_page = -1
+        self.pages_cache = {-1: EmptyPage()}
+        self.notes = False
+        self.on_page_change = lambda *args: None
+
+
+    def page(self, number):
+        """ Informs that rendering is *not* necessary (avoids checking the type)
+        """
+        return self.pages_cache[number] if number in self.pages_cache else None
 
 
 ##

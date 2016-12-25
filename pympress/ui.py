@@ -311,6 +311,29 @@ class UI:
         self.highlight_button.set_visible(self.show_bigbuttons)
 
 
+    def swap_document(self, docpath):
+        """ Replace the currently open document with a new one
+
+        The new document is possibly and EmptyDocument if docpath is None.
+        The state of the ui and cache are updated accordingly.
+
+        Args:
+            docpath (str): the absolute path to the new document
+        """
+        self.doc = pympress.document.Document.create(self.on_page_change, docpath)
+
+        # Use notes mode by default if the document has notes
+        if self.notes_mode != self.doc.has_notes():
+            self.switch_mode()
+
+        # Some things that need updating
+        self.cache.swap_document(self.doc)
+        self.label_last.set_text("/{}".format(self.doc.pages_number()))
+
+        # Draw the new page(s)
+        self.on_page_change(False)
+
+
     def make_cwin(self):
         """ Initializes the content window.
         """
@@ -441,6 +464,8 @@ class UI:
         ui_desc = '''
         <menubar name="MenuBar">
           <menu action="File">
+            <menuitem action="Open"/>
+            <menuitem action="Close File"/>
             <menuitem action="Quit"/>
           </menu>
           <menu action="Presentation">
@@ -488,6 +513,8 @@ class UI:
             ('Starting Configuration', None, _('_Starting Configuration')),
             ('Help',         None,           _('_Help')),
 
+            ('Open',         Gtk.STOCK_OPEN, _('_Open'),        'o',     None, self.pick_file),
+            ('Close File',   Gtk.STOCK_CLOSE,_('_Close File'),  None,    None, self.close_file),
             ('Quit',         Gtk.STOCK_QUIT, _('_Quit'),        'q',     None, self.save_and_quit),
             ('Reset timer',  None,           _('_Reset timer'), 'r',     None, self.reset_timer),
             ('Set talk time',None,           _('Set talk _Time'),'t',    None, self.on_label_ett_event),
@@ -579,7 +606,13 @@ class UI:
         self.doc.goto_end()
 
 
-    def pick_file(self):
+    def close_file(self, *args):
+        """ Remove the current document.
+        """
+        self.swap_document(None)
+
+
+    def pick_file(self, *args):
         """ Ask the user which file he means to open.
         """
         # Use a GTK file dialog to choose file
@@ -602,20 +635,11 @@ class UI:
 
         response = dialog.run()
 
+        path = None
         if response == Gtk.ResponseType.OK:
-            name = dialog.get_filename()
-            dialog.destroy()
-        else:
-            dialog.destroy()
+            self.swap_document(os.path.abspath(dialog.get_filename()))
 
-            # Use a GTK dialog to tell we need a file
-            msg=_("""No file selected!\n\nYou can specify the PDF file to open on the command line if you don't want to use the "Open File" dialog.""")
-            dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg, parent=self.p_win)
-            dialog.set_position(Gtk.WindowPosition.CENTER)
-            dialog.run()
-            sys.exit(1)
-
-        return os.path.abspath(name)
+        dialog.destroy()
 
 
     def menu_about(self, widget=None, event=None):
@@ -829,6 +853,9 @@ class UI:
             # No next page: just return so we won't draw anything
             if page is None:
                 return
+
+        if not page.can_render():
+            return
 
         # Instead of rendering the document to a Cairo surface (which is slow),
         # use a surface from the cache if possible.
