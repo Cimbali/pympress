@@ -295,6 +295,10 @@ class UI:
         self.c_win.show_all()
         self.p_win.show_all()
 
+        # Some final setup steps
+        self.initial_resize()
+        self.load_time_colors()
+
         # Add media
         self.replace_media_overlays()
 
@@ -385,6 +389,30 @@ class UI:
 
         self.scrolled_window.set_hexpand(True)
 
+        # set default values
+        self.label_last.set_text("/{}".format(self.doc.pages_number()))
+        self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
+
+        # Enable dropping files onto the window
+        self.p_win.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
+        self.p_win.drag_dest_add_text_targets()
+
+
+    def initial_resize(self):
+        """ Last setup, that needs to be done after windows are realized, to size panes and annotation lists etc.
+        """
+        pane_size = self.config.getfloat('presenter', 'slide_ratio')
+        avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
+        self.hpaned.set_position(int(round(pane_size * avail_size)))
+        self.on_page_change(False)
+
+        GLib.idle_add(self.resize_annotation_list)
+
+        # delayed check for a file, prompt which to open
+        GLib.idle_add(lambda: self.doc.pages_number() > 0 or self.pick_file())
+
+
+    def load_time_colors(self):
         # Load color from CSS
         style_context = self.label_time.get_style_context()
         style_context.add_class("ett-reached")
@@ -401,25 +429,6 @@ class UI:
         style_context.remove_class("ett-warn")
         self.label_time.show();
         self.label_color_default = style_context.get_color(Gtk.StateType.NORMAL)
-
-        # set default values
-        self.label_last.set_text("/{}".format(self.doc.pages_number()))
-        self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
-
-        # Enable dropping files onto the window
-        self.p_win.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
-        self.p_win.drag_dest_add_text_targets()
-
-        self.p_win.show_all()
-
-        pane_size = self.config.getfloat('presenter', 'slide_ratio')
-        avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
-        self.hpaned.set_position(int(round(pane_size * avail_size)))
-        self.on_page_change(False)
-        GLib.idle_add(self.resize_annotation_list)
-
-        # delayed check for a file, prompt which to open
-        GLib.idle_add(lambda: self.doc.pages_number() > 0 or self.pick_file())
 
 
     def setup_screens(self):
@@ -1251,10 +1260,16 @@ class UI:
         w = self.p_frame_next.props.parent.get_allocated_width()
         h = self.p_frame_next.props.parent.props.parent.get_allocated_height()
         n = 2 if self.notes_mode else 1
+
         self.annotation_renderer.props.wrap_width = w - 10
-        self.p_frame_annot.set_size_request(-1, min(h - 200, max(h - n * (20 + w / r), 100)))
-        self.scrollable_treelist.get_column(0).queue_resize()
+        minh = self.p_frame_annot.get_preferred_height()[0]
+
+        newh = h - n * (20 + w / r)
+        newh = max(min(h - 200, newh), minh)
+        self.p_frame_annot.set_size_request(-1, newh)
+
         self.scrolled_window.queue_resize()
+        self.scrollable_treelist.get_column(0).queue_resize()
 
 
     def restore_current_label(self):
@@ -1267,7 +1282,6 @@ class UI:
             self.hb_cur.reorder_child(self.label_cur, 0)
 
         self.editing_cur = False
-
 
 
     def restore_current_label_ett(self):
