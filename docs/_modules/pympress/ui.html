@@ -392,7 +392,7 @@
         <span class="p">)</span>
 
         <span class="c1"># Document</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">,</span> <span class="n">docpath</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_file</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">,</span> <span class="n">docpath</span><span class="p">)</span>
 
         <span class="c1"># Use notes mode by default if the document has notes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">has_notes</span><span class="p">()</span>
@@ -431,6 +431,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
 
+        <span class="c1"># Some final setup steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_resize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_time_colors</span><span class="p">()</span>
+
         <span class="c1"># Add media</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">replace_media_overlays</span><span class="p">()</span>
 
@@ -447,14 +451,34 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">highlight_button</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_bigbuttons</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="UI.swap_document"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.swap_document">[docs]</a>    <span class="k">def</span> <span class="nf">swap_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Replace the currently open document with a new one</span>
+
+<span class="sd">        The new document is possibly and EmptyDocument if docpath is None.</span>
+<span class="sd">        The state of the ui and cache are updated accordingly.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            docpath (str): the absolute path to the new document</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">,</span> <span class="n">docpath</span><span class="p">)</span>
+
+        <span class="c1"># Use notes mode by default if the document has notes</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">has_notes</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switch_mode</span><span class="p">()</span>
+
+        <span class="c1"># Some things that need updating</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_last</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">()))</span>
+
+        <span class="c1"># Draw the new page(s)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="UI.make_cwin"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.make_cwin">[docs]</a>    <span class="k">def</span> <span class="nf">make_cwin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Initializes the content window.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;c_win&quot;</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">c_frame</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s2">&quot;yalign&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;yalign&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_frame</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s2">&quot;xalign&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;xalign&#39;</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c_da</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;c_da&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="s2">&quot;c_da&quot;</span><span class="p">,</span> <span class="n">pympress</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">PDF_CONTENT_PAGE</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -463,20 +487,16 @@
         <span class="n">pr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">current_page</span><span class="p">()</span><span class="o">.</span><span class="n">get_aspect_ratio</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_frame</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s2">&quot;ratio&quot;</span><span class="p">,</span> <span class="n">pr</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="UI.make_pwin"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.make_pwin">[docs]</a>    <span class="k">def</span> <span class="nf">make_pwin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Initializes the presenter window.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Presenter window</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;p_win&quot;</span><span class="p">)</span>
-
         <span class="n">bigvbox</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s2">&quot;bigvbox&quot;</span><span class="p">)</span>
         <span class="n">menubar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_menubar</span><span class="p">()</span>
         <span class="n">bigvbox</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">menubar</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">bigvbox</span><span class="o">.</span><span class="n">reorder_child</span><span class="p">(</span><span class="n">menubar</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">p_da_cur</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;p_da_cur&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">p_da_pres</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;p_da_pres&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">p_da_next</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;p_da_next&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_bigbuttons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_bigbuttons&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">get_adjustment</span><span class="p">()</span><span class="o">.</span><span class="n">set_upper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">())</span>
@@ -505,6 +525,30 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">scrolled_window</span><span class="o">.</span><span class="n">set_hexpand</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
+        <span class="c1"># set default values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_last</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_ett</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:02}</span><span class="s2">:</span><span class="si">{:02}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">est_time</span><span class="p">,</span> <span class="mi">60</span><span class="p">)))</span>
+
+        <span class="c1"># Enable dropping files onto the window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">drag_dest_set</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">DestDefaults</span><span class="o">.</span><span class="n">ALL</span><span class="p">,</span> <span class="p">[],</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">DragAction</span><span class="o">.</span><span class="n">COPY</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">drag_dest_add_text_targets</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="UI.initial_resize"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.initial_resize">[docs]</a>    <span class="k">def</span> <span class="nf">initial_resize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Last setup, that needs to be done after windows are realized, to size panes and annotation lists etc.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pane_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;slide_ratio&#39;</span><span class="p">)</span>
+        <span class="n">avail_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_cur</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_next</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hpaned</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">pane_size</span> <span class="o">*</span> <span class="n">avail_size</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resize_annotation_list</span><span class="p">)</span>
+
+        <span class="c1"># delayed check for a file, prompt which to open</span>
+        <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_file</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="UI.load_time_colors"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.load_time_colors">[docs]</a>    <span class="k">def</span> <span class="nf">load_time_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Load color from CSS</span>
         <span class="n">style_context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">get_style_context</span><span class="p">()</span>
         <span class="n">style_context</span><span class="o">.</span><span class="n">add_class</span><span class="p">(</span><span class="s2">&quot;ett-reached&quot;</span><span class="p">)</span>
@@ -520,19 +564,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">label_color_ett_warn</span> <span class="o">=</span> <span class="n">style_context</span><span class="o">.</span><span class="n">get_color</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">StateType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">)</span>
         <span class="n">style_context</span><span class="o">.</span><span class="n">remove_class</span><span class="p">(</span><span class="s2">&quot;ett-warn&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">label_color_default</span> <span class="o">=</span> <span class="n">style_context</span><span class="o">.</span><span class="n">get_color</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">StateType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">)</span>
-
-        <span class="c1"># set default values</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">label_last</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">()))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">label_ett</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:02}</span><span class="s2">:</span><span class="si">{:02}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">est_time</span><span class="p">,</span> <span class="mi">60</span><span class="p">)))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
-
-        <span class="n">pane_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;slide_ratio&#39;</span><span class="p">)</span>
-        <span class="n">avail_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_cur</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_next</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hpaned</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">pane_size</span> <span class="o">*</span> <span class="n">avail_size</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resize_annotation_list</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_color_default</span> <span class="o">=</span> <span class="n">style_context</span><span class="o">.</span><span class="n">get_color</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">StateType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UI.setup_screens"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.setup_screens">[docs]</a>    <span class="k">def</span> <span class="nf">setup_screens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -576,6 +608,8 @@
         <span class="n">ui_desc</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">        &lt;menubar name=&quot;MenuBar&quot;&gt;</span>
 <span class="s1">          &lt;menu action=&quot;File&quot;&gt;</span>
+<span class="s1">            &lt;menuitem action=&quot;Open&quot;/&gt;</span>
+<span class="s1">            &lt;menuitem action=&quot;Close File&quot;/&gt;</span>
 <span class="s1">            &lt;menuitem action=&quot;Quit&quot;/&gt;</span>
 <span class="s1">          &lt;/menu&gt;</span>
 <span class="s1">          &lt;menu action=&quot;Presentation&quot;&gt;</span>
@@ -623,6 +657,8 @@
             <span class="p">(</span><span class="s1">&#39;Starting Configuration&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;_Starting Configuration&#39;</span><span class="p">)),</span>
             <span class="p">(</span><span class="s1">&#39;Help&#39;</span><span class="p">,</span>         <span class="kc">None</span><span class="p">,</span>           <span class="n">_</span><span class="p">(</span><span class="s1">&#39;_Help&#39;</span><span class="p">)),</span>
 
+            <span class="p">(</span><span class="s1">&#39;Open&#39;</span><span class="p">,</span>         <span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_OPEN</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;_Open&#39;</span><span class="p">),</span>        <span class="s1">&#39;o&#39;</span><span class="p">,</span>     <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_file</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;Close File&#39;</span><span class="p">,</span>   <span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_CLOSE</span><span class="p">,</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;_Close File&#39;</span><span class="p">),</span>  <span class="kc">None</span><span class="p">,</span>    <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">close_file</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;Quit&#39;</span><span class="p">,</span>         <span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_QUIT</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;_Quit&#39;</span><span class="p">),</span>        <span class="s1">&#39;q&#39;</span><span class="p">,</span>     <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_and_quit</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;Reset timer&#39;</span><span class="p">,</span>  <span class="kc">None</span><span class="p">,</span>           <span class="n">_</span><span class="p">(</span><span class="s1">&#39;_Reset timer&#39;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span>     <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_timer</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;Set talk time&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span>           <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Set talk _Time&#39;</span><span class="p">),</span><span class="s1">&#39;t&#39;</span><span class="p">,</span>    <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_label_ett_event</span><span class="p">),</span>
@@ -656,13 +692,26 @@
         <span class="k">return</span> <span class="n">ui_manager</span><span class="o">.</span><span class="n">get_widget</span><span class="p">(</span><span class="s1">&#39;/MenuBar&#39;</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="UI.on_drag_drop"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.on_drag_drop">[docs]</a>    <span class="k">def</span> <span class="nf">on_drag_drop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">drag_context</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span><span class="n">info</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Receive the drag-drops (as text only). If a file is dropped, open it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">received</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">received</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;file://&#39;</span><span class="p">):</span>
+            <span class="n">received</span> <span class="o">=</span> <span class="n">received</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;file://&#39;</span><span class="p">):]</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">received</span><span class="p">)</span> <span class="ow">and</span> <span class="n">received</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.pdf&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">received</span><span class="p">))</span></div>
+
+
 <div class="viewcode-block" id="UI.add_annotations"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.add_annotations">[docs]</a>    <span class="k">def</span> <span class="nf">add_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotations</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Insert text annotations into the tree view that displays them.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">list_annot</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
+        <span class="n">bullet</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\xe2\x97\x8f</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="se">\xe2\x97\x8f</span><span class="s1"> &#39;</span>
+
         <span class="k">for</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
-            <span class="n">list_annot</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;</span><span class="se">\xe2\x97\x8f</span><span class="s1"> &#39;</span><span class="o">+</span><span class="n">annot</span><span class="p">,))</span>
+            <span class="n">list_annot</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">bullet</span> <span class="o">+</span> <span class="n">annot</span><span class="p">,))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">scrollable_treelist</span><span class="o">.</span><span class="n">set_model</span><span class="p">(</span><span class="n">list_annot</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resize_annotation_list</span><span class="p">()</span></div>
@@ -712,7 +761,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_end</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="UI.pick_file"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.pick_file">[docs]</a>    <span class="k">def</span> <span class="nf">pick_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="UI.close_file"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.close_file">[docs]</a>    <span class="k">def</span> <span class="nf">close_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Remove the current document.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UI.pick_file"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.pick_file">[docs]</a>    <span class="k">def</span> <span class="nf">pick_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Ask the user which file he means to open.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Use a GTK file dialog to choose file</span>
@@ -735,20 +790,11 @@
 
         <span class="n">response</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 
+        <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">get_filename</span><span class="p">()</span>
-            <span class="n">dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">dialog</span><span class="o">.</span><span class="n">get_filename</span><span class="p">()))</span>
 
-            <span class="c1"># Use a GTK dialog to tell we need a file</span>
-            <span class="n">msg</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;No file selected!</span><span class="se">\n\n</span><span class="s2">You can specify the PDF file to open on the command line if you don&#39;t want to use the &quot;Open File&quot; dialog.&quot;&quot;&quot;</span><span class="p">)</span>
-            <span class="n">dialog</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">MessageType</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">buttons</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ButtonsType</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">message_format</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">)</span>
-            <span class="n">dialog</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">WindowPosition</span><span class="o">.</span><span class="n">CENTER</span><span class="p">)</span>
-            <span class="n">dialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="UI.menu_about"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.menu_about">[docs]</a>    <span class="k">def</span> <span class="nf">menu_about</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -787,7 +833,7 @@
             <span class="k">return</span>
 
         <span class="n">page_cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">page_nb</span><span class="p">)</span>
-        <span class="n">page_next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">page_nb</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">page_next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">page_nb</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">page_preview_nb</span> <span class="o">=</span> <span class="n">page_nb</span>
 
@@ -958,10 +1004,13 @@
             <span class="c1"># Current page &#39;preview&#39;</span>
             <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page_preview_nb</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page_preview_nb</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page_preview_nb</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
             <span class="c1"># No next page: just return so we won&#39;t draw anything</span>
             <span class="k">if</span> <span class="n">page</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">page</span><span class="o">.</span><span class="n">can_render</span><span class="p">():</span>
+            <span class="k">return</span>
 
         <span class="c1"># Instead of rendering the document to a Cairo surface (which is slow),</span>
         <span class="c1"># use a surface from the cache if possible.</span>
@@ -1001,10 +1050,18 @@
 <span class="sd">        instance about it, so that it can invalidate its internal cache for the</span>
 <span class="sd">        specified widget and pre-render next pages at a correct size.</span>
 
+<span class="sd">        Warning: Some not-explicitely sent signals contain wrong values! Just don&#39;t resize in that case,</span>
+<span class="sd">        since these always seem to happen after a correct signal that was sent explicitely.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            widget (:class:`Gtk.Widget`):  the widget which has been resized</span>
 <span class="sd">            event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Don&#39;t trust those</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">send_event</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">resize_widget</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_da</span> <span class="ow">and</span> <span class="n">vlc_enabled</span><span class="p">:</span>
@@ -1249,7 +1306,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">grab_focus</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">editing_cur</span> <span class="o">=</span> <span class="kc">True</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">current_page</span><span class="p">()</span><span class="o">.</span><span class="n">number</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">current_page</span><span class="p">()</span><span class="o">.</span><span class="n">number</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">select_region</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">editing_cur</span><span class="p">:</span>
@@ -1339,10 +1396,16 @@
         <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_next</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">()</span>
         <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_next</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">get_allocated_height</span><span class="p">()</span>
         <span class="n">n</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="k">else</span> <span class="mi">1</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">annotation_renderer</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">wrap_width</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="mi">10</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_annot</span><span class="o">.</span><span class="n">set_size_request</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="mi">200</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="mi">20</span> <span class="o">+</span> <span class="n">w</span> <span class="o">/</span> <span class="n">r</span><span class="p">),</span> <span class="mi">100</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scrollable_treelist</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">queue_resize</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scrolled_window</span><span class="o">.</span><span class="n">queue_resize</span><span class="p">()</span></div>
+        <span class="n">minh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_annot</span><span class="o">.</span><span class="n">get_preferred_height</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">newh</span> <span class="o">=</span> <span class="n">h</span> <span class="o">-</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="mi">20</span> <span class="o">+</span> <span class="n">w</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span>
+        <span class="n">newh</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="mi">200</span><span class="p">,</span> <span class="n">newh</span><span class="p">),</span> <span class="n">minh</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_annot</span><span class="o">.</span><span class="n">set_size_request</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">newh</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scrolled_window</span><span class="o">.</span><span class="n">queue_resize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scrollable_treelist</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">queue_resize</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="UI.restore_current_label"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.restore_current_label">[docs]</a>    <span class="k">def</span> <span class="nf">restore_current_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1355,7 +1418,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">hb_cur</span><span class="o">.</span><span class="n">reorder_child</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_cur</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">editing_cur</span> <span class="o">=</span> <span class="kc">False</span></div>
-
 
 
 <div class="viewcode-block" id="UI.restore_current_label_ett"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.restore_current_label_ett">[docs]</a>    <span class="k">def</span> <span class="nf">restore_current_label_ett</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1389,7 +1451,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Current time</span>
-        <span class="n">clock</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span> <span class="c1">#&quot;%H:%M:%S&quot;</span>
+        <span class="n">clock</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%X</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1">#&quot;%H:%M:%S&quot;</span>
 
         <span class="c1"># Time elapsed since the beginning of the presentation</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
@@ -1710,6 +1772,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;c_da&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_cur&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_next&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_pres&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="s2">&quot;scribble_p_da&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">disable_prerender</span><span class="p">(</span><span class="s2">&quot;p_da_pres&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_cur</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Current slide&quot;</span><span class="p">))</span>
@@ -1719,6 +1782,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;c_da&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_cur&quot;</span><span class="p">,</span> <span class="n">PDF_NOTES_PAGE</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_next&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_pres&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="s2">&quot;scribble_p_da&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">enable_prerender</span><span class="p">(</span><span class="s2">&quot;p_da_pres&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_cur</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Notes&quot;</span><span class="p">))</span>
@@ -1862,11 +1926,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="s2">&quot;scribble_p_da&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="k">else</span> <span class="n">PDF_REGULAR</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># Presenter-size setup</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scribble_overlay</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;scribble_overlay&quot;</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s2">&quot;scribble_color&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_rgba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_color</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s2">&quot;scribble_width&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_width</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scribble_p_da</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;scribble_p_da&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s2">&quot;scribble_width&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_width</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UI.switch_scribbling"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.switch_scribbling">[docs]</a>    <span class="k">def</span> <span class="nf">switch_scribbling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1940,7 +2001,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-76-g1f7afd9&#39;',
+            VERSION:'b&#39;0.6-92-g5fb2ae6&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
