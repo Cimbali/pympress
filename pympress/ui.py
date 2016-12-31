@@ -1262,10 +1262,9 @@ class UI:
         n = 2 if self.notes_mode else 1
 
         self.annotation_renderer.props.wrap_width = w - 10
-        minh = self.p_frame_annot.get_preferred_height()[0]
 
         newh = h - n * (20 + w / r)
-        newh = max(min(h - 200, newh), minh)
+        newh = max(min(h - 200, newh), 100)
         self.p_frame_annot.set_size_request(-1, newh)
 
         self.scrolled_window.queue_resize()
