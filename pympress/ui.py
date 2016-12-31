@@ -1326,7 +1326,7 @@ class UI:
         self.label_time.set_text(elapsed)
         self.label_clock.set_text(clock)
 
-        self.update_color()
+        self.update_time_color()
 
         return True
 
@@ -1348,7 +1348,7 @@ class UI:
         return Gdk.RGBA(*map(interpolate, color_tuple(from_color), color_tuple(to_color)))
 
 
-    def update_color(self):
+    def update_time_color(self):
         """ Update the color of the time label based on how much time is remaining.
         """
         if not self.est_time == 0:
