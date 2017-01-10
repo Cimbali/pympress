@@ -221,8 +221,12 @@ class Page:
             fun = None
 
         elif link_type == Poppler.ActionType.GOTO_DEST:
-            dest_page = action.goto_dest.dest.page_num
-            fun = lambda: self.parent.goto(dest_page)
+            dest_type = action.goto_dest.dest.type
+            if dest_type == Poppler.DestType.NAMED:
+                dest = self.parent.doc.find_dest(action.goto_dest.dest.named_dest)
+                fun = lambda: self.parent.goto(dest.page_num)
+            elif dest_type != Poppler.DestType.UNKNOWN:
+                fun = lambda: self.parent.goto(action.goto_dest.dest.page_num)
 
         elif link_type == Poppler.ActionType.NAMED:
             dest_name = action.named.named_dest
