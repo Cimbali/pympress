@@ -682,8 +682,7 @@ class UI:
     def page_preview(self, widget, *args):
         """ Switch to another page and display it.
 
-        This is a kind of event which is supposed to be called only from the
-        :class:`~pympress.document.Document` class.
+        This is a kind of event which is supposed to be called only from the spin_cur spinner as a callback
 
         Args:
             unpause (boolean):  ``True`` if the page change should unpause the timer, ``False`` otherwise
@@ -1070,12 +1069,13 @@ class UI:
 
             if name == 'return' or name == 'enter':
                 try:
-                    page_nb = int(self.spin_cur.get_value()) - 1
-
-                    if page_nb < self.doc.pages_number() and page_nb >= 0:
-                        self.doc.goto(page_nb)
+                    page_nb = int(self.spin_cur.get_buffer().get_text()) - 1
                 except:
-                    pass
+                    page_nb = int(self.spin_cur.get_value()) - 1
+                self.doc.goto(page_nb)
+
+            elif name == 'escape':
+                GLib.idle_add(self.on_page_change, False)
 
             if name in ['escape', 'return', 'enter']:
                 self.restore_current_label()
