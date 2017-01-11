@@ -80,8 +80,6 @@ except NameError:
     class PermissionError(Exception):
         pass
 
-media_overlays = {}
-
 class UI:
     """ Pympress GUI management.
     """
@@ -199,6 +197,9 @@ class UI:
     #: track whether we blank the screen
     blanked = False
 
+    #: Dictionary of :class:`pympress.vlcvideo.VLCVideo` ready to be added on top of the slides
+    media_overlays = {}
+
     #: :class:`Gdk.RGBA` The default color of the info labels
     label_color_default = None
     #: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is reached
@@ -239,12 +240,17 @@ class UI:
     #: A :class:`Gtk.OffscreenWindow` where we render the scirbbling interface when it's not shown
     off_render = None
 
+    # The :class:`UI` singleton, since there is only one (as a class variable). Used by classmethods only.
+    _instance = None
+
     def __init__(self, docpath = None, ett = 0):
         """
         Args:
             docpath (string):  the path to the document to open
             ett (int):  the estimated (intended) talk time
         """
+        UI._instance = self
+
         self.est_time = ett
         self.config = pympress.util.load_config()
         self.blanked = self.config.getboolean('content', 'start_blanked')
@@ -797,25 +803,23 @@ class UI:
         page_cur = self.doc.current_page()
         pw, ph = page_cur.get_size()
 
-        global media_overlays
-
         for relative_margins, filename, show_controls in page_cur.get_media():
             media_id = hash((relative_margins, filename, show_controls))
 
-            if media_id not in media_overlays:
+            if media_id not in self.media_overlays:
                 v_da = pympress.vlcvideo.VLCVideo(self.c_overlay, show_controls, relative_margins)
                 v_da.set_file(filename)
 
-                media_overlays[media_id] = v_da
+                self.media_overlays[media_id] = v_da
 
 
-    @staticmethod
-    def play_media(media_id):
+    @classmethod
+    def play_media(cls, media_id):
         """ Static way of starting (playing) a media. Used by callbacks.
         """
-        global media_overlays
-        if media_id in media_overlays:
-            media_overlays[media_id].play()
+        self = cls._instance
+        if media_id in self.media_overlays:
+            self.media_overlays[media_id].play()
 
 
     def redraw_hpaned(self):
