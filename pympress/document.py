@@ -143,6 +143,8 @@ class Page:
     ph = 0.
     #: All text annotations
     annotations = []
+    #: Instance of :class:`pympress.document.Document` that contains this page.
+    parent = None
 
     def __init__(self, page, number, parent):
         """
@@ -235,11 +237,9 @@ class Page:
             if dest:
                 fun = lambda: self.parent.goto(dest.page_num)
             elif dest_name == "GoBack":
-                #TODO make a history of visited pages, use this action to jump back in history
-                fun = lambda: print(_("Pympress does not yet support link type \"{}\" to \"{}\"").format(link_type, dest_name))
+                fun = self.parent.hist_prev
             elif dest_name == "GoForward":
-                #TODO make a history of visited pages, use this action to jump forward in history
-                fun = lambda: print(_("Pympress does not yet support link type \"{}\" to \"{}\"").format(link_type, dest_name))
+                fun = self.parent.hist_next
             elif dest_name == "GoToPage":
                 # Same as the "G" action which allows to pick a page to jump to
                 fun = pympress.ui.UI.notify_label_event
@@ -447,6 +447,10 @@ class Document:
     pages_cache = {}
     #: Files that are temporary and need to be removed
     temp_files = set()
+    #: History of pages we have visited
+    history = []
+    #: Our position in the history
+    hist_pos = -1
 
     def __init__(self, pop_doc, path, page=0):
         """
@@ -467,6 +471,8 @@ class Document:
 
         # Number of the current page
         self.cur_page = page
+        self.history.append(page)
+        self.hist_pos = 0
 
         # Pages cache
         self.pages_cache = {}
@@ -548,6 +554,18 @@ class Document:
         return self.nb_pages
 
 
+    def _do_page_change(self, number):
+        """ Perform the actual change of page and UI notification.
+
+        The page number is **not** checked here, so it must be within bounds already.
+
+        Args:
+            number (integer):  number of the destination page
+        """
+        self.cur_page = number
+        pympress.ui.UI.notify_page_change()
+
+
     def goto(self, number):
         """ Switch to another page.
 
@@ -560,8 +578,13 @@ class Document:
             number = self.nb_pages - 1
 
         if number != self.cur_page:
-            self.cur_page = number
-            pympress.ui.UI.notify_page_change()
+            self._do_page_change(number)
+
+            # chop off history where we were and go to end
+            self.hist_pos += 1
+            if self.hist_pos < len(self.history):
+                self.history = self.history[:self.hist_pos]
+            self.history.append(number)
 
     def goto_next(self, *args):
         """ Switch to the next page.
@@ -582,6 +605,24 @@ class Document:
         """ Switch to the last page.
         """
         self.goto(self.nb_pages-1)
+
+    def hist_next(self, *args):
+        """ Switch to the page we viewed next
+        """
+        if self.hist_pos + 1 == len(self.history):
+            return
+
+        self.hist_pos += 1
+        self._do_page_change(self.history[self.hist_pos])
+
+    def hist_prev(self, *args):
+        """ Switch to the page we viewed before
+        """
+        if self.hist_pos == 0:
+            return
+
+        self.hist_pos -= 1
+        self._do_page_change(self.history[self.hist_pos])
 
     def get_full_path(self, filename):
         """ Returns full path, extrapolated from a path relative to this document
