@@ -262,7 +262,7 @@ class UI:
         )
 
         # Document
-        self.doc = pympress.document.Document.create(self.on_page_change, docpath)
+        self.doc = pympress.document.Document.create(docpath)
 
         # Use notes mode by default if the document has notes
         self.notes_mode = self.doc.has_notes()
@@ -330,7 +330,7 @@ class UI:
         Args:
             docpath (str): the absolute path to the new document
         """
-        self.doc = pympress.document.Document.create(self.on_page_change, docpath)
+        self.doc = pympress.document.Document.create(docpath)
 
         # Use notes mode by default if the document has notes
         if self.notes_mode != self.doc.has_notes():
@@ -790,6 +790,13 @@ class UI:
             self.cache.prerender(p)
 
         self.replace_media_overlays()
+
+
+    @classmethod
+    def notify_page_change(cls):
+        """ Statically notify the UI of a page change (typically from document)
+        """
+        cls._instance.on_page_change()
 
 
     def replace_media_overlays(self):

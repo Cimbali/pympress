@@ -445,16 +445,13 @@ class Document:
     #: navigation in the document faster by avoiding calls to Poppler when loading
     #: a page that has already been loaded.
     pages_cache = {}
-    #: Callback function to signal whenever we change pages
-    on_page_change = None
     #: Files that are temporary and need to be removed
     temp_files = set()
 
-    def __init__(self, page_change_callback, pop_doc, path, page=0):
+    def __init__(self, pop_doc, path, page=0):
         """
 
         Args:
-            page_change_callback (function):  action to perform to signal we changed pages
             pop_doc (Poppler.Document):  Instance of the Poppler document at path that this class will wrap
             path (string):  Absolute path to the PDF file to open
             page (integer):  page number to which the file should be opened
@@ -483,14 +480,11 @@ class Document:
             ar = page0.get_aspect_ratio()
             self.notes = (ar >= 2)
 
-        self.on_page_change = page_change_callback
-
     @staticmethod
-    def create(page_change_callback, path, page=0):
+    def create(path, page=0):
         """ Initializes a Document by passing it a :class:`Poppler.Document`
 
         Args:
-            page_change_callback (function):  action to perform to signal we changed pages
             path (string):  Absolute path to the PDF file to open
             page (integer):  page number to which the file should be opened
 
@@ -501,7 +495,7 @@ class Document:
             return EmptyDocument()
         else:
             poppler_doc = Poppler.Document.new_from_file(urljoin('file:', pathname2url(path)), None)
-            return Document(page_change_callback, poppler_doc, path, page)
+            return Document(poppler_doc, path, page)
 
     def has_notes(self):
         """ Get the document mode.
@@ -554,7 +548,7 @@ class Document:
         return self.nb_pages
 
 
-    def goto(self, number, unpause = True):
+    def goto(self, number):
         """ Switch to another page.
 
         Args:
@@ -567,7 +561,7 @@ class Document:
 
         if number != self.cur_page:
             self.cur_page = number
-            self.on_page_change(unpause)
+            pympress.ui.UI.notify_page_change()
 
     def goto_next(self, *args):
         """ Switch to the next page.
@@ -669,7 +663,6 @@ class EmptyDocument(Document):
         self.cur_page = -1
         self.pages_cache = {-1: EmptyPage()}
         self.notes = False
-        self.on_page_change = lambda *args: None
 
 
     def page(self, number):
