@@ -216,8 +216,6 @@
     <span class="k">class</span> <span class="nc">PermissionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
         <span class="k">pass</span>
 
-<span class="n">media_overlays</span> <span class="o">=</span> <span class="p">{}</span>
-
 <div class="viewcode-block" id="UI"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI">[docs]</a><span class="k">class</span> <span class="nc">UI</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Pympress GUI management.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -335,6 +333,9 @@
     <span class="c1">#: track whether we blank the screen</span>
     <span class="n">blanked</span> <span class="o">=</span> <span class="kc">False</span>
 
+    <span class="c1">#: Dictionary of :class:`pympress.vlcvideo.VLCVideo` ready to be added on top of the slides</span>
+    <span class="n">media_overlays</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="c1">#: :class:`Gdk.RGBA` The default color of the info labels</span>
     <span class="n">label_color_default</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1">#: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is reached</span>
@@ -375,12 +376,17 @@
     <span class="c1">#: A :class:`Gtk.OffscreenWindow` where we render the scirbbling interface when it&#39;s not shown</span>
     <span class="n">off_render</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="c1"># The :class:`UI` singleton, since there is only one (as a class variable). Used by classmethods only.</span>
+    <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpath</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ett</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            docpath (string):  the path to the document to open</span>
 <span class="sd">            ett (int):  the estimated (intended) talk time</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">UI</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="bp">self</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span> <span class="o">=</span> <span class="n">ett</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">load_config</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blanked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_blanked&#39;</span><span class="p">)</span>
@@ -392,7 +398,7 @@
         <span class="p">)</span>
 
         <span class="c1"># Document</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">,</span> <span class="n">docpath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">docpath</span><span class="p">)</span>
 
         <span class="c1"># Use notes mode by default if the document has notes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">has_notes</span><span class="p">()</span>
@@ -460,7 +466,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            docpath (str): the absolute path to the new document</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">,</span> <span class="n">docpath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">docpath</span><span class="p">)</span>
 
         <span class="c1"># Use notes mode by default if the document has notes</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">has_notes</span><span class="p">():</span>
@@ -818,8 +824,7 @@
 <div class="viewcode-block" id="UI.page_preview"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.page_preview">[docs]</a>    <span class="k">def</span> <span class="nf">page_preview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to another page and display it.</span>
 
-<span class="sd">        This is a kind of event which is supposed to be called only from the</span>
-<span class="sd">        :class:`~pympress.document.Document` class.</span>
+<span class="sd">        This is a kind of event which is supposed to be called only from the spin_cur spinner as a callback</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            unpause (boolean):  ``True`` if the page change should unpause the timer, ``False`` otherwise</span>
@@ -923,6 +928,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">replace_media_overlays</span><span class="p">()</span></div>
 
 
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="UI.notify_page_change"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.notify_page_change">[docs]</a>    <span class="k">def</span> <span class="nf">notify_page_change</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Statically notify the UI of a page change (typically from document)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cls</span><span class="o">.</span><span class="n">_instance</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">()</span></div>
+
+
 <div class="viewcode-block" id="UI.replace_media_overlays"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.replace_media_overlays">[docs]</a>    <span class="k">def</span> <span class="nf">replace_media_overlays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Remove current media overlays, add new ones if page contains media.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -934,25 +946,23 @@
         <span class="n">page_cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">current_page</span><span class="p">()</span>
         <span class="n">pw</span><span class="p">,</span> <span class="n">ph</span> <span class="o">=</span> <span class="n">page_cur</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
 
-        <span class="k">global</span> <span class="n">media_overlays</span>
-
         <span class="k">for</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">show_controls</span> <span class="ow">in</span> <span class="n">page_cur</span><span class="o">.</span><span class="n">get_media</span><span class="p">():</span>
             <span class="n">media_id</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">((</span><span class="n">relative_margins</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">))</span>
 
-            <span class="k">if</span> <span class="n">media_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">media_overlays</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">media_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">media_overlays</span><span class="p">:</span>
                 <span class="n">v_da</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">)</span>
                 <span class="n">v_da</span><span class="o">.</span><span class="n">set_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
-                <span class="n">media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_da</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_da</span></div>
 
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="UI.play_media"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.play_media">[docs]</a>    <span class="k">def</span> <span class="nf">play_media</span><span class="p">(</span><span class="n">media_id</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="UI.play_media"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.play_media">[docs]</a>    <span class="k">def</span> <span class="nf">play_media</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">media_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Static way of starting (playing) a media. Used by callbacks.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">global</span> <span class="n">media_overlays</span>
-        <span class="k">if</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="n">media_overlays</span><span class="p">:</span>
-            <span class="n">media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span></div>
+        <span class="bp">self</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_instance</span>
+        <span class="k">if</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">media_overlays</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="UI.redraw_hpaned"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.redraw_hpaned">[docs]</a>    <span class="k">def</span> <span class="nf">redraw_hpaned</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1206,12 +1216,13 @@
 
             <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;return&#39;</span> <span class="ow">or</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;enter&#39;</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">page_nb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
-
-                    <span class="k">if</span> <span class="n">page_nb</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">()</span> <span class="ow">and</span> <span class="n">page_nb</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">page_nb</span><span class="p">)</span>
+                    <span class="n">page_nb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">get_buffer</span><span class="p">()</span><span class="o">.</span><span class="n">get_text</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
                 <span class="k">except</span><span class="p">:</span>
-                    <span class="k">pass</span>
+                    <span class="n">page_nb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">page_nb</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;escape&#39;</span><span class="p">:</span>
+                <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;escape&#39;</span><span class="p">,</span> <span class="s1">&#39;return&#39;</span><span class="p">,</span> <span class="s1">&#39;enter&#39;</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">restore_current_label</span><span class="p">()</span>
@@ -1293,7 +1304,7 @@
         <span class="n">event_type</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">alt_start_editing</span> <span class="k">else</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span>
 
         <span class="c1"># Click in label-mode</span>
-        <span class="k">if</span> <span class="n">alt_start_editing</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_PRESS</span><span class="p">:</span> <span class="c1"># click</span>
+        <span class="k">if</span> <span class="n">alt_start_editing</span> <span class="ow">or</span> <span class="n">event_type</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_PRESS</span><span class="p">:</span> <span class="c1"># click</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">editing_cur_ett</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">restore_current_label_ett</span><span class="p">()</span>
 
@@ -1317,6 +1328,15 @@
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
+
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="UI.notify_label_event"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.notify_label_event">[docs]</a>    <span class="k">def</span> <span class="nf">notify_label_event</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Static way to start the &quot;go to&quot; label editing.</span>
+
+<span class="sd">        Typically used as callbacks from document links.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cls</span><span class="o">.</span><span class="n">_instance</span><span class="o">.</span><span class="n">on_label_event</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UI.on_label_ett_event"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.on_label_ett_event">[docs]</a>    <span class="k">def</span> <span class="nf">on_label_ett_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -1398,10 +1418,9 @@
         <span class="n">n</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="k">else</span> <span class="mi">1</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">annotation_renderer</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">wrap_width</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="mi">10</span>
-        <span class="n">minh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_annot</span><span class="o">.</span><span class="n">get_preferred_height</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">newh</span> <span class="o">=</span> <span class="n">h</span> <span class="o">-</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="mi">20</span> <span class="o">+</span> <span class="n">w</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span>
-        <span class="n">newh</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="mi">200</span><span class="p">,</span> <span class="n">newh</span><span class="p">),</span> <span class="n">minh</span><span class="p">)</span>
+        <span class="n">newh</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">h</span> <span class="o">-</span> <span class="mi">200</span><span class="p">,</span> <span class="n">newh</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_annot</span><span class="o">.</span><span class="n">set_size_request</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">newh</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">scrolled_window</span><span class="o">.</span><span class="n">queue_resize</span><span class="p">()</span>
@@ -1463,7 +1482,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">elapsed</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">label_clock</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">clock</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_color</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_time_color</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -1485,7 +1504,7 @@
         <span class="k">return</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">RGBA</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">interpolate</span><span class="p">,</span> <span class="n">color_tuple</span><span class="p">(</span><span class="n">from_color</span><span class="p">),</span> <span class="n">color_tuple</span><span class="p">(</span><span class="n">to_color</span><span class="p">)))</span></div>
 
 
-    <span class="k">def</span> <span class="nf">update_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="UI.update_time_color"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.update_time_color">[docs]</a>    <span class="k">def</span> <span class="nf">update_time_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Update the color of the time label based on how much time is remaining.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1518,7 +1537,7 @@
             <span class="k">if</span> <span class="p">(</span><span class="n">remaining</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">5</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">remaining</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mi">300</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">310</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">get_style_context</span><span class="p">()</span><span class="o">.</span><span class="n">add_class</span><span class="p">(</span><span class="s2">&quot;time-warn&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">get_style_context</span><span class="p">()</span><span class="o">.</span><span class="n">remove_class</span><span class="p">(</span><span class="s2">&quot;time-warn&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">get_style_context</span><span class="p">()</span><span class="o">.</span><span class="n">remove_class</span><span class="p">(</span><span class="s2">&quot;time-warn&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UI.switch_pause"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.switch_pause">[docs]</a>    <span class="k">def</span> <span class="nf">switch_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -2001,7 +2020,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-92-g5fb2ae6&#39;',
+            VERSION:'b&#39;0.6-102-g9819fae&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

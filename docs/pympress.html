@@ -200,7 +200,7 @@ current and the next page, as well as a time counter and a clock.</p>
 
 <dl class="attribute">
 <dt id="pympress.ui.UI.builder">
-<code class="descname">builder</code><em class="property"> = &lt;Gtk.Builder object at 0x7f08a3640a20 (GtkBuilder at 0x2d6e550)&gt;</em><a class="headerlink" href="#pympress.ui.UI.builder" title="Permalink to this definition">¶</a></dt>
+<code class="descname">builder</code><em class="property"> = &lt;Gtk.Builder object at 0x7fbc76c18870 (GtkBuilder at 0x1ac45b0)&gt;</em><a class="headerlink" href="#pympress.ui.UI.builder" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="xref py py-class docutils literal"><span class="pre">Builder</span></code> to read XML descriptions of GUIs and load them.</p>
 </dd></dl>
 
@@ -333,7 +333,7 @@ current and the next page, as well as a time counter and a clock.</p>
 
 <dl class="attribute">
 <dt id="pympress.ui.UI.entry_ett">
-<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f08a364e708 (GtkEntry at 0x2db22b0)&gt;</em><a class="headerlink" href="#pympress.ui.UI.entry_ett" title="Permalink to this definition">¶</a></dt>
+<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7fbc76c2c5a0 (GtkEntry at 0x1b5e2b0)&gt;</em><a class="headerlink" href="#pympress.ui.UI.entry_ett" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="xref py py-class docutils literal"><span class="pre">Entry</span></code> used to set the estimated talk time.</p>
 </dd></dl>
 
@@ -478,6 +478,12 @@ current and the next page, as well as a time counter and a clock.</p>
 <dd><p>Initializes the presenter window.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="pympress.ui.UI.media_overlays">
+<code class="descname">media_overlays</code><em class="property"> = {}</em><a class="headerlink" href="#pympress.ui.UI.media_overlays" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of <a class="reference internal" href="#pympress.vlcvideo.VLCVideo" title="pympress.vlcvideo.VLCVideo"><code class="xref py py-class docutils literal"><span class="pre">pympress.vlcvideo.VLCVideo</span></code></a> ready to be added on top of the slides</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="pympress.ui.UI.menu_about">
 <code class="descname">menu_about</code><span class="sig-paren">(</span><em>widget=None</em>, <em>event=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.menu_about"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.menu_about" title="Permalink to this definition">¶</a></dt>
@@ -494,6 +500,19 @@ current and the next page, as well as a time counter and a clock.</p>
 <dt id="pympress.ui.UI.notes_mode">
 <code class="descname">notes_mode</code><em class="property"> = False</em><a class="headerlink" href="#pympress.ui.UI.notes_mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to use notes mode or not</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pympress.ui.UI.notify_label_event">
+<em class="property">classmethod </em><code class="descname">notify_label_event</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.notify_label_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.notify_label_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Static way to start the &#8220;go to&#8221; label editing.</p>
+<p>Typically used as callbacks from document links.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pympress.ui.UI.notify_page_change">
+<em class="property">classmethod </em><code class="descname">notify_page_change</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.notify_page_change"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.notify_page_change" title="Permalink to this definition">¶</a></dt>
+<dd><p>Statically notify the UI of a page change (typically from document)</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -763,8 +782,7 @@ moving the middle pane is done (which happens at the end of a mouse resize)</p>
 <dt id="pympress.ui.UI.page_preview">
 <code class="descname">page_preview</code><span class="sig-paren">(</span><em>widget</em>, <em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.page_preview"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.page_preview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Switch to another page and display it.</p>
-<p>This is a kind of event which is supposed to be called only from the
-<a class="reference internal" href="#pympress.document.Document" title="pympress.document.Document"><code class="xref py py-class docutils literal"><span class="pre">Document</span></code></a> class.</p>
+<p>This is a kind of event which is supposed to be called only from the spin_cur spinner as a callback</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -793,9 +811,9 @@ moving the middle pane is done (which happens at the end of a mouse resize)</p>
 <dd><p>Ask the user which file he means to open.</p>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="classmethod">
 <dt id="pympress.ui.UI.play_media">
-<em class="property">static </em><code class="descname">play_media</code><span class="sig-paren">(</span><em>media_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.play_media"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.play_media" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">play_media</code><span class="sig-paren">(</span><em>media_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.play_media"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.play_media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Static way of starting (playing) a media. Used by callbacks.</p>
 </dd></dl>
 
@@ -1122,6 +1140,12 @@ when leaving fullscreen mode.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pympress.ui.UI.update_time_color">
+<code class="descname">update_time_color</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.update_time_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.update_time_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the color of the time label based on how much time is remaining.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pympress.ui.UI.update_width">
 <code class="descname">update_width</code><span class="sig-paren">(</span><em>widget=None</em>, <em>event=None</em>, <em>value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.update_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.update_width" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback for the width chooser slider, to set scribbling width</p>
@@ -1141,7 +1165,7 @@ only rendering itself: the preparation of the target surface must be done
 elsewhere).</p>
 <dl class="class">
 <dt id="pympress.document.Document">
-<em class="property">class </em><code class="descclassname">pympress.document.</code><code class="descname">Document</code><span class="sig-paren">(</span><em>page_change_callback</em>, <em>pop_doc</em>, <em>path</em>, <em>page=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.document.</code><code class="descname">Document</code><span class="sig-paren">(</span><em>pop_doc</em>, <em>path</em>, <em>page=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>This is the main document handling class.</p>
 <div class="admonition note">
@@ -1157,14 +1181,13 @@ starts at 0.</p>
 
 <dl class="staticmethod">
 <dt id="pympress.document.Document.create">
-<em class="property">static </em><code class="descname">create</code><span class="sig-paren">(</span><em>page_change_callback</em>, <em>path</em>, <em>page=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.create" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">create</code><span class="sig-paren">(</span><em>path</em>, <em>page=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a Document by passing it a <code class="xref py py-class docutils literal"><span class="pre">Poppler.Document</span></code></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>page_change_callback</strong> (<em>function</em>) &#8211; action to perform to signal we changed pages</li>
 <li><strong>path</strong> (<em>string</em>) &#8211; Absolute path to the PDF file to open</li>
 <li><strong>page</strong> (<em>integer</em>) &#8211; page number to which the file should be opened</li>
 </ul>
@@ -1229,7 +1252,7 @@ or to the current directory.</p>
 
 <dl class="method">
 <dt id="pympress.document.Document.goto">
-<code class="descname">goto</code><span class="sig-paren">(</span><em>number</em>, <em>unpause=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.goto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.goto" title="Permalink to this definition">¶</a></dt>
+<code class="descname">goto</code><span class="sig-paren">(</span><em>number</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.goto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.goto" title="Permalink to this definition">¶</a></dt>
 <dd><p>Switch to another page.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1281,6 +1304,30 @@ or to the current directory.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="pympress.document.Document.hist_next">
+<code class="descname">hist_next</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.hist_next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.hist_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch to the page we viewed next</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.document.Document.hist_pos">
+<code class="descname">hist_pos</code><em class="property"> = -1</em><a class="headerlink" href="#pympress.document.Document.hist_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Our position in the history</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.document.Document.hist_prev">
+<code class="descname">hist_prev</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.hist_prev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.hist_prev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch to the page we viewed before</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.document.Document.history">
+<code class="descname">history</code><em class="property"> = []</em><a class="headerlink" href="#pympress.document.Document.history" title="Permalink to this definition">¶</a></dt>
+<dd><p>History of pages we have visited</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="pympress.document.Document.nb_pages">
 <code class="descname">nb_pages</code><em class="property"> = -1</em><a class="headerlink" href="#pympress.document.Document.nb_pages" title="Permalink to this definition">¶</a></dt>
@@ -1307,12 +1354,6 @@ or to the current directory.</p>
 <dt id="pympress.document.Document.notes">
 <code class="descname">notes</code><em class="property"> = False</em><a class="headerlink" href="#pympress.document.Document.notes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Document with notes or not</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pympress.document.Document.on_page_change">
-<code class="descname">on_page_change</code><em class="property"> = None</em><a class="headerlink" href="#pympress.document.Document.on_page_change" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callback function to signal whenever we change pages</p>
 </dd></dl>
 
 <dl class="method">
@@ -1639,6 +1680,12 @@ if one exists, <code class="docutils literal"><span class="pre">None</span></cod
 <dt id="pympress.document.Page.page_nb">
 <code class="descname">page_nb</code><em class="property"> = -1</em><a class="headerlink" href="#pympress.document.Page.page_nb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of the current page (starting from 0)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.document.Page.parent">
+<code class="descname">parent</code><em class="property"> = None</em><a class="headerlink" href="#pympress.document.Page.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance of <a class="reference internal" href="#pympress.document.Document" title="pympress.document.Document"><code class="xref py py-class docutils literal"><span class="pre">pympress.document.Document</span></code></a> that contains this page.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -2170,7 +2217,7 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-92-g5fb2ae6&#39;',
+            VERSION:'b&#39;0.6-102-g9819fae&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

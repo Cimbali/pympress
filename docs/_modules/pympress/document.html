@@ -279,6 +279,8 @@
     <span class="n">ph</span> <span class="o">=</span> <span class="mf">0.</span>
     <span class="c1">#: All text annotations</span>
     <span class="n">annotations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1">#: Instance of :class:`pympress.document.Document` that contains this page.</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -357,8 +359,12 @@
             <span class="n">fun</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">elif</span> <span class="n">link_type</span> <span class="o">==</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">ActionType</span><span class="o">.</span><span class="n">GOTO_DEST</span><span class="p">:</span>
-            <span class="n">dest_page</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">goto_dest</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">page_num</span>
-            <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">dest_page</span><span class="p">)</span>
+            <span class="n">dest_type</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">goto_dest</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">type</span>
+            <span class="k">if</span> <span class="n">dest_type</span> <span class="o">==</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">DestType</span><span class="o">.</span><span class="n">NAMED</span><span class="p">:</span>
+                <span class="n">dest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">find_dest</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">goto_dest</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">named_dest</span><span class="p">)</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">dest</span><span class="o">.</span><span class="n">page_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">dest_type</span> <span class="o">!=</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">DestType</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="p">:</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">goto_dest</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">page_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">link_type</span> <span class="o">==</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">ActionType</span><span class="o">.</span><span class="n">NAMED</span><span class="p">:</span>
             <span class="n">dest_name</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">named</span><span class="o">.</span><span class="n">named_dest</span>
@@ -367,14 +373,12 @@
             <span class="k">if</span> <span class="n">dest</span><span class="p">:</span>
                 <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">dest</span><span class="o">.</span><span class="n">page_num</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">dest_name</span> <span class="o">==</span> <span class="s2">&quot;GoBack&quot;</span><span class="p">:</span>
-                <span class="c1">#TODO make a history of visited pages, use this action to jump back in history</span>
-                <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Pympress does not yet support link type </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> to </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">link_type</span><span class="p">,</span> <span class="n">dest_name</span><span class="p">))</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">hist_prev</span>
             <span class="k">elif</span> <span class="n">dest_name</span> <span class="o">==</span> <span class="s2">&quot;GoForward&quot;</span><span class="p">:</span>
-                <span class="c1">#TODO make a history of visited pages, use this action to jump forward in history</span>
-                <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Pympress does not yet support link type </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> to </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">link_type</span><span class="p">,</span> <span class="n">dest_name</span><span class="p">))</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">hist_next</span>
             <span class="k">elif</span> <span class="n">dest_name</span> <span class="o">==</span> <span class="s2">&quot;GoToPage&quot;</span><span class="p">:</span>
-                <span class="c1">#TODO connect this to the &quot;G&quot; action which allows to pick a page to jump to</span>
-                <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Pympress does not yet support link type </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2"> to </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">link_type</span><span class="p">,</span> <span class="n">dest_name</span><span class="p">))</span>
+                <span class="c1"># Same as the &quot;G&quot; action which allows to pick a page to jump to</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">UI</span><span class="o">.</span><span class="n">notify_label_event</span>
             <span class="k">elif</span> <span class="n">dest_name</span> <span class="o">==</span> <span class="s2">&quot;Find&quot;</span><span class="p">:</span>
                 <span class="c1">#TODO popup a text box and search results with Page.find_text</span>
                 <span class="c1"># http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text</span>
@@ -577,16 +581,17 @@
     <span class="c1">#: navigation in the document faster by avoiding calls to Poppler when loading</span>
     <span class="c1">#: a page that has already been loaded.</span>
     <span class="n">pages_cache</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="c1">#: Callback function to signal whenever we change pages</span>
-    <span class="n">on_page_change</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1">#: Files that are temporary and need to be removed</span>
     <span class="n">temp_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="c1">#: History of pages we have visited</span>
+    <span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1">#: Our position in the history</span>
+    <span class="n">hist_pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_change_callback</span><span class="p">,</span> <span class="n">pop_doc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop_doc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            page_change_callback (function):  action to perform to signal we changed pages</span>
 <span class="sd">            pop_doc (Poppler.Document):  Instance of the Poppler document at path that this class will wrap</span>
 <span class="sd">            path (string):  Absolute path to the PDF file to open</span>
 <span class="sd">            page (integer):  page number to which the file should be opened</span>
@@ -602,6 +607,8 @@
 
         <span class="c1"># Number of the current page</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span> <span class="o">=</span> <span class="n">page</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">page</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1"># Pages cache</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pages_cache</span> <span class="o">=</span> <span class="p">{}</span>
@@ -615,14 +622,11 @@
             <span class="n">ar</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="n">get_aspect_ratio</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="p">(</span><span class="n">ar</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span> <span class="o">=</span> <span class="n">page_change_callback</span>
-
     <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="Document.create"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">page_change_callback</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.create"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Initializes a Document by passing it a :class:`Poppler.Document`</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            page_change_callback (function):  action to perform to signal we changed pages</span>
 <span class="sd">            path (string):  Absolute path to the PDF file to open</span>
 <span class="sd">            page (integer):  page number to which the file should be opened</span>
 
@@ -633,7 +637,7 @@
             <span class="k">return</span> <span class="n">EmptyDocument</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">poppler_doc</span> <span class="o">=</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">new_from_file</span><span class="p">(</span><span class="n">urljoin</span><span class="p">(</span><span class="s1">&#39;file:&#39;</span><span class="p">,</span> <span class="n">pathname2url</span><span class="p">(</span><span class="n">path</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="n">page_change_callback</span><span class="p">,</span> <span class="n">poppler_doc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="n">poppler_doc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Document.has_notes"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.has_notes">[docs]</a>    <span class="k">def</span> <span class="nf">has_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the document mode.</span>
@@ -686,7 +690,19 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_pages</span></div>
 
 
-<div class="viewcode-block" id="Document.goto"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.goto">[docs]</a>    <span class="k">def</span> <span class="nf">goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">unpause</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_do_page_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Perform the actual change of page and UI notification.</span>
+
+<span class="sd">        The page number is **not** checked here, so it must be within bounds already.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            number (integer):  number of the destination page</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span> <span class="o">=</span> <span class="n">number</span>
+        <span class="n">pympress</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">UI</span><span class="o">.</span><span class="n">notify_page_change</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Document.goto"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.goto">[docs]</a>    <span class="k">def</span> <span class="nf">goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to another page.</span>
 
 <span class="sd">        Args:</span>
@@ -698,8 +714,13 @@
             <span class="n">number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_pages</span> <span class="o">-</span> <span class="mi">1</span>
 
         <span class="k">if</span> <span class="n">number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span> <span class="o">=</span> <span class="n">number</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">(</span><span class="n">unpause</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_page_change</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+
+            <span class="c1"># chop off history where we were and go to end</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Document.goto_next"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.goto_next">[docs]</a>    <span class="k">def</span> <span class="nf">goto_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to the next page.</span>
@@ -720,6 +741,24 @@
         <span class="sd">&quot;&quot;&quot; Switch to the last page.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_pages</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Document.hist_next"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.hist_next">[docs]</a>    <span class="k">def</span> <span class="nf">hist_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Switch to the page we viewed next</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_page_change</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Document.hist_prev"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.hist_prev">[docs]</a>    <span class="k">def</span> <span class="nf">hist_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Switch to the page we viewed before</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_do_page_change</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="Document.get_full_path"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.get_full_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_full_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns full path, extrapolated from a path relative to this document</span>
@@ -801,7 +840,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pages_cache</span> <span class="o">=</span> <span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="n">EmptyPage</span><span class="p">()}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="EmptyDocument.page"><a class="viewcode-back" href="../../pympress.html#pympress.document.EmptyDocument.page">[docs]</a>    <span class="k">def</span> <span class="nf">page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
@@ -850,7 +888,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-92-g5fb2ae6&#39;',
+            VERSION:'b&#39;0.6-102-g9819fae&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
