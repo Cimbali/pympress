@@ -43,6 +43,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -50,24 +51,14 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search">
           
+	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
+	<br />
+	<a href="../../../index.html" class="icon icon-home"> Docs home</a>
+	<div class="version">
+		v0.6
+	</div>
 
-          
-            <a href="../../../index.html" class="icon icon-home"> Pympress
-          
-
-          
-          </a>
-
-          
-            
-            
-              <div class="version">
-                0.6
-              </div>
-            
-          
-
-          
+	
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -76,11 +67,11 @@
   </form>
 </div>
 
-          
         </div>
 
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+	
             
             
                 <ul>
@@ -93,6 +84,10 @@
 
             
           
+	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
+	<a href="../../../genindex.html">Index</a>
+	<a href="../../../py-modindex.html">Module index</a>
+
         </div>
       </div>
     </nav>
@@ -101,8 +96,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../index.html">Pympress</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Pympress</a>
+        
       </nav>
 
 
@@ -115,19 +112,40 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../../index.html">Module code</a> &raquo;</li>
-      
-    <li>gi.overrides.Gtk</li>
+        
+      <li>gi.overrides.Gtk</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
+            
+            
+              <a href="https://github.com/Cimbali/pympress/blob/master/docs/source/_modules/gi/overrides/Gtk" class="fa fa-github"> Edit on GitHub</a>
+            
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -296,7 +314,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="c1"># alias for Python 2.x object protocol</span>
-    <span class="n">__nonzero__</span> <span class="o">=</span> <span class="n">__bool__</span>
+    <span class="n">__nonzero__</span> <span class="o">=</span> <span class="fm">__bool__</span>
 
     <span class="n">get_focus_chain</span> <span class="o">=</span> <span class="n">strip_boolean_result</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Container</span><span class="o">.</span><span class="n">get_focus_chain</span><span class="p">)</span>
 
@@ -339,7 +357,7 @@
 
 
 <span class="k">class</span> <span class="nc">Action</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Action</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Action</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;tooltip&#39;</span><span class="p">,</span> <span class="s1">&#39;stock_id&#39;</span><span class="p">),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -348,7 +366,7 @@
 
 
 <span class="k">class</span> <span class="nc">RadioAction</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">RadioAction</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">RadioAction</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">RadioAction</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;tooltip&#39;</span><span class="p">,</span> <span class="s1">&#39;stock_id&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -357,7 +375,7 @@
 
 
 <span class="k">class</span> <span class="nc">ActionGroup</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ActionGroup</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ActionGroup</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ActionGroup</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -547,7 +565,7 @@
 
 
 <span class="k">class</span> <span class="nc">Box</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;homogeneous&#39;</span><span class="p">,</span> <span class="s1">&#39;spacing&#39;</span><span class="p">),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -556,7 +574,7 @@
 
 
 <span class="k">class</span> <span class="nc">SizeGroup</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">SizeGroup</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">SizeGroup</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">SizeGroup</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;mode&#39;</span><span class="p">,),</span>
                                <span class="n">deprecated_defaults</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mode&#39;</span><span class="p">:</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">SizeGroupMode</span><span class="o">.</span><span class="n">VERTICAL</span><span class="p">},</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
@@ -566,7 +584,7 @@
 
 
 <span class="k">class</span> <span class="nc">MenuItem</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">MenuItem</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">MenuItem</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">MenuItem</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -614,7 +632,7 @@
 
 
 <span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Window</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Window</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Window</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -624,7 +642,7 @@
 
 <span class="k">class</span> <span class="nc">Dialog</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Dialog</span><span class="p">,</span> <span class="n">Container</span><span class="p">):</span>
     <span class="n">_old_arg_names</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;parent&#39;</span><span class="p">,</span> <span class="s1">&#39;flags&#39;</span><span class="p">,</span> <span class="s1">&#39;buttons&#39;</span><span class="p">,</span> <span class="s1">&#39;_buttons_property&#39;</span><span class="p">)</span>
-    <span class="n">_init</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Dialog</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="n">_init</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Dialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                             <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;transient_for&#39;</span><span class="p">,</span> <span class="s1">&#39;flags&#39;</span><span class="p">,</span>
                                        <span class="s1">&#39;add_buttons&#39;</span><span class="p">,</span> <span class="s1">&#39;buttons&#39;</span><span class="p">),</span>
                             <span class="n">ignore</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;flags&#39;</span><span class="p">,</span> <span class="s1">&#39;add_buttons&#39;</span><span class="p">),</span>
@@ -640,7 +658,7 @@
 
         <span class="c1"># Increment the warning stacklevel for sub-classes which implement their own __init__.</span>
         <span class="n">stacklevel</span> <span class="o">=</span> <span class="mi">2</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span> <span class="o">!=</span> <span class="n">Dialog</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__init__</span> <span class="o">!=</span> <span class="n">Dialog</span><span class="o">.</span><span class="n">__init__</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">!=</span> <span class="n">Dialog</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="fm">__init__</span> <span class="o">!=</span> <span class="n">Dialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">:</span>
             <span class="n">stacklevel</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="c1"># buttons was overloaded by PyGtk but is needed for Gtk.MessageDialog</span>
@@ -709,7 +727,7 @@
 
 
 <span class="k">class</span> <span class="nc">MessageDialog</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="p">,</span> <span class="n">Dialog</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;parent&#39;</span><span class="p">,</span> <span class="s1">&#39;flags&#39;</span><span class="p">,</span> <span class="s1">&#39;message_type&#39;</span><span class="p">,</span>
                                           <span class="s1">&#39;buttons&#39;</span><span class="p">,</span> <span class="s1">&#39;message_format&#39;</span><span class="p">),</span>
                                <span class="n">deprecated_aliases</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;message_format&#39;</span><span class="p">,</span>
@@ -729,7 +747,7 @@
 
 
 <span class="k">class</span> <span class="nc">ColorSelectionDialog</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ColorSelectionDialog</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ColorSelectionDialog</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ColorSelectionDialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -738,7 +756,7 @@
 
 
 <span class="k">class</span> <span class="nc">FileChooserDialog</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserDialog</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserDialog</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserDialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;parent&#39;</span><span class="p">,</span> <span class="s1">&#39;action&#39;</span><span class="p">,</span> <span class="s1">&#39;buttons&#39;</span><span class="p">),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -747,7 +765,7 @@
 
 
 <span class="k">class</span> <span class="nc">FontSelectionDialog</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FontSelectionDialog</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FontSelectionDialog</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">FontSelectionDialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -758,7 +776,7 @@
 <span class="k">class</span> <span class="nc">RecentChooserDialog</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">RecentChooserDialog</span><span class="p">):</span>
     <span class="c1"># Note, the &quot;manager&quot; keyword must work across the entire 3.x series because</span>
     <span class="c1"># &quot;recent_manager&quot; is not backwards compatible with PyGObject versions prior to 3.10.</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">RecentChooserDialog</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">RecentChooserDialog</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;parent&#39;</span><span class="p">,</span> <span class="s1">&#39;recent_manager&#39;</span><span class="p">,</span> <span class="s1">&#39;buttons&#39;</span><span class="p">),</span>
                                <span class="n">deprecated_aliases</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;recent_manager&#39;</span><span class="p">:</span> <span class="s1">&#39;manager&#39;</span><span class="p">},</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
@@ -768,7 +786,7 @@
 
 
 <span class="k">class</span> <span class="nc">IconView</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">IconView</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">IconView</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">IconView</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -781,7 +799,7 @@
 
 
 <span class="k">class</span> <span class="nc">ToolButton</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ToolButton</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;stock_id&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -906,7 +924,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="c1"># alias for Python 2.x object protocol</span>
-    <span class="n">__nonzero__</span> <span class="o">=</span> <span class="n">__bool__</span>
+    <span class="n">__nonzero__</span> <span class="o">=</span> <span class="fm">__bool__</span>
 
     <span class="k">def</span> <span class="nf">_getiter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeIter</span><span class="p">):</span>
@@ -1065,7 +1083,7 @@
 
 
 <span class="k">class</span> <span class="nc">TreeModelSort</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TreeModelSort</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TreeModelSort</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TreeModelSort</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -1075,7 +1093,7 @@
 
 <span class="k">class</span> <span class="nc">ListStore</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">,</span> <span class="n">TreeModel</span><span class="p">,</span> <span class="n">TreeSortable</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">column_types</span><span class="p">):</span>
-        <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_column_types</span><span class="p">(</span><span class="n">column_types</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_do_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
@@ -1161,7 +1179,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">iter_or_path</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeModel</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;expected Gtk.TreeModel, </span><span class="si">%s</span><span class="s2"> found&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;expected Gtk.TreeModel, </span><span class="si">%s</span><span class="s2"> found&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iter_or_path</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreePath</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_iter</span><span class="p">(</span><span class="n">iter_or_path</span><span class="p">)</span>
@@ -1169,7 +1187,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="n">iter_or_path</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;expected Gtk.TreeIter or Gtk.TreePath, </span><span class="se">\</span>
-<span class="s2">                </span><span class="si">%s</span><span class="s2"> found&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">iter_or_path</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+<span class="s2">                </span><span class="si">%s</span><span class="s2"> found&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">iter_or_path</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1219,7 +1237,7 @@
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;indices must be integers, slice or tuple, not </span><span class="si">%s</span><span class="s2">&quot;</span>
-                            <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+                            <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -1247,7 +1265,7 @@
                 <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;indices must be an integer, slice or tuple, not </span><span class="si">%s</span><span class="s2">&quot;</span>
-                            <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+                            <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_convert_negative_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="n">new_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_n_columns</span><span class="p">()</span> <span class="o">+</span> <span class="n">index</span>
@@ -1276,7 +1294,7 @@
         <span class="k">return</span> <span class="n">row</span>
 
     <span class="c1"># alias for Python 2.x object protocol</span>
-    <span class="nb">next</span> <span class="o">=</span> <span class="n">__next__</span>
+    <span class="nb">next</span> <span class="o">=</span> <span class="fm">__next__</span>
 
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
@@ -1286,7 +1304,7 @@
 
 <span class="k">class</span> <span class="nc">TreePath</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TreePath</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">_basestring</span><span class="p">):</span>
@@ -1300,7 +1318,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;could not parse subscript &#39;</span><span class="si">%s</span><span class="s2">&#39; as a tree path&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">TreePath</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TreePath</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
@@ -1338,7 +1356,7 @@
 
 <span class="k">class</span> <span class="nc">TreeStore</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TreeStore</span><span class="p">,</span> <span class="n">TreeModel</span><span class="p">,</span> <span class="n">TreeSortable</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">column_types</span><span class="p">):</span>
-        <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeStore</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeStore</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_column_types</span><span class="p">(</span><span class="n">column_types</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_do_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
@@ -1416,7 +1434,7 @@
 
 
 <span class="k">class</span> <span class="nc">TreeView</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TreeView</span><span class="p">,</span> <span class="n">Container</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TreeView</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TreeView</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -1465,7 +1483,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                  <span class="n">cell_renderer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">attributes</span><span class="p">):</span>
-        <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+        <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cell_renderer</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">cell_renderer</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
@@ -1514,7 +1532,7 @@
 
 
 <span class="k">class</span> <span class="nc">Button</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">,</span> <span class="n">Container</span><span class="p">):</span>
-    <span class="n">_init</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="n">_init</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                             <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;stock&#39;</span><span class="p">,</span> <span class="s1">&#39;use_stock&#39;</span><span class="p">,</span> <span class="s1">&#39;use_underline&#39;</span><span class="p">),</span>
                             <span class="n">ignore</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;stock&#39;</span><span class="p">,),</span>
                             <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">,</span>
@@ -1534,7 +1552,7 @@
             <span class="n">new_kwargs</span><span class="p">[</span><span class="s1">&#39;use_stock&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">new_kwargs</span><span class="p">[</span><span class="s1">&#39;use_underline&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">del</span> <span class="n">new_kwargs</span><span class="p">[</span><span class="s1">&#39;stock&#39;</span><span class="p">]</span>
-            <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">new_kwargs</span><span class="p">)</span>
+            <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">new_kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -1543,7 +1561,7 @@
 
 
 <span class="k">class</span> <span class="nc">LinkButton</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">LinkButton</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">LinkButton</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">LinkButton</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;uri&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -1552,7 +1570,7 @@
 
 
 <span class="k">class</span> <span class="nc">Label</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Label</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Label</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Label</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -1561,7 +1579,7 @@
 
 
 <span class="k">class</span> <span class="nc">Adjustment</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Adjustment</span><span class="p">):</span>
-    <span class="n">_init</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Adjustment</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="n">_init</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Adjustment</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                             <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="s1">&#39;upper&#39;</span><span class="p">,</span>
                                        <span class="s1">&#39;step_increment&#39;</span><span class="p">,</span> <span class="s1">&#39;page_increment&#39;</span><span class="p">,</span> <span class="s1">&#39;page_size&#39;</span><span class="p">),</span>
                             <span class="n">deprecated_aliases</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;page_increment&#39;</span><span class="p">:</span> <span class="s1">&#39;page_incr&#39;</span><span class="p">,</span>
@@ -1583,7 +1601,7 @@
 
 
 <span class="k">class</span> <span class="nc">Table</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Table</span><span class="p">,</span> <span class="n">Container</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Table</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Table</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;n_rows&#39;</span><span class="p">,</span> <span class="s1">&#39;n_columns&#39;</span><span class="p">,</span> <span class="s1">&#39;homogeneous&#39;</span><span class="p">),</span>
                                <span class="n">deprecated_aliases</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_rows&#39;</span><span class="p">:</span> <span class="s1">&#39;rows&#39;</span><span class="p">,</span> <span class="s1">&#39;n_columns&#39;</span><span class="p">:</span> <span class="s1">&#39;columns&#39;</span><span class="p">},</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
@@ -1596,7 +1614,7 @@
 
 
 <span class="k">class</span> <span class="nc">ScrolledWindow</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;hadjustment&#39;</span><span class="p">,</span> <span class="s1">&#39;vadjustment&#39;</span><span class="p">),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -1605,7 +1623,7 @@
 
 
 <span class="k">class</span> <span class="nc">HScrollbar</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">HScrollbar</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">HScrollbar</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">HScrollbar</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;adjustment&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -1614,7 +1632,7 @@
 
 
 <span class="k">class</span> <span class="nc">VScrollbar</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">VScrollbar</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">VScrollbar</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">VScrollbar</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;adjustment&#39;</span><span class="p">,),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -1634,7 +1652,7 @@
 
 
 <span class="k">class</span> <span class="nc">Arrow</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Arrow</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Arrow</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Arrow</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;arrow_type&#39;</span><span class="p">,</span> <span class="s1">&#39;shadow_type&#39;</span><span class="p">),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -1643,25 +1661,25 @@
 
 
 <span class="k">class</span> <span class="nc">IconSet</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">IconSet</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">pixbuf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pixbuf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">pixbuf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Gtk.IconSet(pixbuf) has been deprecated. Please use: &#39;</span>
                           <span class="s1">&#39;Gtk.IconSet.new_from_pixbuf(pixbuf)&#39;</span><span class="p">,</span>
                           <span class="n">PyGTKDeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="n">iconset</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">IconSet</span><span class="o">.</span><span class="n">new_from_pixbuf</span><span class="p">(</span><span class="n">pixbuf</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">iconset</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">IconSet</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
+            <span class="n">iconset</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">IconSet</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">iconset</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">IconSet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">IconSet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <span class="n">IconSet</span> <span class="o">=</span> <span class="n">override</span><span class="p">(</span><span class="n">IconSet</span><span class="p">)</span>
 <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;IconSet&#39;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Viewport</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Viewport</span><span class="p">):</span>
-    <span class="n">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Viewport</span><span class="o">.</span><span class="n">__init__</span><span class="p">,</span>
+    <span class="fm">__init__</span> <span class="o">=</span> <span class="n">deprecated_init</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Viewport</span><span class="o">.</span><span class="fm">__init__</span><span class="p">,</span>
                                <span class="n">arg_names</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;hadjustment&#39;</span><span class="p">,</span> <span class="s1">&#39;vadjustment&#39;</span><span class="p">),</span>
                                <span class="n">category</span><span class="o">=</span><span class="n">PyGTKDeprecationWarning</span><span class="p">)</span>
 
@@ -1703,6 +1721,9 @@
 </pre></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -1711,7 +1732,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2009-2011, Thomas Jost; 2015-2016 Cimbali.
+        &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali.
 
     </p>
   </div>
@@ -1733,10 +1754,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'b&#39;0.6-102-g9819fae&#39;',
+            VERSION:'b&#39;0.6-104-g2815c5e&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../../_static/jquery.js"></script>

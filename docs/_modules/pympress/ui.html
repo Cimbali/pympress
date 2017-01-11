@@ -43,6 +43,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -50,24 +51,14 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search">
           
+	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
+	<br />
+	<a href="../../index.html" class="icon icon-home"> Docs home</a>
+	<div class="version">
+		v0.6
+	</div>
 
-          
-            <a href="../../index.html" class="icon icon-home"> Pympress
-          
-
-          
-          </a>
-
-          
-            
-            
-              <div class="version">
-                0.6
-              </div>
-            
-          
-
-          
+	
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -76,11 +67,11 @@
   </form>
 </div>
 
-          
         </div>
 
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+	
             
             
                 <ul>
@@ -93,6 +84,10 @@
 
             
           
+	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
+	<a href="../../genindex.html">Index</a>
+	<a href="../../py-modindex.html">Module index</a>
+
         </div>
       </div>
     </nav>
@@ -101,8 +96,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">Pympress</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pympress</a>
+        
       </nav>
 
 
@@ -115,19 +112,40 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>pympress.ui</li>
+        
+      <li>pympress.ui</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
+            
+            
+              <a href="https://github.com/Cimbali/pympress/blob/master/docs/source/_modules/pympress/ui" class="fa fa-github"> Edit on GitHub</a>
+            
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -714,7 +732,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">list_annot</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
-        <span class="n">bullet</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\xe2\x97\x8f</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="se">\xe2\x97\x8f</span><span class="s1"> &#39;</span>
+        <span class="n">bullet</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xe2\x97\x8f</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="se">\xe2\x97\x8f</span><span class="s1"> &#39;</span>
 
         <span class="k">for</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
             <span class="n">list_annot</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">bullet</span> <span class="o">+</span> <span class="n">annot</span><span class="p">,))</span>
@@ -929,10 +947,10 @@
 
 
     <span class="nd">@classmethod</span>
-<div class="viewcode-block" id="UI.notify_page_change"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.notify_page_change">[docs]</a>    <span class="k">def</span> <span class="nf">notify_page_change</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+<div class="viewcode-block" id="UI.notify_page_change"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.notify_page_change">[docs]</a>    <span class="k">def</span> <span class="nf">notify_page_change</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Statically notify the UI of a page change (typically from document)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cls</span><span class="o">.</span><span class="n">_instance</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">()</span></div>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="UI.replace_media_overlays"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.replace_media_overlays">[docs]</a>    <span class="k">def</span> <span class="nf">replace_media_overlays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -957,10 +975,10 @@
 
 
     <span class="nd">@classmethod</span>
-<div class="viewcode-block" id="UI.play_media"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.play_media">[docs]</a>    <span class="k">def</span> <span class="nf">play_media</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">media_id</span><span class="p">):</span>
+<div class="viewcode-block" id="UI.play_media"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.play_media">[docs]</a>    <span class="k">def</span> <span class="nf">play_media</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">media_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Static way of starting (playing) a media. Used by callbacks.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_instance</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span>
         <span class="k">if</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">media_overlays</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span></div>
 
@@ -1331,12 +1349,12 @@
 
 
     <span class="nd">@classmethod</span>
-<div class="viewcode-block" id="UI.notify_label_event"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.notify_label_event">[docs]</a>    <span class="k">def</span> <span class="nf">notify_label_event</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+<div class="viewcode-block" id="UI.notify_label_event"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.notify_label_event">[docs]</a>    <span class="k">def</span> <span class="nf">notify_label_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Static way to start the &quot;go to&quot; label editing.</span>
 
 <span class="sd">        Typically used as callbacks from document links.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cls</span><span class="o">.</span><span class="n">_instance</span><span class="o">.</span><span class="n">on_label_event</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_instance</span><span class="o">.</span><span class="n">on_label_event</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UI.on_label_ett_event"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.on_label_ett_event">[docs]</a>    <span class="k">def</span> <span class="nf">on_label_ett_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -1990,6 +2008,9 @@
 </pre></div>
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -1998,7 +2019,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2009-2011, Thomas Jost; 2015-2016 Cimbali.
+        &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali.
 
     </p>
   </div>
@@ -2020,10 +2041,11 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-102-g9819fae&#39;',
+            VERSION:'b&#39;0.6-104-g2815c5e&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
