@@ -241,8 +241,8 @@ class Page:
                 #TODO make a history of visited pages, use this action to jump forward in history
                 fun = lambda: print(_("Pympress does not yet support link type \"{}\" to \"{}\"").format(link_type, dest_name))
             elif dest_name == "GoToPage":
-                #TODO connect this to the "G" action which allows to pick a page to jump to
-                fun = lambda: print(_("Pympress does not yet support link type \"{}\" to \"{}\"").format(link_type, dest_name))
+                # Same as the "G" action which allows to pick a page to jump to
+                fun = pympress.ui.UI.notify_label_event
             elif dest_name == "Find":
                 #TODO popup a text box and search results with Page.find_text
                 # http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text

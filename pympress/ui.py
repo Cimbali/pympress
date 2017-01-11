@@ -1168,7 +1168,7 @@ class UI:
         event_type = None if alt_start_editing else event.type
 
         # Click in label-mode
-        if alt_start_editing or event.type == Gdk.EventType.BUTTON_PRESS: # click
+        if alt_start_editing or event_type == Gdk.EventType.BUTTON_PRESS: # click
             if self.editing_cur_ett:
                 self.restore_current_label_ett()
 
@@ -1192,6 +1192,15 @@ class UI:
             return False
 
         return True
+
+
+    @classmethod
+    def notify_label_event(cls):
+        """ Static way to start the "go to" label editing.
+
+        Typically used as callbacks from document links.
+        """
+        cls._instance.on_label_event(True)
 
 
     def on_label_ett_event(self, *args):
