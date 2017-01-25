@@ -1,0 +1,15 @@
+{% extends "!breadcrumbs.html" %}
+
+{# do the setup for the github links to appear correctly #}
+
+{% set display_github = True %}
+{% set github_user = 'Cimbali' %}
+{% set github_repo = 'pympress' %}
+{% set github_version = 'master' %}
+
+{% if pagename == 'README' %}
+{% set conf_py_path = '/' %}
+{% else %}
+{% set conf_py_path = '/docs/source/' %}
+{% endif %}
+

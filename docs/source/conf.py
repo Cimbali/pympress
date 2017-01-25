@@ -42,7 +42,7 @@ extensions = [
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = []
+templates_path = ['_template']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -73,7 +73,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Pympress'
-copyright = '2009-2011, Thomas Jost; 2015-2016 Cimbali'
+copyright = '2009-2011, Thomas Jost; 2015-2017 Cimbali'
 author = 'Thomas Jost, Cimbali'
 
 # The version info for the project you're documenting, acts as replacement for

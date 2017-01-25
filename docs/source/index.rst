@@ -8,8 +8,6 @@ Contents
 
    README.md
    pympress.md
-   `genindex`
-   `modindex`
 
 Indices and tables
 ------------------

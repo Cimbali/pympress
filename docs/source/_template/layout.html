@@ -1,0 +1,17 @@
+{% extends "!layout.html" %}
+{% block sidebartitle %}
+	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
+	<br />
+	<a href="{{ pathto(master_doc) }}" class="icon icon-home"> Docs home</a>
+	<div class="version">
+		v{{ version }}
+	</div>
+
+	{% include "searchbox.html" %}
+{% endblock %}
+{% block menu %}
+	{{ super() }}
+	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
+	<a href="{{ pathto("genindex") }}">Index</a>
+	<a href="{{ pathto("py-modindex") }}">Module index</a>
+{% endblock %}

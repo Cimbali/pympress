@@ -23,7 +23,7 @@
 
 __version__ = '0.6'
 __copyright__= """2009, 2010 Thomas Jost <thomas.jost@gmail.com>
-2015, 2016 Cimbali <me@cimba.li>
+2015-2017 Cimbali <me@cimba.li>
 2016 Christoph Rath <christof.rath@iaik.tugraz.at>
 2016 Epithumia <endless@airelle.info>
 """
