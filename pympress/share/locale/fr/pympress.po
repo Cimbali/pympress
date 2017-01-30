@@ -4,9 +4,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Pympress v0.6\n"
+"Project-Id-Version: Pympress v1.0\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
-"POT-Creation-Date: 2016-10-24 15:45+0200\n"
+"POT-Creation-Date: 2016-10-24 15:50+0200\n"
 "PO-Revision-Date: 2016-07-30 19:34+0200\n"
 "Last-Translator: Cimbali <me@cimba.li>\n"
 "MIME-Version: 1.0\n"
@@ -94,9 +94,8 @@ msgstr "Fichiers PDF"
 msgid "Presenter fullscreen"
 msgstr "Présenteur en plein écran"
 
-#, fuzzy
 msgid "Pympress Content"
-msgstr "pympress contenu"
+msgstr "Pympress Contenu"
 
 msgid "Pympress can not extract embedded media"
 msgstr "Pympress ne peut extraire le média intégré"
@@ -149,6 +148,12 @@ msgstr "Évément inconnu {}"
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Usage: {} [options] <fichier de présentation>"
 
+msgid "Video support using VLC is disabled."
+msgstr "La prise en charge vidéo grâce à VLC est désactivée"
+
+msgid "Video support using VLC is enabled."
+msgstr "La prise en charge vidéo grâce à VLC est activée"
+
 msgid "Warning: Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr "Attention: La fenêtre de contenu et de présenteur ne peuvent être sur le même écran pour démarrer en plein écran !"
 
@@ -179,6 +184,9 @@ msgstr "_Annotations"
 msgid "_Blank screen"
 msgstr "Masquer l'écran"
 
+msgid "_Close File"
+msgstr "Fi_chier"
+
 msgid "_File"
 msgstr "_Fichier"
 
@@ -208,6 +216,9 @@ msgstr "_Suivant"
 
 msgid "_Note mode"
 msgstr "Mode _note"
+
+msgid "_Open"
+msgstr "_Ouvrir..."
 
 msgid "_Pause timer"
 msgstr "Mettre le minuteur en _pause"

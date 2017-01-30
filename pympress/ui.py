@@ -675,7 +675,8 @@ class UI:
         about.set_version(pympress.__version__)
         about.set_copyright(_('Contributors:') + '\n' + pympress.__copyright__)
         about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n')
-                         + _('Some preferences are saved in ') + pympress.util.path_to_config())
+                         + _('Some preferences are saved in ') + pympress.util.path_to_config() + '\n\n'
+                         + (_('Video support using VLC is enabled.') if vlc_enabled else _('Video support using VLC is disabled.')))
         about.set_website('http://www.pympress.xyz/')
         try:
             about.set_logo(pympress.util.get_icon_pixbuf('pympress-128.png'))
