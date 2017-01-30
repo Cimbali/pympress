@@ -21,6 +21,7 @@
 
 from cx_Freeze import setup, Executable
 import os, site, sys, importlib
+import pypandoc
 import glob
 
 IS_POSIX = os.name == 'posix'
@@ -127,6 +128,7 @@ executable = Executable(os.path.join('pympress', '__main__.py'), targetName='pym
 setup(name='pympress',
       version=pkg_meta.__version__,
       description='A simple dual-screen PDF reader designed for presentations',
+      long_description = pypandoc.convert_file('README.md', 'rst'),
       author='Cimbali, Thomas Jost, Christof Rath, Epithumia',
       author_email='me@cimba.li',
       url='https://github.com/Cimbali/pympress/',

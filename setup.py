@@ -22,6 +22,7 @@
 
 from setuptools import setup
 import glob, sys, os.path, importlib
+import pypandoc
 
 #get version
 pkg_meta = importlib.import_module('pympress.__init__')
@@ -29,6 +30,7 @@ pkg_meta = importlib.import_module('pympress.__init__')
 setup(name='pympress',
       version=pkg_meta.__version__,
       description='A simple dual-screen PDF reader designed for presentations',
+      long_description = pypandoc.convert_file('README.md', 'rst'),
       author='Cimbali, Thomas Jost, Christof Rath, Epithumia',
       author_email='me@cimba.li',
       url='https://github.com/Cimbali/pympress/',
