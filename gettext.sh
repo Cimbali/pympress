@@ -5,10 +5,10 @@ cd `dirname $p`
 pot=pympress/share/locale/pympress.pot
 translated=`ls pympress/share/locale/*/*.po`
 opts="--no-location --no-wrap --sort-output"
-pkg="--package-name=Pympress --package-version=`git describe --abbrev=0` --msgid-bugs-address=me@cimba.li"
+pkg="--package-name=Pympress --package-version=`git describe --tags --abbrev=0` --msgid-bugs-address=me@cimba.li"
 
 xgettext -d python $opts $pkg -L Python --from-code utf-8 --keyword=_ pympress/*.py
-xgettext -d glade  $opts $pkg -L glade --keyword=translatable pympress/share/*.glade
+xgettext -d glade  $opts $pkg -L glade --keyword=translatable pympress/share/xml/*.glade
 
 sed -i 's/CHARSET/UTF-8/g' python.po glade.po
 

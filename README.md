@@ -21,6 +21,10 @@ This is now a fork of [Schnouki's original Pympress](https://github.com/Schnouki
 
 Run the following command in your shell (or replace `python3 -m pip` with `python -m pip` or just `pip`):
 
+    python3 -m pip install pympress
+
+Or you can get it from github:
+
     python3 -m pip install git+https://github.com/Cimbali/pympress#egg=pympress
 
 If you don't have pip, see [the python documentation on installing](https://docs.python.org/3.5/installing/index.html). You may also want to check that you have all [the dependencies](#dependencies).

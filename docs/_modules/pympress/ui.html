@@ -55,7 +55,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v0.6
+		v1.0
 	</div>
 
 	
@@ -829,7 +829,8 @@
         <span class="n">about</span><span class="o">.</span><span class="n">set_version</span><span class="p">(</span><span class="n">pympress</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
         <span class="n">about</span><span class="o">.</span><span class="n">set_copyright</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Contributors:&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">pympress</span><span class="o">.</span><span class="n">__copyright__</span><span class="p">)</span>
         <span class="n">about</span><span class="o">.</span><span class="n">set_comments</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-                         <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Some preferences are saved in &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">pympress</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">path_to_config</span><span class="p">())</span>
+                         <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Some preferences are saved in &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">pympress</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">path_to_config</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+                         <span class="o">+</span> <span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Video support using VLC is enabled.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">vlc_enabled</span> <span class="k">else</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Video support using VLC is disabled.&#39;</span><span class="p">)))</span>
         <span class="n">about</span><span class="o">.</span><span class="n">set_website</span><span class="p">(</span><span class="s1">&#39;http://www.pympress.xyz/&#39;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">about</span><span class="o">.</span><span class="n">set_logo</span><span class="p">(</span><span class="n">pympress</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">get_icon_pixbuf</span><span class="p">(</span><span class="s1">&#39;pympress-128.png&#39;</span><span class="p">))</span>
@@ -2041,7 +2042,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-104-g2815c5e&#39;',
+            VERSION:'b&#39;0.6-107-g2817d0c&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
