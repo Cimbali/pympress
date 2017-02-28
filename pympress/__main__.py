@@ -43,8 +43,11 @@ if pympress.util.IS_WINDOWS:
     libintl.bindtextdomain('pympress', pympress.util.get_resource_path('share', 'locale'))
     libintl.bind_textdomain_codeset('pympress', 'UTF-8')
 else:
-    locale.bindtextdomain('pympress', pympress.util.get_resource_path('share', 'locale'))
-    locale.textdomain('pympress')
+    try:
+        locale.bindtextdomain('pympress', pympress.util.get_resource_path('share', 'locale'))
+        locale.textdomain('pympress')
+    except AttributeError:
+        pass
 
 import pympress.ui
 
