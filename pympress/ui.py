@@ -1342,7 +1342,7 @@ class UI:
             self.delta = time.time() - self.start_time
         elapsed = "{:02}:{:02}".format(*divmod(int(self.delta), 60))
         if self.paused:
-            elapsed += _(" (paused)")
+            elapsed += " " + _("(paused)")
 
         self.label_time.set_text(elapsed)
         self.label_clock.set_text(clock)
