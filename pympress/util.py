@@ -26,6 +26,8 @@
 from __future__ import print_function
 
 import gi
+import locale
+import ctypes
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
 import pkg_resources
@@ -177,6 +179,20 @@ def load_config():
         config.set('scribble', 'width', '8')
 
     return config
+
+
+def get_gettext_lib():
+    ''' Returns the 'locale' module, or the platform-dependent ctype library that contains gettext.
+
+        In particular, the object returned must allow to bind the text domain in gettext, such that
+        Gtk3 can access it. It needs to contain the bindtextdomain(name, path) function.
+    '''
+    if hasattr(locale, 'bindtextdomain'):
+        return locale
+    elif IS_WINDOWS:
+        return ctypes.cdll.LoadLibrary('libintl-8.dll')
+    elif IS_MAC_OS:
+        pass
 
 
 def save_config(config):

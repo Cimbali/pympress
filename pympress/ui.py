@@ -272,6 +272,7 @@ class UI:
         self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
 
         # Make and populate windows
+        self.builder.set_translation_domain('pympress')
         self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'presenter.glade'))
         self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'highlight.glade'))
         self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'content.glade'))
