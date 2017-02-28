@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: de\n"
 
-msgid " (paused)"
+msgid "(paused)"
 msgstr "(pausiert)"
 
 msgid "Adjust alignment of slides in projector screen"

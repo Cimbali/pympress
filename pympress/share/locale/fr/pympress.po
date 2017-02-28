@@ -14,8 +14,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
-msgid " (paused)"
-msgstr " (en pause)"
+msgid "(paused)"
+msgstr "(en pause)"
 
 msgid "Adjust alignment of slides in projector screen"
 msgstr "Ajuster l'alignement des diapos sur l'écran du projecteur"
