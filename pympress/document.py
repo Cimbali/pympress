@@ -574,7 +574,7 @@ class Document:
         """
         if number < 0:
             number = 0
-        elif number >= self.nb_pages:
+        if number >= self.nb_pages:
             number = self.nb_pages - 1
 
         if number != self.cur_page:
