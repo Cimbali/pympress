@@ -49,7 +49,10 @@ Pympress relies on:
 * [Gtk+ 3](http://www.gtk.org/), a toolkit for creating graphical user interfaces.
 * [PyGi, the python bindings for Gtk+3](https://wiki.gnome.org/Projects/PyGObject). PyGi is also known as *pygobject3*, just *pygobject* or *python3-gi*.
   * Introspection bindings for poppler may be shipped separately, ensure you have those as well (`typelib-1_0-Poppler-0_18` on OpenSUSE, `gir1.2-poppler-0.18` on Ubuntu)
-* optionally VLC, to play videos (with the same bitness as Python)
+* optionally [VLC](https://www.videolan.org/vlc/), to play videos (with the same bitness as Python)
+* optionally [gettext](https://www.gnu.org/software/gettext/), to get a translated version of Pympress.
+
+Gettext is part of libc on Linux, and part of the PyGi installer on Windows. On Mac OS X, you can [use brew to install gettext](http://stackoverflow.com/a/33896321/1387346).
 
 On windows GTK+3, Poppler and their python bindings are all shipped together in [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/). *Be sure to check the supported Python versions (up to 3.4 at the time of writing)*, they appear in the FEATURES list in the linked page.
 
