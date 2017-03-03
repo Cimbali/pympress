@@ -185,14 +185,26 @@ def get_gettext_lib():
     ''' Returns the 'locale' module, or the platform-dependent ctype library that contains gettext.
 
         In particular, the object returned must allow to bind the text domain in gettext, such that
-        Gtk3 can access it. It needs to contain the bindtextdomain(name, path) function.
+        Gtk3 can access it: it needs to contain the bindtextdomain(name, path) function.
+
+        If we can not find anything suitable, return `None`, which will disactivate translation.
     '''
     if hasattr(locale, 'bindtextdomain'):
         return locale
     elif IS_WINDOWS:
-        return ctypes.cdll.LoadLibrary('libintl-8.dll')
+        try:
+            return ctypes.cdll.LoadLibrary('libintl-8.dll')
+        except OSError:
+            pass
     elif IS_MAC_OS:
-        pass
+        try:
+            return ctypes.cdll.LoadLibrary('libintl.dylib')
+        except OSError:
+            pass
+        try:
+            return ctypes.cdll.LoadLibrary('libintl.8.dylib')
+        except OSError:
+            pass
 
 
 def save_config(config):
