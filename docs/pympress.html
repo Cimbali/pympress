@@ -55,7 +55,7 @@
 	<br />
 	<a href="index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.0
+		v1.0.1
 	</div>
 
 	
@@ -73,8 +73,9 @@
           
 	
             
-            
-                <ul class="current">
+              
+              
+                  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="README.html">What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#usage">Usage</a></li>
@@ -92,6 +93,7 @@
 </li>
 </ul>
 
+              
             
           
 	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
@@ -216,7 +218,7 @@ current and the next page, as well as a time counter and a clock.</p>
 
 <dl class="attribute">
 <dt id="pympress.ui.UI.builder">
-<code class="descname">builder</code><em class="property"> = &lt;Gtk.Builder object at 0x7ff3bf1e51f8 (GtkBuilder at 0x29cc150)&gt;</em><a class="headerlink" href="#pympress.ui.UI.builder" title="Permalink to this definition">¶</a></dt>
+<code class="descname">builder</code><em class="property"> = &lt;Builder object at 0x61a81b0 (GtkBuilder at 0x4fb5c20)&gt;</em><a class="headerlink" href="#pympress.ui.UI.builder" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="xref py py-class docutils literal"><span class="pre">Builder</span></code> to read XML descriptions of GUIs and load them.</p>
 </dd></dl>
 
@@ -349,7 +351,7 @@ current and the next page, as well as a time counter and a clock.</p>
 
 <dl class="attribute">
 <dt id="pympress.ui.UI.entry_ett">
-<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7ff3bf201f30 (GtkEntry at 0x2a4c2b0)&gt;</em><a class="headerlink" href="#pympress.ui.UI.entry_ett" title="Permalink to this definition">¶</a></dt>
+<code class="descname">entry_ett</code><em class="property"> = &lt;Entry object at 0x63e8bd0 (GtkEntry at 0x3d03190)&gt;</em><a class="headerlink" href="#pympress.ui.UI.entry_ett" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="xref py py-class docutils literal"><span class="pre">Entry</span></code> used to set the estimated talk time.</p>
 </dd></dl>
 
@@ -1739,11 +1741,6 @@ if one exists, <code class="docutils literal"><span class="pre">None</span></cod
 </dd></dl>
 
 <dl class="function">
-<dt id="pympress.document.fileopen">
-<code class="descclassname">pympress.document.</code><code class="descname">fileopen</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pympress.document.fileopen" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="pympress.document.get_extension">
 <code class="descclassname">pympress.document.</code><code class="descname">get_extension</code><span class="sig-paren">(</span><em>mime_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#get_extension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.get_extension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a valid filename extension (recognized by python) for a given mime type.</p>
@@ -1760,7 +1757,7 @@ Hence the prerendering isn&#8217;t really done in parallel in another thread, bu
 scheduled on the main thread at idle times using GLib.idle_add().</p>
 <dl class="class">
 <dt id="pympress.surfacecache.OrderedDict">
-<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">collections.OrderedDict</span></code></p>
 <p>OrderedDict for python2 compatibility, adding move_to_end().</p>
 <dl class="method">
@@ -2043,6 +2040,15 @@ or <a class="reference internal" href="#pympress.ui.PDF_NOTES_PAGE" title="pympr
 <span class="target" id="module-pympress.util"></span><div class="section" id="pympress-util-various-utility-functions">
 <h3><a class="reference internal" href="#module-pympress.util" title="pympress.util"><code class="xref py py-mod docutils literal"><span class="pre">pympress.util</span></code></a> &#8211; various utility functions<a class="headerlink" href="#pympress-util-various-utility-functions" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
+<dt id="pympress.util.get_gettext_lib">
+<code class="descclassname">pympress.util.</code><code class="descname">get_gettext_lib</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#get_gettext_lib"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.get_gettext_lib" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the &#8216;locale&#8217; module, or the platform-dependent ctype library that contains gettext.</p>
+<p>In particular, the object returned must allow to bind the text domain in gettext, such that
+Gtk3 can access it: it needs to contain the bindtextdomain(name, path) function.</p>
+<p>If we can not find anything suitable, return <cite>None</cite>, which will disactivate translation.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pympress.util.get_icon_pixbuf">
 <code class="descclassname">pympress.util.</code><code class="descname">get_icon_pixbuf</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#get_icon_pixbuf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.get_icon_pixbuf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load an image from pympress&#8217; resources in a Gdk Pixbuf.</p>
@@ -2205,7 +2211,7 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="README.html" class="btn btn-neutral" title="What is Pympress?" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="README.html" class="btn btn-neutral" title="What is Pympress?" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -2236,7 +2242,7 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-107-g2817d0c&#39;',
+            VERSION:'b&#39;0.6-117-gd5f7817&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

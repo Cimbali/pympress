@@ -56,7 +56,7 @@
 	<br />
 	<a href="index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.0
+		v1.0.1
 	</div>
 
 	
@@ -74,8 +74,9 @@
           
 	
             
-            
-                <ul class="current">
+              
+              
+                  <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#installing">Installing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#if-you-have-python">If you have python</a><ul>
@@ -99,6 +100,7 @@
 <li class="toctree-l1"><a class="reference internal" href="pympress.html">Pympress package</a></li>
 </ul>
 
+              
             
           
 	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
@@ -218,8 +220,10 @@ Grab <a class="reference external" href="https://github.com/Cimbali/pympress/rel
 <li>Introspection bindings for poppler may be shipped separately, ensure you have those as well (<code class="docutils literal"><span class="pre">typelib-1_0-Poppler-0_18</span></code> on OpenSUSE, <code class="docutils literal"><span class="pre">gir1.2-poppler-0.18</span></code> on Ubuntu)</li>
 </ul>
 </li>
-<li>optionally VLC, to play videos (with the same bitness as Python)</li>
+<li>optionally <a class="reference external" href="https://www.videolan.org/vlc/">VLC</a>, to play videos (with the same bitness as Python)</li>
+<li>optionally <a class="reference external" href="https://www.gnu.org/software/gettext/">gettext</a>, to get a translated version of Pympress.</li>
 </ul>
+<p>Gettext is part of libc on Linux, and part of the PyGi installer on Windows. On Mac OS X, you can <a class="reference external" href="http://stackoverflow.com/a/33896321/1387346">use brew to install gettext</a>.</p>
 <p>On windows GTK+3, Poppler and their python bindings are all shipped together in <a class="reference external" href="https://sourceforge.net/projects/pygobjectwin32/">the PyGi installer</a>. <em>Be sure to check the supported Python versions (up to 3.4 at the time of writing)</em>, they appear in the FEATURES list in the linked page.</p>
 <p>On other platforms they are often installed by default, or easily available through your package or software manager.
 For example, on ubuntu, you can run the following as root to make sure you have all the prerequisites <em>assuming you use python3</em>:</p>
@@ -285,10 +289,10 @@ Finally pass this .po file to msgfmt and add the output to the repo at <code cla
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pympress.html" class="btn btn-neutral float-right" title="Pympress package" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pympress.html" class="btn btn-neutral float-right" title="Pympress package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Welcome to pympress’s documentation!" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Welcome to pympress’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -319,7 +323,7 @@ Finally pass this .po file to msgfmt and add the output to the repo at <code cla
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-107-g2817d0c&#39;',
+            VERSION:'b&#39;0.6-117-gd5f7817&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

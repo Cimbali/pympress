@@ -55,7 +55,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.0
+		v1.0.1
 	</div>
 
 	
@@ -72,16 +72,6 @@
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
 	
-            
-            
-                <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html#hacking">Hacking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
-</ul>
-
             
           
 	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
@@ -180,6 +170,8 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
 
 <span class="kn">import</span> <span class="nn">gi</span>
+<span class="kn">import</span> <span class="nn">locale</span>
+<span class="kn">import</span> <span class="nn">ctypes</span>
 <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GdkPixbuf</span>
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
@@ -333,6 +325,32 @@
     <span class="k">return</span> <span class="n">config</span></div>
 
 
+<div class="viewcode-block" id="get_gettext_lib"><a class="viewcode-back" href="../../pympress.html#pympress.util.get_gettext_lib">[docs]</a><span class="k">def</span> <span class="nf">get_gettext_lib</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39; Returns the &#39;locale&#39; module, or the platform-dependent ctype library that contains gettext.</span>
+
+<span class="sd">        In particular, the object returned must allow to bind the text domain in gettext, such that</span>
+<span class="sd">        Gtk3 can access it: it needs to contain the bindtextdomain(name, path) function.</span>
+
+<span class="sd">        If we can not find anything suitable, return `None`, which will disactivate translation.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">locale</span><span class="p">,</span> <span class="s1">&#39;bindtextdomain&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">locale</span>
+    <span class="k">elif</span> <span class="n">IS_WINDOWS</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="s1">&#39;libintl-8.dll&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">IS_MAC_OS</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="s1">&#39;libintl.dylib&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="s1">&#39;libintl.8.dylib&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+
 <div class="viewcode-block" id="save_config"><a class="viewcode-back" href="../../pympress.html#pympress.util.save_config">[docs]</a><span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Save the configuration to its file.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -382,7 +400,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-107-g2817d0c&#39;',
+            VERSION:'b&#39;0.6-117-gd5f7817&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
