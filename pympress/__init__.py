@@ -21,7 +21,7 @@
 # DON'T IMPORT ANYTHING HERE (OR YOU WILL BREAK setup.py)
 #
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __copyright__= """2009, 2010 Thomas Jost <thomas.jost@gmail.com>
 2015-2017 Cimbali <me@cimba.li>
 2016 Christoph Rath <christof.rath@iaik.tugraz.at>

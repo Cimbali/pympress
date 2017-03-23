@@ -55,7 +55,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.0.1
+		v1.0.2
 	</div>
 
 	
@@ -309,7 +309,7 @@
     <span class="n">redraw_timeout</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="c1">#: Current :class:`~pympress.document.Document` instance.</span>
-    <span class="n">doc</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">EmptyDocument</span><span class="p">()</span>
 
     <span class="c1">#: Whether to use notes mode or not</span>
     <span class="n">notes_mode</span> <span class="o">=</span> <span class="kc">False</span>
@@ -387,10 +387,9 @@
     <span class="c1"># The :class:`UI` singleton, since there is only one (as a class variable). Used by classmethods only.</span>
     <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpath</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ett</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ett</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
-<span class="sd">            docpath (string):  the path to the document to open</span>
 <span class="sd">            ett (int):  the estimated (intended) talk time</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">UI</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="bp">self</span>
@@ -404,9 +403,6 @@
             <span class="n">pympress</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">get_style_provider</span><span class="p">(),</span>
             <span class="n">Gtk</span><span class="o">.</span><span class="n">STYLE_PROVIDER_PRIORITY_APPLICATION</span>
         <span class="p">)</span>
-
-        <span class="c1"># Document</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">pympress</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">docpath</span><span class="p">)</span>
 
         <span class="c1"># Use notes mode by default if the document has notes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">has_notes</span><span class="p">()</span>
@@ -514,7 +510,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">show_bigbuttons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_bigbuttons&#39;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">get_adjustment</span><span class="p">()</span><span class="o">.</span><span class="n">set_upper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hb_cur</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
@@ -557,10 +553,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">hpaned</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">pane_size</span> <span class="o">*</span> <span class="n">avail_size</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resize_annotation_list</span><span class="p">)</span>
-
-        <span class="c1"># delayed check for a file, prompt which to open</span>
-        <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_file</span><span class="p">())</span></div>
+        <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resize_annotation_list</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UI.load_time_colors"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.load_time_colors">[docs]</a>    <span class="k">def</span> <span class="nf">load_time_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1327,6 +1320,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">grab_focus</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">editing_cur</span> <span class="o">=</span> <span class="kc">True</span>
 
+                <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">())</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">current_page</span><span class="p">()</span><span class="o">.</span><span class="n">number</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">select_region</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
@@ -2033,7 +2027,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-117-gd5f7817&#39;',
+            VERSION:'b&#39;0.6-120-g2cc4f74&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
