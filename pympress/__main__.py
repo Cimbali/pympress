@@ -30,7 +30,7 @@ import ctypes
 
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GLib
 
 import pympress.util
 gettext.install('pympress', pympress.util.get_resource_path('share', 'locale'))
@@ -100,7 +100,11 @@ def main(argv = sys.argv[1:]):
             name = None
 
     # Create windows
-    ui = pympress.ui.UI(name, ett)
+    ui = pympress.ui.UI(ett)
+    if name:
+        GLib.idle_add(ui.swap_document, name)
+    else:
+        GLib.idle_add(ui.pick_file)
     ui.run()
 
 

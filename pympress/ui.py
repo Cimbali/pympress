@@ -165,7 +165,7 @@ class UI:
     redraw_timeout = 0
 
     #: Current :class:`~pympress.document.Document` instance.
-    doc = None
+    doc = pympress.document.EmptyDocument()
 
     #: Whether to use notes mode or not
     notes_mode = False
@@ -243,10 +243,9 @@ class UI:
     # The :class:`UI` singleton, since there is only one (as a class variable). Used by classmethods only.
     _instance = None
 
-    def __init__(self, docpath = None, ett = 0):
+    def __init__(self, ett = 0):
         """
         Args:
-            docpath (string):  the path to the document to open
             ett (int):  the estimated (intended) talk time
         """
         UI._instance = self
@@ -260,9 +259,6 @@ class UI:
             pympress.util.get_style_provider(),
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
-
-        # Document
-        self.doc = pympress.document.Document.create(docpath)
 
         # Use notes mode by default if the document has notes
         self.notes_mode = self.doc.has_notes()
@@ -414,9 +410,6 @@ class UI:
         self.on_page_change(False)
 
         GLib.idle_add(self.resize_annotation_list)
-
-        # delayed check for a file, prompt which to open
-        GLib.idle_add(lambda: self.doc.pages_number() > 0 or self.pick_file())
 
 
     def load_time_colors(self):
