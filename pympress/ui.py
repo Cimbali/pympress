@@ -366,7 +366,7 @@ class UI:
 
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
 
-        self.spin_cur.get_adjustment().set_upper(self.doc.pages_number())
+        self.spin_cur.set_range(1, self.doc.pages_number())
         self.hb_cur.remove(self.spin_cur)
 
         if self.notes_mode:
@@ -1176,6 +1176,7 @@ class UI:
                 self.spin_cur.grab_focus()
                 self.editing_cur = True
 
+                self.spin_cur.set_range(1, self.doc.pages_number())
                 self.spin_cur.set_value(self.doc.current_page().number() + 1)
                 self.spin_cur.select_region(0, -1)
 
