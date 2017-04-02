@@ -33,22 +33,14 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, GLib
 
 import pympress.util
-gettext.install('pympress', pympress.util.get_resource_path('share', 'locale'))
 
 if pympress.util.IS_WINDOWS:
     if os.getenv('LANG') is None:
         lang, enc = locale.getdefaultlocale()
         os.environ['LANG'] = lang
 
-try:
-    # setup the textdomain so Gtk3 can find it
-    libintl = pympress.util.get_gettext_lib()
-    libintl.bindtextdomain('pympress', pympress.util.get_resource_path('share', 'locale'))
-    libintl.bind_textdomain_codeset('pympress', 'UTF-8')
-
-except AttributeError:
-    # disable translations altogether. Pympress will be in English but at least consistenly so.
-    gettext.install('')
+locale.setlocale(locale.LC_ALL, '')
+gettext.install('pympress', pympress.util.get_resource_path('share', 'locale'))
 
 import pympress.ui
 

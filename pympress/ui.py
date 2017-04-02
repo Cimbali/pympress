@@ -268,10 +268,13 @@ class UI:
         self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
 
         # Make and populate windows
-        self.builder.set_translation_domain('pympress')
         self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'presenter.glade'))
         self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'highlight.glade'))
         self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'content.glade'))
+
+        # Apply translations to top-level widgets from each file
+        for top_widget in map(self.builder.get_object, ['p_win', 'c_win', 'off_render']):
+            pympress.util.recursive_translate_widgets(top_widget)
 
         # Introspectively load all missing elements from builder
         # This means that all attributes that are None at this time must exist under the same name in the builder

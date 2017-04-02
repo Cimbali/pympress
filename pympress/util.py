@@ -29,7 +29,7 @@ import gi
 import locale
 import ctypes
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GdkPixbuf
+from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
 import pkg_resources
 import os, os.path, sys
 
@@ -42,6 +42,21 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
+
+def recursive_translate_widgets(a_widget):
+    ''' Calls gettext on all strings we can find in widgets, recursively.
+    '''
+    for str_prop in (prop.name for prop in a_widget.props if prop.value_type == GObject.TYPE_STRING):
+        try:
+            setattr(a_widget.props, str_prop, _(getattr(a_widget.props, str_prop)))
+        except TypeError:
+            # Thrown when a string property is not readable
+            pass
+
+    if issubclass(type(a_widget), Gtk.Container):
+        #NB: Parent-loop in widgets would cause infinite loop here, but that's absurd (right?)
+        #NB2: maybe forall instead of foreach if we miss some strins?
+        a_widget.foreach(recursive_translate_widgets)
 
 def get_resource_path(*path_parts):
     ''' Return the resource path based on whether its frozen or not.
@@ -179,32 +194,6 @@ def load_config():
         config.set('scribble', 'width', '8')
 
     return config
-
-
-def get_gettext_lib():
-    ''' Returns the 'locale' module, or the platform-dependent ctype library that contains gettext.
-
-        In particular, the object returned must allow to bind the text domain in gettext, such that
-        Gtk3 can access it: it needs to contain the bindtextdomain(name, path) function.
-
-        If we can not find anything suitable, return `None`, which will disactivate translation.
-    '''
-    if hasattr(locale, 'bindtextdomain'):
-        return locale
-    elif IS_WINDOWS:
-        try:
-            return ctypes.cdll.LoadLibrary('libintl-8.dll')
-        except OSError:
-            pass
-    elif IS_MAC_OS:
-        try:
-            return ctypes.cdll.LoadLibrary('libintl.dylib')
-        except OSError:
-            pass
-        try:
-            return ctypes.cdll.LoadLibrary('libintl.8.dylib')
-        except OSError:
-            pass
 
 
 def save_config(config):
