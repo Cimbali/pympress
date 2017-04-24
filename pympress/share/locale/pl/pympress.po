@@ -1,0 +1,251 @@
+# Pympress Polish translation
+# Copyright (C) 2017
+# This file is distributed under the same license as the Pympress package.
+# Stanisław Polak <polak@icsr.agh.edu.pl>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Pympress v1.0\n"
+"Report-Msgid-Bugs-To: me@cimba.li\n"
+"POT-Creation-Date: 2016-10-24 15:50+0200\n"
+"PO-Revision-Date: 2017-04-23 15:22+0200\n"
+"Last-Translator: Stanisław Polak <polak@icsr.agh.edu.pl>\n"
+"Language-Team: \n"
+"Language: Polish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+msgid "(paused)"
+msgstr "(wstrzymany)"
+
+msgid "Adjust alignment of slides in projector screen"
+msgstr "Wyreguluj wyrównanie slajdów na ekranie rzutnika"
+
+msgid "All files"
+msgstr "Wszystkie pliki"
+
+msgid "Annotations"
+msgstr "Adnotacje"
+
+msgid "Big buttons"
+msgstr "Duże przyciski"
+
+msgid "Clock"
+msgstr "Zegar"
+
+msgid "Content blanked"
+msgstr "Puste okno treści"
+
+msgid "Content fullscreen"
+msgstr "Okno treści w trybie pełnoekranowym"
+
+msgid "Contributors:"
+msgstr "Współpracownicy:"
+
+msgid "Could not find the file \"{}\""
+msgstr "Nie mogę znaleźć pliku \"{}\""
+
+msgid "Current slide"
+msgstr "Bieżący slajd"
+
+msgid "ERROR Unknown widget to start fullscreen: {}"
+msgstr "BŁĄD Nieznany widżet do uruchomienia w trybie pełnoekranowym: {}"
+
+msgid "ERROR no action defined for this link!"
+msgstr "BŁĄÐ nie określono działania dla tego odnośnika!"
+
+msgid "Error loading icon for about window"
+msgstr "Błąd ładowania ikony dla okna \"O\""
+
+msgid "Error: access denied when trying to access screen saver settings in registry!"
+msgstr "Błąd: odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"
+
+msgid "Highlight"
+msgstr "Zakreślacz"
+
+msgid "Invalid time (mm or mm:ss expected), got \"{}\""
+msgstr "Nieprawidłowy czas (oczekiwano min lub min:sek), podano (wprowadzono) \"{}\""
+
+msgid "Next slide"
+msgstr "Następny slajd"
+
+msgid "No action was defined for this link"
+msgstr "Dla tego odnośnika nie zdefiniowano żadnych działań"
+
+msgid ""
+"No file selected!\n"
+"\n"
+"You can specify the PDF file to open on the command line if you don't want to use the \"Open File\" dialog."
+msgstr ""
+"Nie wybrano żadnego pliku!\n"
+"\n"
+"Jeśli nie chcesz używać okna dialogowego \"Otwórz plik\", to w wierszu poleceń możesz określić, który plik PDF ma zostać otwarty."
+
+msgid "Notes"
+msgstr "Notatki"
+
+msgid "Open..."
+msgstr "Otwórz..."
+
+msgid "Options:"
+msgstr "Opcje:"
+
+msgid "PDF files"
+msgstr "Pliki PDF"
+
+msgid "Presenter fullscreen"
+msgstr "Okno prelegenta w trybie pełnoekranowym"
+
+msgid "Pympress Content"
+msgstr "Okno treści Pympress"
+
+msgid "Pympress can not extract embedded media"
+msgstr "Pympress nie może wyodrębnić osadzonych mediów"
+
+msgid "Pympress can not find file "
+msgstr "Pympress nie może znaleźć pliku "
+
+msgid "Pympress can not interpret annotation of type:"
+msgstr "Pympress nie może zinterpretować adnotacji typu:"
+
+msgid "Pympress does not recognize link type \"{}\""
+msgstr "Pympress nie rozpoznaje odsyłacza typu \"{}\""
+
+msgid "Pympress does not recognize link type \"{}\" to \"{}\""
+msgstr "Pympress nie rozpoznaje odsyłacza typu \"{}\" do \"{}\""
+
+msgid "Pympress does not yet support link type \"{}\""
+msgstr "Pympress jeszcze nie obsługuje odsyłacza typu \"{}\""
+
+msgid "Pympress does not yet support link type \"{}\" to \"{}\""
+msgstr "Pympress jeszcze nie obsługuje odsyłacza typu \"{}\" do \"{}\""
+
+msgid "Set talk _Time"
+msgstr "Ustaw _czas trwania wystąpienia (prelekcji)"
+
+msgid "Slide number"
+msgstr "Numer slajdu"
+
+msgid "Some preferences are saved in "
+msgstr "Niektóre ustawienia są zapisywane w "
+
+msgid "The estimated (intended) talk time in minutes"
+msgstr "Przewidywany (spodziewany) czas trwania wystąpienia (prelekcji) w minutach"
+
+msgid "This help"
+msgstr "Niniejsza pomoc"
+
+msgid "Time elapsed"
+msgstr "Czas, który upłynął"
+
+msgid "Time estimation"
+msgstr "Przewidziany czas"
+
+msgid "Unknow widget {} to be fullscreened, aborting."
+msgstr "Nie mogę uruchomić w trybie pełnoekranowym, nieznanego widżetu {}, przerywam działanie."
+
+msgid "Unknown event {}"
+msgstr "Nieznane zdarzenie {}"
+
+msgid "Usage: {} [options] <presentation_file>"
+msgstr "Sposób użycia: {} [opcje] <plik_z_prezentacją>"
+
+msgid "Video support using VLC is disabled."
+msgstr "Obsługa wideo przy użyciu VLC jest wyłączona."
+
+msgid "Video support using VLC is enabled."
+msgstr "Obsługa wideo przy użyciu VLC jest włączona."
+
+msgid "Warning: Content and presenter window must not be on the same monitor if you start full screen!"
+msgstr "Ostrzeżenie: okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnoekranowy!"
+
+msgid "Warning: Could not disable DPMS screen blanking: got status "
+msgstr "Ostrzeżenie: nie można wyłączyć wygaszania ekranu DPMS: otrzymany status "
+
+msgid "Warning: Could not enable DPMS screen blanking: got status "
+msgstr "Ostrzeżenie: nie można włączyć wygaszania ekranu DPMS: otrzymany status "
+
+msgid "Warning: Could not set screensaver status: got status "
+msgstr "Ostrzeżenie: nie można ustawić stanu wygaszacza ekranu: otrzymany status "
+
+msgid "Warning: Unsupported OS: can't enable/disable screensaver"
+msgstr "Ostrzeżenie: nieobsługiwany system operacyjny: nie można włączyć/wyłączyć wygaszacza ekranu"
+
+msgid "Warning: video support is disabled"
+msgstr "Ostrzeżenie: wyłączona obsługa wideo"
+
+msgid "_About"
+msgstr "_O"
+
+msgid "_Align content"
+msgstr "_Wyrównaj treść"
+
+msgid "_Annotations"
+msgstr "_Adnotacje"
+
+msgid "_Blank screen"
+msgstr "_Pusty ekran"
+
+msgid "_Close File"
+msgstr "_Zamknij plik"
+
+msgid "_File"
+msgstr "_Plik"
+
+msgid "_First"
+msgstr "_Pierwszy"
+
+msgid "_Fullscreen"
+msgstr "_Tryb pełnoekranowy"
+
+msgid "_Go to..."
+msgstr "_Idź do..."
+
+msgid "_Help"
+msgstr "_Pomoc"
+
+msgid "_Highlight"
+msgstr "_Zakreślacz"
+
+msgid "_Last"
+msgstr "_Ostatni"
+
+msgid "_Navigation"
+msgstr "_Nawigacja"
+
+msgid "_Next"
+msgstr "_Następny"
+
+msgid "_Note mode"
+msgstr "_Tryb notatek"
+
+msgid "_Open"
+msgstr "_Otwórz"
+
+msgid "_Pause timer"
+msgstr "_Wstrzymaj timer"
+
+msgid "_Presentation"
+msgstr "_Prezentacja"
+
+msgid "_Previous"
+msgstr "_Poprzedni"
+
+msgid "_Quit"
+msgstr "_Wyjdź"
+
+msgid "_Reset timer"
+msgstr "Zresetuj timer"
+
+msgid "_Starting Configuration"
+msgstr "_Konfiguracja startowa"
+
+msgid "_Swap screens"
+msgstr "_Zamień ekrany"
+
+msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
+msgstr "pympress jest małym czytnikiem PDF napisanym w Pythonie, używającym Popplera do renderowania plików PDF oraz GTK do tworzenia GUI.\n"
+
+msgid "pympress presenter"
+msgstr "Okno presentera Pympress"
