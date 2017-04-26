@@ -11,7 +11,7 @@ It comes with many great features:
 
 Pympress is a free software, distributed under the terms of the GPL license (version 2 or, at your option, any later version).
 
-This is now a fork of [Schnouki's original Pympress](https://github.com/Schnouki/pympress), at least for now.
+Pympress was originally created and maintained by [Schnouki](https://github.com/Schnouki), on [his repo](https://github.com/Schnouki/pympress).
 
 # Installing
 
