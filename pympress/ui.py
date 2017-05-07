@@ -341,6 +341,8 @@ class UI:
         self.label_last.set_text("/{}".format(self.doc.pages_number()))
 
         # Draw the new page(s)
+        self.paused = True
+        self.reset_timer()
         self.on_page_change(False)
 
 
@@ -773,10 +775,8 @@ class UI:
         self.p_da_pres.queue_draw()
 
         # Start counter if needed
-        if unpause:
-            self.paused = False
-            if self.start_time == 0:
-                self.start_time = time.time()
+        if unpause and self.paused:
+            self.switch_pause()
 
         # Update display
         self.update_page_numbers()
