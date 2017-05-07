@@ -689,7 +689,7 @@ class UI:
         This is a kind of event which is supposed to be called only from the spin_cur spinner as a callback
 
         Args:
-            unpause (boolean):  ``True`` if the page change should unpause the timer, ``False`` otherwise
+            widget (:class:`~Gtk.SpinButton`): The spinner button widget calling page_preview
         """
         try:
             page_nb = int(widget.get_buffer().get_text()) - 1
