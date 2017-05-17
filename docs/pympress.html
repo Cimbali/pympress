@@ -43,19 +43,17 @@
 
 <body class="wy-body-for-nav" role="document">
 
-   
   <div class="wy-grid-for-nav">
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+      <div class="wy-side-nav-search">
+        
 	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
 	<br />
 	<a href="index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.0.2
+		v1.0.3
 	</div>
 
 	
@@ -67,19 +65,34 @@
   </form>
 </div>
 
-        </div>
+      </div>
 
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
 	
-            
-              
-              
-                  <ul class="current">
+          
+          
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="README.html">What is Pympress?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#installing">Installing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#usage">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#hacking">Hacking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#installing">Installing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="README.html#if-you-have-python">If you have python</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="README.html#using-pip">Using pip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="README.html#from-source">From source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#binary-install">Binary install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#usage">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="README.html#opening-a-file">Opening a file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#functionalities">Functionalities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#hacking">Hacking</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="README.html#translations">Translations</a></li>
+</ul>
+</li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Pympress package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-pympress.ui">Modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pympress-ui-gui-management"><code class="docutils literal"><span class="pre">pympress.ui</span></code> &#8211; GUI management</a></li>
@@ -93,73 +106,44 @@
 </li>
 </ul>
 
-              
-            
           
+        
 	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
 	<a href="genindex.html">Index</a>
 	<a href="py-modindex.html">Module index</a>
 
-        </div>
       </div>
+      &nbsp;
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Pympress</a>
-        
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Pympress</a>
       </nav>
 
 
       
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>Pympress package</li>
-    
-    
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Pympress package</li>
       <li class="wy-breadcrumbs-aside">
         
-            
-            
-              <a href="https://github.com/Cimbali/pympress/blob/master/docs/source/pympress.md" class="fa fa-github"> Edit on GitHub</a>
-            
+          
+            <a href="https://github.com/Cimbali/pympress/blob/master/docs/source/pympress" class="fa fa-github"> Edit on GitHub</a>
           
         
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+          <div role="main" class="document">
             
   <div class="section" id="pympress-package">
 <span id="pympress-package"></span><h1>Pympress package<a class="headerlink" href="#pympress-package" title="Permalink to this headline">¶</a></h1>
@@ -218,7 +202,7 @@ current and the next page, as well as a time counter and a clock.</p>
 
 <dl class="attribute">
 <dt id="pympress.ui.UI.builder">
-<code class="descname">builder</code><em class="property"> = &lt;Builder object at 0x6395b88 (GtkBuilder at 0x4fe5c20)&gt;</em><a class="headerlink" href="#pympress.ui.UI.builder" title="Permalink to this definition">¶</a></dt>
+<code class="descname">builder</code><em class="property"> = &lt;Gtk.Builder object at 0x7fc050754bd0 (GtkBuilder at 0x15021b0)&gt;</em><a class="headerlink" href="#pympress.ui.UI.builder" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="xref py py-class docutils literal"><span class="pre">Builder</span></code> to read XML descriptions of GUIs and load them.</p>
 </dd></dl>
 
@@ -351,7 +335,7 @@ current and the next page, as well as a time counter and a clock.</p>
 
 <dl class="attribute">
 <dt id="pympress.ui.UI.entry_ett">
-<code class="descname">entry_ett</code><em class="property"> = &lt;Entry object at 0x63c6990 (GtkEntry at 0x3d3c100)&gt;</em><a class="headerlink" href="#pympress.ui.UI.entry_ett" title="Permalink to this definition">¶</a></dt>
+<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7fc0506f0ab0 (GtkEntry at 0x15742b0)&gt;</em><a class="headerlink" href="#pympress.ui.UI.entry_ett" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="xref py py-class docutils literal"><span class="pre">Entry</span></code> used to set the estimated talk time.</p>
 </dd></dl>
 
@@ -472,22 +456,6 @@ current and the next page, as well as a time counter and a clock.</p>
 <dt id="pympress.ui.UI.make_cwin">
 <code class="descname">make_cwin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.make_cwin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.make_cwin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes the content window.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pympress.ui.UI.make_menubar">
-<code class="descname">make_menubar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.make_menubar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.make_menubar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates and initializes the menu bar.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the menu bar</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">Gtk.Widget</span></code></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="method">
@@ -805,7 +773,7 @@ moving the middle pane is done (which happens at the end of a mouse resize)</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unpause</strong> (<em>boolean</em>) &#8211; <code class="docutils literal"><span class="pre">True</span></code> if the page change should unpause the timer, <code class="docutils literal"><span class="pre">False</span></code> otherwise</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>widget</strong> (<code class="xref py py-class docutils literal"><span class="pre">SpinButton</span></code>) &#8211; The spinner button widget calling page_preview</td>
 </tr>
 </tbody>
 </table>
@@ -1075,7 +1043,7 @@ The state of the ui and cache are updated accordingly.</p>
 <dl class="method">
 <dt id="pympress.ui.UI.switch_blanked">
 <code class="descname">switch_blanked</code><span class="sig-paren">(</span><em>widget=None</em>, <em>event=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_blanked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_blanked" title="Permalink to this definition">¶</a></dt>
-<dd><p>Switch the blanked mode of the main screen.</p>
+<dd><p>Switch the blanked mode of the content screen.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1108,13 +1076,19 @@ when leaving fullscreen mode.</p>
 <dl class="method">
 <dt id="pympress.ui.UI.switch_start_blanked">
 <code class="descname">switch_start_blanked</code><span class="sig-paren">(</span><em>widget=None</em>, <em>event=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_start_blanked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_start_blanked" title="Permalink to this definition">¶</a></dt>
-<dd><p>Switch the blanked mode of the main screen.</p>
+<dd><p>Switch the blanked mode of the content screen at startup.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pympress.ui.UI.switch_start_fullscreen">
-<code class="descname">switch_start_fullscreen</code><span class="sig-paren">(</span><em>widget=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_start_fullscreen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_start_fullscreen" title="Permalink to this definition">¶</a></dt>
-<dd><p>Switch the blanked mode of the main screen.</p>
+<dt id="pympress.ui.UI.switch_start_cwin_full">
+<code class="descname">switch_start_cwin_full</code><span class="sig-paren">(</span><em>widget=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_start_cwin_full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_start_cwin_full" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch the fullscreen mode of the content screen at startup.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.ui.UI.switch_start_pwin_full">
+<code class="descname">switch_start_pwin_full</code><span class="sig-paren">(</span><em>widget=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_start_pwin_full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_start_pwin_full" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch the fullscreen mode of the presenter screen at startup.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1741,6 +1715,11 @@ if one exists, <code class="docutils literal"><span class="pre">None</span></cod
 </dd></dl>
 
 <dl class="function">
+<dt id="pympress.document.fileopen">
+<code class="descclassname">pympress.document.</code><code class="descname">fileopen</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pympress.document.fileopen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="pympress.document.get_extension">
 <code class="descclassname">pympress.document.</code><code class="descname">get_extension</code><span class="sig-paren">(</span><em>mime_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#get_extension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.get_extension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a valid filename extension (recognized by python) for a given mime type.</p>
@@ -1757,7 +1736,7 @@ Hence the prerendering isn&#8217;t really done in parallel in another thread, bu
 scheduled on the main thread at idle times using GLib.idle_add().</p>
 <dl class="class">
 <dt id="pympress.surfacecache.OrderedDict">
-<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">collections.OrderedDict</span></code></p>
 <p>OrderedDict for python2 compatibility, adding move_to_end().</p>
 <dl class="method">
@@ -2040,15 +2019,6 @@ or <a class="reference internal" href="#pympress.ui.PDF_NOTES_PAGE" title="pympr
 <span class="target" id="module-pympress.util"></span><div class="section" id="pympress-util-various-utility-functions">
 <h3><a class="reference internal" href="#module-pympress.util" title="pympress.util"><code class="xref py py-mod docutils literal"><span class="pre">pympress.util</span></code></a> &#8211; various utility functions<a class="headerlink" href="#pympress-util-various-utility-functions" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="pympress.util.get_gettext_lib">
-<code class="descclassname">pympress.util.</code><code class="descname">get_gettext_lib</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#get_gettext_lib"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.get_gettext_lib" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the &#8216;locale&#8217; module, or the platform-dependent ctype library that contains gettext.</p>
-<p>In particular, the object returned must allow to bind the text domain in gettext, such that
-Gtk3 can access it: it needs to contain the bindtextdomain(name, path) function.</p>
-<p>If we can not find anything suitable, return <cite>None</cite>, which will disactivate translation.</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="pympress.util.get_icon_pixbuf">
 <code class="descclassname">pympress.util.</code><code class="descname">get_icon_pixbuf</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#get_icon_pixbuf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.get_icon_pixbuf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load an image from pympress&#8217; resources in a Gdk Pixbuf.</p>
@@ -2107,6 +2077,12 @@ Paths parts given should be relative to the pympress package dir.</p>
 <dt id="pympress.util.path_to_config">
 <code class="descclassname">pympress.util.</code><code class="descname">path_to_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#path_to_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.path_to_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the OS-specific path to the configuration file.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pympress.util.recursive_translate_widgets">
+<code class="descclassname">pympress.util.</code><code class="descname">recursive_translate_widgets</code><span class="sig-paren">(</span><em>a_widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#recursive_translate_widgets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.recursive_translate_widgets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls gettext on all strings we can find in widgets, recursively.</p>
 </dd></dl>
 
 <dl class="function">
@@ -2201,17 +2177,13 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
 </div>
 
 
-           </div>
-           <div class="articleComments">
-            
-           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="README.html" class="btn btn-neutral" title="What is Pympress?" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="README.html" class="btn btn-neutral" title="What is Pympress?" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -2221,10 +2193,9 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
   <div role="contentinfo">
     <p>
         &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali.
-
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 
 </footer>
 
@@ -2242,11 +2213,10 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-120-g2cc4f74&#39;',
+            VERSION:'b&#39;0.6-132-gd7b1e53&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
+            HAS_SOURCE:  true
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>

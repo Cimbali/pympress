@@ -44,19 +44,17 @@
 
 <body class="wy-body-for-nav" role="document">
 
-   
   <div class="wy-grid-for-nav">
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+      <div class="wy-side-nav-search">
+        
 	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
 	<br />
 	<a href="index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.0.2
+		v1.0.3
 	</div>
 
 	
@@ -68,15 +66,14 @@
   </form>
 </div>
 
-        </div>
+      </div>
 
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
 	
-            
-              
-              
-                  <ul class="current">
+          
+          
+              <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#installing">Installing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#if-you-have-python">If you have python</a><ul>
@@ -97,76 +94,57 @@
 <li class="toctree-l2"><a class="reference internal" href="#translations">Translations</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pympress.html">Pympress package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pympress.html">Pympress package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pympress.html#module-pympress.ui">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pympress.html#pympress-ui-gui-management"><code class="docutils literal"><span class="pre">pympress.ui</span></code> &#8211; GUI management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pympress.html#pympress-document-document-handling"><code class="docutils literal"><span class="pre">pympress.document</span></code> &#8211; document handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pympress.html#pympress-surfacecache-pages-prerendering-and-caching"><code class="docutils literal"><span class="pre">pympress.surfacecache</span></code> &#8211; pages prerendering and caching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pympress.html#pympress-util-various-utility-functions"><code class="docutils literal"><span class="pre">pympress.util</span></code> &#8211; various utility functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pympress.html#pympress-vlcvideo-widget-to-play-videos-with-vlc-backend"><code class="docutils literal"><span class="pre">pympress.vlcvideo</span></code> &#8211; widget to play videos with VLC backend</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
-              
-            
           
+        
 	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
 	<a href="genindex.html">Index</a>
 	<a href="py-modindex.html">Module index</a>
 
-        </div>
       </div>
+      &nbsp;
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Pympress</a>
-        
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Pympress</a>
       </nav>
 
 
       
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>What is Pympress?</li>
-    
-    
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>What is Pympress?</li>
       <li class="wy-breadcrumbs-aside">
         
-            
-            
-              <a href="https://github.com/Cimbali/pympress/blob/master/README.md" class="fa fa-github"> Edit on GitHub</a>
-            
+          
+            <a href="https://github.com/Cimbali/pympress/blob/master/README" class="fa fa-github"> Edit on GitHub</a>
           
         
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+          <div role="main" class="document">
             
   <div class="section" id="what-is-pympress">
 <span id="what-is-pympress"></span><h1>What is Pympress?<a class="headerlink" href="#what-is-pympress" title="Permalink to this headline">¶</a></h1>
@@ -179,7 +157,7 @@
 <li>natively supports beamer&#8217;s <em>notes on second screen</em>!</li>
 </ul>
 <p>Pympress is a free software, distributed under the terms of the GPL license (version 2 or, at your option, any later version).</p>
-<p>This is now a fork of <a class="reference external" href="https://github.com/Schnouki/pympress">Schnouki&#8217;s original Pympress</a>, at least for now.</p>
+<p>Pympress was originally created and maintained by <a class="reference external" href="https://github.com/Schnouki">Schnouki</a>, on <a class="reference external" href="https://github.com/Schnouki/pympress">his repo</a>.</p>
 </div>
 <div class="section" id="installing">
 <span id="installing"></span><h1>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h1>
@@ -221,9 +199,7 @@ Grab <a class="reference external" href="https://github.com/Cimbali/pympress/rel
 </ul>
 </li>
 <li>optionally <a class="reference external" href="https://www.videolan.org/vlc/">VLC</a>, to play videos (with the same bitness as Python)</li>
-<li>optionally <a class="reference external" href="https://www.gnu.org/software/gettext/">gettext</a>, to get a translated version of Pympress.</li>
 </ul>
-<p>Gettext is part of libc on Linux, and part of the PyGi installer on Windows. On Mac OS X, you can <a class="reference external" href="http://stackoverflow.com/a/33896321/1387346">use brew to install gettext</a>.</p>
 <p>On windows GTK+3, Poppler and their python bindings are all shipped together in <a class="reference external" href="https://sourceforge.net/projects/pygobjectwin32/">the PyGi installer</a>. <em>Be sure to check the supported Python versions (up to 3.4 at the time of writing)</em>, they appear in the FEATURES list in the linked page.</p>
 <p>On other platforms they are often installed by default, or easily available through your package or software manager.
 For example, on ubuntu, you can run the following as root to make sure you have all the prerequisites <em>assuming you use python3</em>:</p>
@@ -280,19 +256,15 @@ Finally pass this .po file to msgfmt and add the output to the repo at <code cla
 </div>
 
 
-           </div>
-           <div class="articleComments">
-            
-           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pympress.html" class="btn btn-neutral float-right" title="Pympress package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pympress.html" class="btn btn-neutral float-right" title="Pympress package" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Welcome to pympress’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Welcome to pympress’s documentation!" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -302,10 +274,9 @@ Finally pass this .po file to msgfmt and add the output to the repo at <code cla
   <div role="contentinfo">
     <p>
         &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali.
-
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 
 </footer>
 
@@ -323,11 +294,10 @@ Finally pass this .po file to msgfmt and add the output to the repo at <code cla
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-120-g2cc4f74&#39;',
+            VERSION:'b&#39;0.6-132-gd7b1e53&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
+            HAS_SOURCE:  true
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>
