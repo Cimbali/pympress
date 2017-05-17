@@ -55,8 +55,12 @@ def recursive_translate_widgets(a_widget):
 
     if issubclass(type(a_widget), Gtk.Container):
         #NB: Parent-loop in widgets would cause infinite loop here, but that's absurd (right?)
-        #NB2: maybe forall instead of foreach if we miss some strins?
+        #NB2: maybe forall instead of foreach if we miss some strings?
         a_widget.foreach(recursive_translate_widgets)
+
+    if issubclass(type(a_widget), Gtk.MenuItem) and a_widget.get_submenu() is not None:
+        recursive_translate_widgets(a_widget.get_submenu())
+
 
 def get_resource_path(*path_parts):
     ''' Return the resource path based on whether its frozen or not.

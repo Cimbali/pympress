@@ -363,13 +363,25 @@ class UI:
     def make_pwin(self):
         """ Initializes the presenter window.
         """
-        # Presenter window
-        bigvbox = self.builder.get_object("bigvbox")
-        menubar = self.make_menubar()
-        bigvbox.pack_start(menubar, False, False, 0)
-        bigvbox.reorder_child(menubar, 0)
 
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
+
+        init_checkstates = {
+            'pres_pause':      True,
+            'pres_fullscreen': self.config.getboolean('content', 'start_fullscreen'),
+            'pres_notes':      self.notes_mode,
+            'pres_blank':      self.blanked,
+            'pres_annot':      self.show_annotations,
+            'pres_buttons':    self.show_bigbuttons,
+            'pres_highlight':  False,
+
+            'start_blanked':   self.config.getboolean('content', 'start_blanked'),
+            'start_cwin_full': self.config.getboolean('content', 'start_fullscreen'),
+            'start_pwin_full': self.config.getboolean('presenter', 'start_fullscreen'),
+        }
+
+        for n in init_checkstates:
+            self.builder.get_object(n).set_active(init_checkstates[n])
 
         self.spin_cur.set_range(1, self.doc.pages_number())
         self.hb_cur.remove(self.spin_cur)
@@ -462,103 +474,6 @@ class UI:
             self.c_win.move(c_bounds.x, c_bounds.y)
             if c_full:
                 self.c_win.fullscreen()
-
-
-    def make_menubar(self):
-        """ Creates and initializes the menu bar.
-
-        Returns:
-            :class:`Gtk.Widget`: the menu bar
-        """
-        # UI Manager for menu
-        ui_manager = Gtk.UIManager()
-
-        # UI description
-        ui_desc = '''
-        <menubar name="MenuBar">
-          <menu action="File">
-            <menuitem action="Open"/>
-            <menuitem action="Close File"/>
-            <menuitem action="Quit"/>
-          </menu>
-          <menu action="Presentation">
-            <menuitem action="Pause timer"/>
-            <menuitem action="Reset timer"/>
-            <menuitem action="Set talk time"/>
-            <menuitem action="Fullscreen"/>
-            <menuitem action="Swap screens"/>
-            <menuitem action="Notes mode"/>
-            <menuitem action="Blank screen"/>
-            <menuitem action="Align content"/>
-            <menuitem action="Annotations"/>
-            <menuitem action="Big buttons"/>
-            <menuitem action="Highlight"/>
-          </menu>
-          <menu action="Navigation">
-            <menuitem action="Next"/>
-            <menuitem action="Previous"/>
-            <menuitem action="First"/>
-            <menuitem action="Last"/>
-            <menuitem action="Go to..."/>
-          </menu>
-          <menu action="Starting Configuration">
-            <menuitem action="Content blanked"/>
-            <menuitem action="Content fullscreen"/>
-            <menuitem action="Presenter fullscreen"/>
-          </menu>
-          <menu action="Help">
-            <menuitem action="About"/>
-          </menu>
-        </menubar>'''
-        ui_manager.add_ui_from_string(ui_desc)
-
-        # Accelerator group
-        accel_group = ui_manager.get_accel_group()
-        self.p_win.add_accel_group(accel_group)
-
-        # Action group
-        action_group = Gtk.ActionGroup('MenuBar')
-        # Name, stock id, label, accelerator, tooltip, action [, is_active]
-        action_group.add_actions([
-            ('File',         None,           _('_File')),
-            ('Presentation', None,           _('_Presentation')),
-            ('Navigation',   None,           _('_Navigation')),
-            ('Starting Configuration', None, _('_Starting Configuration')),
-            ('Help',         None,           _('_Help')),
-
-            ('Open',         Gtk.STOCK_OPEN, _('_Open'),        'o',     None, self.pick_file),
-            ('Close File',   Gtk.STOCK_CLOSE,_('_Close File'),  None,    None, self.close_file),
-            ('Quit',         Gtk.STOCK_QUIT, _('_Quit'),        'q',     None, self.save_and_quit),
-            ('Reset timer',  None,           _('_Reset timer'), 'r',     None, self.reset_timer),
-            ('Set talk time',None,           _('Set talk _Time'),'t',    None, self.on_label_ett_event),
-            ('About',        None,           _('_About'),       None,    None, self.menu_about),
-            ('Swap screens', None,           _('_Swap screens'),'s',     None, self.swap_screens),
-            ('Align content',None,           _('_Align content'),None,   None, self.adjust_frame_position),
-
-            ('Next',         None,           _('_Next'),        'Right', None, self.goto_next),
-            ('Previous',     None,           _('_Previous'),    'Left',  None, self.goto_prev),
-            ('First',        None,           _('_First'),       'Home',  None, self.goto_home),
-            ('Last',         None,           _('_Last'),        'End',   None, self.goto_end),
-            ('Go to...',     None,           _('_Go to...'),    'g',     None, self.on_label_event),
-        ])
-        action_group.add_toggle_actions([
-            ('Pause timer',  None,           _('_Pause timer'), 'p',     None, self.switch_pause,         True),
-            ('Fullscreen',   None,           _('_Fullscreen'),  'f',     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
-            ('Notes mode',   None,           _('_Notes mode'),  'n',     None, self.switch_mode,          self.notes_mode),
-            ('Blank screen', None,           _('_Blank screen'),'b',     None, self.switch_blanked,       self.blanked),
-            ('Content blanked',      None,   _('Content blanked'),       None, None, self.switch_start_blanked,    self.config.getboolean('content', 'start_blanked')),
-            ('Content fullscreen',   None,   _('Content fullscreen'),    None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),
-            ('Presenter fullscreen', None,   _('Presenter fullscreen'),  None, None, self.switch_start_fullscreen, self.config.getboolean('presenter', 'start_fullscreen')),
-            ('Annotations',  None,           _('_Annotations'), 'a',     None, self.switch_annotations,   self.show_annotations),
-            ('Big buttons',  None,           _('Big buttons'),   None,   None, self.switch_bigbuttons,    self.config.getboolean('presenter', 'show_bigbuttons')),
-            ('Highlight',    None,           _('_Highlight'),   'h',     None, self.switch_scribbling,    False),
-        ])
-        ui_manager.insert_action_group(action_group)
-
-        # Add menu bar to the window
-        h = ui_manager.get_widget('/MenuBar/Help')
-        h.set_right_justified(True)
-        return ui_manager.get_widget('/MenuBar')
 
 
     def on_drag_drop(self, widget, drag_context, x, y, data,info, time):
@@ -1162,7 +1077,7 @@ class UI:
         event = args[-1]
 
         # we can come manually or through a menu action as well
-        alt_start_editing = (type(event) == bool and event is True or type(event) == Gtk.Action)
+        alt_start_editing = (type(event) == bool and event is True or type(event) == Gtk.MenuItem)
         event_type = None if alt_start_editing else event.type
 
         # Click in label-mode
@@ -1218,7 +1133,7 @@ class UI:
         event = args[-1]
 
         # we can come manually or through a menu action as well
-        alt_start_editing = (type(event) == bool and event is True or type(event) == Gtk.Action)
+        alt_start_editing = (type(event) == bool and event is True or type(event) == Gtk.MenuItem)
         event_type = None if alt_start_editing else event.type
 
         # Click on the label
@@ -1497,7 +1412,7 @@ class UI:
         Screensaver will be disabled when entering fullscreen mode, and enabled
         when leaving fullscreen mode.
         """
-        if isinstance(widget, Gtk.Action):
+        if isinstance(widget, Gtk.CheckMenuItem):
             # Called from menu -> use c_win
             widget = self.c_win
             fullscreen = self.c_win_fullscreen
@@ -1613,14 +1528,14 @@ class UI:
 
 
     def switch_blanked(self, widget=None, event=None):
-        """ Switch the blanked mode of the main screen.
+        """ Switch the blanked mode of the content screen.
         """
         self.blanked = not self.blanked
         self.c_da.queue_draw()
 
 
     def switch_start_blanked(self, widget=None, event=None):
-        """ Switch the blanked mode of the main screen.
+        """ Switch the blanked mode of the content screen at startup.
         """
         if self.config.getboolean('content', 'start_blanked'):
             self.config.set('content', 'start_blanked', 'off')
@@ -1628,22 +1543,24 @@ class UI:
             self.config.set('content', 'start_blanked', 'on')
 
 
-    def switch_start_fullscreen(self, widget=None):
-        """ Switch the blanked mode of the main screen.
+    def switch_start_cwin_full(self, widget=None):
+        """ Switch the fullscreen mode of the content screen at startup.
         """
-        name_words=widget.get_name().lower().split()
-        if 'content' in name_words:
-            target = 'content'
-        elif 'presenter' in name_words:
-            target = 'presenter'
-        else:
-            print(_("ERROR Unknown widget to start fullscreen: {}").format(widget.get_name()))
-            return
 
-        if self.config.getboolean(target, 'start_fullscreen'):
-            self.config.set(target, 'start_fullscreen', 'off')
+        if self.config.getboolean('content', 'start_fullscreen'):
+            self.config.set('content', 'start_fullscreen', 'off')
         else:
-            self.config.set(target, 'start_fullscreen', 'on')
+            self.config.set('content', 'start_fullscreen', 'on')
+
+
+    def switch_start_pwin_full(self, widget=None):
+        """ Switch the fullscreen mode of the presenter screen at startup.
+        """
+
+        if self.config.getboolean('presenter', 'start_fullscreen'):
+            self.config.set('presenter', 'start_fullscreen', 'off')
+        else:
+            self.config.set('presenter', 'start_fullscreen', 'on')
 
 
     def switch_mode(self, widget=None, event=None):
