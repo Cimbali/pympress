@@ -234,7 +234,7 @@ msgstr "_Navigation"
 msgid "_Next"
 msgstr "_Nächste"
 
-msgid "_Note mode"
+msgid "_Notes mode"
 msgstr "_Notizmodus"
 
 msgid "_Open"

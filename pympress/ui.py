@@ -544,7 +544,7 @@ class UI:
         action_group.add_toggle_actions([
             ('Pause timer',  None,           _('_Pause timer'), 'p',     None, self.switch_pause,         True),
             ('Fullscreen',   None,           _('_Fullscreen'),  'f',     None, self.switch_fullscreen,    self.config.getboolean('content', 'start_fullscreen')),
-            ('Notes mode',   None,           _('_Note mode'),   'n',     None, self.switch_mode,          self.notes_mode),
+            ('Notes mode',   None,           _('_Notes mode'),  'n',     None, self.switch_mode,          self.notes_mode),
             ('Blank screen', None,           _('_Blank screen'),'b',     None, self.switch_blanked,       self.blanked),
             ('Content blanked',      None,   _('Content blanked'),       None, None, self.switch_start_blanked,    self.config.getboolean('content', 'start_blanked')),
             ('Content fullscreen',   None,   _('Content fullscreen'),    None, None, self.switch_start_fullscreen, self.config.getboolean('content', 'start_fullscreen')),

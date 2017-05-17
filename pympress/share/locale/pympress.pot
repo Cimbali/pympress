@@ -214,7 +214,7 @@ msgstr ""
 msgid "_Next"
 msgstr ""
 
-msgid "_Note mode"
+msgid "_Notes mode"
 msgstr ""
 
 msgid "_Open"
