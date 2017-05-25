@@ -85,6 +85,9 @@ msgstr ""
 msgid "Notes"
 msgstr "Notatki"
 
+msgid "Open _Recent"
+msgstr ""
+
 msgid "Open..."
 msgstr "Otwórz..."
 
