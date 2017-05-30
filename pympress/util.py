@@ -126,8 +126,8 @@ def load_icons():
         try:
             icon_pixbuf = get_icon_pixbuf(icon_name)
             icons.append(icon_pixbuf)
-        except Exception:
-            print('Error loading icons')
+        except Exception as e:
+            logger.exception('Error loading icons')
 
     return icons
 

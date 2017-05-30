@@ -262,7 +262,7 @@ class SurfaceCache:
             wtype = self.surface_type[widget_name]
 
         if ww < 0 or wh < 0:
-            print(widget_name)
+            logger.warning('Widget {} with invalid size {}x{} when rendering'.format(widget_name, ww, wh))
             return
 
         with self.doc_lock:
