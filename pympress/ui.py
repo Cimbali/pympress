@@ -32,6 +32,9 @@ Both windows are managed by the :class:`~pympress.ui.UI` class.
 
 from __future__ import print_function
 
+import logging
+logger = logging.getLogger(__name__)
+
 import os, os.path, subprocess
 import sys
 import time

@@ -31,6 +31,9 @@ Hence the prerendering isn't really done in parallel in another thread, but
 scheduled on the main thread at idle times using GLib.idle_add().
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import threading
 import time
 import collections

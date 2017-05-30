@@ -20,6 +20,9 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+import logging
+logger = logging.getLogger(__name__)
+
 import os.path
 import sys
 import getopt
@@ -42,8 +45,6 @@ if pympress.util.IS_WINDOWS:
 locale.setlocale(locale.LC_ALL, '')
 gettext.install('pympress', pympress.util.get_resource_path('share', 'locale'))
 
-import pympress.ui
-
 def usage():
     print(_("Usage: {} [options] <presentation_file>").format(sys.argv[0]))
     print("")
@@ -55,12 +56,14 @@ def usage():
 def main(argv = sys.argv[1:]):
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     try:
-        opts, args = getopt.getopt(argv, "ht:", ["help", "talk-time="])
+        opts, args = getopt.getopt(argv, "ht:", ["help", "talk-time=", "log="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
 
     ett = 0
+    log_level = logging.ERROR
+
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             usage()
@@ -77,6 +80,16 @@ def main(argv = sys.argv[1:]):
             except IndexError:
                 s = 0
             ett = m * 60 + s
+        elif opt == "--log":
+            numeric_level = getattr(logging, arg.upper(), None)
+            if isinstance(numeric_level, int):
+                log_level = numeric_level
+            else:
+                print(_("Invalid log level \"{}\", try one of {}").format(
+                    arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"
+                ))
+
+    logging.basicConfig(filename='pympress.log', level=log_level)
 
     # PDF file to open passed on command line?
     name = None
@@ -92,6 +105,7 @@ def main(argv = sys.argv[1:]):
             name = None
 
     # Create windows
+    import pympress.ui
     ui = pympress.ui.UI(ett)
     if name:
         GLib.idle_add(ui.swap_document, name)

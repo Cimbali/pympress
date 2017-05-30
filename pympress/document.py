@@ -34,6 +34,9 @@ elsewhere).
 
 from __future__ import print_function
 
+import logging
+logger = logging.getLogger(__name__)
+
 import os
 import sys
 import shutil

@@ -25,6 +25,9 @@
 
 from __future__ import print_function
 
+import logging
+logger = logging.getLogger(__name__)
+
 import gi
 import locale
 import ctypes
