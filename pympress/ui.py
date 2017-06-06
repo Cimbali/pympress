@@ -41,7 +41,7 @@ import pkg_resources
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import GObject, Gtk, Gdk, Pango, GLib
+from gi.repository import GObject, Gtk, Gdk, Pango, GLib, GdkPixbuf
 
 #: "Regular" PDF file (without notes)
 PDF_REGULAR      = 0
@@ -129,6 +129,20 @@ class UI:
     eb_ett = None
     #: :class:`~gtk.Entry` used to set the estimated talk time.
     entry_ett = Gtk.Entry()
+
+    #: :class:`~GdkPixbuf.Pixbuf` to read XML descriptions of GUIs and load them.
+    pointer = GdkPixbuf.Pixbuf()
+    #: tuple of position relative to slide, where the pointer should appear
+    pointer_pos = (.5, .5)
+    #: boolean indicating whether we should show the pointer
+    show_pointer = False
+    #: a dict of cursors, ready to use
+    cursors = {
+        'parent': None,
+        'default': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'default'),
+        'pointer': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'pointer'),
+        'invisible': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'none'),
+    }
 
     #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
     p_frame_next = None
@@ -358,6 +372,8 @@ class UI:
 
         pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
+
+        self.pointer = pympress.util.get_icon_pixbuf('pointer_red.png')
 
 
     def make_pwin(self):
@@ -805,6 +821,7 @@ class UI:
         nb = page.number()
         pb = self.cache.get(name, nb)
         wtype = self.cache.get_widget_type(name)
+        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
         if pb is None:
             if self.resize_hpaned and widget in [self.p_da_next, self.p_da_pres, self.p_da_cur]:
@@ -812,20 +829,26 @@ class UI:
                 return
 
             # Cache miss: render the page, and save it to the cache
-            ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
             pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
 
             cairo_prerender = cairo.Context(pb)
             page.render_cairo(cairo_prerender, ww, wh, wtype)
 
+            self.cache.set(name, nb, pb)
+
             cairo_context.set_source_surface(pb, 0, 0)
             cairo_context.paint()
-
-            self.cache.set(name, nb, pb)
         else:
             # Cache hit: draw the surface from the cache to the widget
             cairo_context.set_source_surface(pb, 0, 0)
             cairo_context.paint()
+
+        if widget is self.c_da and self.show_pointer:
+            x = ww * self.pointer_pos[0] - self.pointer.get_width() / 2
+            y = wh * self.pointer_pos[1] - self.pointer.get_height() / 2
+            Gdk.cairo_set_source_pixbuf(cairo_context, self.pointer, x, y)
+
+        cairo_context.paint()
 
 
     def on_configure_da(self, widget, event):
@@ -978,6 +1001,16 @@ class UI:
 
             return True
 
+        elif event.type == Gdk.EventType.BUTTON_PRESS:
+            print('click, showing pointer')
+            self.show_pointer = True
+            # TODO trigger content window redraw
+            return True
+        elif event.type == Gdk.EventType.BUTTON_RELEASE:
+            print('click, hiding pointer')
+            # TODO trigger content window redraw
+            self.show_pointer = False
+
         return False
 
 
@@ -1053,13 +1086,16 @@ class UI:
 
         elif event.type == Gdk.EventType.MOTION_NOTIFY:
             if link is not None:
-                cursor = Gdk.Cursor.new(Gdk.CursorType.HAND2)
-                widget.get_window().set_cursor(cursor)
+                widget.get_window().set_cursor(self.cursors['pointer'])
+            elif self.show_pointer and widget is self.c_da:
+                widget.get_window().set_cursor(self.cursors['invisible'])
             else:
-                widget.get_window().set_cursor(None)
+                widget.get_window().set_cursor(self.cursors['parent'])
 
         else:
             print(_("Unknown event {}").format(event.type))
+
+        return True
 
 
     def on_label_event(self, *args):
@@ -1639,6 +1675,33 @@ class UI:
             self.scribble_p_da.queue_draw()
         else:
             return self.on_link(widget, event)
+
+
+    def track_pointer(self, widget=None, event=None):
+        """ Track events defining "pointing the laser" by user, on top of current slide
+        """
+        ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
+
+        if not ctrl_pressed and event.type == Gdk.EventType.BUTTON_PRESS:
+            return self.on_link(widget, event)
+        elif event.type == Gdk.EventType.MOTION_NOTIFY:
+            self.on_link(widget, event)
+        elif event.type == Gdk.EventType.BUTTON_PRESS:
+            self.show_pointer = True
+            self.c_da.get_window().set_cursor(self.cursors['invisible'])
+        elif self.show_pointer and event.type == Gdk.EventType.BUTTON_RELEASE:
+            self.show_pointer = False
+            self.c_da.get_window().set_cursor(self.cursors['parent'])
+            self.c_da.queue_draw()
+
+        if self.show_pointer:
+            ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+            ex, ey = event.get_coords()
+            self.pointer_pos = (ex / ww, ey / wh)
+            self.c_da.queue_draw()
+
+        return True
+
 
     def draw_scribble(self, widget, cairo_context):
         """ Drawings by user
