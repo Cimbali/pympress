@@ -50,6 +50,11 @@ PDF_CONTENT_PAGE = 1
 #: Notes page (right side) of a PDF file with notes
 PDF_NOTES_PAGE   = 2
 
+
+POINTER_OFF = -1
+POINTER_HIDE = 0
+POINTER_SHOW = 1
+
 import pympress.document
 import pympress.surfacecache
 import pympress.util
@@ -135,7 +140,7 @@ class UI:
     #: tuple of position relative to slide, where the pointer should appear
     pointer_pos = (.5, .5)
     #: boolean indicating whether we should show the pointer
-    show_pointer = False
+    show_pointer = POINTER_OFF
     #: a dict of cursors, ready to use
     cursors = {
         'parent': None,
@@ -373,7 +378,9 @@ class UI:
         pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
 
-        self.pointer = pympress.util.get_icon_pixbuf('pointer_red.png')
+        for radio_name in ['pointer_red', 'pointer_blue', 'pointer_green', 'pointer_none']:
+            radio = self.builder.get_object(radio_name)
+            radio.set_name(radio_name)
 
 
     def make_pwin(self):
@@ -843,7 +850,7 @@ class UI:
             cairo_context.set_source_surface(pb, 0, 0)
             cairo_context.paint()
 
-        if widget is self.c_da and self.show_pointer:
+        if (widget is self.c_da or widget is self.p_da_cur) and self.show_pointer == POINTER_SHOW:
             x = ww * self.pointer_pos[0] - self.pointer.get_width() / 2
             y = wh * self.pointer_pos[1] - self.pointer.get_height() / 2
             Gdk.cairo_set_source_pixbuf(cairo_context, self.pointer, x, y)
@@ -1002,14 +1009,12 @@ class UI:
             return True
 
         elif event.type == Gdk.EventType.BUTTON_PRESS:
-            print('click, showing pointer')
-            self.show_pointer = True
+            self.show_pointer = POINTER_SHOW
             # TODO trigger content window redraw
             return True
         elif event.type == Gdk.EventType.BUTTON_RELEASE:
-            print('click, hiding pointer')
             # TODO trigger content window redraw
-            self.show_pointer = False
+            self.show_pointer = POINTER_HIDE
 
         return False
 
@@ -1085,10 +1090,10 @@ class UI:
                 link.follow()
 
         elif event.type == Gdk.EventType.MOTION_NOTIFY:
-            if link is not None:
+            if self.show_pointer == POINTER_SHOW:
+                pass
+            elif link is not None:
                 widget.get_window().set_cursor(self.cursors['pointer'])
-            elif self.show_pointer and widget is self.c_da:
-                widget.get_window().set_cursor(self.cursors['invisible'])
             else:
                 widget.get_window().set_cursor(self.cursors['parent'])
 
@@ -1658,7 +1663,7 @@ class UI:
         """ Track events defining drawings by user, on top of current slide
         """
         if not self.scribbling_mode:
-            return self.on_link(widget, event)
+            return self.track_pointer(widget, event)
 
         if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
             self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
@@ -1680,6 +1685,9 @@ class UI:
     def track_pointer(self, widget=None, event=None):
         """ Track events defining "pointing the laser" by user, on top of current slide
         """
+        if self.show_pointer == POINTER_OFF:
+            return self.on_link(widget, event)
+
         ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
 
         if not ctrl_pressed and event.type == Gdk.EventType.BUTTON_PRESS:
@@ -1687,18 +1695,22 @@ class UI:
         elif event.type == Gdk.EventType.MOTION_NOTIFY:
             self.on_link(widget, event)
         elif event.type == Gdk.EventType.BUTTON_PRESS:
-            self.show_pointer = True
-            self.c_da.get_window().set_cursor(self.cursors['invisible'])
-        elif self.show_pointer and event.type == Gdk.EventType.BUTTON_RELEASE:
-            self.show_pointer = False
-            self.c_da.get_window().set_cursor(self.cursors['parent'])
+            self.show_pointer = POINTER_SHOW
+            self.c_overlay.get_window().set_cursor(self.cursors['invisible'])
+            self.p_da_cur.get_window().set_cursor(self.cursors['invisible'])
+        elif self.show_pointer == POINTER_SHOW and event.type == Gdk.EventType.BUTTON_RELEASE:
+            self.show_pointer = POINTER_HIDE
+            self.c_overlay.get_window().set_cursor(self.cursors['parent'])
+            self.p_da_cur.get_window().set_cursor(self.cursors['parent'])
             self.c_da.queue_draw()
+            self.p_da_cur.queue_draw()
 
-        if self.show_pointer:
+        if self.show_pointer == POINTER_SHOW:
             ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
             ex, ey = event.get_coords()
             self.pointer_pos = (ex / ww, ey / wh)
             self.c_da.queue_draw()
+            self.p_da_cur.queue_draw()
 
         return True
 
@@ -1821,6 +1833,18 @@ class UI:
             self.c_overlay.show_all()
 
             self.scribbling_mode = True
+
+
+    def change_pointer(self, widget):
+        if not widget.get_active():
+            return
+
+        if widget.get_name() == 'pointer_none':
+            self.show_pointer = POINTER_OFF
+        else:
+            print(widget.get_name())
+            self.show_pointer = POINTER_HIDE
+            self.pointer = pympress.util.get_icon_pixbuf('{}.png'.format(widget.get_name()))
 
 
 ##
