@@ -378,9 +378,14 @@ class UI:
         pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
         self.c_frame.set_property("ratio", pr)
 
+        default = 'pointer_' + self.config.get('presenter', 'pointer')
+        self.load_pointer(default)
+
         for radio_name in ['pointer_red', 'pointer_blue', 'pointer_green', 'pointer_none']:
             radio = self.builder.get_object(radio_name)
             radio.set_name(radio_name)
+
+            radio.set_active(radio_name == default)
 
 
     def make_pwin(self):
@@ -1835,16 +1840,24 @@ class UI:
             self.scribbling_mode = True
 
 
-    def change_pointer(self, widget):
-        if not widget.get_active():
-            return
-
-        if widget.get_name() == 'pointer_none':
-            self.show_pointer = POINTER_OFF
-        else:
-            print(widget.get_name())
+    def load_pointer(self, name):
+        """ Perform the change of pointer using its name
+        """
+        if name in ['pointer_red', 'pointer_green', 'pointer_blue']:
             self.show_pointer = POINTER_HIDE
-            self.pointer = pympress.util.get_icon_pixbuf('{}.png'.format(widget.get_name()))
+            self.pointer = pympress.util.get_icon_pixbuf(name + '.png')
+        else:
+            self.show_pointer = POINTER_OFF
+
+
+    def change_pointer(self, widget):
+        """ Callback for a radio item selection as pointer color
+        """
+        if widget.get_active():
+            assert(widget.get_name().startswith('pointer_'))
+            self.load_pointer(widget.get_name())
+            self.config.set('presenter', 'pointer', widget.get_name()[len('pointer_'):])
+
 
 
 ##

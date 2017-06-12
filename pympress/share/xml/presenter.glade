@@ -246,7 +246,6 @@
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">_Disabled</property>
                                 <property name="use_underline">True</property>
-                                <property name="active">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <signal name="toggled" handler="change_pointer" swapped="no"/>
                               </object>
