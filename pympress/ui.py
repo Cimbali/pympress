@@ -112,9 +112,9 @@ class UI:
     #: :class:`~Gtk.Paned` containg current/next slide on top and annotations on the bottom
     vpaned = None
     #: :class:`~Gtk.AspectFrame` for the current slide in the Presenter window.
-    p_frame_cur = None
+    p_frame_notes = None
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
-    p_da_cur = None
+    p_da_notes = None
     #: Slide counter :class:`~Gtk.Label` for the current slide.
     label_cur = None
     #: Slide counter :class:`~Gtk.Label` for the last slide.
@@ -141,9 +141,9 @@ class UI:
     #: :class:`~Gtk.DrawingArea` for the next slide in the Presenter window.
     p_da_next = None
     #: :class:`~Gtk.AspectFrame` for the current slide copy in the Presenter window.
-    p_frame_pres = None
+    p_frame_cur = None
     #: :class:`~Gtk.DrawingArea` for the current slide copy in the Presenter window.
-    p_da_pres = None
+    p_da_cur = None
 
     #: :class:`~Gtk.Frame` for the annotations in the Presenter window.
     p_frame_annot = None
@@ -298,8 +298,8 @@ class UI:
             setattr(self, n, self.builder.get_object(n))
 
         self.placeable_widgets = {
-            "notes/current": self.p_frame_cur,
-            "current": self.p_frame_pres,
+            "notes": self.p_frame_notes,
+            "current": self.p_frame_cur,
             "next": self.p_frame_next,
             "annotations": self.p_frame_annot,
         }
@@ -337,8 +337,6 @@ class UI:
         self.redraw_panes()
 
         # Adjust default visibility of items
-        self.p_frame_annot.set_visible(self.show_annotations)
-        self.p_frame_pres.set_visible(self.notes_mode)
         self.prev_button.set_visible(self.show_bigbuttons)
         self.next_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
@@ -358,6 +356,10 @@ class UI:
         # Use notes mode by default if the document has notes
         if self.notes_mode != self.doc.has_notes():
             self.switch_mode()
+
+        # make sure things are like we want them after we loaded the doc
+        self.p_frame_notes.set_visible(self.notes_mode)
+        self.p_frame_annot.set_visible(self.show_annotations)
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
@@ -386,12 +388,12 @@ class UI:
         self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
         self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
         if self.notes_mode:
-            self.cache.add_widget("c_da", pympress.document.PDF_CONTENT_PAGE)
+            page_type = pympress.document.PDF_CONTENT_PAGE
         else:
-            self.cache.add_widget("c_da", pympress.document.PDF_REGULAR)
+            page_type = pympress.document.PDF_REGULAR
 
-        pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
-        self.c_frame.set_property("ratio", pr)
+        self.cache.add_widget("c_da", page_type)
+        self.c_frame.set_property("ratio", self.doc.current_page().get_aspect_ratio(page_type))
 
 
     def validate_layout(self, layout):
@@ -510,11 +512,11 @@ class UI:
         # take apart the default layout
         self.p_central.remove(self.hpaned)
         self.hpaned.remove(self.vpaned)
-        self.hpaned.remove(self.p_frame_cur)
+        self.hpaned.remove(self.p_frame_notes)
         right_vbox = self.vpaned.get_child1()
         self.vpaned.remove(right_vbox)
         self.vpaned.remove(self.p_frame_annot)
-        right_vbox.remove(self.p_frame_pres)
+        right_vbox.remove(self.p_frame_cur)
         right_vbox.remove(self.p_frame_next)
 
         # iterate over new layout to build it, using a BFS
@@ -616,13 +618,13 @@ class UI:
         self.hb_cur.remove(self.spin_cur)
 
         if self.notes_mode:
-            self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
-            self.cache.add_widget("p_da_pres", PDF_CONTENT_PAGE, True)
+            self.cache.add_widget("p_da_cur", PDF_CONTENT_PAGE)
             self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
+            self.cache.add_widget("p_da_notes", PDF_NOTES_PAGE)
         else:
             self.cache.add_widget("p_da_cur", PDF_REGULAR)
             self.cache.add_widget("p_da_next", PDF_REGULAR)
-            self.cache.add_widget("p_da_pres", PDF_REGULAR, False)
+            self.cache.add_widget("p_da_notes", PDF_REGULAR, False)
 
 
         # Annotations
@@ -669,7 +671,9 @@ class UI:
             if avail_size <= 1:
                 postpone.append(pane)
             else:
-                pane.set_position(int(round(relpos * avail_size)))
+                pos = int(round(relpos * avail_size))
+                logger.debug("pane has handle at {:.2f}% of {} = {}".format(relpos * 100, avail_size, pos))
+                pane.set_position(pos)
                 pane.show_all()
 
         if postpone:
@@ -879,20 +883,22 @@ class UI:
         self.page_preview_nb = page_nb
 
         # Aspect ratios and queue redraws
-        pr = page_cur.get_aspect_ratio(self.notes_mode)
-        self.p_frame_cur.set_property('ratio', pr)
+        if not self.notes_mode:
+            page_type = pympress.document.PDF_REGULAR
+        else:
+            page_type = pympress.document.PDF_CONTENT_PAGE
 
-        if self.notes_mode:
-            self.p_frame_pres.set_property('ratio', pr)
+            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(pympress.document.PDF_NOTES_PAGE))
+            self.p_da_notes.queue_draw()
+
+        self.p_frame_cur.set_property('ratio', page_cur.get_aspect_ratio(page_type))
+        self.p_da_cur.queue_draw()
 
         if page_next is not None:
-            pr = page_next.get_aspect_ratio(self.notes_mode)
+            pr = page_next.get_aspect_ratio(page_type)
             self.p_frame_next.set_property('ratio', pr)
 
-        # queue redraws
-        self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
-        self.p_da_pres.queue_draw()
 
         self.add_annotations(page_cur.get_annotations())
 
@@ -922,29 +928,31 @@ class UI:
         # Page change: resynchronize miniatures
         self.page_preview_nb = page_cur.number()
 
-        # Aspect ratios
-        pr = page_cur.get_aspect_ratio(self.notes_mode)
-        self.c_frame.set_property('ratio', pr)
-        self.p_frame_cur.set_property('ratio', pr)
-        self.scribble_p_frame.set_property('ratio', pr)
+        # Aspect ratios and queue redraws
+        if not self.notes_mode:
+            page_type = pympress.document.PDF_REGULAR
+        else:
+            page_type = pympress.document.PDF_CONTENT_PAGE
 
-        if self.notes_mode:
-            self.p_frame_pres.set_property('ratio', pr)
+            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(pympress.document.PDF_NOTES_PAGE))
+            self.p_da_notes.queue_draw()
+
+        self.c_frame.set_property('ratio', page_cur.get_aspect_ratio(page_type))
+        self.c_da.queue_draw()
+
+        self.p_frame_cur.set_property('ratio', page_cur.get_aspect_ratio(page_type))
+        self.p_da_cur.queue_draw()
 
         if page_next is not None:
-            pr = page_next.get_aspect_ratio(self.notes_mode)
+            pr = page_next.get_aspect_ratio(page_type)
             self.p_frame_next.set_property('ratio', pr)
+
+        self.p_da_next.queue_draw()
 
         # Remove scribbling if ongoing
         if self.scribbling_mode:
             self.switch_scribbling()
         del self.scribble_list[:]
-
-        # Queue redraws
-        self.c_da.queue_draw()
-        self.p_da_cur.queue_draw()
-        self.p_da_next.queue_draw()
-        self.p_da_pres.queue_draw()
 
         # Start counter if needed
         if unpause and self.paused:
@@ -1006,7 +1014,7 @@ class UI:
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
         if self.notes_mode:
-            self.p_da_pres.queue_draw()
+            self.p_da_notes.queue_draw()
         if self.redraw_timeout:
             self.redraw_timeout = 0
 
@@ -1044,7 +1052,7 @@ class UI:
             if self.blanked:
                 return
             page = self.doc.page(self.doc.current_page().number())
-        elif widget is self.p_da_cur or widget is self.p_da_pres:
+        elif widget is self.p_da_notes or widget is self.p_da_cur:
             # Current page 'preview'
             page = self.doc.page(self.page_preview_nb)
         else:
@@ -1064,7 +1072,7 @@ class UI:
         wtype = self.cache.get_widget_type(name)
 
         if pb is None:
-            if self.resize_panes and widget in [self.p_da_next, self.p_da_pres, self.p_da_cur]:
+            if self.resize_panes and widget in [self.p_da_next, self.p_da_cur, self.p_da_notes]:
                 # too slow to render here when resize_panes things
                 return
 
@@ -1804,23 +1812,25 @@ class UI:
         if self.notes_mode:
             self.notes_mode = False
             self.cache.set_widget_type("c_da", PDF_REGULAR)
-            self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
-            self.cache.set_widget_type("p_da_pres", PDF_REGULAR)
+            self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
             self.cache.set_widget_type("scribble_p_da", PDF_REGULAR)
-            self.cache.disable_prerender("p_da_pres")
-            self.p_frame_cur.set_label(_("Current slide"))
-            self.p_frame_pres.set_visible(False)
+            self.cache.disable_prerender("p_da_cur")
+
+            self.cache.disable_prerender("p_da_notes")
+            self.cache.set_widget_type("p_da_notes", PDF_REGULAR)
+            self.p_frame_notes.set_visible(False)
         else:
             self.notes_mode = True
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
-            self.cache.set_widget_type("p_da_cur", PDF_NOTES_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
-            self.cache.set_widget_type("p_da_pres", PDF_CONTENT_PAGE)
+            self.cache.set_widget_type("p_da_cur", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("scribble_p_da", PDF_CONTENT_PAGE)
-            self.cache.enable_prerender("p_da_pres")
-            self.p_frame_cur.set_label(_("Notes"))
-            self.p_frame_pres.set_visible(True)
+            self.cache.enable_prerender("p_da_cur")
+
+            self.cache.set_widget_type("p_da_notes", PDF_NOTES_PAGE)
+            self.cache.enable_prerender("p_da_notes")
+            self.p_frame_notes.set_visible(True)
 
         # show/hide annotations, in opposite of nodes'
         if self.show_annotations == self.notes_mode:

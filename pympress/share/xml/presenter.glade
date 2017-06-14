@@ -382,7 +382,7 @@
                 <signal name="button-release-event" handler="on_pane_event" swapped="no"/>
                 <property name="wide_handle">True</property>
                 <child>
-                  <object class="GtkAspectFrame" id="p_frame_cur">
+                  <object class="GtkAspectFrame" id="p_frame_notes">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_right">5</property>
@@ -391,8 +391,8 @@
                     <property name="ratio">1.3300000429153442</property>
                     <property name="obey_child">False</property>
                     <child>
-                      <object class="GtkDrawingArea" id="p_da_cur">
-                        <property name="name">p_da_cur</property>
+                      <object class="GtkDrawingArea" id="p_da_notes">
+                        <property name="name">p_da_notes</property>
                         <property name="visible">True</property>
                         <property name="app_paintable">True</property>
                         <property name="can_focus">False</property>
@@ -407,7 +407,7 @@
                       <object class="GtkLabel" id="label422">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Current slide</property>
+                        <property name="label" translatable="yes">Notes</property>
                         <property name="use_markup">True</property>
                         <style>
                           <class name="frame-label"/>
@@ -437,7 +437,7 @@
                         <property name="margin_left">5</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkAspectFrame" id="p_frame_pres">
+                          <object class="GtkAspectFrame" id="p_frame_cur">
                             <property name="height_request">200</property>
                             <property name="can_focus">False</property>
                             <property name="label_xalign">0</property>
@@ -446,8 +446,8 @@
                             <property name="ratio">1.3300000429153442</property>
                             <property name="obey_child">False</property>
                             <child>
-                              <object class="GtkDrawingArea" id="p_da_pres">
-                                <property name="name">p_da_pres</property>
+                              <object class="GtkDrawingArea" id="p_da_cur">
+                                <property name="name">p_da_cur</property>
                                 <property name="visible">True</property>
                                 <property name="app_paintable">True</property>
                                 <property name="can_focus">False</property>
