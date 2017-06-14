@@ -349,6 +349,17 @@ class UI:
         self.on_page_change(False)
 
 
+    def recent_document(self, recent_menu):
+        """ Callback for the recent document menu.
+
+        Gets the URI and requests the document swap.
+
+        Args:
+            recent_menu (:class:`~Gtk.RecentChooserMenu`): the recent docs menu
+        """
+        self.swap_document(recent_menu.get_current_uri())
+
+
     def make_cwin(self):
         """ Initializes the content window.
         """
