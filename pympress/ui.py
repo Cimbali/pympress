@@ -108,6 +108,8 @@ class UI:
     p_central = None
     #: :class:`~Gtk.Paned` containg current/notes slide on one side, current/next slide/annotations
     hpaned = None
+    #: :class:`~Gtk.Paned` containg current/next slide on top and annotations on the bottom
+    vpaned = None
     #: :class:`~Gtk.AspectFrame` for the current slide in the Presenter window.
     p_frame_cur = None
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
@@ -163,7 +165,7 @@ class UI:
     c_win_fullscreen = False
 
     #: Indicates whether we should delay redraws on some drawing areas to fluidify resizing hpaned
-    resize_hpaned = False
+    resize_panes = False
     #: Tracks return values of GLib.timeout_add to cancel hpaned's redraw callbacks
     redraw_timeout = 0
 
@@ -314,7 +316,7 @@ class UI:
         # Queue some redraws
         self.c_overlay.queue_draw()
         self.c_da.queue_draw()
-        GLib.idle_add(self.redraw_hpaned)
+        GLib.idle_add(self.redraw_panes)
 
         # Adjust default visibility of items
         self.p_frame_annot.set_visible(self.show_annotations)
@@ -435,12 +437,9 @@ class UI:
     def initial_resize(self):
         """ Last setup, that needs to be done after windows are realized, to size panes and annotation lists etc.
         """
-        pane_size = self.config.getfloat('presenter', 'slide_ratio')
-        avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
-        self.hpaned.set_position(int(round(pane_size * avail_size)))
+        self.hpaned.set_position(int(round(self.config.getfloat('presenter', 'slide_ratio') * self.hpaned.get_allocated_width())))
+        self.vpaned.set_position(int(round(self.config.getfloat('presenter', 'annot_ratio') * self.vpaned.get_allocated_height())))
         self.on_page_change(False)
-
-        GLib.idle_add(self.resize_annotation_list)
 
 
     def load_time_colors(self):
@@ -512,7 +511,6 @@ class UI:
             list_annot.append((bullet + annot,))
 
         self.scrollable_treelist.set_model(list_annot)
-        self.resize_annotation_list()
 
 
     def run(self):
@@ -524,10 +522,12 @@ class UI:
     def save_and_quit(self, *args):
         """ Save configuration and exit the main loop.
         """
-        cur_pane_size = self.p_frame_cur.get_allocated_width()
-        next_pane_size = self.p_frame_next.get_allocated_width()
-        ratio = float(cur_pane_size) / (cur_pane_size + next_pane_size)
-        self.config.set('presenter', 'slide_ratio', "{0:.2f}".format(ratio))
+        ratio = self.hpaned.get_child1().get_allocated_width() / float(self.hpaned.get_allocated_width())
+        self.config.set('presenter', 'slide_ratio', str(ratio))
+
+        if self.show_annotations:
+            ratio = self.vpaned.get_child1().get_allocated_height() / float(self.vpaned.get_allocated_height())
+            self.config.set('presenter', 'annot_ratio', str(ratio))
 
         self.doc.cleanup_media_files()
 
@@ -756,10 +756,10 @@ class UI:
             self.media_overlays[media_id].play()
 
 
-    def redraw_hpaned(self):
+    def redraw_panes(self):
         """ Callback to redraw hpaned's drawing areas, used for delayed drawing events
         """
-        self.resize_hpaned = False
+        self.resize_panes = False
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
         if self.notes_mode:
@@ -774,13 +774,13 @@ class UI:
         This function allows to delay drawing events when resizing, and to speed up redrawing when
         moving the middle pane is done (which happens at the end of a mouse resize)
         """
-        if type(evt) == Gdk.EventButton and evt.type ==  Gdk.EventType.BUTTON_RELEASE:
-            self.redraw_hpaned()
+        if type(evt) == Gdk.EventButton and evt.type == Gdk.EventType.BUTTON_RELEASE:
+            self.redraw_panes()
         elif type(evt) == GObject.GParamSpec and evt.name == "position":
-            self.resize_hpaned = True
+            self.resize_panes = True
             if self.redraw_timeout:
                 GLib.Source.remove(self.redraw_timeout)
-            self.redraw_timeout = GLib.timeout_add(200, self.redraw_hpaned)
+            self.redraw_timeout = GLib.timeout_add(200, self.redraw_panes)
 
 
     def on_draw(self, widget, cairo_context):
@@ -821,8 +821,8 @@ class UI:
         wtype = self.cache.get_widget_type(name)
 
         if pb is None:
-            if self.resize_hpaned and widget in [self.p_da_next, self.p_da_pres, self.p_da_cur]:
-                # too slow to render here when resize_hpaned things
+            if self.resize_panes and widget in [self.p_da_next, self.p_da_pres, self.p_da_cur]:
+                # too slow to render here when resize_panes things
                 return
 
             # Cache miss: render the page, and save it to the cache
@@ -867,8 +867,6 @@ class UI:
 
         if widget is self.c_da and vlc_enabled:
             self.c_overlay.foreach(lambda child, *ignored: child.resize() if type(child) is pympress.vlcvideo.VLCVideo else None, None)
-        elif widget is self.p_da_next:
-            self.resize_annotation_list()
 
 
     def on_configure_win(self, widget, event):
@@ -1200,25 +1198,6 @@ class UI:
         return True
 
 
-    def resize_annotation_list(self):
-        """ Readjust the annotation list's scroll window
-        so it won't compete for space with the slide frame(s) above
-        """
-        r = self.p_frame_next.props.ratio
-        w = self.p_frame_next.props.parent.get_allocated_width()
-        h = self.p_frame_next.props.parent.props.parent.get_allocated_height()
-        n = 2 if self.notes_mode else 1
-
-        self.annotation_renderer.props.wrap_width = w - 10
-
-        newh = h - n * (20 + w / r)
-        newh = max(min(h - 200, newh), 100)
-        self.p_frame_annot.set_size_request(-1, newh)
-
-        self.scrolled_window.queue_resize()
-        self.scrollable_treelist.get_column(0).queue_resize()
-
-
     def restore_current_label(self):
         """ Make sure that the current page number is displayed in a label and not in an entry.
         If it is an entry, then replace it with the label.
@@ -1246,7 +1225,6 @@ class UI:
     def update_page_numbers(self):
         """ Update the displayed page numbers.
         """
-
         cur_nb = self.doc.current_page().number()
         cur = str(cur_nb+1)
 

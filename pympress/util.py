@@ -185,6 +185,9 @@ def load_config():
     if not config.has_option('presenter', 'slide_ratio'):
         config.set('presenter', 'slide_ratio', '0.75')
 
+    if not config.has_option('presenter', 'annot_ratio'):
+        config.set('presenter', 'annot_ratio', '0.5')
+
     if not config.has_option('presenter', 'monitor'):
         config.set('presenter', 'monitor', '1')
 
