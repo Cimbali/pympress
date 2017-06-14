@@ -400,13 +400,16 @@ class UI:
             Args:
                 layout (dict): the json-parsed config string
 
-            Layout must have all self.placeable_widgets (as strings) and only allowed properties for each dict.
-            Contraints on the only allowed properties are:
+
+            Layout must have all self.placeable_widgets (leaves of the tree, as strings) and only allowed properties
+            on the nodes of the tree (as dicts).
+
+            Contraints on the only allowed properties of the nodes are:
                 resizeable: bool (optional, defaults to no),
-                orientation: vertical or horizontal (mandatory)
-                children: list (mandatory)
-                proportions: list of floats (opional, only if resizeable) with sum <= 1, length < len(children)
-            the children must be a list of size >= 2 with
+                orientation: "vertical" or "horizontal" (mandatory)
+                children: list (mandatory), of size >= 2, containing strings or dicts
+                proportions: list of floats (optional, only if resizeable) with sum = 1, length == len(children), representing
+                    the relative sizes of all the resizeable items.
         """
 
         next_visits = [layout]
@@ -443,7 +446,7 @@ class UI:
 
 
     def widget_layout_to_tree(self, widget):
-        """ Returns a tree representing a widget hierarchy, leafs are strings and nodes are dicts.
+        """ Returns a tree representing a widget hierarchy, leaves are strings and nodes are dicts.
 
             Args:
                 widget (:class:`Gtk.Widget`): the widget where to start
