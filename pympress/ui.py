@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 import os, os.path, subprocess
 import sys
 import time
+import json
 
 import pkg_resources
 
@@ -205,6 +206,15 @@ class UI:
     #: Dictionary of :class:`pympress.vlcvideo.VLCVideo` ready to be added on top of the slides
     media_overlays = {}
 
+    #: Dictionary of :class:`Gtk.Widget` from the presenter window that can be dynamically rearranged
+    placeable_widgets = {}
+    #: Map of :class:`Gtk.Paned` to the relative position (float between 0 and 1) of its handle
+    pane_handle_pos = {}
+    #: List of :class:`Gtk.Paned` indicating the panes that need to be resize
+    pane_resize_list = []
+    #: bool tracking whether we use the dynamic (i.e. loaded from config file) presenter window layout
+    dynamic_layout = True
+
     #: :class:`Gdk.RGBA` The default color of the info labels
     label_color_default = None
     #: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is reached
@@ -268,6 +278,7 @@ class UI:
         # Use notes mode by default if the document has notes
         self.notes_mode = self.doc.has_notes()
         self.show_annotations = not self.notes_mode
+        self.page_preview_nb = self.doc.current_page().number()
 
         # Surface cache
         self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
@@ -285,6 +296,13 @@ class UI:
         # This means that all attributes that are None at this time must exist under the same name in the builder
         for n in (attr for attr in dir(self) if getattr(self, attr) is None and attr[:2] + attr[-2:] != '____'):
             setattr(self, n, self.builder.get_object(n))
+
+        self.placeable_widgets = {
+            "notes/current": self.p_frame_cur,
+            "current": self.p_frame_pres,
+            "next": self.p_frame_next,
+            "annotations": self.p_frame_annot,
+        }
 
         # Initialize windows and screens
         self.make_cwin()
@@ -307,7 +325,7 @@ class UI:
         self.p_win.show_all()
 
         # Some final setup steps
-        self.initial_resize()
+        GLib.idle_add(self.initial_resize)
         self.load_time_colors()
 
         # Add media
@@ -316,7 +334,7 @@ class UI:
         # Queue some redraws
         self.c_overlay.queue_draw()
         self.c_da.queue_draw()
-        GLib.idle_add(self.redraw_panes)
+        self.redraw_panes()
 
         # Adjust default visibility of items
         self.p_frame_annot.set_visible(self.show_annotations)
@@ -376,9 +394,195 @@ class UI:
         self.c_frame.set_property("ratio", pr)
 
 
+    def validate_layout(self, layout):
+        """ Validate layout: check whether the layout of widgets built from the config string is valid.
+
+            Args:
+                layout (dict): the json-parsed config string
+
+            Layout must have all self.placeable_widgets (as strings) and only allowed properties for each dict.
+            Contraints on the only allowed properties are:
+                resizeable: bool (optional, defaults to no),
+                orientation: vertical or horizontal (mandatory)
+                children: list (mandatory)
+                proportions: list of floats (opional, only if resizeable) with sum <= 1, length < len(children)
+            the children must be a list of size >= 2 with
+        """
+
+        next_visits = [layout]
+        widget_seen = set()
+        while next_visits:
+            w_desc = next_visits.pop(0)
+            if type(w_desc) is str:
+                if w_desc not in self.placeable_widgets:
+                    raise ValueError('Unrecognized widget "{}", pick one of: {}"'.format(w_desc, ', '.join(self.placeable_widgets.keys())))
+                elif w_desc in widget_seen:
+                    raise ValueError('Duplicate widget "{}", all self.placeable_widgets can only appear once'.format(w_desc))
+                widget_seen.add(w_desc)
+
+            elif type(w_desc) is dict:
+                if 'orientation' not in w_desc or w_desc['orientation'] not in ['horizontal', 'vertical']:
+                    raise ValueError('"orientation" is mandatory and must be "horizontal" or "vertical" at node {}'.format(w_desc))
+                elif 'children' not in w_desc or type(w_desc['children']) is not list or len(w_desc['children']) < 2:
+                    raise ValueError('"children" is mandatory and must be a list of 2+ items at node {}'.format(w_desc))
+                elif 'resizeable' in w_desc and type(w_desc['resizeable']) is not bool:
+                    raise ValueError('"resizeable" must be boolean at node {}'.format(w_desc))
+
+                elif 'proportions' in w_desc:
+                    if 'resizeable' not in w_desc or not w_desc['resizeable']:
+                        raise ValueError('"proportions" is only valid for resizeable widgets at node {}'.format(w_desc))
+                    elif type(w_desc['proportions']) is not list or any(type(n) is not float for n in w_desc['proportions']) or len(w_desc['proportions']) != len(w_desc['children']) or abs(sum(w_desc['proportions']) - 1) > 1e-10:
+                        raise ValueError('"proportions" must be a list of floats (one per separator), between 0 and 1, at node {}'.format(w_desc))
+
+                next_visits += w_desc['children']
+            else:
+                raise ValueError('Unexpected type {}, nodes must be dicts or strings, at node {}'.format(type(w_desc), w_desc))
+        widget_missing = set(self.placeable_widgets.keys()) - widget_seen
+        if widget_missing:
+            raise ValueError('Following placeable_widgets were not specified: {}'.format(', '.join(widget_missing)))
+
+
+    def widget_layout_to_tree(self, widget):
+        """ Returns a tree representing a widget hierarchy, leafs are strings and nodes are dicts.
+
+            Args:
+                widget (:class:`Gtk.Widget`): the widget where to start
+
+            Recursive function. See validate_layout() for more info on the tree structure.
+        """
+        orientation_names = {Gtk.Orientation.HORIZONTAL:'horizontal', Gtk.Orientation.VERTICAL:'vertical'}
+
+        if issubclass(type(widget), Gtk.Box):
+            return {'resizeable': False, 'children': [self.widget_layout_to_tree(c) for c in widget.get_children()],
+                    'orientation': orientation_names[widget.get_orientation()]}
+        elif issubclass(type(widget), Gtk.Paned):
+            proportions = [1]
+            reverse_children = []
+            orientation = widget.get_orientation()
+
+            while issubclass(type(widget), Gtk.Paned) and orientation == widget.get_orientation():
+                left_pane = widget.get_child1()
+                right_pane = widget.get_child2()
+
+                if not left_pane.get_visible() or not right_pane.get_visible():
+                    # reuse number that was in config initially, otherwise gets overwritten with 0
+                    ratio = self.pane_handle_pos[widget]
+                elif widget.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                    ratio = float(left_pane.get_allocated_width()) / widget.get_allocated_width()
+                else:
+                    ratio = float(left_pane.get_allocated_height()) / widget.get_allocated_height()
+
+                proportions = [ratio] + [(1 - ratio) * p for p in proportions]
+                reverse_children.append(right_pane)
+                widget = left_pane
+
+            reverse_children.append(left_pane)
+
+            return {'resizeable': True, 'children': [self.widget_layout_to_tree(c) for c in reversed(reverse_children)],
+                    'proportions': proportions, 'orientation': orientation_names[orientation]}
+
+        elif widget in self.placeable_widgets.values():
+            for name, placeable_widget in self.placeable_widgets.items():
+                if placeable_widget == widget:
+                    return name
+        else:
+            raise ValueError('Error serializing layout: widget of type {} is not an expected container or named widget: {}'.format(type(widget), widget))
+
+
+    def serialize_p_layout(self):
+        """ Returns a valid json string representing the layout of the presenter window, for configuration.
+        """
+        if self.scribbling_mode:
+            self.switch_scribbling()
+
+        return json.dumps(self.widget_layout_to_tree(self.p_central.get_children()[0]), indent=4)
+
+
+    def rearrange_p_layout(self, layout):
+        """ Remix the layout of the presenter window with the layout configuration given (assumed to be valid!).
+
+            Args:
+                layout (dict): the json-parsed config string
+        """
+        # take apart the default layout
+        self.p_central.remove(self.hpaned)
+        self.hpaned.remove(self.vpaned)
+        self.hpaned.remove(self.p_frame_cur)
+        right_vbox = self.vpaned.get_child1()
+        self.vpaned.remove(right_vbox)
+        self.vpaned.remove(self.p_frame_annot)
+        right_vbox.remove(self.p_frame_pres)
+        right_vbox.remove(self.p_frame_next)
+
+        # iterate over new layout to build it, using a BFS
+        widgets_to_add = [(self.p_central, layout)]
+        while widgets_to_add:
+            parent, w_desc = widgets_to_add.pop(0)
+
+            if type(w_desc) is str:
+                w = self.placeable_widgets[w_desc]
+
+            else:
+                # get new container widget, attempt to recycle the containers we removed
+                if 'resizeable' in w_desc and w_desc['resizeable']:
+                    w =  self.hpaned if w_desc['orientation'] == 'horizontal' and self.hpaned.get_parent() is None \
+                    else Gtk.Paned.new(getattr(Gtk.Orientation, w_desc['orientation'].upper()))
+
+                    w.set_wide_handle(self.hpaned.get_wide_handle())
+
+                    # left pane is first child
+                    widgets_to_add.append((w, w_desc['children'].pop()))
+
+                    if 'proportions' in w_desc:
+                        *other_panes, left_pane_size, right_pane_size = w_desc['proportions']
+                        w_desc['proportions'] = other_panes + [left_pane_size + right_pane_size]
+
+                        self.pane_resize_list.append(w)
+                        self.pane_handle_pos[w] = float(left_pane_size) / (left_pane_size + right_pane_size)
+                    else:
+                        self.pane_handle_pos[w] = 0.5
+
+                    # if more than 2 children are to be added, add the 2+ from the right side in a new child Gtk.Paned
+                    widgets_to_add.append((w, w_desc['children'][0] if len(w_desc['children']) == 1 else w_desc))
+                else:
+                    w =  right_vbox if w_desc['orientation'] == 'vertical' and right_vbox.get_parent() is None \
+                    else Gtk.Box.new(getattr(Gtk.Orientation, w_desc['orientation'].upper()), 5)
+
+                    w.set_baseline_position(right_vbox.get_baseline_position())
+                    w.set_homogeneous(right_vbox.get_homogeneous())
+                    w.set_spacing(right_vbox.get_spacing())
+
+                    widgets_to_add += [(w, c) for c in w_desc['children']]
+
+            if issubclass(type(parent), Gtk.Box):
+                parent.pack_start(w, True, True, 10)
+            else: #it's a Gtk.Paned
+                if parent.get_child2() is None:
+                    parent.pack2(w, True, True)
+                else:
+                    parent.pack1(w, True, True)
+
+
     def make_pwin(self):
         """ Initializes the presenter window.
         """
+        # Log error and keep default layout
+        try:
+            if self.dynamic_layout:
+                layout = json.loads(self.config.get('presenter', 'layout'))
+                self.validate_layout(layout)
+
+        except json.decoder.JSONDecodeError as e:
+            self.dynamic_layout = False
+            print("Layout option contains invalid JSON in configuration file")
+
+        except ValueError as e:
+            self.dynamic_layout = False
+            print('Error in layout: ' + e)
+
+        # Don't catch exceptions here, let the program die.
+        if self.dynamic_layout:
+            self.rearrange_p_layout(layout)
 
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
 
@@ -437,9 +641,33 @@ class UI:
     def initial_resize(self):
         """ Last setup, that needs to be done after windows are realized, to size panes and annotation lists etc.
         """
-        self.hpaned.set_position(int(round(self.config.getfloat('presenter', 'slide_ratio') * self.hpaned.get_allocated_width())))
-        self.vpaned.set_position(int(round(self.config.getfloat('presenter', 'annot_ratio') * self.vpaned.get_allocated_height())))
-        self.on_page_change(False)
+        if not self.dynamic_layout:
+            # Gracefully fall back, i.e. keep remembering resizeable panel configurations for default layout
+            self.pane_handle_pos[self.hpaned] = self.config.getfloat('presenter', 'slide_ratio')
+            self.pane_handle_pos[self.vpaned] = self.config.getfloat('presenter', 'annot_ratio')
+            self.pane_resize_list = [self.hpaned, self.vpaned]
+
+        postpone = []
+        while self.pane_resize_list:
+            pane = self.pane_resize_list.pop(0)
+            relpos = self.pane_handle_pos[pane]
+
+            if pane.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                avail_size = pane.get_allocated_width()
+            else:
+                avail_size = pane.get_allocated_height()
+
+            if avail_size <= 1:
+                postpone.append(pane)
+            else:
+                pane.set_position(int(round(relpos * avail_size)))
+                pane.show_all()
+
+        if postpone:
+            self.pane_resize_list = postpone
+            GLib.idle_add(self.initial_resize)
+        else:
+            self.on_page_change(False)
 
 
     def load_time_colors(self):
@@ -522,12 +750,18 @@ class UI:
     def save_and_quit(self, *args):
         """ Save configuration and exit the main loop.
         """
-        ratio = self.hpaned.get_child1().get_allocated_width() / float(self.hpaned.get_allocated_width())
-        self.config.set('presenter', 'slide_ratio', str(ratio))
+        # write the presenter layout in the config file
+        self.config.set('presenter', 'layout', self.serialize_p_layout())
 
-        if self.show_annotations:
-            ratio = self.vpaned.get_child1().get_allocated_height() / float(self.vpaned.get_allocated_height())
-            self.config.set('presenter', 'annot_ratio', str(ratio))
+        if not self.dynamic_layout:
+            # old version of remembering configuration (single parameter being hpaned's position)
+            # keep it as a fall back.
+            ratio = self.hpaned.get_child1().get_allocated_width() / float(self.hpaned.get_allocated_width())
+            self.config.set('presenter', 'slide_ratio', str(ratio))
+
+            if self.show_annotations:
+                ratio = self.vpaned.get_child1().get_allocated_height() / float(self.vpaned.get_allocated_height())
+                self.config.set('presenter', 'annot_ratio', str(ratio))
 
         self.doc.cleanup_media_files()
 
@@ -1726,22 +1960,26 @@ class UI:
         """
 
         if self.scribbling_mode:
+            p_layout = self.off_render.get_child()
+
             self.p_central.remove(self.scribble_overlay)
-            self.off_render.remove(self.hpaned)
+            self.off_render.remove(p_layout)
 
             self.off_render.add(self.scribble_overlay)
-            self.p_central.pack_start(self.hpaned, True, True, 0)
+            self.p_central.pack_start(p_layout, True, True, 0)
             self.scribbling_mode = False
 
         else:
             pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
             self.scribble_p_frame.set_property('ratio', pr)
 
-            self.p_central.remove(self.hpaned)
+            p_layout = self.p_central.get_children()[0]
+
+            self.p_central.remove(p_layout)
             self.off_render.remove(self.scribble_overlay)
 
             self.p_central.pack_start(self.scribble_overlay, True, True, 0)
-            self.off_render.add(self.hpaned)
+            self.off_render.add(p_layout)
 
             self.p_central.queue_draw()
 

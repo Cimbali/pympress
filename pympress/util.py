@@ -197,6 +197,10 @@ def load_config():
     if not config.has_option('presenter', 'show_bigbuttons'):
         config.set('presenter', 'show_bigbuttons', 'off')
 
+    if not config.has_option('presenter', 'layout'):
+        # invalid config, but our fall back is good
+        config.set('presenter', 'layout', '{}')
+
     if not config.has_option('scribble', 'color'):
         config.set('scribble', 'color', Gdk.RGBA(1., 0., 0., 1.).to_string())
 
