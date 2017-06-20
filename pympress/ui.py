@@ -171,7 +171,7 @@ class UI:
     redraw_timeout = 0
 
     #: Current :class:`~pympress.document.Document` instance.
-    doc = pympress.document.EmptyDocument()
+    doc = None
 
     #: Whether to use notes mode or not
     notes_mode = False
@@ -258,7 +258,7 @@ class UI:
     # The :class:`UI` singleton, since there is only one (as a class variable). Used by classmethods only.
     _instance = None
 
-    def __init__(self, ett = 0):
+    def __init__(self, ett = 0, docpath = None):
         """
         Args:
             ett (int):  the estimated (intended) talk time
@@ -276,8 +276,9 @@ class UI:
         )
 
         # Use notes mode by default if the document has notes
+        self.doc = pympress.document.Document.create(docpath)
         self.notes_mode = self.doc.has_notes()
-        self.show_annotations = not self.notes_mode
+        self.show_annotations = (not self.notes_mode) and self.config.getboolean('presenter', 'show_annotations')
         self.page_preview_nb = self.doc.current_page().number()
 
         # Surface cache
@@ -335,11 +336,13 @@ class UI:
         self.c_overlay.queue_draw()
         self.c_da.queue_draw()
         self.redraw_panes()
+        self.on_page_change(False)
 
         # Adjust default visibility of items
         self.prev_button.set_visible(self.show_bigbuttons)
         self.next_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
+        self.p_frame_annot.set_visible(self.show_annotations)
 
 
     def swap_document(self, docpath):

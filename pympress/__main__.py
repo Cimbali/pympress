@@ -113,10 +113,8 @@ def main(argv = sys.argv[1:]):
 
     # Create windows
     import pympress.ui
-    ui = pympress.ui.UI(ett)
-    if name:
-        GLib.idle_add(ui.swap_document, name)
-    else:
+    ui = pympress.ui.UI(ett, name)
+    if not name:
         GLib.idle_add(ui.pick_file)
     ui.run()
 

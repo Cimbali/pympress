@@ -201,6 +201,9 @@ def load_config():
         # invalid config, but our fall back is good
         config.set('presenter', 'layout', '{}')
 
+    if not config.has_option('presenter', 'show_annotations'):
+        config.set('presenter', 'show_annotations', 'off')
+
     if not config.has_option('scribble', 'color'):
         config.set('scribble', 'color', Gdk.RGBA(1., 0., 0., 1.).to_string())
 
