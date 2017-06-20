@@ -508,7 +508,7 @@ class Document:
                 # actually a path, not an url, was passed
                 scheme = 'file'
                 path = pathname2url(path)
-            poppler_doc = Poppler.Document.new_from_file(urlunsplit((scheme, netloc, path, *more)), None)
+            poppler_doc = Poppler.Document.new_from_file(urlunsplit((scheme, netloc, path) + more), None)
             return Document(poppler_doc, path, page)
 
     def has_notes(self):
