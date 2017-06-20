@@ -45,6 +45,13 @@ if pympress.util.IS_WINDOWS:
 locale.setlocale(locale.LC_ALL, '')
 gettext.install('pympress', pympress.util.get_resource_path('share', 'locale'))
 
+# Catch all uncaught exceptions in the log file:
+def uncaught_handler(*exc_info):
+    logger.critical('Uncaught exception:\n{}'.format(logging.Formatter().formatException(exc_info)))
+    sys.__excepthook__(*exc_info)
+
+sys.excepthook = uncaught_handler
+
 def usage():
     print(_("Usage: {} [options] <presentation_file>").format(sys.argv[0]))
     print("")
