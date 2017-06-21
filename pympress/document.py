@@ -50,10 +50,10 @@ gi.require_version('Poppler', '0.18')
 from gi.repository import Poppler
 
 try:
-    from urllib.parse import urlunsplit, urlsplit
+    from urllib.parse import urljoin, scheme_chars
     from urllib.request import pathname2url
 except ImportError:
-    from urlparse import urljoin
+    from urlparse import urljoin, scheme_chars
     from urllib import pathname2url
 
 # find the right function to open files
@@ -503,12 +503,13 @@ class Document:
         if path is None:
             return EmptyDocument()
         else:
-            scheme, netloc, path, *more = urlsplit(path)
-            if not scheme:
-                # actually a path, not an url, was passed
-                scheme = 'file'
-                path = pathname2url(path)
-            poppler_doc = Poppler.Document.new_from_file(urlunsplit((scheme, netloc, path) + more), None)
+            # Do not trust urlsplit, manually check we have an URI
+            pos = path.index(':') if ':' in path else -1
+            if path[pos:pos+3] == '://' or (pos > 1 and set(path[:pos]) <= scheme_chars):
+                uri = path
+            else:
+                uri = urljoin('file:', pathname2url(path))
+            poppler_doc = Poppler.Document.new_from_file(uri, None)
             return Document(poppler_doc, path, page)
 
     def has_notes(self):
