@@ -31,6 +31,9 @@ Hence the prerendering isn't really done in parallel in another thread, but
 scheduled on the main thread at idle times using GLib.idle_add().
 """
 
+import logging
+logger = logging.getLogger(__name__)
+
 import threading
 import time
 import collections
@@ -259,7 +262,7 @@ class SurfaceCache:
             wtype = self.surface_type[widget_name]
 
         if ww < 0 or wh < 0:
-            print(widget_name)
+            logger.warning('Widget {} with invalid size {}x{} when rendering'.format(widget_name, ww, wh))
             return
 
         with self.doc_lock:

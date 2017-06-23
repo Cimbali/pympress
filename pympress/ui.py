@@ -32,6 +32,9 @@ Both windows are managed by the :class:`~pympress.ui.UI` class.
 
 from __future__ import print_function
 
+import logging
+logger = logging.getLogger(__name__)
+
 import os, os.path, subprocess
 import sys
 import time
@@ -56,9 +59,9 @@ import pympress.util
 try:
     import pympress.vlcvideo
     vlc_enabled = True
-except:
+except Exception as e:
     vlc_enabled = False
-    print(_("Warning: video support is disabled"))
+    logger.exception(_("video support is disabled"))
 
 from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 
@@ -346,6 +349,17 @@ class UI:
         self.on_page_change(False)
 
 
+    def recent_document(self, recent_menu):
+        """ Callback for the recent document menu.
+
+        Gets the URI and requests the document swap.
+
+        Args:
+            recent_menu (:class:`~Gtk.RecentChooserMenu`): the recent docs menu
+        """
+        self.swap_document(recent_menu.get_current_uri())
+
+
     def make_cwin(self):
         """ Initializes the content window.
         """
@@ -460,7 +474,7 @@ class UI:
             c_full = self.config.getboolean('content', 'start_fullscreen')
 
             if c_monitor == p_monitor and (c_full or p_full):
-                print(_("Warning: Content and presenter window must not be on the same monitor if you start full screen!"), file=sys.stderr)
+                logger.warning(_("Content and presenter window must not be on the same monitor if you start full screen!"), file=sys.stderr)
                 p_monitor = 0 if c_monitor > 0 else 1
 
             p_bounds = screen.get_monitor_geometry(p_monitor)
@@ -594,8 +608,8 @@ class UI:
         about.set_website('http://www.pympress.xyz/')
         try:
             about.set_logo(pympress.util.get_icon_pixbuf('pympress-128.png'))
-        except Exception:
-            print(_('Error loading icon for about window'))
+        except Exception as e:
+            logger.exception(_('Error loading icon for about window'))
         about.run()
         about.destroy()
 
@@ -1059,7 +1073,7 @@ class UI:
                 widget.get_window().set_cursor(None)
 
         else:
-            print(_("Unknown event {}").format(event.type))
+            logger.warning(_("Unknown event {}").format(event.type))
 
 
     def on_label_event(self, *args):
@@ -1166,7 +1180,7 @@ class UI:
                     m = int(t[0])
                     s = int(t[1])
                 except ValueError:
-                    print(_("Invalid time (mm or mm:ss expected), got \"{}\"").format(text))
+                    logger.error(_("Invalid time (mm or mm:ss expected), got \"{}\"").format(text))
                     return True
                 except IndexError:
                     s = 0
@@ -1360,7 +1374,7 @@ class UI:
             cmd = "suspend" if must_disable else "resume"
             status = os.system("xdg-screensaver {} {}".format(cmd, self.c_win.get_window().get_xid()))
             if status != 0:
-                print(_("Warning: Could not set screensaver status: got status ")+str(status), file=sys.stderr)
+                logger.warning(_("Could not set screensaver status: got status ")+str(status), file=sys.stderr)
 
             # Also manage screen blanking via DPMS
             if must_disable:
@@ -1378,7 +1392,7 @@ class UI:
                     self.dpms_was_enabled = True
                     status = os.system("xset -dpms")
                     if status != 0:
-                        print(_("Warning: Could not disable DPMS screen blanking: got status ")+str(status), file=sys.stderr)
+                        logger.warning(_("Could not disable DPMS screen blanking: got status ")+str(status), file=sys.stderr)
                 else:
                     self.dpms_was_enabled = False
 
@@ -1386,7 +1400,7 @@ class UI:
                 # Re-enable DPMS
                 status = os.system("xset +dpms")
                 if status != 0:
-                    print(_("Warning: Could not enable DPMS screen blanking: got status ")+str(status), file=sys.stderr)
+                    logger.warning(_("Could not enable DPMS screen blanking: got status ")+str(status), file=sys.stderr)
 
         elif IS_WINDOWS:
             try:
@@ -1400,9 +1414,9 @@ class UI:
                     elif self.dpms_was_enabled:
                         winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "1")
             except (OSError, PermissionError):
-                print(_("Error: access denied when trying to access screen saver settings in registry!"))
+                logger.exception(_("access denied when trying to access screen saver settings in registry!"))
         else:
-            print(_("Warning: Unsupported OS: can't enable/disable screensaver"), file=sys.stderr)
+            logger.warning(_("Unsupported OS: can't enable/disable screensaver"), file=sys.stderr)
 
 
     def switch_fullscreen(self, widget=None, event=None):
@@ -1421,7 +1435,7 @@ class UI:
         elif widget == self.p_win:
             fullscreen = self.p_win_fullscreen
         else:
-            print (_("Unknow widget {} to be fullscreened, aborting.").format(widget), file=sys.stderr)
+            logger.error(_("Unknow widget {} to be fullscreened, aborting.").format(widget), file=sys.stderr)
             return
 
         if fullscreen:
@@ -1572,7 +1586,7 @@ class UI:
             self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
             self.cache.set_widget_type("p_da_pres", PDF_REGULAR)
-            self.cache.add_widget("scribble_p_da", PDF_REGULAR)
+            self.cache.set_widget_type("scribble_p_da", PDF_REGULAR)
             self.cache.disable_prerender("p_da_pres")
             self.p_frame_cur.set_label(_("Current slide"))
             self.p_frame_pres.set_visible(False)
@@ -1582,7 +1596,7 @@ class UI:
             self.cache.set_widget_type("p_da_cur", PDF_NOTES_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_pres", PDF_CONTENT_PAGE)
-            self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE)
+            self.cache.set_widget_type("scribble_p_da", PDF_CONTENT_PAGE)
             self.cache.enable_prerender("p_da_pres")
             self.p_frame_cur.set_label(_("Notes"))
             self.p_frame_pres.set_visible(True)
