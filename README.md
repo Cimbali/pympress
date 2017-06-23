@@ -40,6 +40,8 @@ Grab [the latest installer for your platform](https://github.com/Cimbali/pympres
 
 Currently binaries are only available for windows (.msi files). Choose packages with 'amd64' in the name if you have a 64 bit machine, 'x86' if you have a 32 bit machine. The 'vlc' suffix indicates that this installer ships VLC as well to support video, so try it if the other version fails to read videos.
 
+On windows, in the unlikely event you get an error message along the lines of "MSVCP100.dll is missing", you can download this package from Microsoft [for x86 (32 bit)](https://www.microsoft.com/en-in/download/details.aspx?id=5555) or [for x64 (64 bits)](https://www.microsoft.com/en-us/download/details.aspx?id=14632). Those libraries really should already be installed on your system.
+
 ## Dependencies
 
 Pympress relies on:
