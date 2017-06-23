@@ -95,7 +95,6 @@ include_files.append( (os.path.join('pympress', 'share', 'pixmaps'), os.path.joi
 include_files += [(f,  f.split(os.path.sep, 1)[1]) for f in glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))]
 
 buildOptions = dict(
-    compressed = False,
     includes = [],
     excludes = [],
     packages = ['gi', 'vlc'],
