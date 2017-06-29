@@ -562,12 +562,20 @@ class UI:
                     widgets_to_add += [(w, c) for c in w_desc['children']]
 
             if issubclass(type(parent), Gtk.Box):
-                parent.pack_start(w, True, True, 10)
+                parent.pack_start(w, True, True, 0)
             else: #it's a Gtk.Paned
                 if parent.get_child2() is None:
                     parent.pack2(w, True, True)
+                    if parent.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                        w.set_margin_start(8)
+                    else:
+                        w.set_margin_top(8)
                 else:
                     parent.pack1(w, True, True)
+                    if parent.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                        w.set_margin_end(8)
+                    else:
+                        w.set_margin_bottom(8)
 
             # hierarchichally ordered list of widgets
             widgets.append(w)
@@ -610,7 +618,7 @@ class UI:
             self.plain_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["annotations", "current", "next"], "proportions":[0.15, 0.675, 0.175]}')
         except ValueError as e:
             logger.exception('Invalid layout')
-            self.plain_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["annotations", "current", "next"], "proportions":[0.15, 0.675, 0.175]}')
+            self.plain_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["current", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}')
 
         self.rearrange_p_layout(self.notes_layout if self.notes_mode else self.plain_layout)
 
