@@ -1039,6 +1039,9 @@ class UI:
         if self.redraw_timeout:
             self.redraw_timeout = 0
 
+        # Temporarily, while p_frame_annot's configure-event is noto working
+        self.on_configure_annot(self.p_frame_annot, None)
+
 
     def on_pane_event(self, widget, evt):
         """ Signal handler for gtk.paned events
@@ -1165,6 +1168,14 @@ class UI:
         elif widget is self.c_win:
             c_monitor = self.c_win.get_screen().get_monitor_at_window(self.c_frame.get_parent_window())
             self.config.set('content', 'monitor', str(c_monitor))
+
+
+    def on_configure_annot(self, widget, event):
+        """ Adjust wrap width in annotations when they are resized.
+        """
+        self.annotation_renderer.props.wrap_width = widget.get_allocated_width() - 10
+        self.scrolled_window.queue_resize()
+        self.scrollable_treelist.get_column(0).queue_resize()
 
 
     def on_navigation(self, widget, event):
