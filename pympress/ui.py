@@ -631,9 +631,6 @@ class UI:
         try:
             self.notes_layout = json.loads(self.config.get('layout', 'notes'))
             self.validate_layout(self.notes_layout, set(self.placeable_widgets.keys()) - {"annotations"})
-        except json.decoder.JSONDecodeError as e:
-            logger.error("Layout section contains invalid JSON in configuration file")
-            self.notes_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["notes", {"resizeable":false, "children":["current", "next"], "orientation":"vertical"}], "proportions": [0.60, 0.40]}')
         except ValueError as e:
             logger.exception('Invalid layout')
             self.notes_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["notes", {"resizeable":false, "children":["current", "next"], "orientation":"vertical"}], "proportions": [0.60, 0.40]}')
@@ -641,9 +638,6 @@ class UI:
         try:
             self.plain_layout = json.loads(self.config.get('layout', 'plain'))
             self.validate_layout(self.plain_layout, set(self.placeable_widgets.keys()) - {"notes"})
-        except json.decoder.JSONDecodeError as e:
-            logger.error("Layout section contains invalid JSON in configuration file")
-            self.plain_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["annotations", "current", "next"], "proportions":[0.15, 0.675, 0.175]}')
         except ValueError as e:
             logger.exception('Invalid layout')
             self.plain_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["current", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}')
