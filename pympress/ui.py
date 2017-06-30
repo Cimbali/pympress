@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 import os, os.path, subprocess
 import sys
 import time
+import json
 
 import pkg_resources
 
@@ -106,12 +107,10 @@ class UI:
     p_win = None
     #: :class:`~Gtk.Box` for the Presenter window.
     p_central = None
-    #: :class:`~Gtk.Paned` containg current/notes slide on one side, current/next slide/annotations
-    hpaned = None
     #: :class:`~Gtk.AspectFrame` for the current slide in the Presenter window.
-    p_frame_cur = None
+    p_frame_notes = None
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
-    p_da_cur = None
+    p_da_notes = None
     #: Slide counter :class:`~Gtk.Label` for the current slide.
     label_cur = None
     #: Slide counter :class:`~Gtk.Label` for the last slide.
@@ -138,9 +137,9 @@ class UI:
     #: :class:`~Gtk.DrawingArea` for the next slide in the Presenter window.
     p_da_next = None
     #: :class:`~Gtk.AspectFrame` for the current slide copy in the Presenter window.
-    p_frame_pres = None
+    p_frame_cur = None
     #: :class:`~Gtk.DrawingArea` for the current slide copy in the Presenter window.
-    p_da_pres = None
+    p_da_cur = None
 
     #: :class:`~Gtk.Frame` for the annotations in the Presenter window.
     p_frame_annot = None
@@ -162,13 +161,13 @@ class UI:
     #: Fullscreen toggle. By config value, start in fullscreen mode.
     c_win_fullscreen = False
 
-    #: Indicates whether we should delay redraws on some drawing areas to fluidify resizing hpaned
-    resize_hpaned = False
-    #: Tracks return values of GLib.timeout_add to cancel hpaned's redraw callbacks
+    #: Indicates whether we should delay redraws on some drawing areas to fluidify resizing gtk.paned
+    resize_panes = False
+    #: Tracks return values of GLib.timeout_add to cancel gtk.paned's redraw callbacks
     redraw_timeout = 0
 
     #: Current :class:`~pympress.document.Document` instance.
-    doc = pympress.document.EmptyDocument()
+    doc = None
 
     #: Whether to use notes mode or not
     notes_mode = False
@@ -202,6 +201,15 @@ class UI:
 
     #: Dictionary of :class:`pympress.vlcvideo.VLCVideo` ready to be added on top of the slides
     media_overlays = {}
+
+    #: Dictionary of :class:`Gtk.Widget` from the presenter window that can be dynamically rearranged
+    placeable_widgets = {}
+    #: Map of :class:`Gtk.Paned` to the relative position (float between 0 and 1) of its handle
+    pane_handle_pos = {}
+    #: dict-tree of presenter layout for the notes mode
+    notes_layout = {}
+    #: dict-tree of presenter layout for the non-notes mode
+    plain_layout = {}
 
     #: :class:`Gdk.RGBA` The default color of the info labels
     label_color_default = None
@@ -246,7 +254,7 @@ class UI:
     # The :class:`UI` singleton, since there is only one (as a class variable). Used by classmethods only.
     _instance = None
 
-    def __init__(self, ett = 0):
+    def __init__(self, ett = 0, docpath = None):
         """
         Args:
             ett (int):  the estimated (intended) talk time
@@ -264,8 +272,10 @@ class UI:
         )
 
         # Use notes mode by default if the document has notes
+        self.doc = pympress.document.Document.create(docpath)
         self.notes_mode = self.doc.has_notes()
-        self.show_annotations = not self.notes_mode
+        self.show_annotations = (not self.notes_mode) and self.config.getboolean('presenter', 'show_annotations')
+        self.page_preview_nb = self.doc.current_page().number()
 
         # Surface cache
         self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
@@ -284,12 +294,22 @@ class UI:
         for n in (attr for attr in dir(self) if getattr(self, attr) is None and attr[:2] + attr[-2:] != '____'):
             setattr(self, n, self.builder.get_object(n))
 
+        self.placeable_widgets = {
+            "notes": self.p_frame_notes,
+            "current": self.p_frame_cur,
+            "next": self.p_frame_next,
+            "annotations": self.p_frame_annot,
+        }
+
         # Initialize windows and screens
+        self.setup_screens()
+        self.c_win.show_now()
+        self.p_win.show_now()
+
         self.make_cwin()
         self.make_pwin()
         self.setup_scribbling()
 
-        self.setup_screens()
         self.builder.connect_signals(self)
 
         # Common to both windows
@@ -305,7 +325,6 @@ class UI:
         self.p_win.show_all()
 
         # Some final setup steps
-        self.initial_resize()
         self.load_time_colors()
 
         # Add media
@@ -314,14 +333,14 @@ class UI:
         # Queue some redraws
         self.c_overlay.queue_draw()
         self.c_da.queue_draw()
-        GLib.idle_add(self.redraw_hpaned)
+        self.redraw_panes()
+        self.on_page_change(False)
 
         # Adjust default visibility of items
-        self.p_frame_annot.set_visible(self.show_annotations)
-        self.p_frame_pres.set_visible(self.notes_mode)
         self.prev_button.set_visible(self.show_bigbuttons)
         self.next_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
+        self.p_frame_annot.set_visible(self.show_annotations)
 
 
     def swap_document(self, docpath):
@@ -366,17 +385,242 @@ class UI:
         self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
         self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
         if self.notes_mode:
-            self.cache.add_widget("c_da", pympress.document.PDF_CONTENT_PAGE)
+            page_type = pympress.document.PDF_CONTENT_PAGE
         else:
-            self.cache.add_widget("c_da", pympress.document.PDF_REGULAR)
+            page_type = pympress.document.PDF_REGULAR
 
-        pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
-        self.c_frame.set_property("ratio", pr)
+        self.cache.add_widget("c_da", page_type)
+        self.c_frame.set_property("ratio", self.doc.current_page().get_aspect_ratio(page_type))
+
+
+    def validate_layout(self, layout, expected_widgets):
+        """ Validate layout: check whether the layout of widgets built from the config string is valid.
+
+            Args:
+                layout (dict): the json-parsed config string
+                expected_widgets (set): strings with the names of widgets for this layout
+
+
+            Layout must have all self.placeable_widgets (leaves of the tree, as strings) and only allowed properties
+            on the nodes of the tree (as dicts).
+
+            Contraints on the only allowed properties of the nodes are:
+                resizeable: bool (optional, defaults to no),
+                orientation: "vertical" or "horizontal" (mandatory)
+                children: list (mandatory), of size >= 2, containing strings or dicts
+                proportions: list of floats (optional, only if resizeable) with sum = 1, length == len(children), representing
+                    the relative sizes of all the resizeable items.
+        """
+
+        next_visits = [layout]
+        widget_seen = set()
+        while next_visits:
+            w_desc = next_visits.pop(0)
+            if type(w_desc) is str:
+                if w_desc not in expected_widgets:
+                    raise ValueError('Unrecognized widget "{}", pick one of: {}'.format(w_desc, ', '.join(expected_widgets)))
+                elif w_desc in widget_seen:
+                    raise ValueError('Duplicate widget "{}", all expected_widgets can only appear once'.format(w_desc))
+                widget_seen.add(w_desc)
+
+            elif type(w_desc) is dict:
+                if 'orientation' not in w_desc or w_desc['orientation'] not in ['horizontal', 'vertical']:
+                    raise ValueError('"orientation" is mandatory and must be "horizontal" or "vertical" at node {}'.format(w_desc))
+                elif 'children' not in w_desc or type(w_desc['children']) is not list or len(w_desc['children']) < 2:
+                    raise ValueError('"children" is mandatory and must be a list of 2+ items at node {}'.format(w_desc))
+                elif 'resizeable' in w_desc and type(w_desc['resizeable']) is not bool:
+                    raise ValueError('"resizeable" must be boolean at node {}'.format(w_desc))
+
+                elif 'proportions' in w_desc:
+                    if 'resizeable' not in w_desc or not w_desc['resizeable']:
+                        raise ValueError('"proportions" is only valid for resizeable widgets at node {}'.format(w_desc))
+                    elif type(w_desc['proportions']) is not list or any(type(n) is not float for n in w_desc['proportions']) or len(w_desc['proportions']) != len(w_desc['children']) or abs(sum(w_desc['proportions']) - 1) > 1e-10:
+                        raise ValueError('"proportions" must be a list of floats (one per separator), between 0 and 1, at node {}'.format(w_desc))
+
+                next_visits += w_desc['children']
+            else:
+                raise ValueError('Unexpected type {}, nodes must be dicts or strings, at node {}'.format(type(w_desc), w_desc))
+        widget_missing = expected_widgets - widget_seen
+        if widget_missing:
+            raise ValueError('Following placeable_widgets were not specified: {}'.format(', '.join(widget_missing)))
+
+
+    def widget_layout_to_tree(self, widget):
+        """ Returns a tree representing a widget hierarchy, leaves are strings and nodes are dicts.
+
+            Args:
+                widget (:class:`Gtk.Widget`): the widget where to start
+
+            Recursive function. See validate_layout() for more info on the tree structure.
+        """
+        orientation_names = {Gtk.Orientation.HORIZONTAL:'horizontal', Gtk.Orientation.VERTICAL:'vertical'}
+
+        if issubclass(type(widget), Gtk.Box):
+            node = {'resizeable': False, 'children': [self.widget_layout_to_tree(c) for c in widget.get_children()],
+                    'orientation': orientation_names[widget.get_orientation()]}
+        elif issubclass(type(widget), Gtk.Paned):
+            proportions = [1]
+            reverse_children = []
+            orientation = widget.get_orientation()
+
+            while issubclass(type(widget), Gtk.Paned) and orientation == widget.get_orientation():
+                left_pane = widget.get_child1()
+                right_pane = widget.get_child2()
+
+                if not left_pane.get_visible() or not right_pane.get_visible():
+                    # reuse number that was in config initially, otherwise gets overwritten with 0
+                    ratio = self.pane_handle_pos[widget]
+                elif widget.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                    ratio = float(widget.get_position()) / Gtk.Widget.get_allocated_width(widget)
+                else:
+                    ratio = float(widget.get_position()) / Gtk.Widget.get_allocated_height(widget)
+
+                proportions = [ratio] + [(1 - ratio) * p for p in proportions]
+                reverse_children.append(right_pane)
+                widget = left_pane
+
+            reverse_children.append(left_pane)
+
+            node = {'resizeable': True, 'children': [self.widget_layout_to_tree(c) for c in reversed(reverse_children)],
+                    'proportions': proportions, 'orientation': orientation_names[orientation]}
+
+        elif widget in self.placeable_widgets.values():
+            for name, placeable_widget in self.placeable_widgets.items():
+                if placeable_widget == widget:
+                    node = name
+                    break
+        else:
+            raise ValueError('Error serializing layout: widget of type {} is not an expected container or named widget: {}'.format(type(widget), widget))
+
+        return node
+
+
+    def rearrange_p_layout(self, layout):
+        """ Remix the layout of the presenter window with the layout configuration given (assumed to be valid!).
+
+            Args:
+                layout (dict): the json-parsed config string
+        """
+        # take apart the previous/default layout
+        containers = []
+        widgets = self.p_central.get_children()
+        i = 0
+        while i < len(widgets):
+            w = widgets[i]
+            if issubclass(type(w), Gtk.Box) or issubclass(type(w), Gtk.Paned):
+                widgets.extend(w.get_children())
+                containers.append(w)
+            w.get_parent().remove(w)
+            i += 1
+
+        # cleanup widgets
+        del widgets[:]
+        while containers:
+            containers.pop().destroy()
+
+        # iterate over new layout to build it, using a BFS
+        widgets_to_add = [(self.p_central, layout)]
+        pane_resize = set()
+
+        while widgets_to_add:
+            parent, w_desc = widgets_to_add.pop(0)
+
+            if type(w_desc) is str:
+                w = self.placeable_widgets[w_desc]
+
+            else:
+                # get new container widget, attempt to recycle the containers we removed
+                if 'resizeable' in w_desc and w_desc['resizeable']:
+                    orientation = getattr(Gtk.Orientation, w_desc['orientation'].upper())
+                    w = Gtk.Paned.new(orientation)
+                    w.set_wide_handle(True)
+
+                    # Add on resize events
+                    w.connect("notify::position", self.on_pane_event)
+                    w.connect("button-release-event", self.on_pane_event)
+
+                    # left pane is first child
+                    widgets_to_add.append((w, w_desc['children'].pop()))
+
+                    if 'proportions' in w_desc:
+                        right_pane = w_desc['proportions'].pop()
+                        left_pane  = w_desc['proportions'].pop()
+                        w_desc['proportions'].append(left_pane + right_pane)
+
+                        self.pane_handle_pos[w] = float(left_pane) / (left_pane + right_pane)
+                        pane_resize.add(w)
+                    else:
+                        self.pane_handle_pos[w] = 0.5
+
+                    # if more than 2 children are to be added, add the 2+ from the right side in a new child Gtk.Paned
+                    widgets_to_add.append((w, w_desc['children'][0] if len(w_desc['children']) == 1 else w_desc))
+                else:
+                    w = Gtk.Box.new(getattr(Gtk.Orientation, w_desc['orientation'].upper()), 5)
+                    w.set_homogeneous(True)
+                    w.set_spacing(10)
+
+                    widgets_to_add += [(w, c) for c in w_desc['children']]
+
+            if issubclass(type(parent), Gtk.Box):
+                parent.pack_start(w, True, True, 0)
+            else: #it's a Gtk.Paned
+                if parent.get_child2() is None:
+                    parent.pack2(w, True, True)
+                    if parent.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                        w.set_margin_start(8)
+                    else:
+                        w.set_margin_top(8)
+                else:
+                    parent.pack1(w, True, True)
+                    if parent.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                        w.set_margin_end(8)
+                    else:
+                        w.set_margin_bottom(8)
+
+            # hierarchichally ordered list of widgets
+            widgets.append(w)
+
+        for w in widgets:
+            w.queue_resize()
+            w.show_now()
+            w.get_parent().check_resize()
+
+        for p in (w for w in widgets if issubclass(type(w), Gtk.Box) or issubclass(type(w), Gtk.Paned)):
+            p.check_resize()
+            if p in pane_resize:
+                if p.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                    pane_pos = int(round(Gtk.Widget.get_allocated_width(p) * self.pane_handle_pos[p]))
+                else:
+                    pane_pos = int(round(Gtk.Widget.get_allocated_height(p) * self.pane_handle_pos[p]))
+
+                p.set_position(pane_pos)
 
 
     def make_pwin(self):
         """ Initializes the presenter window.
         """
+        # Log error and keep default layout
+        try:
+            self.notes_layout = json.loads(self.config.get('layout', 'notes'))
+            self.validate_layout(self.notes_layout, set(self.placeable_widgets.keys()) - {"annotations"})
+        except json.decoder.JSONDecodeError as e:
+            logger.error("Layout section contains invalid JSON in configuration file")
+            self.notes_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["notes", {"resizeable":false, "children":["current", "next"], "orientation":"vertical"}], "proportions": [0.60, 0.40]}')
+        except ValueError as e:
+            logger.exception('Invalid layout')
+            self.notes_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["notes", {"resizeable":false, "children":["current", "next"], "orientation":"vertical"}], "proportions": [0.60, 0.40]}')
+
+        try:
+            self.plain_layout = json.loads(self.config.get('layout', 'plain'))
+            self.validate_layout(self.plain_layout, set(self.placeable_widgets.keys()) - {"notes"})
+        except json.decoder.JSONDecodeError as e:
+            logger.error("Layout section contains invalid JSON in configuration file")
+            self.plain_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["annotations", "current", "next"], "proportions":[0.15, 0.675, 0.175]}')
+        except ValueError as e:
+            logger.exception('Invalid layout')
+            self.plain_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["current", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}')
+
+        self.rearrange_p_layout(self.notes_layout if self.notes_mode else self.plain_layout)
 
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
 
@@ -401,13 +645,13 @@ class UI:
         self.hb_cur.remove(self.spin_cur)
 
         if self.notes_mode:
-            self.cache.add_widget("p_da_cur", PDF_NOTES_PAGE)
-            self.cache.add_widget("p_da_pres", PDF_CONTENT_PAGE, True)
+            self.cache.add_widget("p_da_cur", PDF_CONTENT_PAGE)
             self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
+            self.cache.add_widget("p_da_notes", PDF_NOTES_PAGE)
         else:
             self.cache.add_widget("p_da_cur", PDF_REGULAR)
             self.cache.add_widget("p_da_next", PDF_REGULAR)
-            self.cache.add_widget("p_da_pres", PDF_REGULAR, False)
+            self.cache.add_widget("p_da_notes", PDF_REGULAR, False)
 
 
         # Annotations
@@ -430,17 +674,6 @@ class UI:
         # Enable dropping files onto the window
         self.p_win.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
         self.p_win.drag_dest_add_text_targets()
-
-
-    def initial_resize(self):
-        """ Last setup, that needs to be done after windows are realized, to size panes and annotation lists etc.
-        """
-        pane_size = self.config.getfloat('presenter', 'slide_ratio')
-        avail_size = self.p_frame_cur.get_allocated_width() + self.p_frame_next.get_allocated_width()
-        self.hpaned.set_position(int(round(pane_size * avail_size)))
-        self.on_page_change(False)
-
-        GLib.idle_add(self.resize_annotation_list)
 
 
     def load_time_colors(self):
@@ -474,20 +707,27 @@ class UI:
             c_full = self.config.getboolean('content', 'start_fullscreen')
 
             if c_monitor == p_monitor and (c_full or p_full):
-                logger.warning(_("Content and presenter window must not be on the same monitor if you start full screen!"), file=sys.stderr)
+                logger.warning(_("Content and presenter window must not be on the same monitor if you start full screen!"))
                 p_monitor = 0 if c_monitor > 0 else 1
+        else:
+            c_monitor = 0
+            p_monitor = 0
+            c_full = False
+            p_full = False
 
-            p_bounds = screen.get_monitor_geometry(p_monitor)
-            self.p_win.move(p_bounds.x, p_bounds.y)
-            if p_full:
-                self.p_win.fullscreen()
-            else:
-                self.p_win.maximize()
+        p_bounds = screen.get_monitor_geometry(p_monitor)
+        self.p_win.move(p_bounds.x, p_bounds.y)
+        self.p_win.resize(p_bounds.width, p_bounds.height)
+        if p_full:
+            self.p_win.fullscreen()
+        else:
+            self.p_win.maximize()
 
-            c_bounds = screen.get_monitor_geometry(c_monitor)
-            self.c_win.move(c_bounds.x, c_bounds.y)
-            if c_full:
-                self.c_win.fullscreen()
+        c_bounds = screen.get_monitor_geometry(c_monitor)
+        self.c_win.move(c_bounds.x, c_bounds.y)
+        self.c_win.resize(c_bounds.width, c_bounds.height)
+        if c_full:
+            self.c_win.fullscreen()
 
 
     def on_drag_drop(self, widget, drag_context, x, y, data,info, time):
@@ -512,7 +752,6 @@ class UI:
             list_annot.append((bullet + annot,))
 
         self.scrollable_treelist.set_model(list_annot)
-        self.resize_annotation_list()
 
 
     def run(self):
@@ -524,10 +763,17 @@ class UI:
     def save_and_quit(self, *args):
         """ Save configuration and exit the main loop.
         """
-        cur_pane_size = self.p_frame_cur.get_allocated_width()
-        next_pane_size = self.p_frame_next.get_allocated_width()
-        ratio = float(cur_pane_size) / (cur_pane_size + next_pane_size)
-        self.config.set('presenter', 'slide_ratio', "{0:.2f}".format(ratio))
+        # write the presenter layout in the config file
+        if self.scribbling_mode:
+            self.switch_scribbling()
+
+        if self.notes_mode:
+            self.notes_layout = self.widget_layout_to_tree(self.p_central.get_children()[0])
+        else:
+            self.plain_layout = self.widget_layout_to_tree(self.p_central.get_children()[0])
+
+        self.config.set('layout', 'notes', json.dumps(self.notes_layout, indent=4))
+        self.config.set('layout', 'plain', json.dumps(self.plain_layout, indent=4))
 
         self.doc.cleanup_media_files()
 
@@ -636,20 +882,22 @@ class UI:
         self.page_preview_nb = page_nb
 
         # Aspect ratios and queue redraws
-        pr = page_cur.get_aspect_ratio(self.notes_mode)
-        self.p_frame_cur.set_property('ratio', pr)
+        if not self.notes_mode:
+            page_type = pympress.document.PDF_REGULAR
+        else:
+            page_type = pympress.document.PDF_CONTENT_PAGE
 
-        if self.notes_mode:
-            self.p_frame_pres.set_property('ratio', pr)
+            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(pympress.document.PDF_NOTES_PAGE))
+            self.p_da_notes.queue_draw()
+
+        self.p_frame_cur.set_property('ratio', page_cur.get_aspect_ratio(page_type))
+        self.p_da_cur.queue_draw()
 
         if page_next is not None:
-            pr = page_next.get_aspect_ratio(self.notes_mode)
+            pr = page_next.get_aspect_ratio(page_type)
             self.p_frame_next.set_property('ratio', pr)
 
-        # queue redraws
-        self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
-        self.p_da_pres.queue_draw()
 
         self.add_annotations(page_cur.get_annotations())
 
@@ -679,29 +927,31 @@ class UI:
         # Page change: resynchronize miniatures
         self.page_preview_nb = page_cur.number()
 
-        # Aspect ratios
-        pr = page_cur.get_aspect_ratio(self.notes_mode)
-        self.c_frame.set_property('ratio', pr)
-        self.p_frame_cur.set_property('ratio', pr)
-        self.scribble_p_frame.set_property('ratio', pr)
+        # Aspect ratios and queue redraws
+        if not self.notes_mode:
+            page_type = pympress.document.PDF_REGULAR
+        else:
+            page_type = pympress.document.PDF_CONTENT_PAGE
 
-        if self.notes_mode:
-            self.p_frame_pres.set_property('ratio', pr)
+            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(pympress.document.PDF_NOTES_PAGE))
+            self.p_da_notes.queue_draw()
+
+        self.c_frame.set_property('ratio', page_cur.get_aspect_ratio(page_type))
+        self.c_da.queue_draw()
+
+        self.p_frame_cur.set_property('ratio', page_cur.get_aspect_ratio(page_type))
+        self.p_da_cur.queue_draw()
 
         if page_next is not None:
-            pr = page_next.get_aspect_ratio(self.notes_mode)
+            pr = page_next.get_aspect_ratio(page_type)
             self.p_frame_next.set_property('ratio', pr)
+
+        self.p_da_next.queue_draw()
 
         # Remove scribbling if ongoing
         if self.scribbling_mode:
             self.switch_scribbling()
         del self.scribble_list[:]
-
-        # Queue redraws
-        self.c_da.queue_draw()
-        self.p_da_cur.queue_draw()
-        self.p_da_next.queue_draw()
-        self.p_da_pres.queue_draw()
 
         # Start counter if needed
         if unpause and self.paused:
@@ -756,31 +1006,31 @@ class UI:
             self.media_overlays[media_id].play()
 
 
-    def redraw_hpaned(self):
-        """ Callback to redraw hpaned's drawing areas, used for delayed drawing events
+    def redraw_panes(self):
+        """ Callback to redraw gtk.paned's drawing areas, used for delayed drawing events
         """
-        self.resize_hpaned = False
+        self.resize_panes = False
         self.p_da_cur.queue_draw()
         self.p_da_next.queue_draw()
         if self.notes_mode:
-            self.p_da_pres.queue_draw()
+            self.p_da_notes.queue_draw()
         if self.redraw_timeout:
             self.redraw_timeout = 0
 
 
     def on_pane_event(self, widget, evt):
-        """ Signal handler for hpaned events
+        """ Signal handler for gtk.paned events
 
         This function allows to delay drawing events when resizing, and to speed up redrawing when
         moving the middle pane is done (which happens at the end of a mouse resize)
         """
-        if type(evt) == Gdk.EventButton and evt.type ==  Gdk.EventType.BUTTON_RELEASE:
-            self.redraw_hpaned()
+        if type(evt) == Gdk.EventButton and evt.type == Gdk.EventType.BUTTON_RELEASE:
+            self.redraw_panes()
         elif type(evt) == GObject.GParamSpec and evt.name == "position":
-            self.resize_hpaned = True
+            self.resize_panes = True
             if self.redraw_timeout:
                 GLib.Source.remove(self.redraw_timeout)
-            self.redraw_timeout = GLib.timeout_add(200, self.redraw_hpaned)
+            self.redraw_timeout = GLib.timeout_add(200, self.redraw_panes)
 
 
     def on_draw(self, widget, cairo_context):
@@ -801,7 +1051,7 @@ class UI:
             if self.blanked:
                 return
             page = self.doc.page(self.doc.current_page().number())
-        elif widget is self.p_da_cur or widget is self.p_da_pres:
+        elif widget is self.p_da_notes or widget is self.p_da_cur:
             # Current page 'preview'
             page = self.doc.page(self.page_preview_nb)
         else:
@@ -821,8 +1071,8 @@ class UI:
         wtype = self.cache.get_widget_type(name)
 
         if pb is None:
-            if self.resize_hpaned and widget in [self.p_da_next, self.p_da_pres, self.p_da_cur]:
-                # too slow to render here when resize_hpaned things
+            if self.resize_panes and widget in [self.p_da_next, self.p_da_cur, self.p_da_notes]:
+                # too slow to render here when resize_panes things
                 return
 
             # Cache miss: render the page, and save it to the cache
@@ -867,8 +1117,6 @@ class UI:
 
         if widget is self.c_da and vlc_enabled:
             self.c_overlay.foreach(lambda child, *ignored: child.resize() if type(child) is pympress.vlcvideo.VLCVideo else None, None)
-        elif widget is self.p_da_next:
-            self.resize_annotation_list()
 
 
     def on_configure_win(self, widget, event):
@@ -1200,25 +1448,6 @@ class UI:
         return True
 
 
-    def resize_annotation_list(self):
-        """ Readjust the annotation list's scroll window
-        so it won't compete for space with the slide frame(s) above
-        """
-        r = self.p_frame_next.props.ratio
-        w = self.p_frame_next.props.parent.get_allocated_width()
-        h = self.p_frame_next.props.parent.props.parent.get_allocated_height()
-        n = 2 if self.notes_mode else 1
-
-        self.annotation_renderer.props.wrap_width = w - 10
-
-        newh = h - n * (20 + w / r)
-        newh = max(min(h - 200, newh), 100)
-        self.p_frame_annot.set_size_request(-1, newh)
-
-        self.scrolled_window.queue_resize()
-        self.scrollable_treelist.get_column(0).queue_resize()
-
-
     def restore_current_label(self):
         """ Make sure that the current page number is displayed in a label and not in an entry.
         If it is an entry, then replace it with the label.
@@ -1246,7 +1475,6 @@ class UI:
     def update_page_numbers(self):
         """ Update the displayed page numbers.
         """
-
         cur_nb = self.doc.current_page().number()
         cur = str(cur_nb+1)
 
@@ -1374,7 +1602,7 @@ class UI:
             cmd = "suspend" if must_disable else "resume"
             status = os.system("xdg-screensaver {} {}".format(cmd, self.c_win.get_window().get_xid()))
             if status != 0:
-                logger.warning(_("Could not set screensaver status: got status ")+str(status), file=sys.stderr)
+                logger.warning(_("Could not set screensaver status: got status ")+str(status))
 
             # Also manage screen blanking via DPMS
             if must_disable:
@@ -1392,7 +1620,7 @@ class UI:
                     self.dpms_was_enabled = True
                     status = os.system("xset -dpms")
                     if status != 0:
-                        logger.warning(_("Could not disable DPMS screen blanking: got status ")+str(status), file=sys.stderr)
+                        logger.warning(_("Could not disable DPMS screen blanking: got status ")+str(status))
                 else:
                     self.dpms_was_enabled = False
 
@@ -1400,7 +1628,7 @@ class UI:
                 # Re-enable DPMS
                 status = os.system("xset +dpms")
                 if status != 0:
-                    logger.warning(_("Could not enable DPMS screen blanking: got status ")+str(status), file=sys.stderr)
+                    logger.warning(_("Could not enable DPMS screen blanking: got status ")+str(status))
 
         elif IS_WINDOWS:
             try:
@@ -1416,7 +1644,7 @@ class UI:
             except (OSError, PermissionError):
                 logger.exception(_("access denied when trying to access screen saver settings in registry!"))
         else:
-            logger.warning(_("Unsupported OS: can't enable/disable screensaver"), file=sys.stderr)
+            logger.warning(_("Unsupported OS: can't enable/disable screensaver"))
 
 
     def switch_fullscreen(self, widget=None, event=None):
@@ -1435,7 +1663,7 @@ class UI:
         elif widget == self.p_win:
             fullscreen = self.p_win_fullscreen
         else:
-            logger.error(_("Unknow widget {} to be fullscreened, aborting.").format(widget), file=sys.stderr)
+            logger.error(_("Unknow widget {} to be fullscreened, aborting.").format(widget))
             return
 
         if fullscreen:
@@ -1580,43 +1808,58 @@ class UI:
     def switch_mode(self, widget=None, event=None):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
         """
+        if self.scribbling_mode:
+            self.switch_scribbling()
+
         if self.notes_mode:
             self.notes_mode = False
             self.cache.set_widget_type("c_da", PDF_REGULAR)
-            self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
-            self.cache.set_widget_type("p_da_pres", PDF_REGULAR)
+            self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
             self.cache.set_widget_type("scribble_p_da", PDF_REGULAR)
-            self.cache.disable_prerender("p_da_pres")
-            self.p_frame_cur.set_label(_("Current slide"))
-            self.p_frame_pres.set_visible(False)
+            self.cache.disable_prerender("p_da_cur")
+
+            self.cache.disable_prerender("p_da_notes")
+            self.cache.set_widget_type("p_da_notes", PDF_REGULAR)
+
+            self.notes_layout = self.widget_layout_to_tree(self.p_central.get_children()[0])
+            self.rearrange_p_layout(self.plain_layout)
         else:
             self.notes_mode = True
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
-            self.cache.set_widget_type("p_da_cur", PDF_NOTES_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
-            self.cache.set_widget_type("p_da_pres", PDF_CONTENT_PAGE)
+            self.cache.set_widget_type("p_da_cur", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("scribble_p_da", PDF_CONTENT_PAGE)
-            self.cache.enable_prerender("p_da_pres")
-            self.p_frame_cur.set_label(_("Notes"))
-            self.p_frame_pres.set_visible(True)
+            self.cache.enable_prerender("p_da_cur")
 
-        # show/hide annotations, in opposite of nodes'
-        if self.show_annotations == self.notes_mode:
-            self.switch_annotations(widget, event)
+            self.cache.set_widget_type("p_da_notes", PDF_NOTES_PAGE)
+            self.cache.enable_prerender("p_da_notes")
 
+            self.plain_layout = self.widget_layout_to_tree(self.p_central.get_children()[0])
+            self.rearrange_p_layout(self.notes_layout)
+            # make sure visibility is right
+            self.p_frame_annot.set_visible(self.show_annotations)
+
+        self.p_central.show_all()
         self.on_page_change(False)
 
 
     def switch_annotations(self, widget=None, event=None):
         """ Switch the display to show annotations or to hide them.
         """
+        self.show_annotations = not self.show_annotations
+
+        self.p_frame_annot.set_visible(self.show_annotations)
+        self.config.set('presenter', 'show_annotations', 'on' if self.show_annotations else 'off')
+
         if self.show_annotations:
-            self.show_annotations = False
-            self.p_frame_annot.set_visible(False)
-        else:
-            self.show_annotations = True
-            self.p_frame_annot.set_visible(True)
+            parent = self.p_frame_annot.get_parent()
+            if issubclass(type(parent), Gtk.Paned):
+                if parent.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                    size = parent.get_parent().get_allocated_width()
+                else:
+                    size = parent.get_parent().get_allocated_height()
+                parent.set_position(self.pane_handle_pos[parent] * size)
 
         self.on_page_change(False)
 
@@ -1748,22 +1991,26 @@ class UI:
         """
 
         if self.scribbling_mode:
+            p_layout = self.off_render.get_child()
+
             self.p_central.remove(self.scribble_overlay)
-            self.off_render.remove(self.hpaned)
+            self.off_render.remove(p_layout)
 
             self.off_render.add(self.scribble_overlay)
-            self.p_central.pack_start(self.hpaned, True, True, 0)
+            self.p_central.pack_start(p_layout, True, True, 0)
             self.scribbling_mode = False
 
         else:
             pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
             self.scribble_p_frame.set_property('ratio', pr)
 
-            self.p_central.remove(self.hpaned)
+            p_layout = self.p_central.get_children()[0]
+
+            self.p_central.remove(p_layout)
             self.off_render.remove(self.scribble_overlay)
 
             self.p_central.pack_start(self.scribble_overlay, True, True, 0)
-            self.off_render.add(self.hpaned)
+            self.off_render.add(p_layout)
 
             self.p_central.queue_draw()
 

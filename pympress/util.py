@@ -159,6 +159,7 @@ def load_config():
     config = configparser.ConfigParser()
     config.add_section('content')
     config.add_section('presenter')
+    config.add_section('layout')
     config.add_section('cache')
     config.add_section('scribble')
 
@@ -182,9 +183,6 @@ def load_config():
     if not config.has_option('content', 'start_fullscreen'):
         config.set('content', 'start_fullscreen', 'on')
 
-    if not config.has_option('presenter', 'slide_ratio'):
-        config.set('presenter', 'slide_ratio', '0.75')
-
     if not config.has_option('presenter', 'monitor'):
         config.set('presenter', 'monitor', '1')
 
@@ -193,6 +191,15 @@ def load_config():
 
     if not config.has_option('presenter', 'show_bigbuttons'):
         config.set('presenter', 'show_bigbuttons', 'off')
+
+    if not config.has_option('presenter', 'show_annotations'):
+        config.set('presenter', 'show_annotations', 'off')
+
+    if not config.has_option('layout', 'notes'):
+        config.set('layout', 'notes', '{}')
+
+    if not config.has_option('layout', 'plain'):
+        config.set('layout', 'plain', '{}')
 
     if not config.has_option('scribble', 'color'):
         config.set('scribble', 'color', Gdk.RGBA(1., 0., 0., 1.).to_string())
