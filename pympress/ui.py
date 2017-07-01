@@ -629,18 +629,18 @@ class UI:
         """
         # Log error and keep default layout
         try:
-            self.notes_layout = json.loads(self.config.get('layout', 'notes'))
+            self.notes_layout = pympress.util.layout_from_json(self.config.get('layout', 'notes'))
             self.validate_layout(self.notes_layout, set(self.placeable_widgets.keys()) - {"annotations"})
         except ValueError as e:
             logger.exception('Invalid layout')
-            self.notes_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["notes", {"resizeable":false, "children":["current", "next"], "orientation":"vertical"}], "proportions": [0.60, 0.40]}')
+            self.notes_layout = pympress.util.layout_from_json('{"resizeable":true, "orientation":"horizontal", "children":["notes", {"resizeable":false, "children":["current", "next"], "orientation":"vertical"}], "proportions": [0.60, 0.40]}')
 
         try:
-            self.plain_layout = json.loads(self.config.get('layout', 'plain'))
+            self.plain_layout = pympress.util.layout_from_json(self.config.get('layout', 'plain'))
             self.validate_layout(self.plain_layout, set(self.placeable_widgets.keys()) - {"notes"})
         except ValueError as e:
             logger.exception('Invalid layout')
-            self.plain_layout=json.loads('{"resizeable":true, "orientation":"horizontal", "children":["current", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}')
+            self.plain_layout = pympress.util.layout_from_json('{"resizeable":true, "orientation":"horizontal", "children":["current", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}')
 
         self.rearrange_p_layout(self.notes_layout if self.notes_mode else self.plain_layout)
 

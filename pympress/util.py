@@ -29,6 +29,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import gi
+import json
 import locale
 import ctypes
 gi.require_version('Gtk', '3.0')
@@ -211,6 +212,35 @@ def load_config():
         config.set('scribble', 'width', '8')
 
     return config
+
+
+def recursive_unicode_to_str(obj):
+    ''' Recursively convert unicode to str (for python2)
+        Raises NameError in python3 as 'unicode' is undefined
+    '''
+    if isinstance(obj, unicode):
+        return str(obj)
+    elif isinstance(obj, dict):
+        return {recursive_unicode_to_str(k):recursive_unicode_to_str(obj[k]) for k in obj}
+    elif isinstance(obj, list):
+        return [recursive_unicode_to_str(i) for i in obj]
+    else:
+        return obj
+
+
+def layout_from_json(layout_string):
+    ''' Load the layout from config, with all strings cast to type 'str' (even on python2 where they default to 'unicode')
+        Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on invalid input.
+    '''
+
+    layout = json.loads(layout_string)
+
+    try:
+        layout = recursive_unicode_to_str(layout)
+    except NameError:
+        pass
+
+    return layout
 
 
 def save_config(config):
