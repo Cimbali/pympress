@@ -200,10 +200,10 @@ def load_config():
         config.set('presenter', 'show_annotations', 'off')
 
     if not config.has_option('layout', 'notes'):
-        config.set('layout', 'notes', '{}')
+        config.set('layout', 'notes', '')
 
     if not config.has_option('layout', 'plain'):
-        config.set('layout', 'plain', '{}')
+        config.set('layout', 'plain', '')
 
     if not config.has_option('scribble', 'color'):
         config.set('scribble', 'color', Gdk.RGBA(1., 0., 0., 1.).to_string())
@@ -228,10 +228,13 @@ def recursive_unicode_to_str(obj):
         return obj
 
 
-def layout_from_json(layout_string):
+def layout_from_json(layout_string, default_string):
     ''' Load the layout from config, with all strings cast to type 'str' (even on python2 where they default to 'unicode')
         Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on invalid input.
     '''
+
+    if not layout_string:
+        layout_string = default_string
 
     layout = json.loads(layout_string)
 
