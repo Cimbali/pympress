@@ -78,7 +78,7 @@ def get_extension(mime_type):
             return ext
 
 
-class Link:
+class Link(object):
     """ This class encapsulates one hyperlink of the document.
     """
 
@@ -124,7 +124,7 @@ class Link:
         """
 
 
-class Page:
+class Page(object):
     """ Class representing a single page.
 
     It provides several methods used by the GUI for preparing windows for
@@ -427,7 +427,7 @@ class Page:
         return True
 
 
-class Document:
+class Document(object):
     """ This is the main document handling class.
 
     .. note:: The internal page numbering scheme is the same as in Poppler: it

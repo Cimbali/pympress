@@ -56,7 +56,7 @@ class OrderedDict(collections.OrderedDict):
             self[key] = val
 
 
-class SurfaceCache:
+class SurfaceCache(object):
     """ Pages caching and prerendering made (almost) easy.
     """
 

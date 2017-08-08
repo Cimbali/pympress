@@ -89,7 +89,7 @@ except NameError:
     class PermissionError(Exception):
         pass
 
-class UI:
+class UI(object):
     """ Pympress GUI management.
     """
 
