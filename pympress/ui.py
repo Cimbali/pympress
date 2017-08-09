@@ -1356,7 +1356,17 @@ class UI:
         # Normalize event coordinates and get link
         x, y = event.get_coords()
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
-        x2, y2 = x/ww, y/wh
+
+        if not self.notes_mode:
+            # PDF_REGULAR page, the allocated size is the page size
+            x2, y2 = x/ww, y/wh
+        elif widget is self.p_da_notes:
+            # PDF_NOTES_PAGE, the allocated size is the right half of the page
+            x2, y2 = (ww + x) / (2 * ww), y / wh
+        else:
+            # PDF_CONTENT_PAGE, the allocated size is left half of the page
+            x2, y2 = x / (2 * ww), y / wh
+
         link = page.get_link_at(x2, y2)
 
         # Event type?
