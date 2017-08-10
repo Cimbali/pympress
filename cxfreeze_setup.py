@@ -97,7 +97,7 @@ include_files += [(f,  f.split(os.path.sep, 1)[1]) for f in glob.glob(os.path.jo
 buildOptions = dict(
     includes = [],
     excludes = [],
-    packages = ['gi', 'vlc'],
+    packages = ['gi', 'vlc', 'six'],
     include_files = include_files,
     silent = True
 )
