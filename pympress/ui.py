@@ -177,8 +177,10 @@ class UI:
     #: Timer paused status.
     paused = True
 
-    #: Fullscreen toggle. By config value, start in fullscreen mode.
+    #: Fullscreen toggle for content window. By config value, start in fullscreen mode.
     c_win_fullscreen = False
+    #: Fullscreen toggle for presenter window. By config value, start in fullscreen mode.
+    p_win_fullscreen = False
 
     #: Indicates whether we should delay redraws on some drawing areas to fluidify resizing gtk.paned
     resize_panes = False
