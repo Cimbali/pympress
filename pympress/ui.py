@@ -57,11 +57,7 @@ PDF_CONTENT_PAGE = 1
 PDF_NOTES_PAGE   = 2
 
 
-POINTER_OFF = -1
-POINTER_HIDE = 0
-POINTER_SHOW = 1
-
-from pympress import document, surfacecache, util
+from pympress import document, surfacecache, util, pointer
 
 try:
     from pympress import vlcvideo
@@ -90,7 +86,7 @@ except NameError:
     class PermissionError(Exception):
         pass
 
-class UI(object):
+class UI(pointer.Pointer):
     """ Pympress GUI management.
     """
 
@@ -138,12 +134,6 @@ class UI(object):
     #: :class:`~gtk.Entry` used to set the estimated talk time.
     entry_ett = Gtk.Entry()
 
-    #: :class:`~GdkPixbuf.Pixbuf` to read XML descriptions of GUIs and load them.
-    pointer = GdkPixbuf.Pixbuf()
-    #: tuple of position relative to slide, where the pointer should appear
-    pointer_pos = (.5, .5)
-    #: boolean indicating whether we should show the pointer
-    show_pointer = POINTER_OFF
     #: a dict of cursors, ready to use
     cursors = {
         'parent': None,
@@ -317,6 +307,8 @@ class UI(object):
         # This means that all attributes that are None at this time must exist under the same name in the builder
         for n in (attr for attr in dir(self) if getattr(self, attr) is None and attr[:2] + attr[-2:] != '____'):
             setattr(self, n, self.builder.get_object(n))
+
+        self.default_pointer(self.config, self)
 
         self.placeable_widgets = {
             "notes": self.p_frame_notes,
@@ -621,15 +613,6 @@ class UI(object):
                     pane_pos = int(round(Gtk.Widget.get_allocated_height(p) * self.pane_handle_pos[p]))
 
                 p.set_position(pane_pos)
-
-        default = 'pointer_' + self.config.get('presenter', 'pointer')
-        self.load_pointer(default)
-
-        for radio_name in ['pointer_red', 'pointer_blue', 'pointer_green', 'pointer_none']:
-            radio = self.builder.get_object(radio_name)
-            radio.set_name(radio_name)
-
-            radio.set_active(radio_name == default)
 
 
     def make_pwin(self):
@@ -1128,10 +1111,8 @@ class UI(object):
             cairo_context.set_source_surface(pb, 0, 0)
             cairo_context.paint()
 
-        if (widget is self.c_da or widget is self.p_da_cur) and self.show_pointer == POINTER_SHOW:
-            x = ww * self.pointer_pos[0] - self.pointer.get_width() / 2
-            y = wh * self.pointer_pos[1] - self.pointer.get_height() / 2
-            Gdk.cairo_set_source_pixbuf(cairo_context, self.pointer, x, y)
+        if widget is self.c_da or widget is self.p_da_cur:
+            self.render_pointer(cairo_context, ww, wh)
 
         cairo_context.paint()
 
@@ -2026,49 +2007,6 @@ class UI(object):
         return False
 
 
-    def track_pointer(self, widget, event):
-        """ Move the laser pointer at the mouse location.
-        """
-        if self.show_pointer == POINTER_SHOW:
-            ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
-            ex, ey = event.get_coords()
-            self.pointer_pos = (ex / ww, ey / wh)
-            self.c_da.queue_draw()
-            self.p_da_cur.queue_draw()
-            return True
-
-        else:
-            return False
-
-
-    def toggle_pointer(self, widget, event):
-        """ Track events defining when the laser is pointing.
-        """
-        if self.show_pointer == POINTER_OFF:
-            return False
-
-        ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
-
-        if ctrl_pressed and event.type == Gdk.EventType.BUTTON_PRESS:
-            self.show_pointer = POINTER_SHOW
-            self.c_overlay.get_window().set_cursor(self.cursors['invisible'])
-            self.p_da_cur.get_window().set_cursor(self.cursors['invisible'])
-
-            # Immediately place & draw the pointer
-            return self.track_pointer(widget, event)
-
-        elif self.show_pointer == POINTER_SHOW and event.type == Gdk.EventType.BUTTON_RELEASE:
-            self.show_pointer = POINTER_HIDE
-            self.c_overlay.get_window().set_cursor(self.cursors['parent'])
-            self.p_da_cur.get_window().set_cursor(self.cursors['parent'])
-            self.c_da.queue_draw()
-            self.p_da_cur.queue_draw()
-            return True
-
-        else:
-            return False
-
-
     def draw_scribble(self, widget, cairo_context):
         """ Drawings by user
         """
@@ -2191,25 +2129,6 @@ class UI(object):
             self.c_overlay.show_all()
 
             self.scribbling_mode = True
-
-
-    def load_pointer(self, name):
-        """ Perform the change of pointer using its name
-        """
-        if name in ['pointer_red', 'pointer_green', 'pointer_blue']:
-            self.show_pointer = POINTER_HIDE
-            self.pointer = util.get_icon_pixbuf(name + '.png')
-        else:
-            self.show_pointer = POINTER_OFF
-
-
-    def change_pointer(self, widget):
-        """ Callback for a radio item selection as pointer color
-        """
-        if widget.get_active():
-            assert(widget.get_name().startswith('pointer_'))
-            self.load_pointer(widget.get_name())
-            self.config.set('presenter', 'pointer', widget.get_name()[len('pointer_'):])
 
 
 
