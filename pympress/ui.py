@@ -1339,6 +1339,28 @@ class UI(object):
         return False
 
 
+    def track_motions(self, widget = None, event = None):
+        """ Track mouse motion events
+        """
+        if self.track_scribble(widget, event):
+            return True
+        elif self.track_pointer(widget, event):
+            return True
+        else:
+            return self.on_link(widget, event)
+
+
+    def track_clicks(self, widget = None, event = None):
+        """ Track mouse press and release events
+        """
+        if self.track_scribble(widget, event):
+            return True
+        elif self.track_pointer(widget, event):
+            return True
+        else:
+            return self.on_link(widget, event)
+
+
     def on_link(self, widget, event):
         """ Manage events related to hyperlinks.
 
@@ -1944,11 +1966,11 @@ class UI(object):
         self.config.set('presenter', 'show_bigbuttons', 'on' if self.show_bigbuttons else 'off')
 
 
-    def track_scribble(self, widget=None, event=None):
+    def track_scribble(self, widget, event):
         """ Track events defining drawings by user, on top of current slide
         """
         if not self.scribbling_mode:
-            return self.track_pointer(widget, event)
+            return False
 
         if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
             self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
@@ -1964,25 +1986,28 @@ class UI(object):
             self.scribble_c_da.queue_draw()
             self.scribble_p_da.queue_draw()
         else:
-            return self.on_link(widget, event)
+            return False
 
 
-    def track_pointer(self, widget=None, event=None):
+    def track_pointer(self, widget, event):
         """ Track events defining "pointing the laser" by user, on top of current slide
         """
         if self.show_pointer == POINTER_OFF:
-            return self.on_link(widget, event)
+            return False
 
         ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
 
         if not ctrl_pressed and event.type == Gdk.EventType.BUTTON_PRESS:
             return self.on_link(widget, event)
+
         elif event.type == Gdk.EventType.MOTION_NOTIFY:
-            self.on_link(widget, event)
+            return False
+
         elif event.type == Gdk.EventType.BUTTON_PRESS:
             self.show_pointer = POINTER_SHOW
             self.c_overlay.get_window().set_cursor(self.cursors['invisible'])
             self.p_da_cur.get_window().set_cursor(self.cursors['invisible'])
+
         elif self.show_pointer == POINTER_SHOW and event.type == Gdk.EventType.BUTTON_RELEASE:
             self.show_pointer = POINTER_HIDE
             self.c_overlay.get_window().set_cursor(self.cursors['parent'])

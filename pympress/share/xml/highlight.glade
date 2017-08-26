@@ -21,9 +21,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
-                <signal name="button-press-event" handler="track_scribble" swapped="no"/>
-                <signal name="button-release-event" handler="track_scribble" swapped="no"/>
-                <signal name="motion-notify-event" handler="track_scribble" swapped="no"/>
+                <signal name="button-press-event" handler="track_clicks" swapped="no"/>
+                <signal name="button-release-event" handler="track_clicks" swapped="no"/>
+                <signal name="motion-notify-event" handler="track_motions" swapped="no"/>
                 <child>
                   <object class="GtkDrawingArea" id="scribble_p_da">
                     <property name="name">scribble_p_da</property>
