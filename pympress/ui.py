@@ -36,7 +36,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 import os.path
-import importlib
 
 import pkg_resources
 
@@ -53,10 +52,10 @@ PDF_CONTENT_PAGE = 1
 PDF_NOTES_PAGE   = 2
 
 
-from pympress import document, surfacecache, util, pointer, config, builder, talk_time, extras, page_number
+from pympress import document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number
 
 
-class UI(builder.Builder):
+class UI(scribble.Scribbler, builder.Builder):
     """ Pympress GUI management.
     """
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
@@ -66,8 +65,6 @@ class UI(builder.Builder):
     c_win = None
     #: :class:`~Gtk.AspectFrame` for the Content window.
     c_frame = None
-    #: :class:`~Gtk.Overlay` for the Content window.
-    c_overlay = None
     #: :class:`~Gtk.DrawingArea` for the Content window.
     c_da = None
 
@@ -142,32 +139,6 @@ class UI(builder.Builder):
     #: Class :class:`pympress.extras.Media` managing keeping track of and callbacks on media overlays
     medias = extras.Media()
 
-    #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
-    scribbling_mode = False
-    #: list of scribbles to be drawn, as pairs of  :class:`Gdk.RGBA`
-    scribble_list = []
-    #: Whether the current mouse movements are drawing strokes or should be ignored
-    scribble_drawing = False
-    #: :class:`Gdk.RGBA` current color of the scribbling tool
-    scribble_color = Gdk.RGBA()
-    #: `int` current stroke width of the scribbling tool
-    scribble_width = 1
-    #: :class:`~Gtk.HBox` that is replaces normal panes when scribbling is toggled, contains buttons and scribble drawing area
-    scribble_overlay = None
-    #: :class:`~Gtk.DrawingArea` for the scribbling in the Presenter window. Actually redraws the slide.
-    scribble_c_da = None
-    #: :class:`~Gtk.DrawingArea` for the scribbles in the Content window. On top of existing overlays and slide.
-    scribble_p_da = None
-    #: :class:`~Gtk.EventBox` for the scribbling in the Presenter window, captures freehand drawing
-    scribble_c_eb = None
-    #: :class:`~Gtk.EventBox` for the scribbling in the Content window, captures freehand drawing
-    scribble_p_eb = None
-    #: :class:`~Gtk.AspectFrame` for the slide in the Presenter's highlight mode
-    scribble_p_frame = None
-
-    #: A :class:`Gtk.OffscreenWindow` where we render the scirbbling interface when it's not shown
-    off_render = None
-
     #: Software-implemented laser pointer, :class:`pympress.pointer.Pointer`
     laser = pointer.Pointer()
 
@@ -209,7 +180,6 @@ class UI(builder.Builder):
         # Make and populate windows
         self.load_ui('presenter')
         self.load_ui('content')
-        self.load_ui('highlight')
 
         self.laser.default_pointer(self.config, self)
         self.medias.setup(self)
@@ -226,7 +196,7 @@ class UI(builder.Builder):
 
         self.make_cwin()
         self.make_pwin()
-        self.setup_scribbling()
+        self.setup_scribbling(self.config, self)
 
         self.connect_signals(self)
 
@@ -414,9 +384,7 @@ class UI(builder.Builder):
     def save_and_quit(self, *args):
         """ Save configuration and exit the main loop.
         """
-        # write the presenter layout in the config file
-        if self.scribbling_mode:
-            self.switch_scribbling()
+        self.disable_scribbling()
 
         self.doc.cleanup_media_files()
 
@@ -468,13 +436,12 @@ class UI(builder.Builder):
     def menu_about(self, widget=None, event=None):
         """ Display the "About pympress" dialog.
         """
-        pympress = importlib.import_module('pympress.__init__')
         about = Gtk.AboutDialog()
         about.set_program_name('pympress')
         about.set_version(pympress.__version__)
         about.set_copyright(_('Contributors:') + '\n' + pympress.__copyright__)
         about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n')
-                         + _('Some preferences are saved in ') + self.config.path_to_config() + '\n\n'
+                         + _('Some preferences are saved in ') + util.Config.path_to_config() + '\n\n'
                          + (_('Video support using VLC is enabled.') if vlc_enabled else _('Video support using VLC is disabled.')))
         about.set_website('http://www.pympress.xyz/')
         try:
@@ -573,10 +540,9 @@ class UI(builder.Builder):
 
         self.p_da_next.queue_draw()
 
-        # Remove scribbling if ongoing
-        if self.scribbling_mode:
-            self.switch_scribbling()
-        del self.scribble_list[:]
+        # Remove scribbles and scribbling mode
+        self.disable_scribbling()
+        self.clear_scribble()
 
         # Start counter if needed
         if unpause:
@@ -769,6 +735,8 @@ class UI(builder.Builder):
             return True
         elif self.talk_time.on_label_ett_keypress(widget, event):
             return True
+        elif self.nav_scribble(name, ctrl_pressed):
+            return True
 
         if name == 'space' and self.talk_time.unpause():
             # first space unpauses, next space(s) advance by one page
@@ -796,17 +764,13 @@ class UI(builder.Builder):
         elif name.upper() == 'R':
             self.talk_time.reset_timer()
 
-        if self.scribbling_mode:
-            if name.upper() == 'Z' and ctrl_pressed:
-                self.pop_scribble()
-            elif name == 'Escape':
-                self.switch_scribbling()
-
         # Some key events are already handled by toggle actions in the
         # presenter window, so we must handle them in the content window only
         # to prevent them from double-firing
-        if widget is self.c_win:
-            if self.talk_time.on_label_ett_event(widget, event, name):
+        elif widget is self.c_win:
+            if self.switch_scribbling(widget, event, name):
+                return True
+            elif self.talk_time.on_label_ett_event(widget, event, name):
                 return True
             elif self.page_number.on_label_event(widget, event, name):
                 return True
@@ -825,8 +789,6 @@ class UI(builder.Builder):
                     self.switch_fullscreen(self.c_win)
             elif name.upper() == 'B':
                 self.switch_blanked()
-            elif name.upper() == 'H':
-                self.switch_scribbling()
             else:
                 return False
 
@@ -1109,8 +1071,7 @@ class UI(builder.Builder):
     def switch_mode(self, widget=None, event=None):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
         """
-        if self.scribbling_mode:
-            self.switch_scribbling()
+        self.disable_scribbling()
 
         if self.notes_mode:
             self.notes_mode = False
@@ -1175,164 +1136,6 @@ class UI(builder.Builder):
         self.next_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
         self.config.set('presenter', 'show_bigbuttons', 'on' if self.show_bigbuttons else 'off')
-
-
-    def track_scribble(self, widget, event):
-        """ Draw the scribble following the mouse's moves.
-        """
-        if self.scribble_drawing:
-            ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
-            ex, ey = event.get_coords()
-            self.scribble_list[-1][2].append((ex / ww, ey / wh))
-
-            self.scribble_c_da.queue_draw()
-            self.scribble_p_da.queue_draw()
-            return True
-        else:
-            return False
-
-
-    def toggle_scribble(self, widget, event):
-        """ Start/stop drawing scribbles.
-        """
-        if not self.scribbling_mode:
-            return False
-
-        if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
-            self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
-            self.scribble_drawing = True
-
-            return self.track_scribble(widget, event)
-        elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
-            self.scribble_drawing = False
-            return True
-
-        return False
-
-
-    def draw_scribble(self, widget, cairo_context):
-        """ Drawings by user
-        """
-        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
-
-        if widget is not self.scribble_c_da:
-            page = self.doc.current_page()
-            nb = page.number()
-            pb = self.cache.get("scribble_p_da", nb)
-
-            if pb is None:
-                # Cache miss: render the page, and save it to the cache
-                pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
-                wtype = PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR
-
-                cairo_prerender = cairo.Context(pb)
-                page.render_cairo(cairo_prerender, ww, wh, wtype)
-
-                cairo_context.set_source_surface(pb, 0, 0)
-                cairo_context.paint()
-
-                self.cache.set("scribble_p_da", nb, pb)
-            else:
-                # Cache hit: draw the surface from the cache to the widget
-                cairo_context.set_source_surface(pb, 0, 0)
-                cairo_context.paint()
-
-        cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
-
-        for color, width, points in self.scribble_list:
-            points = [(p[0] * ww, p[1] * wh) for p in points]
-
-            cairo_context.set_source_rgba(*color)
-            cairo_context.set_line_width(width)
-            cairo_context.move_to(*points[0])
-
-            for p in points[1:]:
-                cairo_context.line_to(*p)
-            cairo_context.stroke()
-
-
-    def update_color(self, widget = None):
-        """ Callback for the color chooser button, to set scribbling color
-        """
-        if widget:
-            self.scribble_color = widget.get_rgba()
-            self.config.set('scribble', 'color', self.scribble_color.to_string())
-
-
-    def update_width(self, widget = None, event = None, value = None):
-        """ Callback for the width chooser slider, to set scribbling width
-        """
-        if widget:
-            self.scribble_width = int(value)
-            self.config.set('scribble', 'width', str(self.scribble_width))
-
-
-    def clear_scribble(self, widget = None):
-        """ Callback for the scribble undo button, to undo the last scribble
-        """
-        del self.scribble_list[:]
-
-        self.scribble_c_da.queue_draw()
-        self.scribble_p_da.queue_draw()
-
-
-    def pop_scribble(self, widget = None):
-        """ Callback for the scribble undo button, to undo the last scribble
-        """
-        if self.scribble_list:
-            self.scribble_list.pop()
-
-        self.scribble_c_da.queue_draw()
-        self.scribble_p_da.queue_draw()
-
-
-    def setup_scribbling(self):
-        """ Setup all the necessary for scribbling
-        """
-        self.scribble_color = Gdk.RGBA()
-        self.scribble_color.parse(self.config.get('scribble', 'color'))
-        self.scribble_width = self.config.getint('scribble', 'width')
-        self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR, False)
-
-        # Presenter-size setup
-        self.get_object("scribble_color").set_rgba(self.scribble_color)
-        self.get_object("scribble_width").set_value(self.scribble_width)
-
-
-    def switch_scribbling(self, widget=None, event=None):
-        """ Starts the mode where one can read on top of the screen
-        """
-
-        if self.scribbling_mode:
-            p_layout = self.off_render.get_child()
-
-            self.p_central.remove(self.scribble_overlay)
-            self.off_render.remove(p_layout)
-
-            self.off_render.add(self.scribble_overlay)
-            self.p_central.pack_start(p_layout, True, True, 0)
-            self.scribbling_mode = False
-
-        else:
-            pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
-            self.scribble_p_frame.set_property('ratio', pr)
-
-            p_layout = self.p_central.get_children()[0]
-
-            self.p_central.remove(p_layout)
-            self.off_render.remove(self.scribble_overlay)
-
-            self.p_central.pack_start(self.scribble_overlay, True, True, 0)
-            self.off_render.add(p_layout)
-
-            self.p_central.queue_draw()
-
-            # Also make sure our overlay on Content window is visible
-            self.c_overlay.reorder_overlay(self.scribble_c_eb, 1)
-            self.c_overlay.show_all()
-
-            self.scribbling_mode = True
-
 
 
 ##
