@@ -56,7 +56,7 @@ PDF_CONTENT_PAGE = 1
 PDF_NOTES_PAGE   = 2
 
 
-from pympress import document, surfacecache, util, pointer, config
+from pympress import document, surfacecache, util, pointer, config, builder
 
 try:
     from pympress import vlcvideo
@@ -85,15 +85,11 @@ except NameError:
     class PermissionError(Exception):
         pass
 
-class UI(pointer.Pointer):
+class UI(pointer.Pointer, builder.Builder):
     """ Pympress GUI management.
     """
-
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
     cache = None
-
-    #: :class:`~Gtk.Builder` to read XML descriptions of GUIs and load them.
-    builder = Gtk.Builder()
 
     #: Content window, as a :class:`Gtk.Window` instance.
     c_win = None
@@ -239,7 +235,7 @@ class UI(pointer.Pointer):
     #: Whether the current mouse movements are drawing strokes or should be ignored
     scribble_drawing = False
     #: :class:`Gdk.RGBA` current color of the scribbling tool
-    scribble_color = None
+    scribble_color = Gdk.RGBA()
     #: `int` current stroke width of the scribbling tool
     scribble_width = 1
     #: :class:`~Gtk.HBox` that is replaces normal panes when scribbling is toggled, contains buttons and scribble drawing area
@@ -289,24 +285,15 @@ class UI(pointer.Pointer):
 
 
         # Make and populate windows
-        util.load_ui(self.builder, 'presenter')
-        util.load_ui(self.builder, 'content')
-        util.load_ui(self.builder, 'highlight')
-
-        # Apply translations to top-level widgets from each file
-        for top_widget in map(self.builder.get_object, ['p_win', 'c_win', 'off_render']):
-            util.recursive_translate_widgets(top_widget)
-
-        # Introspectively load all missing elements from builder
-        # This means that all attributes that are None at this time must exist under the same name in the builder
-        for n in (attr for attr in dir(self) if getattr(self, attr) is None and attr[:2] + attr[-2:] != '____'):
-            setattr(self, n, self.builder.get_object(n))
+        self.load_ui('presenter')
+        self.load_ui('content')
+        self.load_ui('highlight')
 
         self.default_pointer(self.config, self)
 
         # Get placeable widgets. NB, ids are slightly shorter than names.
         self.placeable_widgets = {
-            name: self.builder.get_object('p_frame_' + ('cur' if name == 'current' else name[:5])) for name in self.config.placeable_widgets
+            name: self.get_object('p_frame_' + ('cur' if name == 'current' else name[:5])) for name in self.config.placeable_widgets
         }
 
         # Initialize windows and screens
@@ -318,7 +305,7 @@ class UI(pointer.Pointer):
         self.make_pwin()
         self.setup_scribbling()
 
-        self.builder.connect_signals(self)
+        self.connect_signals(self)
 
         # Common to both windows
         icon_list = util.load_icons()
@@ -527,7 +514,7 @@ class UI(pointer.Pointer):
         }
 
         for n in init_checkstates:
-            self.builder.get_object(n).set_active(init_checkstates[n])
+            self.get_object(n).set_active(init_checkstates[n])
 
         self.spin_cur.set_range(1, self.doc.pages_number())
         self.hb_cur.remove(self.spin_cur)
@@ -1961,8 +1948,8 @@ class UI(pointer.Pointer):
         self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR, False)
 
         # Presenter-size setup
-        self.builder.get_object("scribble_color").set_rgba(self.scribble_color)
-        self.builder.get_object("scribble_width").set_value(self.scribble_width)
+        self.get_object("scribble_color").set_rgba(self.scribble_color)
+        self.get_object("scribble_width").set_value(self.scribble_width)
 
 
     def switch_scribbling(self, widget=None, event=None):

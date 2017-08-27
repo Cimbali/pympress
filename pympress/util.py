@@ -42,24 +42,6 @@ IS_MAC_OS = sys.platform == 'darwin'
 IS_WINDOWS = os.name == 'nt'
 
 
-def recursive_translate_widgets(a_widget):
-    """ Calls gettext on all strings we can find in widgets, recursively.
-    """
-    for str_prop in (prop.name for prop in a_widget.props if prop.value_type == GObject.TYPE_STRING):
-        try:
-            setattr(a_widget.props, str_prop, _(getattr(a_widget.props, str_prop)))
-        except TypeError:
-            # Thrown when a string property is not readable
-            pass
-
-    if issubclass(type(a_widget), Gtk.Container):
-        #NB: Parent-loop in widgets would cause infinite loop here, but that's absurd (right?)
-        #NB2: maybe forall instead of foreach if we miss some strings?
-        a_widget.foreach(recursive_translate_widgets)
-
-    if issubclass(type(a_widget), Gtk.MenuItem) and a_widget.get_submenu() is not None:
-        recursive_translate_widgets(a_widget.get_submenu())
-
 def __get_resource_path(*path_parts):
     """ Return the resource path based on whether its frozen or not.
     Paths parts given should be relative to the pympress package dir.
@@ -107,11 +89,10 @@ def get_icon_pixbuf(name):
     return GdkPixbuf.Pixbuf.new_from_file(__get_resource_path('share', 'pixmaps', name))
 
 
-def load_ui(builder, name):
+def get_ui_resource_file(name):
     """ Load an UI definition file from pympress' resources.
     """
-    ui_fn = __get_resource_path('share', 'xml', name + '.glade')
-    builder.add_from_file(ui_fn)
+    return __get_resource_path('share', 'xml', name + '.glade')
 
 
 def list_icons():

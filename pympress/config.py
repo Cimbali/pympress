@@ -308,18 +308,26 @@ class Config(configparser.ConfigParser):
 
 
     def get_notes_layout(self):
+        """ Getter for the notes layout.
+        """
         return self.notes_layout
 
 
     def get_plain_layout(self):
+        """ Getter for the plain layout.
+        """
         return self.plain_layout
 
 
     def update_notes_layout(self, widget, pane_handle_pos):
+        """ Setter for the notes layout.
+        """
         self.notes_layout = self.widget_layout_to_tree(widget, pane_handle_pos)
 
 
     def update_plain_layout(self, widget, pane_handle_pos):
+        """ Setter for the plain layout.
+        """
         self.plain_layout = self.widget_layout_to_tree(widget, pane_handle_pos)
 
 

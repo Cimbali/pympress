@@ -68,12 +68,12 @@ class Pointer(object):
             self.config.set('presenter', 'pointer', widget.get_name()[len('pointer_'):])
 
 
-    def default_pointer(self, config, ui):
+    def default_pointer(self, config, builder):
         default = 'pointer_' + config.get('presenter', 'pointer')
         self.load_pointer(default)
 
         for radio_name in ['pointer_red', 'pointer_blue', 'pointer_green', 'pointer_none']:
-            radio = ui.builder.get_object(radio_name)
+            radio = builder.get_object(radio_name)
             radio.set_name(radio_name)
 
             radio.set_active(radio_name == default)
