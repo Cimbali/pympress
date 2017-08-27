@@ -38,7 +38,6 @@ logger = logging.getLogger(__name__)
 import os
 import sys
 import time
-import json
 import importlib
 import subprocess
 
@@ -57,7 +56,7 @@ PDF_CONTENT_PAGE = 1
 PDF_NOTES_PAGE   = 2
 
 
-from pympress import document, surfacecache, util, pointer
+from pympress import document, surfacecache, util, pointer, config
 
 try:
     from pympress import vlcvideo
@@ -205,8 +204,8 @@ class UI(pointer.Pointer):
     #: track state of preview window
     p_win_maximized = True
 
-    #: :class:`configparser.RawConfigParser` to remember preferences
-    config = None
+    #: :class:`pympress.config.Config` to remember preferences
+    config = config.Config()
 
     #: track whether we blank the screen
     blanked = False
@@ -218,10 +217,6 @@ class UI(pointer.Pointer):
     placeable_widgets = {}
     #: Map of :class:`Gtk.Paned` to the relative position (float between 0 and 1) of its handle
     pane_handle_pos = {}
-    #: dict-tree of presenter layout for the notes mode
-    notes_layout = {}
-    #: dict-tree of presenter layout for the non-notes mode
-    plain_layout = {}
 
     #: :class:`Gdk.RGBA` The default color of the info labels
     label_color_default = None
@@ -275,7 +270,6 @@ class UI(pointer.Pointer):
         UI._instance = self
 
         self.est_time = ett
-        self.config = util.load_config()
         self.blanked = self.config.getboolean('content', 'start_blanked')
 
         Gtk.StyleContext.add_provider_for_screen(
@@ -310,11 +304,9 @@ class UI(pointer.Pointer):
 
         self.default_pointer(self.config, self)
 
+        # Get placeable widgets. NB, ids are slightly shorter than names.
         self.placeable_widgets = {
-            "notes": self.p_frame_notes,
-            "current": self.p_frame_cur,
-            "next": self.p_frame_next,
-            "annotations": self.p_frame_annot,
+            name: self.builder.get_object('p_frame_' + ('cur' if name == 'current' else name[:5])) for name in self.config.placeable_widgets
         }
 
         # Initialize windows and screens
@@ -407,111 +399,6 @@ class UI(pointer.Pointer):
 
         self.cache.add_widget("c_da", page_type)
         self.c_frame.set_property("ratio", self.doc.current_page().get_aspect_ratio(page_type))
-
-
-    def validate_layout(self, layout, expected_widgets):
-        """ Validate layout: check whether the layout of widgets built from the config string is valid.
-
-            Args:
-                layout (dict): the json-parsed config string
-                expected_widgets (set): strings with the names of widgets for this layout
-
-
-            Layout must have all self.placeable_widgets (leaves of the tree, as strings) and only allowed properties
-            on the nodes of the tree (as dicts).
-
-            Contraints on the only allowed properties of the nodes are:
-                resizeable: bool (optional, defaults to no),
-                orientation: "vertical" or "horizontal" (mandatory)
-                children: list (mandatory), of size >= 2, containing strings or dicts
-                proportions: list of floats (optional, only if resizeable) with sum = 1, length == len(children), representing
-                    the relative sizes of all the resizeable items.
-        """
-
-        next_visits = [layout]
-        widget_seen = set()
-        while next_visits:
-            w_desc = next_visits.pop(0)
-            if type(w_desc) is str:
-                if w_desc not in expected_widgets:
-                    raise ValueError('Unrecognized widget "{}", pick one of: {}'.format(w_desc, ', '.join(expected_widgets)))
-                elif w_desc in widget_seen:
-                    raise ValueError('Duplicate widget "{}", all expected_widgets can only appear once'.format(w_desc))
-                widget_seen.add(w_desc)
-
-            elif type(w_desc) is dict:
-                if 'orientation' not in w_desc or w_desc['orientation'] not in ['horizontal', 'vertical']:
-                    raise ValueError('"orientation" is mandatory and must be "horizontal" or "vertical" at node {}'.format(w_desc))
-                elif 'children' not in w_desc or type(w_desc['children']) is not list or len(w_desc['children']) < 2:
-                    raise ValueError('"children" is mandatory and must be a list of 2+ items at node {}'.format(w_desc))
-                elif 'resizeable' in w_desc and type(w_desc['resizeable']) is not bool:
-                    raise ValueError('"resizeable" must be boolean at node {}'.format(w_desc))
-
-                elif 'proportions' in w_desc:
-                    if 'resizeable' not in w_desc or not w_desc['resizeable']:
-                        raise ValueError('"proportions" is only valid for resizeable widgets at node {}'.format(w_desc))
-                    elif type(w_desc['proportions']) is not list or any(type(n) is not float for n in w_desc['proportions']) or len(w_desc['proportions']) != len(w_desc['children']) or abs(sum(w_desc['proportions']) - 1) > 1e-10:
-                        raise ValueError('"proportions" must be a list of floats (one per separator), between 0 and 1, at node {}'.format(w_desc))
-
-                next_visits += w_desc['children']
-            else:
-                raise ValueError('Unexpected type {}, nodes must be dicts or strings, at node {}'.format(type(w_desc), w_desc))
-        widget_missing = expected_widgets - widget_seen
-        if widget_missing:
-            raise ValueError('Following placeable_widgets were not specified: {}'.format(', '.join(widget_missing)))
-
-
-    def widget_layout_to_tree(self, widget):
-        """ Returns a tree representing a widget hierarchy, leaves are strings and nodes are dicts.
-
-            Args:
-                widget (:class:`Gtk.Widget`): the widget where to start
-
-            Recursive function. See validate_layout() for more info on the tree structure.
-        """
-        orientation_names = {Gtk.Orientation.HORIZONTAL:'horizontal', Gtk.Orientation.VERTICAL:'vertical'}
-
-        if issubclass(type(widget), Gtk.Box):
-            node = {'resizeable': False, 'children': [self.widget_layout_to_tree(c) for c in widget.get_children()],
-                    'orientation': orientation_names[widget.get_orientation()]}
-        elif issubclass(type(widget), Gtk.Paned):
-            proportions = [1]
-            reverse_children = []
-            orientation = widget.get_orientation()
-            get_size = Gtk.Widget.get_allocated_width if orientation == Gtk.Orientation.HORIZONTAL else Gtk.Widget.get_allocated_height
-
-            while issubclass(type(widget), Gtk.Paned) and orientation == widget.get_orientation():
-                left_pane = widget.get_child1()
-                right_pane = widget.get_child2()
-
-                visible = left_pane.get_visible() and right_pane.get_visible()
-                position = widget.get_position()
-                widget_size = get_size(widget)
-
-                if not visible or widget_size <= 1:
-                    # reuse number that was in config initially, otherwise gets overwritten with 0
-                    ratio = self.pane_handle_pos[widget]
-                else:
-                    ratio = float(position) / widget_size
-
-                proportions = [ratio] + [(1 - ratio) * p for p in proportions]
-                reverse_children.append(right_pane)
-                widget = left_pane
-
-            reverse_children.append(left_pane)
-
-            node = {'resizeable': True, 'children': [self.widget_layout_to_tree(c) for c in reversed(reverse_children)],
-                    'proportions': proportions, 'orientation': orientation_names[orientation]}
-
-        elif widget in self.placeable_widgets.values():
-            for name, placeable_widget in self.placeable_widgets.items():
-                if placeable_widget == widget:
-                    node = name
-                    break
-        else:
-            raise ValueError('Error serializing layout: widget of type {} is not an expected container or named widget: {}'.format(type(widget), widget))
-
-        return node
 
 
     def rearrange_p_layout(self, layout):
@@ -618,25 +505,10 @@ class UI(pointer.Pointer):
     def make_pwin(self):
         """ Initializes the presenter window.
         """
-        default_notes_layout = '{"resizeable":true, "orientation":"horizontal", "children":["notes", {"resizeable":false, "children":["current", "next"], "orientation":"vertical"}], "proportions": [0.60, 0.40]}'
-        default_plain_layout = '{"resizeable":true, "orientation":"horizontal", "children":["current", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}'
-
-        # Log error and keep default layout
-        try:
-            self.notes_layout = util.layout_from_json(self.config.get('layout', 'notes'))
-            self.validate_layout(self.notes_layout, set(self.placeable_widgets.keys()) - {"annotations"})
-        except ValueError as e:
-            logger.exception('Invalid layout')
-            self.notes_layout = util.layout_from_json(default_notes_layout)
-
-        try:
-            self.plain_layout = util.layout_from_json(self.config.get('layout', 'plain'))
-            self.validate_layout(self.plain_layout, set(self.placeable_widgets.keys()) - {"notes"})
-        except ValueError as e:
-            logger.exception('Invalid layout')
-            self.plain_layout = util.layout_from_json(default_plain_layout)
-
-        self.rearrange_p_layout(self.notes_layout if self.notes_mode else self.plain_layout)
+        if self.notes_mode:
+            self.rearrange_p_layout(self.config.get_notes_layout())
+        else:
+            self.rearrange_p_layout(self.config.get_plain_layout())
 
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
 
@@ -783,17 +655,14 @@ class UI(pointer.Pointer):
         if self.scribbling_mode:
             self.switch_scribbling()
 
-        if self.notes_mode:
-            self.notes_layout = self.widget_layout_to_tree(self.p_central.get_children()[0])
-        else:
-            self.plain_layout = self.widget_layout_to_tree(self.p_central.get_children()[0])
-
-        self.config.set('layout', 'notes', json.dumps(self.notes_layout, indent=4))
-        self.config.set('layout', 'plain', json.dumps(self.plain_layout, indent=4))
-
         self.doc.cleanup_media_files()
 
-        util.save_config(self.config)
+        if self.notes_mode:
+            self.config.update_notes_layout(self.p_central.get_children()[0], self.pane_handle_pos)
+        else:
+            self.config.update_plain_layout(self.p_central.get_children()[0], self.pane_handle_pos)
+
+        self.config.save_config()
         Gtk.main_quit()
 
 
@@ -866,7 +735,7 @@ class UI(pointer.Pointer):
         about.set_version(pympress.__version__)
         about.set_copyright(_('Contributors:') + '\n' + pympress.__copyright__)
         about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n')
-                         + _('Some preferences are saved in ') + util.path_to_config() + '\n\n'
+                         + _('Some preferences are saved in ') + self.config.path_to_config() + '\n\n'
                          + (_('Video support using VLC is enabled.') if vlc_enabled else _('Video support using VLC is disabled.')))
         about.set_website('http://www.pympress.xyz/')
         try:
@@ -1921,8 +1790,8 @@ class UI(pointer.Pointer):
             self.cache.disable_prerender("p_da_notes")
             self.cache.set_widget_type("p_da_notes", PDF_REGULAR)
 
-            self.notes_layout = self.widget_layout_to_tree(self.p_central.get_children()[0])
-            self.rearrange_p_layout(self.plain_layout)
+            self.config.update_notes_layout(self.p_central.get_children()[0], self.pane_handle_pos)
+            self.rearrange_p_layout(self.config.get_plain_layout())
         else:
             self.notes_mode = True
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
@@ -1934,8 +1803,8 @@ class UI(pointer.Pointer):
             self.cache.set_widget_type("p_da_notes", PDF_NOTES_PAGE)
             self.cache.enable_prerender("p_da_notes")
 
-            self.plain_layout = self.widget_layout_to_tree(self.p_central.get_children()[0])
-            self.rearrange_p_layout(self.notes_layout)
+            self.config.update_plain_layout(self.p_central.get_children()[0], self.pane_handle_pos)
+            self.rearrange_p_layout(self.config.get_notes_layout())
             # make sure visibility is right
             self.p_frame_annot.set_visible(self.show_annotations)
 

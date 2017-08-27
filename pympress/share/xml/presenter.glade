@@ -439,6 +439,7 @@
                 <property name="wide_handle">True</property>
                 <child>
                   <object class="GtkAspectFrame" id="p_frame_notes">
+                    <property name="name">p_frame_notes</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_right">5</property>
@@ -491,6 +492,7 @@
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkAspectFrame" id="p_frame_cur">
+                            <property name="name">p_frame_current</property>
                             <property name="height_request">200</property>
                             <property name="can_focus">False</property>
                             <property name="label_xalign">0</property>
@@ -532,6 +534,7 @@
                         </child>
                         <child>
                           <object class="GtkAspectFrame" id="p_frame_next">
+                            <property name="name">p_frame_next</property>
                             <property name="height_request">200</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -576,6 +579,7 @@
                     </child>
                     <child>
                       <object class="GtkFrame" id="p_frame_annot">
+                        <property name="name">p_frame_annotations</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label_xalign">0</property>
