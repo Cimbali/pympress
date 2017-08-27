@@ -1187,148 +1187,158 @@ class UI(object):
 
 
     def on_navigation(self, widget, event):
-        """ Manage events as mouse scroll or clicks for both windows.
+        """ Manage key presses for both windows
 
         Args:
             widget (:class:`Gtk.Widget`):  the widget in which the event occured (ignored)
             event (:class:`Gdk.Event`):  the event that occured
         """
-        if event.type == Gdk.EventType.KEY_PRESS:
-            name = Gdk.keyval_name(event.keyval)
-            ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
+        if event.type != Gdk.EventType.KEY_PRESS:
+            return
 
-            # send all to spinner if it is active to avoid key problems
-            if self.editing_cur and self.on_spin_nav(widget, event):
-                return True
-            # send all to entry field if it is active to avoid key problems
-            if self.editing_cur_ett and self.on_label_ett_event(widget, event):
-                return True
+        name = Gdk.keyval_name(event.keyval)
+        ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
 
-            if self.paused and name == 'space':
+        # Try passing events to spinner or ett if they are enabled
+        if self.editing_cur and self.on_spin_nav(widget, event):
+            return True
+        if self.editing_cur_ett and self.on_label_ett_event(widget, event):
+            return True
+
+        if self.paused and name == 'space':
+            self.switch_pause()
+        elif name in ['Right', 'Down', 'Page_Down', 'space']:
+            self.goto_next()
+        elif name in ['Left', 'Up', 'Page_Up', 'BackSpace']:
+            self.goto_prev()
+        elif name == 'Home':
+            self.goto_home()
+        elif name == 'End':
+            self.goto_end()
+        # sic - accelerator recognizes f not F
+        elif name.upper() == 'F11' or name == 'F' \
+            or (name == 'Return' and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
+            or (name.upper() == 'L' and ctrl_pressed) \
+            or (name.upper() == 'F5' and not self.c_win_fullscreen):
+            self.switch_fullscreen(self.c_win)
+        elif name.upper() == 'F' and ctrl_pressed:
+            self.switch_fullscreen(self.p_win)
+        elif name.upper() == 'Q':
+            self.save_and_quit()
+        elif name == 'Pause':
+            self.switch_pause()
+        elif name.upper() == 'R':
+            self.reset_timer()
+
+        if self.scribbling_mode:
+            if name.upper() == 'Z' and ctrl_pressed:
+                self.pop_scribble()
+            elif name == 'Escape':
+                self.switch_scribbling()
+
+        # Some key events are already handled by toggle actions in the
+        # presenter window, so we must handle them in the content window only
+        # to prevent them from double-firing
+        if widget is self.c_win:
+            if name.upper() == 'P':
                 self.switch_pause()
-            elif name in ['Right', 'Down', 'Page_Down', 'space']:
-                self.goto_next()
-            elif name in ['Left', 'Up', 'Page_Up', 'BackSpace']:
-                self.goto_prev()
-            elif name == 'Home':
-                self.goto_home()
-            elif name == 'End':
-                self.goto_end()
-            # sic - accelerator recognizes f not F
-            elif name.upper() == 'F11' or name == 'F' \
-                or (name == 'Return' and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
-                or (name.upper() == 'L' and ctrl_pressed) \
-                or (name.upper() == 'F5' and not self.c_win_fullscreen):
-                self.switch_fullscreen(self.c_win)
-            elif name.upper() == 'F' and ctrl_pressed:
-                self.switch_fullscreen(self.p_win)
-            elif name.upper() == 'Q':
-                self.save_and_quit()
-            elif name == 'Pause':
-                self.switch_pause()
-            elif name.upper() == 'R':
-                self.reset_timer()
-
-            if self.scribbling_mode:
-                if name.upper() == 'Z' and ctrl_pressed:
-                    self.pop_scribble()
-                elif name == 'Escape':
-                    self.switch_scribbling()
-
-            # Some key events are already handled by toggle actions in the
-            # presenter window, so we must handle them in the content window
-            # only to prevent them from double-firing
-            if widget is self.c_win:
-                if name.upper() == 'P':
-                    self.switch_pause()
-                elif name.upper() == 'N':
-                    self.switch_mode()
-                elif name.upper() == 'A':
-                    self.switch_annotations()
-                elif name.upper() == 'S':
-                    self.swap_screens()
-                elif name.upper() == 'F':
-                    if ctrl_pressed:
-                        self.switch_fullscreen(self.p_win)
-                    else:
-                        self.switch_fullscreen(self.c_win)
-                elif name.upper() == 'G':
-                    self.on_label_event(self.eb_cur, True)
-                elif name.upper() == 'T':
-                    self.on_label_ett_event(self.eb_ett, True)
-                elif name.upper() == 'B':
-                    self.switch_blanked()
-                elif name.upper() == 'H':
-                    self.switch_scribbling()
+            elif name.upper() == 'N':
+                self.switch_mode()
+            elif name.upper() == 'A':
+                self.switch_annotations()
+            elif name.upper() == 'S':
+                self.swap_screens()
+            elif name.upper() == 'F':
+                if ctrl_pressed:
+                    self.switch_fullscreen(self.p_win)
                 else:
-                    return False
-
-                return True
+                    self.switch_fullscreen(self.c_win)
+            elif name.upper() == 'G':
+                self.on_label_event(self.eb_cur, True)
+            elif name.upper() == 'T':
+                self.on_label_ett_event(self.eb_ett, True)
+            elif name.upper() == 'B':
+                self.switch_blanked()
+            elif name.upper() == 'H':
+                self.switch_scribbling()
             else:
                 return False
 
             return True
+        else:
+            return False
 
-        elif event.type == Gdk.EventType.SCROLL:
+        return True
 
-            # send all to spinner if it is active to avoid key problems
-            if self.editing_cur and Gtk.SpinButton.do_scroll_event(self.spin_cur, event):
-                pass
 
-            elif event.direction is Gdk.ScrollDirection.SMOOTH:
-                return False
+    def on_scroll(self, widget, event):
+        """ Manage scroll events
+
+        Args:
+            widget (:class:`Gtk.Widget`):  the widget in which the event occured (ignored)
+            event (:class:`Gdk.Event`):  the event that occured
+        """
+        if event.type != Gdk.EventType.SCROLL:
+            return False
+
+        # send to spinner if it is active
+        if self.editing_cur and Gtk.SpinButton.do_scroll_event(self.spin_cur, event):
+            pass
+
+        elif event.direction is Gdk.ScrollDirection.SMOOTH:
+            return False
+
+        else:
+            adj = self.scrolled_window.get_vadjustment()
+            if event.direction == Gdk.ScrollDirection.UP:
+                adj.set_value(adj.get_value() - adj.get_step_increment())
+            elif event.direction == Gdk.ScrollDirection.DOWN:
+                adj.set_value(adj.get_value() + adj.get_step_increment())
             else:
-                adj = self.scrolled_window.get_vadjustment()
-                if event.direction == Gdk.ScrollDirection.UP:
-                    adj.set_value(adj.get_value() - adj.get_step_increment())
-                elif event.direction == Gdk.ScrollDirection.DOWN:
-                    adj.set_value(adj.get_value() + adj.get_step_increment())
-                else:
-                    return False
+                return False
 
-            return True
-
-        return False
+        return True
 
 
     def on_spin_nav(self, widget, event):
-        """ Manage key presses, for validating or navigating input, or cancelling navigation.
+        """ Manage key presses for the spinner.
+
+        We check the event for any specific behaviour we want: validating, updating, or cancelling navigation,
+        and otherwise fall back to the spin button's normal behaviour.
 
         Args:
             widget (:class:`Gtk.Widget`):  the widget which has received the key stroke.
             event (:class:`Gdk.Event`):  the GTK event, which contains the ket stroke information.
         """
-        if event.type == Gdk.EventType.KEY_PRESS:
-            name = Gdk.keyval_name(event.keyval).lower().replace('kp_', '')
+        if event.type != Gdk.EventType.KEY_PRESS:
+            return False
 
-            if name == 'return' or name == 'enter':
-                try:
-                    page_nb = int(self.spin_cur.get_buffer().get_text()) - 1
-                except:
-                    page_nb = int(self.spin_cur.get_value()) - 1
-                self.doc.goto(page_nb)
+        name = Gdk.keyval_name(event.keyval).lower().replace('kp_', '')
 
-            elif name == 'escape':
-                GLib.idle_add(self.on_page_change, False)
+        if name == 'return' or name == 'enter':
+            try:
+                page_nb = int(self.spin_cur.get_buffer().get_text()) - 1
+            except:
+                page_nb = int(self.spin_cur.get_value()) - 1
+            self.doc.goto(page_nb)
 
-            if name in ['escape', 'return', 'enter']:
-                self.restore_current_label()
-            elif name == 'home':
-                self.spin_cur.set_value(1)
-            elif name == 'end':
-                self.spin_cur.set_value(self.doc.pages_number())
-            elif name == 'left':
-                self.spin_cur.set_value(self.spin_cur.get_value() - 1)
-            elif name == 'right':
-                self.spin_cur.set_value(self.spin_cur.get_value() + 1)
-            elif name in 'a0123456789'  or name in ['up', 'left', 'right', 'down', 'backspace']:
-                return Gtk.SpinButton.do_key_press_event(self.spin_cur, event)
-            else:
-                return False
+        elif name == 'escape':
+            GLib.idle_add(self.on_page_change, False)
 
-            return True
+        if name in ['escape', 'return', 'enter']:
+            self.restore_current_label()
+        elif name == 'home':
+            self.spin_cur.set_value(1)
+        elif name == 'end':
+            self.spin_cur.set_value(self.doc.pages_number())
+        elif name == 'left':
+            self.spin_cur.set_value(self.spin_cur.get_value() - 1)
+        elif name == 'right':
+            self.spin_cur.set_value(self.spin_cur.get_value() + 1)
+        else:
+            return Gtk.SpinButton.do_key_press_event(self.spin_cur, event)
 
-        return False
+        return True
 
 
     def track_motions(self, widget = None, event = None):

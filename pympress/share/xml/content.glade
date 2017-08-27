@@ -15,7 +15,7 @@
     <signal name="configure-event" handler="on_configure_win" swapped="no"/>
     <signal name="key-press-event" handler="on_navigation" swapped="no"/>
     <signal name="delete-event" handler="save_and_quit" swapped="no"/>
-    <signal name="scroll-event" handler="on_navigation" swapped="no"/>
+    <signal name="scroll-event" handler="on_scroll" swapped="no"/>
     <child>
       <object class="GtkAspectFrame" id="c_frame">
         <property name="visible">True</property>

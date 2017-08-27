@@ -25,7 +25,7 @@
     <signal name="destroy" handler="save_and_quit" swapped="no"/>
     <signal name="drag-data-received" handler="on_drag_drop" swapped="no"/>
     <signal name="key-press-event" handler="on_navigation" swapped="no"/>
-    <signal name="scroll-event" handler="on_navigation" swapped="no"/>
+    <signal name="scroll-event" handler="on_scroll" swapped="no"/>
     <signal name="window-state-event" handler="on_window_state_event" swapped="no"/>
     <child>
       <object class="GtkBox" id="bigvbox">
