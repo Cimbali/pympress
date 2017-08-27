@@ -228,13 +228,13 @@ def recursive_unicode_to_str(obj):
         return obj
 
 
-def layout_from_json(layout_string, default_string):
+def layout_from_json(layout_string):
     ''' Load the layout from config, with all strings cast to type 'str' (even on python2 where they default to 'unicode')
         Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on invalid input.
     '''
 
     if not layout_string:
-        layout_string = default_string
+        raise ValueError('No layout string passed. Ignore this error if you just upgraded pympress or reset your configuration file.')
 
     layout = json.loads(layout_string)
 

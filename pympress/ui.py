@@ -483,18 +483,21 @@ class UI:
             proportions = [1]
             reverse_children = []
             orientation = widget.get_orientation()
+            get_size = Gtk.Widget.get_allocated_width if orientation == Gtk.Orientation.HORIZONTAL else Gtk.Widget.get_allocated_height
 
             while issubclass(type(widget), Gtk.Paned) and orientation == widget.get_orientation():
                 left_pane = widget.get_child1()
                 right_pane = widget.get_child2()
 
-                if not left_pane.get_visible() or not right_pane.get_visible():
+                visible = left_pane.get_visible() and right_pane.get_visible()
+                position = widget.get_position()
+                widget_size = get_size(widget)
+
+                if not visible or widget_size <= 1:
                     # reuse number that was in config initially, otherwise gets overwritten with 0
                     ratio = self.pane_handle_pos[widget]
-                elif widget.get_orientation() == Gtk.Orientation.HORIZONTAL:
-                    ratio = float(widget.get_position()) / Gtk.Widget.get_allocated_width(widget)
                 else:
-                    ratio = float(widget.get_position()) / Gtk.Widget.get_allocated_height(widget)
+                    ratio = float(position) / widget_size
 
                 proportions = [ratio] + [(1 - ratio) * p for p in proportions]
                 reverse_children.append(right_pane)
@@ -634,14 +637,14 @@ class UI:
 
         # Log error and keep default layout
         try:
-            self.notes_layout = pympress.util.layout_from_json(self.config.get('layout', 'notes'), default_notes_layout)
+            self.notes_layout = pympress.util.layout_from_json(self.config.get('layout', 'notes'))
             self.validate_layout(self.notes_layout, set(self.placeable_widgets.keys()) - {"annotations"})
         except ValueError as e:
             logger.exception('Invalid layout')
             self.notes_layout = pympress.util.layout_from_json(default_notes_layout)
 
         try:
-            self.plain_layout = pympress.util.layout_from_json(self.config.get('layout', 'plain'), default_plain_layout)
+            self.plain_layout = pympress.util.layout_from_json(self.config.get('layout', 'plain'))
             self.validate_layout(self.plain_layout, set(self.placeable_widgets.keys()) - {"notes"})
         except ValueError as e:
             logger.exception('Invalid layout')
