@@ -45,13 +45,13 @@ import ctypes
 import sys, os
 import vlc
 
-import pympress.util
+from pympress import util
 
 vlc_opts=['--no-video-title-show']
-if pympress.util.IS_POSIX:
+if util.IS_POSIX:
     vlc_opts.append('--no-xlib')
 
-if pympress.util.IS_WINDOWS:
+if util.IS_WINDOWS:
     # let python find the DLLs
     os.environ['PATH'] = vlc.plugin_path + ';' + os.environ['PATH']
 

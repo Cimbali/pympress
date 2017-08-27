@@ -37,15 +37,15 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, GLib
 
-import pympress.util
+from pympress import util
 
-if pympress.util.IS_WINDOWS:
+if util.IS_WINDOWS:
     if os.getenv('LANG') is None:
         lang, enc = locale.getdefaultlocale()
         os.environ['LANG'] = lang
 
 locale.setlocale(locale.LC_ALL, '')
-gettext.install('pympress', pympress.util.get_resource_path('share', 'locale'))
+gettext.install('pympress', util.get_resource_path('share', 'locale'))
 
 # Catch all uncaught exceptions in the log file:
 def uncaught_handler(*exc_info):
@@ -114,11 +114,11 @@ def main(argv = sys.argv[1:]):
             name = None
 
     # Create windows
-    import pympress.ui
-    ui = pympress.ui.UI(ett, name)
+    from pympress import ui
+    gui = ui.UI(ett, name)
     if not name:
-        GLib.idle_add(ui.pick_file)
-    ui.run()
+        GLib.idle_add(gui.pick_file)
+    gui.run()
 
 
 if __name__ == "__main__":

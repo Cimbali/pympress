@@ -63,8 +63,7 @@ else:
     opener = "open" if sys.platform == "darwin" else "xdg-open"
     fileopen = lambda f: subprocess.call([opener, f])
 
-import pympress.util
-
+from pympress import ui
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
 
@@ -190,7 +189,7 @@ class Page(object):
                     relative_margins.y2 = 1.0 - annotation.area.y2 / self.ph # top
                     media = (relative_margins, filepath, movie.show_controls())
                     self.medias.append(media)
-                    action = lambda: pympress.ui.UI.play_media(hash(media))
+                    action = lambda: ui.UI.play_media(hash(media))
                 else:
                     logger.error(_("Pympress can not find file ") + movie.get_filename())
                     continue
@@ -245,7 +244,7 @@ class Page(object):
                 fun = self.parent.hist_next
             elif dest_name == "GoToPage":
                 # Same as the "G" action which allows to pick a page to jump to
-                fun = pympress.ui.UI.notify_label_event
+                fun = ui.UI.notify_label_event
             elif dest_name == "Find":
                 #TODO popup a text box and search results with Page.find_text
                 # http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text
@@ -314,7 +313,7 @@ class Page(object):
 
             media = (relative_margins, filename, False)
             self.medias.append(media)
-            return lambda: pympress.ui.UI.play_media(hash(media))
+            return lambda: ui.UI.play_media(hash(media))
 
         else:
             return self.get_link_action(link_type, action)
@@ -572,7 +571,7 @@ class Document(object):
             number (integer):  number of the destination page
         """
         self.cur_page = number
-        pympress.ui.UI.notify_page_change()
+        ui.UI.notify_page_change()
 
 
     def goto(self, number):

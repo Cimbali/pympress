@@ -35,10 +35,12 @@ from __future__ import print_function
 import logging
 logger = logging.getLogger(__name__)
 
-import os, os.path, subprocess
+import os
 import sys
 import time
 import json
+import importlib
+import subprocess
 
 import pkg_resources
 
@@ -59,11 +61,10 @@ POINTER_OFF = -1
 POINTER_HIDE = 0
 POINTER_SHOW = 1
 
-import pympress.document
-import pympress.surfacecache
-import pympress.util
+from pympress import document, surfacecache, util
+
 try:
-    import pympress.vlcvideo
+    from pympress import vlcvideo
     vlc_enabled = True
 except Exception as e:
     vlc_enabled = False
@@ -280,35 +281,37 @@ class UI(object):
         Args:
             ett (int):  the estimated (intended) talk time
         """
+        super(UI, self).__init__()
         UI._instance = self
 
         self.est_time = ett
-        self.config = pympress.util.load_config()
+        self.config = util.load_config()
         self.blanked = self.config.getboolean('content', 'start_blanked')
 
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(),
-            pympress.util.get_style_provider(),
+            util.get_style_provider(),
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
         # Use notes mode by default if the document has notes
-        self.doc = pympress.document.Document.create(docpath)
+        self.doc = document.Document.create(docpath)
         self.notes_mode = self.doc.has_notes()
         self.show_annotations = (not self.notes_mode) and self.config.getboolean('presenter', 'show_annotations')
         self.page_preview_nb = self.doc.current_page().number()
 
         # Surface cache
-        self.cache = pympress.surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
+        self.cache = surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
+
 
         # Make and populate windows
-        self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'presenter.glade'))
-        self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'highlight.glade'))
-        self.builder.add_from_file(pympress.util.get_resource_path('share', 'xml', 'content.glade'))
+        self.builder.add_from_file(util.get_resource_path('share', 'xml', 'presenter.glade'))
+        self.builder.add_from_file(util.get_resource_path('share', 'xml', 'highlight.glade'))
+        self.builder.add_from_file(util.get_resource_path('share', 'xml', 'content.glade'))
 
         # Apply translations to top-level widgets from each file
         for top_widget in map(self.builder.get_object, ['p_win', 'c_win', 'off_render']):
-            pympress.util.recursive_translate_widgets(top_widget)
+            util.recursive_translate_widgets(top_widget)
 
         # Introspectively load all missing elements from builder
         # This means that all attributes that are None at this time must exist under the same name in the builder
@@ -334,7 +337,7 @@ class UI(object):
         self.builder.connect_signals(self)
 
         # Common to both windows
-        icon_list = pympress.util.load_icons()
+        icon_list = util.load_icons()
         self.c_win.set_icon_list(icon_list)
         self.p_win.set_icon_list(icon_list)
 
@@ -373,7 +376,7 @@ class UI(object):
         Args:
             docpath (str): the absolute path to the new document
         """
-        self.doc = pympress.document.Document.create(docpath)
+        self.doc = document.Document.create(docpath)
 
         # Use notes mode by default if the document has notes
         if self.notes_mode != self.doc.has_notes():
@@ -406,9 +409,9 @@ class UI(object):
         self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
         self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
         if self.notes_mode:
-            page_type = pympress.document.PDF_CONTENT_PAGE
+            page_type = document.PDF_CONTENT_PAGE
         else:
-            page_type = pympress.document.PDF_REGULAR
+            page_type = document.PDF_REGULAR
 
         self.cache.add_widget("c_da", page_type)
         self.c_frame.set_property("ratio", self.doc.current_page().get_aspect_ratio(page_type))
@@ -637,18 +640,18 @@ class UI(object):
 
         # Log error and keep default layout
         try:
-            self.notes_layout = pympress.util.layout_from_json(self.config.get('layout', 'notes'))
+            self.notes_layout = util.layout_from_json(self.config.get('layout', 'notes'))
             self.validate_layout(self.notes_layout, set(self.placeable_widgets.keys()) - {"annotations"})
         except ValueError as e:
             logger.exception('Invalid layout')
-            self.notes_layout = pympress.util.layout_from_json(default_notes_layout)
+            self.notes_layout = util.layout_from_json(default_notes_layout)
 
         try:
-            self.plain_layout = pympress.util.layout_from_json(self.config.get('layout', 'plain'))
+            self.plain_layout = util.layout_from_json(self.config.get('layout', 'plain'))
             self.validate_layout(self.plain_layout, set(self.placeable_widgets.keys()) - {"notes"})
         except ValueError as e:
             logger.exception('Invalid layout')
-            self.plain_layout = pympress.util.layout_from_json(default_plain_layout)
+            self.plain_layout = util.layout_from_json(default_plain_layout)
 
         self.rearrange_p_layout(self.notes_layout if self.notes_mode else self.plain_layout)
 
@@ -807,7 +810,7 @@ class UI(object):
 
         self.doc.cleanup_media_files()
 
-        pympress.util.save_config(self.config)
+        util.save_config(self.config)
         Gtk.main_quit()
 
 
@@ -874,16 +877,17 @@ class UI(object):
     def menu_about(self, widget=None, event=None):
         """ Display the "About pympress" dialog.
         """
+        pympress = importlib.import_module('pympress.__init__')
         about = Gtk.AboutDialog()
         about.set_program_name('pympress')
         about.set_version(pympress.__version__)
         about.set_copyright(_('Contributors:') + '\n' + pympress.__copyright__)
         about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n')
-                         + _('Some preferences are saved in ') + pympress.util.path_to_config() + '\n\n'
+                         + _('Some preferences are saved in ') + util.path_to_config() + '\n\n'
                          + (_('Video support using VLC is enabled.') if vlc_enabled else _('Video support using VLC is disabled.')))
         about.set_website('http://www.pympress.xyz/')
         try:
-            about.set_logo(pympress.util.get_icon_pixbuf('pympress-128.png'))
+            about.set_logo(util.get_icon_pixbuf('pympress-128.png'))
         except Exception as e:
             logger.exception(_('Error loading icon for about window'))
         about.run()
@@ -913,11 +917,11 @@ class UI(object):
 
         # Aspect ratios and queue redraws
         if not self.notes_mode:
-            page_type = pympress.document.PDF_REGULAR
+            page_type = document.PDF_REGULAR
         else:
-            page_type = pympress.document.PDF_CONTENT_PAGE
+            page_type = document.PDF_CONTENT_PAGE
 
-            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(pympress.document.PDF_NOTES_PAGE))
+            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(document.PDF_NOTES_PAGE))
             self.p_da_notes.queue_draw()
 
         self.p_frame_cur.set_property('ratio', page_cur.get_aspect_ratio(page_type))
@@ -959,11 +963,11 @@ class UI(object):
 
         # Aspect ratios and queue redraws
         if not self.notes_mode:
-            page_type = pympress.document.PDF_REGULAR
+            page_type = document.PDF_REGULAR
         else:
-            page_type = pympress.document.PDF_CONTENT_PAGE
+            page_type = document.PDF_CONTENT_PAGE
 
-            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(pympress.document.PDF_NOTES_PAGE))
+            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(document.PDF_NOTES_PAGE))
             self.p_da_notes.queue_draw()
 
         self.c_frame.set_property('ratio', page_cur.get_aspect_ratio(page_type))
@@ -1021,7 +1025,7 @@ class UI(object):
             media_id = hash((relative_margins, filename, show_controls))
 
             if media_id not in self.media_overlays:
-                v_da = pympress.vlcvideo.VLCVideo(self.c_overlay, show_controls, relative_margins)
+                v_da = vlcvideo.VLCVideo(self.c_overlay, show_controls, relative_margins)
                 v_da.set_file(filename)
 
                 self.media_overlays[media_id] = v_da
@@ -1156,7 +1160,7 @@ class UI(object):
         self.cache.resize_widget(widget.get_name(), event.width, event.height)
 
         if widget is self.c_da and vlc_enabled:
-            self.c_overlay.foreach(lambda child, *ignored: child.resize() if type(child) is pympress.vlcvideo.VLCVideo else None, None)
+            self.c_overlay.foreach(lambda child, *ignored: child.resize() if type(child) is vlcvideo.VLCVideo else None, None)
 
 
     def on_configure_win(self, widget, event):
@@ -2194,7 +2198,7 @@ class UI(object):
         """
         if name in ['pointer_red', 'pointer_green', 'pointer_blue']:
             self.show_pointer = POINTER_HIDE
-            self.pointer = pympress.util.get_icon_pixbuf(name + '.png')
+            self.pointer = util.get_icon_pixbuf(name + '.png')
         else:
             self.show_pointer = POINTER_OFF
 
