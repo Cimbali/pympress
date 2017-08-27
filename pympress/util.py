@@ -60,7 +60,7 @@ def recursive_translate_widgets(a_widget):
     if issubclass(type(a_widget), Gtk.MenuItem) and a_widget.get_submenu() is not None:
         recursive_translate_widgets(a_widget.get_submenu())
 
-def get_resource_path(*path_parts):
+def __get_resource_path(*path_parts):
     """ Return the resource path based on whether its frozen or not.
     Paths parts given should be relative to the pympress package dir.
     """
@@ -71,7 +71,7 @@ def get_resource_path(*path_parts):
         return pkg_resources.resource_filename(req, os.path.join('pympress', *path_parts))
 
 
-def get_resource_list(*path_parts):
+def __get_resource_list(*path_parts):
     """ Return the list of elements in a directory based on whether its frozen or not.
     Paths parts given should be relative to the pympress package dir.
     """
@@ -82,13 +82,19 @@ def get_resource_list(*path_parts):
         return pkg_resources.resource_listdir(req, os.path.join('pympress', *path_parts))
 
 
+def get_locale_dir():
+    """ Returns the path to the locale directory
+    """
+    return __get_resource_path('share', 'locale')
+
+
 def get_style_provider():
     """ Load the css and return corresponding style provider.
     """
     if IS_MAC_OS:
-        css_fn = get_resource_path('share', 'css', 'macos.css')
+        css_fn = __get_resource_path('share', 'css', 'macos.css')
     else:
-        css_fn = get_resource_path('share', 'css', 'default.css')
+        css_fn = __get_resource_path('share', 'css', 'default.css')
 
     style_provider = Gtk.CssProvider()
     style_provider.load_from_path(css_fn)
@@ -98,13 +104,20 @@ def get_style_provider():
 def get_icon_pixbuf(name):
     """ Load an image from pympress' resources in a Gdk Pixbuf.
     """
-    return GdkPixbuf.Pixbuf.new_from_file(get_resource_path('share', 'pixmaps', name))
+    return GdkPixbuf.Pixbuf.new_from_file(__get_resource_path('share', 'pixmaps', name))
+
+
+def load_ui(builder, name):
+    """ Load an UI definition file from pympress' resources.
+    """
+    ui_fn = __get_resource_path('share', 'xml', name + '.glade')
+    builder.add_from_file(ui_fn)
 
 
 def list_icons():
     """ List the icons from pympress' resources.
     """
-    icons = get_resource_list('share', 'pixmaps')
+    icons = __get_resource_list('share', 'pixmaps')
 
     return [i for i in icons if os.path.splitext(i)[1].lower() == '.png' and i[:9] == 'pympress-']
 

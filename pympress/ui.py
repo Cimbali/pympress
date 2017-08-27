@@ -289,9 +289,9 @@ class UI(pointer.Pointer):
 
 
         # Make and populate windows
-        self.builder.add_from_file(util.get_resource_path('share', 'xml', 'presenter.glade'))
-        self.builder.add_from_file(util.get_resource_path('share', 'xml', 'highlight.glade'))
-        self.builder.add_from_file(util.get_resource_path('share', 'xml', 'content.glade'))
+        util.load_ui(self.builder, 'presenter')
+        util.load_ui(self.builder, 'content')
+        util.load_ui(self.builder, 'highlight')
 
         # Apply translations to top-level widgets from each file
         for top_widget in map(self.builder.get_object, ['p_win', 'c_win', 'off_render']):

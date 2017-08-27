@@ -45,7 +45,7 @@ if util.IS_WINDOWS:
         os.environ['LANG'] = lang
 
 locale.setlocale(locale.LC_ALL, '')
-gettext.install('pympress', util.get_resource_path('share', 'locale'))
+gettext.install('pympress', util.get_locale_dir())
 
 # Catch all uncaught exceptions in the log file:
 def uncaught_handler(*exc_info):
