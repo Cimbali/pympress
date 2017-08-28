@@ -118,7 +118,7 @@
                         <property name="label" translatable="yes">_Pause timer</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
-                        <signal name="toggled" handler="switch_pause" swapped="no"/>
+                        <signal name="toggled" handler="talk_time.switch_pause" swapped="no"/>
                         <accelerator key="p" signal="activate"/>
                       </object>
                     </child>
@@ -128,7 +128,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Reset timer</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="reset_timer" swapped="no"/>
+                        <signal name="activate" handler="talk_time.reset_timer" swapped="no"/>
                         <accelerator key="r" signal="activate"/>
                       </object>
                     </child>
@@ -138,7 +138,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Set talk _Time</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_label_ett_event" swapped="no"/>
+                        <signal name="activate" handler="talk_time.on_label_ett_event" swapped="no"/>
                         <accelerator key="t" signal="activate"/>
                       </object>
                     </child>
@@ -862,8 +862,8 @@
                   <object class="GtkEventBox" id="eb_ett">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <signal name="button-press-event" handler="on_label_ett_event" swapped="no"/>
-                    <signal name="key-press-event" handler="on_label_ett_event" swapped="no"/>
+                    <signal name="button-press-event" handler="talk_time.on_label_ett_event" swapped="no"/>
+                    <signal name="key-press-event" handler="talk_time.on_label_ett_keypress" swapped="no"/>
                     <child>
                       <object class="GtkLabel" id="label_ett">
                         <property name="visible">True</property>

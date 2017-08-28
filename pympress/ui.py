@@ -37,7 +37,6 @@ logger = logging.getLogger(__name__)
 
 import os
 import sys
-import time
 import importlib
 import subprocess
 
@@ -56,7 +55,7 @@ PDF_CONTENT_PAGE = 1
 PDF_NOTES_PAGE   = 2
 
 
-from pympress import document, surfacecache, util, pointer, config, builder
+from pympress import document, surfacecache, util, pointer, config, builder, talk_time
 
 try:
     from pympress import vlcvideo
@@ -120,14 +119,6 @@ class UI(builder.Builder):
     editing_cur = False
     #: :class:`~Gtk.SpinButton` used to switch to another slide by typing its number.
     spin_cur = None
-    #: forward keystrokes to the Content window even if the window manager puts Presenter on top
-    editing_cur_ett = False
-    #: Estimated talk time :class:`~gtk.Label` for the talk.
-    label_ett = None
-    #: :class:`~gtk.EventBox` associated with the estimated talk time.
-    eb_ett = None
-    #: :class:`~gtk.Entry` used to set the estimated talk time.
-    entry_ett = Gtk.Entry()
 
     #: a static :dict: of :class:`~Gdk.Cursor`s, ready to use
     _cursors = {
@@ -148,20 +139,6 @@ class UI(builder.Builder):
 
     #: :class:`~Gtk.Frame` for the annotations in the Presenter window.
     p_frame_annot = None
-
-    #: Elapsed time :class:`~Gtk.Label`.
-    label_time = None
-    #: Clock :class:`~Gtk.Label`.
-    label_clock = None
-
-    #: Time at which the counter was started.
-    start_time = 0
-    #: Time elapsed since the beginning of the presentation.
-    delta = 0
-    #: Estimated talk time.
-    est_time = 0
-    #: Timer paused status.
-    paused = True
 
     #: Fullscreen toggle for content window. By config value, start in fullscreen mode.
     c_win_fullscreen = False
@@ -214,15 +191,6 @@ class UI(builder.Builder):
     #: Map of :class:`Gtk.Paned` to the relative position (float between 0 and 1) of its handle
     pane_handle_pos = {}
 
-    #: :class:`Gdk.RGBA` The default color of the info labels
-    label_color_default = None
-    #: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is reached
-    label_color_ett_reached = None
-    #: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is exceeded by 2:30 minutes
-    label_color_ett_info = None
-    #: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is exceeded by 5 minutes
-    label_color_ett_warn = None
-
     #: The containing widget for the annotations
     scrollable_treelist = None
     #: Making the annotations list scroll if it's too long
@@ -257,6 +225,9 @@ class UI(builder.Builder):
     #: Software-implemented laser pointer, :class:`pympress.pointer.Pointer`
     laser = pointer.Pointer()
 
+    #: Clock tracking talk time (elapsed, and remaining)
+    talk_time = talk_time.TalkTime()
+
     # The :class:`UI` singleton, since there is only one (as a class variable). Used by classmethods only.
     _instance = None
 
@@ -268,7 +239,6 @@ class UI(builder.Builder):
         super(UI, self).__init__()
         UI._instance = self
 
-        self.est_time = ett
         self.blanked = self.config.getboolean('content', 'start_blanked')
 
         Gtk.StyleContext.add_provider_for_screen(
@@ -316,14 +286,12 @@ class UI(builder.Builder):
         self.p_win.set_icon_list(icon_list)
 
         # Setup timer for clocks
-        GObject.timeout_add(250, self.update_time)
+        self.talk_time.setup(self, ett)
+        GObject.timeout_add(250, self.talk_time.update_time)
 
         # Show all windows
         self.c_win.show_all()
         self.p_win.show_all()
-
-        # Some final setup steps
-        self.load_time_colors()
 
         # Add media
         self.replace_media_overlays()
@@ -361,8 +329,8 @@ class UI(builder.Builder):
         self.label_last.set_text("/{}".format(self.doc.pages_number()))
 
         # Draw the new page(s)
-        self.paused = True
-        self.reset_timer()
+        self.talk_time.pause()
+        self.talk_time.reset_timer()
         self.on_page_change(False)
 
 
@@ -545,32 +513,12 @@ class UI(builder.Builder):
 
         self.scrolled_window.set_hexpand(True)
 
-        # set default values
+        # set default value
         self.label_last.set_text("/{}".format(self.doc.pages_number()))
-        self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
 
         # Enable dropping files onto the window
         self.p_win.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
         self.p_win.drag_dest_add_text_targets()
-
-
-    def load_time_colors(self):
-        # Load color from CSS
-        style_context = self.label_time.get_style_context()
-        style_context.add_class("ett-reached")
-        self.label_time.show();
-        self.label_color_ett_reached = style_context.get_color(Gtk.StateType.NORMAL)
-        style_context.remove_class("ett-reached")
-        style_context.add_class("ett-info")
-        self.label_time.show();
-        self.label_color_ett_info = style_context.get_color(Gtk.StateType.NORMAL)
-        style_context.remove_class("ett-info")
-        style_context.add_class("ett-warn")
-        self.label_time.show();
-        self.label_color_ett_warn = style_context.get_color(Gtk.StateType.NORMAL)
-        style_context.remove_class("ett-warn")
-        self.label_time.show();
-        self.label_color_default = style_context.get_color(Gtk.StateType.NORMAL)
 
 
     def setup_screens(self):
@@ -806,8 +754,8 @@ class UI(builder.Builder):
         del self.scribble_list[:]
 
         # Start counter if needed
-        if unpause and self.paused:
-            self.switch_pause()
+        if unpause:
+            self.talk_time.unpause()
 
         # Update display
         self.update_page_numbers()
@@ -1032,11 +980,12 @@ class UI(builder.Builder):
         # Try passing events to spinner or ett if they are enabled
         if self.editing_cur and self.on_spin_nav(widget, event):
             return True
-        if self.editing_cur_ett and self.on_label_ett_event(widget, event):
+        elif self.talk_time.on_label_ett_keypress(widget, event):
             return True
 
-        if self.paused and name == 'space':
-            self.switch_pause()
+        if name == 'space' and self.talk_time.unpause():
+            # first space unpauses, next space(s) advance by one page
+            pass
         elif name in ['Right', 'Down', 'Page_Down', 'space']:
             self.doc.goto_next()
         elif name in ['Left', 'Up', 'Page_Up', 'BackSpace']:
@@ -1056,9 +1005,9 @@ class UI(builder.Builder):
         elif name.upper() == 'Q':
             self.save_and_quit()
         elif name == 'Pause':
-            self.switch_pause()
+            self.talk_time.switch_pause()
         elif name.upper() == 'R':
-            self.reset_timer()
+            self.talk_time.reset_timer()
 
         if self.scribbling_mode:
             if name.upper() == 'Z' and ctrl_pressed:
@@ -1070,8 +1019,10 @@ class UI(builder.Builder):
         # presenter window, so we must handle them in the content window only
         # to prevent them from double-firing
         if widget is self.c_win:
-            if name.upper() == 'P':
-                self.switch_pause()
+            if self.talk_time.on_label_ett_event(widget, event, name):
+                return True
+            elif name.upper() == 'P':
+                self.talk_time.switch_pause()
             elif name.upper() == 'N':
                 self.switch_mode()
             elif name.upper() == 'A':
@@ -1085,8 +1036,6 @@ class UI(builder.Builder):
                     self.switch_fullscreen(self.c_win)
             elif name.upper() == 'G':
                 self.on_label_event(self.eb_cur, True)
-            elif name.upper() == 'T':
-                self.on_label_ett_event(self.eb_ett, True)
             elif name.upper() == 'B':
                 self.switch_blanked()
             elif name.upper() == 'H':
@@ -1295,8 +1244,7 @@ class UI(builder.Builder):
 
         # Click in label-mode
         if alt_start_editing or event_type == Gdk.EventType.BUTTON_PRESS: # click
-            if self.editing_cur_ett:
-                self.restore_current_label_ett()
+            self.talk_time.stop_editing()
 
             if self.label_cur in self.hb_cur:
                 # Replace label with entry
@@ -1330,75 +1278,6 @@ class UI(builder.Builder):
         cls._instance.on_label_event(True)
 
 
-    def on_label_ett_event(self, *args):
-        """ Manage events on the current slide label/entry.
-
-        This function replaces the label with an entry when clicked, replaces
-        the entry with a label when needed, etc. The nasty stuff it does is an
-        ancient kind of dark magic that should be avoided as much as possible...
-
-        Args:
-            widget (:class:`gtk.Widget`):  the widget in which the event occured
-            event (:class:`gtk.gdk.Event`):  the event that occured
-        """
-
-        widget = self.eb_ett.get_child()
-        event = args[-1]
-
-        # we can come manually or through a menu action as well
-        alt_start_editing = (type(event) == bool and event is True or type(event) == Gtk.MenuItem)
-        event_type = None if alt_start_editing else event.type
-
-        # Click on the label
-        if widget is self.label_ett and (alt_start_editing or event_type == Gdk.EventType.BUTTON_PRESS):
-            if self.editing_cur:
-                self.spin_cur.cancel()
-
-            # Set entry text
-            self.entry_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
-            self.entry_ett.select_region(0, -1)
-
-            # Replace label with entry
-            self.eb_ett.remove(self.label_ett)
-            self.eb_ett.add(self.entry_ett)
-            self.entry_ett.show()
-            self.entry_ett.grab_focus()
-            self.editing_cur_ett = True
-
-        # Key pressed in the entry
-        elif widget is self.entry_ett and event_type == Gdk.EventType.KEY_PRESS:
-            name = Gdk.keyval_name(event.keyval)
-
-            # Return key --> restore label and goto page
-            if name == "Return" or name == "KP_Enter":
-                text = self.entry_ett.get_text()
-                self.restore_current_label_ett()
-
-                t = ["0" + n.strip() for n in text.split(':')]
-                try:
-                    m = int(t[0])
-                    s = int(t[1])
-                except ValueError:
-                    logger.error(_("Invalid time (mm or mm:ss expected), got \"{}\"").format(text))
-                    return True
-                except IndexError:
-                    s = 0
-
-                self.est_time = m * 60 + s;
-                self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
-                self.label_time.override_color(Gtk.StateType.NORMAL, self.label_color_default)
-                return True
-
-            # Escape key --> just restore the label
-            elif name == "Escape":
-                self.restore_current_label_ett()
-                return True
-            else:
-                Gtk.Entry.do_key_press_event(widget, event)
-
-        return True
-
-
     def restore_current_label(self):
         """ Make sure that the current page number is displayed in a label and not in an entry.
         If it is an entry, then replace it with the label.
@@ -1411,16 +1290,13 @@ class UI(builder.Builder):
         self.editing_cur = False
 
 
-    def restore_current_label_ett(self):
-        """ Make sure that the current page number is displayed in a label and not in an entry.
-        If it is an entry, then replace it with the label.
+    @classmethod
+    def stop_editing_slide(cls):
+        """ Make sure that the current page number is not being edited.
         """
-        child = self.eb_ett.get_child()
-        if child is not self.label_ett:
-            self.eb_ett.remove(child)
-            self.eb_ett.add(self.label_ett)
-
-        self.editing_cur_ett = False
+        self = cls._instance
+        if self.editing_cur:
+            self.spin_cur.cancel()
 
 
     def update_page_numbers(self):
@@ -1431,103 +1307,6 @@ class UI(builder.Builder):
 
         self.label_cur.set_text(cur)
         self.restore_current_label()
-
-
-    def update_time(self):
-        """ Update the timer and clock labels.
-
-        Returns:
-            boolean: ``True`` (to prevent the timer from stopping)
-        """
-
-        # Current time
-        clock = time.strftime("%X") #"%H:%M:%S"
-
-        # Time elapsed since the beginning of the presentation
-        if not self.paused:
-            self.delta = time.time() - self.start_time
-        elapsed = "{:02}:{:02}".format(*divmod(int(self.delta), 60))
-        if self.paused:
-            elapsed += " " + _("(paused)")
-
-        self.label_time.set_text(elapsed)
-        self.label_clock.set_text(clock)
-
-        self.update_time_color()
-
-        return True
-
-
-    def calc_color(self, from_color, to_color, position):
-        """ Compute the interpolation between two colors.
-
-        Args:
-            from_color (:class:`Gdk.RGBA`):  the color when position = 0
-            to_color (:class:`Gdk.RGBA`):  the color when position = 1
-            position (float):  A floating point value in the interval [0.0, 1.0]
-
-        Returns:
-            :class:`Gdk.RGBA`: The color that is between from_color and to_color
-        """
-        color_tuple = lambda color: ( color.red, color.green, color.blue, color.alpha )
-        interpolate = lambda start, end: start + (end - start) * position
-
-        return Gdk.RGBA(*map(interpolate, color_tuple(from_color), color_tuple(to_color)))
-
-
-    def update_time_color(self):
-        """ Update the color of the time label based on how much time is remaining.
-        """
-        if not self.est_time == 0:
-            # Set up colors between which to fade, based on how much time remains (<0 has run out of time).
-            # Times are given in seconds, in between two of those timestamps the color will interpolated linearly.
-            # Outside of the intervals the closest color will be used.
-            colors = {
-                 300:self.label_color_default,
-                   0:self.label_color_ett_reached,
-                -150:self.label_color_ett_info,
-                -300:self.label_color_ett_warn
-            }
-            bounds=list(sorted(colors, reverse=True)[:-1])
-
-            remaining = self.est_time - self.delta
-            if remaining >= bounds[0]:
-                color = colors[bounds[0]]
-            elif remaining <= bounds[-1]:
-                color = colors[bounds[-1]]
-            else:
-                c=1
-                while bounds[c] >= remaining:
-                    c += 1
-                position = (remaining - bounds[c-1]) / (bounds[c] - bounds[c-1])
-                color = self.calc_color(colors[bounds[c-1]], colors[bounds[c]], position)
-
-            if color:
-                self.label_time.override_color(Gtk.StateType.NORMAL, color)
-
-            if (remaining <= 0 and remaining > -5) or (remaining <= -300 and remaining > -310):
-                self.label_time.get_style_context().add_class("time-warn")
-            else:
-                self.label_time.get_style_context().remove_class("time-warn")
-
-
-    def switch_pause(self, widget=None, event=None):
-        """ Switch the timer between paused mode and running (normal) mode.
-        """
-        if self.paused:
-            self.start_time = time.time() - self.delta
-            self.paused = False
-        else:
-            self.paused = True
-        self.update_time()
-
-
-    def reset_timer(self, widget=None, event=None):
-        """ Reset the timer.
-        """
-        self.start_time = time.time()
-        self.delta = 0
-        self.update_time()
 
 
     def set_screensaver(self, must_disable):
