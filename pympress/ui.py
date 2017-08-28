@@ -1288,14 +1288,6 @@ class UI(object):
 
             return True
 
-        elif event.type == Gdk.EventType.BUTTON_PRESS:
-            self.show_pointer = POINTER_SHOW
-            # TODO trigger content window redraw
-            return True
-        elif event.type == Gdk.EventType.BUTTON_RELEASE:
-            # TODO trigger content window redraw
-            self.show_pointer = POINTER_HIDE
-
         return False
 
 
@@ -1347,22 +1339,39 @@ class UI(object):
         elif self.track_pointer(widget, event):
             return True
         else:
-            return self.on_link(widget, event)
+            return self.hover_link(widget, event)
 
 
     def track_clicks(self, widget = None, event = None):
         """ Track mouse press and release events
         """
-        if self.track_scribble(widget, event):
+        if self.toggle_scribble(widget, event):
             return True
-        elif self.track_pointer(widget, event):
+        elif self.toggle_pointer(widget, event):
             return True
         else:
-            return self.on_link(widget, event)
+            return self.click_link(widget, event)
 
 
-    def on_link(self, widget, event):
-        """ Manage events related to hyperlinks.
+    def click_pos_in_page(self, widget, event, page):
+        """ Normalize event coordinates and get link
+        """
+        x, y = event.get_coords()
+        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+
+        if not self.notes_mode:
+            # PDF_REGULAR page, the allocated size is the page size
+            return x/ww, y/wh
+        elif widget is self.p_da_notes:
+            # PDF_NOTES_PAGE, the allocated size is the right half of the page
+            return (ww + x) / (2 * ww), y / wh
+        else:
+            # PDF_CONTENT_PAGE, the allocated size is left half of the page
+            return x / (2 * ww), y / wh
+
+
+    def click_link(self, widget, event):
+        """ Check whether a link was clicked and follow it.
 
         Args:
             widget (:class:`Gtk.Widget`):  the widget in which the event occured
@@ -1376,43 +1385,47 @@ class UI(object):
         if widget is self.p_da_next:
             page = self.doc.next_page()
             if page is None:
+                return False
+        else:
+            page = self.doc.current_page()
+
+        x, y = self.click_pos_in_page(widget, event, page)
+        link = page.get_link_at(x, y)
+
+        if event.type == Gdk.EventType.BUTTON_PRESS and link is not None:
+            link.follow()
+            return True
+        else:
+            return False
+
+
+    def hover_link(self, widget, event):
+        """ Manage events related to hyperlinks.
+
+        Args:
+            widget (:class:`Gtk.Widget`):  the widget in which the event occured
+            event (:class:`Gdk.Event`):  the event that occured
+        """
+
+        if event.type != Gdk.EventType.MOTION_NOTIFY:
+            return False
+
+        # Where did the event occur?
+        if widget is self.p_da_next:
+            page = self.doc.next_page()
+            if page is None:
                 return
         else:
             page = self.doc.current_page()
 
-        # Normalize event coordinates and get link
-        x, y = event.get_coords()
-        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+        x, y = self.click_pos_in_page(widget, event, page)
 
-        if not self.notes_mode:
-            # PDF_REGULAR page, the allocated size is the page size
-            x2, y2 = x/ww, y/wh
-        elif widget is self.p_da_notes:
-            # PDF_NOTES_PAGE, the allocated size is the right half of the page
-            x2, y2 = (ww + x) / (2 * ww), y / wh
+        if page.get_link_at(x, y):
+            widget.get_window().set_cursor(self.cursors['pointer'])
+            return False
         else:
-            # PDF_CONTENT_PAGE, the allocated size is left half of the page
-            x2, y2 = x / (2 * ww), y / wh
-
-        link = page.get_link_at(x2, y2)
-
-        # Event type?
-        if event.type == Gdk.EventType.BUTTON_PRESS:
-            if link is not None:
-                link.follow()
-
-        elif event.type == Gdk.EventType.MOTION_NOTIFY:
-            if self.show_pointer == POINTER_SHOW:
-                pass
-            elif link is not None:
-                widget.get_window().set_cursor(self.cursors['pointer'])
-            else:
-                widget.get_window().set_cursor(self.cursors['parent'])
-
-        else:
-            logger.warning(_("Unknown event {}").format(event.type))
-
-        return True
+            widget.get_window().set_cursor(self.cursors['parent'])
+            return True
 
 
     def on_label_event(self, *args):
@@ -1967,17 +1980,8 @@ class UI(object):
 
 
     def track_scribble(self, widget, event):
-        """ Track events defining drawings by user, on top of current slide
+        """ Draw the scribble following the mouse's moves.
         """
-        if not self.scribbling_mode:
-            return False
-
-        if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
-            self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
-            self.scribble_drawing = True
-        elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
-            self.scribble_drawing = False
-
         if self.scribble_drawing:
             ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
             ex, ey = event.get_coords()
@@ -1985,28 +1989,59 @@ class UI(object):
 
             self.scribble_c_da.queue_draw()
             self.scribble_p_da.queue_draw()
+            return True
         else:
             return False
 
 
+    def toggle_scribble(self, widget, event):
+        """ Start/stop drawing scribbles.
+        """
+        if not self.scribbling_mode:
+            return False
+
+        if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
+            self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
+            self.scribble_drawing = True
+
+            return self.track_scribble(widget, event)
+        elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
+            self.scribble_drawing = False
+            return True
+
+        return False
+
+
     def track_pointer(self, widget, event):
-        """ Track events defining "pointing the laser" by user, on top of current slide
+        """ Move the laser pointer at the mouse location.
+        """
+        if self.show_pointer == POINTER_SHOW:
+            ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+            ex, ey = event.get_coords()
+            self.pointer_pos = (ex / ww, ey / wh)
+            self.c_da.queue_draw()
+            self.p_da_cur.queue_draw()
+            return True
+
+        else:
+            return False
+
+
+    def toggle_pointer(self, widget, event):
+        """ Track events defining when the laser is pointing.
         """
         if self.show_pointer == POINTER_OFF:
             return False
 
         ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
 
-        if not ctrl_pressed and event.type == Gdk.EventType.BUTTON_PRESS:
-            return self.on_link(widget, event)
-
-        elif event.type == Gdk.EventType.MOTION_NOTIFY:
-            return False
-
-        elif event.type == Gdk.EventType.BUTTON_PRESS:
+        if ctrl_pressed and event.type == Gdk.EventType.BUTTON_PRESS:
             self.show_pointer = POINTER_SHOW
             self.c_overlay.get_window().set_cursor(self.cursors['invisible'])
             self.p_da_cur.get_window().set_cursor(self.cursors['invisible'])
+
+            # Immediately place & draw the pointer
+            return self.track_pointer(widget, event)
 
         elif self.show_pointer == POINTER_SHOW and event.type == Gdk.EventType.BUTTON_RELEASE:
             self.show_pointer = POINTER_HIDE
@@ -2014,15 +2049,10 @@ class UI(object):
             self.p_da_cur.get_window().set_cursor(self.cursors['parent'])
             self.c_da.queue_draw()
             self.p_da_cur.queue_draw()
+            return True
 
-        if self.show_pointer == POINTER_SHOW:
-            ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
-            ex, ey = event.get_coords()
-            self.pointer_pos = (ex / ww, ey / wh)
-            self.c_da.queue_draw()
-            self.p_da_cur.queue_draw()
-
-        return True
+        else:
+            return False
 
 
     def draw_scribble(self, widget, cairo_context):
