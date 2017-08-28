@@ -237,7 +237,7 @@
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">pointer_none</property>
-                                <signal name="toggled" handler="change_pointer" swapped="no"/>
+                                <signal name="toggled" handler="laser.change_pointer" swapped="no"/>
                               </object>
                             </child>
                             <child>
@@ -248,7 +248,7 @@
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">pointer_none</property>
-                                <signal name="toggled" handler="change_pointer" swapped="no"/>
+                                <signal name="toggled" handler="laser.change_pointer" swapped="no"/>
                               </object>
                             </child>
                             <child>
@@ -259,7 +259,7 @@
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">pointer_none</property>
-                                <signal name="toggled" handler="change_pointer" swapped="no"/>
+                                <signal name="toggled" handler="laser.change_pointer" swapped="no"/>
                               </object>
                             </child>
                             <child>
@@ -269,7 +269,7 @@
                                 <property name="label" translatable="yes">_Disabled</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
-                                <signal name="toggled" handler="change_pointer" swapped="no"/>
+                                <signal name="toggled" handler="laser.change_pointer" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -296,7 +296,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Next</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="goto_next" swapped="no"/>
+                        <signal name="activate" handler="doc.goto_next" swapped="no"/>
                         <accelerator key="Right" signal="activate"/>
                       </object>
                     </child>
@@ -306,7 +306,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Previous</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="goto_prev" swapped="no"/>
+                        <signal name="activate" handler="doc.goto_prev" swapped="no"/>
                         <accelerator key="Left" signal="activate"/>
                       </object>
                     </child>
@@ -316,7 +316,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_First</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="goto_home" swapped="no"/>
+                        <signal name="activate" handler="doc.goto_home" swapped="no"/>
                         <accelerator key="Home" signal="activate"/>
                       </object>
                     </child>
@@ -326,7 +326,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Last</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="goto_end" swapped="no"/>
+                        <signal name="activate" handler="doc.goto_end" swapped="no"/>
                         <accelerator key="End" signal="activate"/>
                       </object>
                     </child>
@@ -658,7 +658,7 @@
                 <property name="receives_default">True</property>
                 <property name="margin_top">10</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="goto_prev" swapped="no"/>
+                <signal name="clicked" handler="doc.goto_prev" swapped="no"/>
                 <style>
                   <class name="info-label"/>
                 </style>
@@ -781,7 +781,7 @@
                 <property name="receives_default">True</property>
                 <property name="margin_top">10</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="goto_next" swapped="no"/>
+                <signal name="clicked" handler="doc.goto_next" swapped="no"/>
                 <style>
                   <class name="info-label"/>
                 </style>

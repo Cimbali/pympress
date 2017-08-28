@@ -656,36 +656,6 @@ class UI(builder.Builder):
         Gtk.main_quit()
 
 
-    def change_pointer(self, widget):
-        """ Callback for a radio item selection as pointer color, forward to laser pointer;
-        """
-        self.laser.change_pointer(widget)
-
-
-    def goto_prev(self, *args):
-        """ Wrapper around eponymous function of current document
-        """
-        self.doc.goto_prev()
-
-
-    def goto_next(self, *args):
-        """ Wrapper around eponymous function of current document
-        """
-        self.doc.goto_next()
-
-
-    def goto_home(self, *args):
-        """ Wrapper around eponymous function of current document
-        """
-        self.doc.goto_home()
-
-
-    def goto_end(self, *args):
-        """ Wrapper around eponymous function of current document
-        """
-        self.doc.goto_end()
-
-
     def close_file(self, *args):
         """ Remove the current document.
         """
@@ -1068,13 +1038,13 @@ class UI(builder.Builder):
         if self.paused and name == 'space':
             self.switch_pause()
         elif name in ['Right', 'Down', 'Page_Down', 'space']:
-            self.goto_next()
+            self.doc.goto_next()
         elif name in ['Left', 'Up', 'Page_Up', 'BackSpace']:
-            self.goto_prev()
+            self.doc.goto_prev()
         elif name == 'Home':
-            self.goto_home()
+            self.doc.goto_home()
         elif name == 'End':
-            self.goto_end()
+            self.doc.goto_end()
         # sic - accelerator recognizes f not F
         elif name.upper() == 'F11' or name == 'F' \
             or (name == 'Return' and event.get_state() & Gdk.ModifierType.MOD1_MASK) \

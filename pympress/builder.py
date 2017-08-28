@@ -74,6 +74,58 @@ class Builder(Gtk.Builder):
             Builder.__recursive_translate_widgets(a_widget.get_submenu())
 
 
+    def signal_resolver(self, attr_list):
+        """ Dynamically resolves a signal that is self.a.b.c() when attr_list is ['a', 'b', 'c'].
+
+            This allows to specify multi-level signals in the XML files, instead of targeting everything at the main UI object.
+
+            Also, resolving signals dynamically means the object properties of the top-level object can be replaced, and the signal
+            will still connect to something meaningful. The downside is that this connection is done at runtime, thus probably less
+            efficient and might fail to find the target if any attribute along the way has an unexpected value.
+        """
+        try:
+            target = self
+            for attr in attr_list:
+                target = getattr(target, attr)
+
+            return target
+
+        except AttributeError as e:
+            logger.error('Can not reach target of signal {}.{}()'.format(self, '.'.join(attr_list)), exc_info = True)
+
+
+    def signal_connector(self, builder, object, signal_name, handler_name, connect_object, flags, *user_data):
+        """ Callback for signal connection. Parse handler names and split on '.' to use some level of recursion
+        """
+        try:
+            try:
+                handler = getattr(self, handler_name)
+
+            except AttributeError:
+                attr_list =  handler_name.split('.')
+
+                if len(attr_list) == 1:
+                    logger.error('Handler name not in target object. Expected "." but got: {}'.format(handler_name), exc_info = True)
+                    raise
+
+                # Dynamically resolved handler for 'doc' (only) since self.doc may change
+                if 'doc' in attr_list:
+                    handler = lambda *args: Builder.signal_resolver(self, attr_list)(*args)
+                else:
+                    handler = Builder.signal_resolver(self, attr_list)
+
+            object.connect(signal_name, handler, *user_data)
+
+        except:
+            logger.critical('Impossible to connect signal {} from object {} to hander {}'.format(signal_name, object, handler_name), exc_info = True)
+
+
+    def connect_signals(self, base_target):
+        """ Override default signal connector so we can map signals to the methods of (any depth of) object that are properties of self
+        """
+        Builder.connect_signals_full(base_target, self.signal_connector)
+
+
     def load_ui(self, resource_name):
         """ Loads the UI defined in the file named resource_name using the builder.
         """
