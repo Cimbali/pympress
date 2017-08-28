@@ -33,7 +33,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, GdkPixbuf
 
-from pympress import util
+from pympress import util, ui
 
 
 POINTER_OFF = -1
@@ -48,6 +48,8 @@ class Pointer(object):
     pointer_pos = (.5, .5)
     #: boolean indicating whether we should show the pointer
     show_pointer = POINTER_OFF
+    #: A reference to the UI's :class:`pympress.config.Config`, to update the pointer preference
+    config = None
 
     def load_pointer(self, name):
         """ Perform the change of pointer using its name
@@ -69,6 +71,8 @@ class Pointer(object):
 
 
     def default_pointer(self, config, builder):
+        self.config = config
+
         default = 'pointer_' + config.get('presenter', 'pointer')
         self.load_pointer(default)
 
@@ -104,8 +108,7 @@ class Pointer(object):
             ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
             ex, ey = event.get_coords()
             self.pointer_pos = (ex / ww, ey / wh)
-            self.c_da.queue_draw()
-            self.p_da_cur.queue_draw()
+            ui.UI.redraw_current_slide()
             return True
 
         else:
@@ -122,18 +125,15 @@ class Pointer(object):
 
         if ctrl_pressed and event.type == Gdk.EventType.BUTTON_PRESS:
             self.show_pointer = POINTER_SHOW
-            self.c_overlay.get_window().set_cursor(self.cursors['invisible'])
-            self.p_da_cur.get_window().set_cursor(self.cursors['invisible'])
+            ui.UI.set_cursor(widget, 'invisible')
 
             # Immediately place & draw the pointer
             return self.track_pointer(widget, event)
 
         elif self.show_pointer == POINTER_SHOW and event.type == Gdk.EventType.BUTTON_RELEASE:
             self.show_pointer = POINTER_HIDE
-            self.c_overlay.get_window().set_cursor(self.cursors['parent'])
-            self.p_da_cur.get_window().set_cursor(self.cursors['parent'])
-            self.c_da.queue_draw()
-            self.p_da_cur.queue_draw()
+            ui.UI.set_cursor(widget, 'parent')
+            ui.UI.redraw_current_slide()
             return True
 
         else:

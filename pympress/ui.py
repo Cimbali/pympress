@@ -85,7 +85,7 @@ except NameError:
     class PermissionError(Exception):
         pass
 
-class UI(pointer.Pointer, builder.Builder):
+class UI(builder.Builder):
     """ Pympress GUI management.
     """
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
@@ -129,8 +129,8 @@ class UI(pointer.Pointer, builder.Builder):
     #: :class:`~gtk.Entry` used to set the estimated talk time.
     entry_ett = Gtk.Entry()
 
-    #: a dict of cursors, ready to use
-    cursors = {
+    #: a static :dict: of :class:`~Gdk.Cursor`s, ready to use
+    _cursors = {
         'parent': None,
         'default': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'default'),
         'pointer': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'pointer'),
@@ -254,6 +254,9 @@ class UI(pointer.Pointer, builder.Builder):
     #: A :class:`Gtk.OffscreenWindow` where we render the scirbbling interface when it's not shown
     off_render = None
 
+    #: Software-implemented laser pointer, :class:`pympress.pointer.Pointer`
+    laser = pointer.Pointer()
+
     # The :class:`UI` singleton, since there is only one (as a class variable). Used by classmethods only.
     _instance = None
 
@@ -289,7 +292,7 @@ class UI(pointer.Pointer, builder.Builder):
         self.load_ui('content')
         self.load_ui('highlight')
 
-        self.default_pointer(self.config, self)
+        self.laser.default_pointer(self.config, self)
 
         # Get placeable widgets. NB, ids are slightly shorter than names.
         self.placeable_widgets = {
@@ -653,6 +656,12 @@ class UI(pointer.Pointer, builder.Builder):
         Gtk.main_quit()
 
 
+    def change_pointer(self, widget):
+        """ Callback for a radio item selection as pointer color, forward to laser pointer;
+        """
+        self.laser.change_pointer(widget)
+
+
     def goto_prev(self, *args):
         """ Wrapper around eponymous function of current document
         """
@@ -894,6 +903,16 @@ class UI(pointer.Pointer, builder.Builder):
         self.on_configure_annot(self.p_frame_annot, None)
 
 
+    @classmethod
+    def redraw_current_slide(cls):
+        """ Static way to queue a redraw of the current slides (in both winows)
+        """
+        self = cls._instance
+
+        self.c_da.queue_draw()
+        self.p_da_cur.queue_draw()
+
+
     def on_pane_event(self, widget, evt):
         """ Signal handler for gtk.paned events
 
@@ -968,7 +987,7 @@ class UI(pointer.Pointer, builder.Builder):
             cairo_context.paint()
 
         if widget is self.c_da or widget is self.p_da_cur:
-            self.render_pointer(cairo_context, ww, wh)
+            self.laser.render_pointer(cairo_context, ww, wh)
 
         cairo_context.paint()
 
@@ -1187,7 +1206,7 @@ class UI(pointer.Pointer, builder.Builder):
         """
         if self.track_scribble(widget, event):
             return True
-        elif self.track_pointer(widget, event):
+        elif self.laser.track_pointer(widget, event):
             return True
         else:
             return self.hover_link(widget, event)
@@ -1198,7 +1217,7 @@ class UI(pointer.Pointer, builder.Builder):
         """
         if self.toggle_scribble(widget, event):
             return True
-        elif self.toggle_pointer(widget, event):
+        elif self.laser.toggle_pointer(widget, event):
             return True
         else:
             return self.click_link(widget, event)
@@ -1250,6 +1269,13 @@ class UI(pointer.Pointer, builder.Builder):
             return False
 
 
+    @classmethod
+    def set_cursor(cls, widget, cursor_name = 'parent'):
+        """ Set the cursor named cursor_name'
+        """
+        widget.get_window().set_cursor(cls._cursors[cursor_name])
+
+
     def hover_link(self, widget, event):
         """ Manage events related to hyperlinks.
 
@@ -1272,10 +1298,10 @@ class UI(pointer.Pointer, builder.Builder):
         x, y = self.click_pos_in_page(widget, event, page)
 
         if page.get_link_at(x, y):
-            widget.get_window().set_cursor(self.cursors['pointer'])
+            self.set_cursor(widget, 'pointer')
             return False
         else:
-            widget.get_window().set_cursor(self.cursors['parent'])
+            self.set_cursor(widget, 'parent')
             return True
 
 
