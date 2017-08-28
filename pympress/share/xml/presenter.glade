@@ -336,7 +336,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Go to...</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_label_event" swapped="no"/>
+                        <signal name="activate" handler="page_number.on_label_event" swapped="no"/>
                         <accelerator key="g" signal="activate"/>
                       </object>
                     </child>
@@ -682,7 +682,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="receives_default">True</property>
-                    <signal name="event" handler="on_label_event" swapped="no"/>
+                    <signal name="event" handler="page_number.on_label_event" swapped="no"/>
                     <child>
                       <object class="GtkBox" id="hb_cur">
                         <property name="visible">True</property>

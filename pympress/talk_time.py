@@ -241,6 +241,8 @@ class TalkTime(object):
             # If we clicked on the Event Box then don't toggle, just enable.
             if widget is not self.eb_ett or self.editing_cur_ett:
                 return False
+        else:
+            return False
 
 
         # Now toggle the state of editing.

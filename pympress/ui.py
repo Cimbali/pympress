@@ -53,7 +53,7 @@ PDF_CONTENT_PAGE = 1
 PDF_NOTES_PAGE   = 2
 
 
-from pympress import document, surfacecache, util, pointer, config, builder, talk_time, extras
+from pympress import document, surfacecache, util, pointer, config, builder, talk_time, extras, page_number
 
 
 class UI(builder.Builder):
@@ -79,18 +79,6 @@ class UI(builder.Builder):
     p_frame_notes = None
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
     p_da_notes = None
-    #: Slide counter :class:`~Gtk.Label` for the current slide.
-    label_cur = None
-    #: Slide counter :class:`~Gtk.Label` for the last slide.
-    label_last = None
-    #: :class:`~Gtk.EventBox` associated with the slide counter label in the Presenter window.
-    eb_cur = None
-    #: :class:`~Gtk.HBox` containing the slide counter label in the Presenter window.
-    hb_cur = None
-    #: forward keystrokes to the Content window even if the window manager puts Presenter on top
-    editing_cur = False
-    #: :class:`~Gtk.SpinButton` used to switch to another slide by typing its number.
-    spin_cur = None
 
     #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
     p_frame_next = None
@@ -182,6 +170,9 @@ class UI(builder.Builder):
 
     #: Software-implemented laser pointer, :class:`pympress.pointer.Pointer`
     laser = pointer.Pointer()
+
+    #: Counter diplaying current and max page numbers
+    page_number = page_number.PageNumber()
 
     #: Clock tracking talk time (elapsed, and remaining)
     talk_time = talk_time.TalkTime()
@@ -284,7 +275,7 @@ class UI(builder.Builder):
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
-        self.label_last.set_text("/{}".format(self.doc.pages_number()))
+        self.page_number.set_last(self.doc.pages_number())
 
         # Draw the new page(s)
         self.talk_time.pause()
@@ -445,9 +436,6 @@ class UI(builder.Builder):
         for n in init_checkstates:
             self.get_object(n).set_active(init_checkstates[n])
 
-        self.spin_cur.set_range(1, self.doc.pages_number())
-        self.hb_cur.remove(self.spin_cur)
-
         if self.notes_mode:
             self.cache.add_widget("p_da_cur", PDF_CONTENT_PAGE)
             self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
@@ -459,9 +447,10 @@ class UI(builder.Builder):
 
 
         self.annotations.setup(self)
+        self.page_number.setup(self)
 
         # set default value
-        self.label_last.set_text("/{}".format(self.doc.pages_number()))
+        self.page_number.set_last(self.doc.pages_number())
 
         # Enable dropping files onto the window
         self.p_win.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
@@ -692,7 +681,7 @@ class UI(builder.Builder):
             self.talk_time.unpause()
 
         # Update display
-        self.update_page_numbers()
+        self.page_number.update_page_numbers(self.doc.current_page().number())
 
         # Prerender the 4 next pages and the 2 previous ones
         page_max = min(self.doc.pages_number(), self.page_preview_nb + 5)
@@ -704,10 +693,10 @@ class UI(builder.Builder):
 
 
     @classmethod
-    def notify_page_change(cls):
+    def notify_page_change(cls, unpause = True):
         """ Statically notify the UI of a page change (typically from document)
         """
-        cls._instance.on_page_change()
+        cls._instance.on_page_change(unpause)
 
 
     def redraw_panes(self):
@@ -874,7 +863,7 @@ class UI(builder.Builder):
         ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
 
         # Try passing events to spinner or ett if they are enabled
-        if self.editing_cur and self.on_spin_nav(widget, event):
+        if self.page_number.on_spin_nav(widget, event):
             return True
         elif self.talk_time.on_label_ett_keypress(widget, event):
             return True
@@ -917,6 +906,8 @@ class UI(builder.Builder):
         if widget is self.c_win:
             if self.talk_time.on_label_ett_event(widget, event, name):
                 return True
+            elif self.page_number.on_label_event(widget, event, name):
+                return True
             elif name.upper() == 'P':
                 self.talk_time.switch_pause()
             elif name.upper() == 'N':
@@ -930,8 +921,6 @@ class UI(builder.Builder):
                     self.switch_fullscreen(self.p_win)
                 else:
                     self.switch_fullscreen(self.c_win)
-            elif name.upper() == 'G':
-                self.on_label_event(self.eb_cur, True)
             elif name.upper() == 'B':
                 self.switch_blanked()
             elif name.upper() == 'H':
@@ -957,53 +946,13 @@ class UI(builder.Builder):
             return False
 
         # send to spinner if it is active
-        elif self.editing_cur and Gtk.SpinButton.do_scroll_event(self.spin_cur, event):
+        elif self.page_number.on_scroll(widget, event):
             return True
+
         elif self.annotations.on_scroll(widget, event):
             return True
         else:
             return False
-
-
-    def on_spin_nav(self, widget, event):
-        """ Manage key presses for the spinner.
-
-        We check the event for any specific behaviour we want: validating, updating, or cancelling navigation,
-        and otherwise fall back to the spin button's normal behaviour.
-
-        Args:
-            widget (:class:`Gtk.Widget`):  the widget which has received the key stroke.
-            event (:class:`Gdk.Event`):  the GTK event, which contains the ket stroke information.
-        """
-        if event.type != Gdk.EventType.KEY_PRESS:
-            return False
-
-        name = Gdk.keyval_name(event.keyval).lower().replace('kp_', '')
-
-        if name == 'return' or name == 'enter':
-            try:
-                page_nb = int(self.spin_cur.get_buffer().get_text()) - 1
-            except:
-                page_nb = int(self.spin_cur.get_value()) - 1
-            self.doc.goto(page_nb)
-
-        elif name == 'escape':
-            GLib.idle_add(self.on_page_change, False)
-
-        if name in ['escape', 'return', 'enter']:
-            self.restore_current_label()
-        elif name == 'home':
-            self.spin_cur.set_value(1)
-        elif name == 'end':
-            self.spin_cur.set_value(self.doc.pages_number())
-        elif name == 'left':
-            self.spin_cur.set_value(self.spin_cur.get_value() - 1)
-        elif name == 'right':
-            self.spin_cur.set_value(self.spin_cur.get_value() + 1)
-        else:
-            return Gtk.SpinButton.do_key_press_event(self.spin_cur, event)
-
-        return True
 
 
     def track_motions(self, widget = None, event = None):
@@ -1103,89 +1052,30 @@ class UI(builder.Builder):
             return True
 
 
-    def on_label_event(self, *args):
-        """ Manage events on the current slide label/entry.
-
-        This function replaces the label with an entry when clicked, replaces
-        the entry with a label when needed, etc. The nasty stuff it does is an
-        ancient kind of dark magic that should be avoided as much as possible...
-
-        Args:
-            widget (:class:`Gtk.Widget`):  the widget in which the event occured
-            event (:class:`Gdk.Event`):  the event that occured
-        """
-
-        event = args[-1]
-
-        # we can come manually or through a menu action as well
-        alt_start_editing = (type(event) == bool and event is True or type(event) == Gtk.MenuItem)
-        event_type = None if alt_start_editing else event.type
-
-        # Click in label-mode
-        if alt_start_editing or event_type == Gdk.EventType.BUTTON_PRESS: # click
-            self.talk_time.stop_editing()
-
-            if self.label_cur in self.hb_cur:
-                # Replace label with entry
-                self.hb_cur.remove(self.label_cur)
-                self.spin_cur.show()
-                self.hb_cur.add(self.spin_cur)
-                self.hb_cur.reorder_child(self.spin_cur, 0)
-                self.spin_cur.grab_focus()
-                self.editing_cur = True
-
-                self.spin_cur.set_range(1, self.doc.pages_number())
-                self.spin_cur.set_value(self.doc.current_page().number() + 1)
-                self.spin_cur.select_region(0, -1)
-
-            elif self.editing_cur:
-                self.spin_cur.grab_focus()
-
-        else:
-            # Ignored event - propagate further
-            return False
-
-        return True
-
-
     @classmethod
     def notify_label_event(cls):
         """ Static way to start the "go to" label editing.
 
         Typically used as callbacks from document links.
         """
-        cls._instance.on_label_event(True)
-
-
-    def restore_current_label(self):
-        """ Make sure that the current page number is displayed in a label and not in an entry.
-        If it is an entry, then replace it with the label.
-        """
-        if self.label_cur not in self.hb_cur:
-            self.hb_cur.remove(self.spin_cur)
-            self.hb_cur.pack_start(self.label_cur, True, True, 0)
-            self.hb_cur.reorder_child(self.label_cur, 0)
-
-        self.editing_cur = False
+        self = cls._instance
+        self.page_number.on_label_event(True)
 
 
     @classmethod
     def stop_editing_slide(cls):
         """ Make sure that the current page number is not being edited.
         """
-        self = cls._instance
-        if self.editing_cur:
-            self.spin_cur.cancel()
+        cls._instance.page_number.restore_current_label()
 
 
-    def update_page_numbers(self):
-        """ Update the displayed page numbers.
+    @classmethod
+    def stop_editing_time(cls):
+        """ Make sure that the estiamte talk time is not being edited.
         """
-        cur_nb = self.doc.current_page().number()
-        cur = str(cur_nb+1)
+        cls._instance.talk_time.restore_current_label_ett()
 
-        self.label_cur.set_text(cur)
-        self.restore_current_label()
+
 
 
     def switch_fullscreen(self, widget=None, event=None):
