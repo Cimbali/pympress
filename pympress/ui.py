@@ -55,15 +55,7 @@ PDF_CONTENT_PAGE = 1
 PDF_NOTES_PAGE   = 2
 
 
-from pympress import document, surfacecache, util, pointer, config, builder, talk_time
-
-try:
-    from pympress import vlcvideo
-    vlc_enabled = True
-except Exception as e:
-    vlc_enabled = False
-    logger.exception(_("video support is disabled"))
-
+from pympress import document, surfacecache, util, pointer, config, builder, talk_time, extras
 from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 
 if IS_WINDOWS:
@@ -120,14 +112,6 @@ class UI(builder.Builder):
     #: :class:`~Gtk.SpinButton` used to switch to another slide by typing its number.
     spin_cur = None
 
-    #: a static :dict: of :class:`~Gdk.Cursor`s, ready to use
-    _cursors = {
-        'parent': None,
-        'default': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'default'),
-        'pointer': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'pointer'),
-        'invisible': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'none'),
-    }
-
     #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
     p_frame_next = None
     #: :class:`~Gtk.DrawingArea` for the next slide in the Presenter window.
@@ -183,18 +167,15 @@ class UI(builder.Builder):
     #: track whether we blank the screen
     blanked = False
 
-    #: Dictionary of :class:`pympress.vlcvideo.VLCVideo` ready to be added on top of the slides
-    media_overlays = {}
-
     #: Dictionary of :class:`Gtk.Widget` from the presenter window that can be dynamically rearranged
     placeable_widgets = {}
     #: Map of :class:`Gtk.Paned` to the relative position (float between 0 and 1) of its handle
     pane_handle_pos = {}
 
-    #: The containing widget for the annotations
-    scrollable_treelist = None
-    #: Making the annotations list scroll if it's too long
-    scrolled_window = None
+    #: Class :class:`pympress.extras.Annotations` managing the display of annotations
+    annotations = extras.Annotations()
+    #: Class :class:`pympress.extras.Media` managing keeping track of and callbacks on media overlays
+    medias = extras.Media()
 
     #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
     scribbling_mode = False
@@ -263,6 +244,7 @@ class UI(builder.Builder):
         self.load_ui('highlight')
 
         self.laser.default_pointer(self.config, self)
+        self.medias.setup(self)
 
         # Get placeable widgets. NB, ids are slightly shorter than names.
         self.placeable_widgets = {
@@ -294,10 +276,9 @@ class UI(builder.Builder):
         self.p_win.show_all()
 
         # Add media
-        self.replace_media_overlays()
+        self.medias.replace_media_overlays(self.doc.current_page())
 
         # Queue some redraws
-        self.c_overlay.queue_draw()
         self.c_da.queue_draw()
         self.redraw_panes()
         self.on_page_change(False)
@@ -500,18 +481,7 @@ class UI(builder.Builder):
             self.cache.add_widget("p_da_notes", PDF_REGULAR, False)
 
 
-        # Annotations
-        self.annotation_renderer = Gtk.CellRendererText()
-        self.annotation_renderer.props.wrap_mode = Pango.WrapMode.WORD_CHAR
-
-        column = Gtk.TreeViewColumn(None, self.annotation_renderer, text=0)
-        column.props.sizing = Gtk.TreeViewColumnSizing.AUTOSIZE
-        column.set_fixed_width(1)
-
-        self.scrollable_treelist.set_model(Gtk.ListStore(str))
-        self.scrollable_treelist.append_column(column)
-
-        self.scrolled_window.set_hexpand(True)
+        self.annotations.setup(self)
 
         # set default value
         self.label_last.set_text("/{}".format(self.doc.pages_number()))
@@ -565,19 +535,6 @@ class UI(builder.Builder):
 
         if os.path.isfile(received) and received.lower().endswith('.pdf'):
             self.swap_document(os.path.abspath(received))
-
-
-    def add_annotations(self, annotations):
-        """ Insert text annotations into the tree view that displays them.
-        """
-        list_annot = Gtk.ListStore(str)
-
-        bullet = b'\xe2\x97\x8f '.decode('utf-8') if sys.version_info > (3, 0) else '\xe2\x97\x8f '
-
-        for annot in annotations:
-            list_annot.append((bullet + annot,))
-
-        self.scrollable_treelist.set_model(list_annot)
 
 
     def run(self):
@@ -699,7 +656,7 @@ class UI(builder.Builder):
 
         self.p_da_next.queue_draw()
 
-        self.add_annotations(page_cur.get_annotations())
+        self.annotations.add_annotations(page_cur.get_annotations())
 
 
         # Prerender the 4 next pages and the 2 previous ones
@@ -722,7 +679,7 @@ class UI(builder.Builder):
         page_cur = self.doc.current_page()
         page_next = self.doc.next_page()
 
-        self.add_annotations(page_cur.get_annotations())
+        self.annotations.add_annotations(page_cur.get_annotations())
 
         # Page change: resynchronize miniatures
         self.page_preview_nb = page_cur.number()
@@ -766,7 +723,7 @@ class UI(builder.Builder):
         for p in list(range(self.page_preview_nb+1, page_max)) + list(range(self.page_preview_nb, page_min, -1)):
             self.cache.prerender(p)
 
-        self.replace_media_overlays()
+        self.medias.replace_media_overlays(self.doc.current_page())
 
 
     @classmethod
@@ -774,36 +731,6 @@ class UI(builder.Builder):
         """ Statically notify the UI of a page change (typically from document)
         """
         cls._instance.on_page_change()
-
-
-    def replace_media_overlays(self):
-        """ Remove current media overlays, add new ones if page contains media.
-        """
-        if not vlc_enabled:
-            return
-
-        self.c_overlay.foreach(lambda child, *ignored: child.hide() if child is not self.c_da else None, None)
-
-        page_cur = self.doc.current_page()
-        pw, ph = page_cur.get_size()
-
-        for relative_margins, filename, show_controls in page_cur.get_media():
-            media_id = hash((relative_margins, filename, show_controls))
-
-            if media_id not in self.media_overlays:
-                v_da = vlcvideo.VLCVideo(self.c_overlay, show_controls, relative_margins)
-                v_da.set_file(filename)
-
-                self.media_overlays[media_id] = v_da
-
-
-    @classmethod
-    def play_media(cls, media_id):
-        """ Static way of starting (playing) a media. Used by callbacks.
-        """
-        self = cls._instance
-        if media_id in self.media_overlays:
-            self.media_overlays[media_id].play()
 
 
     def redraw_panes(self):
@@ -817,8 +744,8 @@ class UI(builder.Builder):
         if self.redraw_timeout:
             self.redraw_timeout = 0
 
-        # Temporarily, while p_frame_annot's configure-event is noto working
-        self.on_configure_annot(self.p_frame_annot, None)
+        # Temporarily, while p_frame_annot's configure-event is not working
+        self.annotations.on_configure_annot(self.p_frame_annot, None)
 
 
     @classmethod
@@ -933,8 +860,8 @@ class UI(builder.Builder):
 
         self.cache.resize_widget(widget.get_name(), event.width, event.height)
 
-        if widget is self.c_da and vlc_enabled:
-            self.c_overlay.foreach(lambda child, *ignored: child.resize() if type(child) is vlcvideo.VLCVideo else None, None)
+        if widget is self.c_da:
+            self.medias.resize()
 
 
     def on_configure_win(self, widget, event):
@@ -954,14 +881,6 @@ class UI(builder.Builder):
         elif widget is self.c_win:
             c_monitor = self.c_win.get_screen().get_monitor_at_window(self.c_frame.get_parent_window())
             self.config.set('content', 'monitor', str(c_monitor))
-
-
-    def on_configure_annot(self, widget, event):
-        """ Adjust wrap width in annotations when they are resized.
-        """
-        self.annotation_renderer.props.wrap_width = widget.get_allocated_width() - 10
-        self.scrolled_window.queue_resize()
-        self.scrollable_treelist.get_column(0).queue_resize()
 
 
     def on_navigation(self, widget, event):
@@ -1061,22 +980,12 @@ class UI(builder.Builder):
             return False
 
         # send to spinner if it is active
-        if self.editing_cur and Gtk.SpinButton.do_scroll_event(self.spin_cur, event):
-            pass
-
-        elif event.direction is Gdk.ScrollDirection.SMOOTH:
-            return False
-
+        elif self.editing_cur and Gtk.SpinButton.do_scroll_event(self.spin_cur, event):
+            return True
+        elif self.annotations.on_scroll(widget, event):
+            return True
         else:
-            adj = self.scrolled_window.get_vadjustment()
-            if event.direction == Gdk.ScrollDirection.UP:
-                adj.set_value(adj.get_value() - adj.get_step_increment())
-            elif event.direction == Gdk.ScrollDirection.DOWN:
-                adj.set_value(adj.get_value() + adj.get_step_increment())
-            else:
-                return False
-
-        return True
+            return False
 
 
     def on_spin_nav(self, widget, event):
@@ -1142,7 +1051,7 @@ class UI(builder.Builder):
             return self.click_link(widget, event)
 
 
-    def click_pos_in_page(self, widget, event, page):
+    def mouse_pos_in_page(self, widget, event, page):
         """ Normalize event coordinates and get link
         """
         x, y = event.get_coords()
@@ -1178,7 +1087,7 @@ class UI(builder.Builder):
         else:
             page = self.doc.current_page()
 
-        x, y = self.click_pos_in_page(widget, event, page)
+        x, y = self.mouse_pos_in_page(widget, event, page)
         link = page.get_link_at(x, y)
 
         if event.type == Gdk.EventType.BUTTON_PRESS and link is not None:
@@ -1186,13 +1095,6 @@ class UI(builder.Builder):
             return True
         else:
             return False
-
-
-    @classmethod
-    def set_cursor(cls, widget, cursor_name = 'parent'):
-        """ Set the cursor named cursor_name'
-        """
-        widget.get_window().set_cursor(cls._cursors[cursor_name])
 
 
     def hover_link(self, widget, event):
@@ -1214,13 +1116,13 @@ class UI(builder.Builder):
         else:
             page = self.doc.current_page()
 
-        x, y = self.click_pos_in_page(widget, event, page)
+        x, y = self.mouse_pos_in_page(widget, event, page)
 
         if page.get_link_at(x, y):
-            self.set_cursor(widget, 'pointer')
+            extras.Cursor.set_cursor(widget, 'pointer')
             return False
         else:
-            self.set_cursor(widget, 'parent')
+            extras.Cursor.set_cursor(widget, 'parent')
             return True
 
 
@@ -1470,9 +1372,6 @@ class UI(builder.Builder):
 
         screen = self.p_win.get_screen()
         if screen.get_n_monitors() > 1:
-            # temporarily remove the annotations' list size so it won't hinder p_frame_next size adjustment
-            self.scrolled_window.set_size_request(-1,  100)
-
             # Though Gtk.Window is a Gtk.Widget get_parent_window() actually returns None on self.{c,p}_win
             p_monitor = screen.get_monitor_at_window(self.p_frame_cur.get_parent_window())
             c_monitor = screen.get_monitor_at_window(self.c_frame.get_parent_window())
@@ -1506,6 +1405,7 @@ class UI(builder.Builder):
         self.c_da.queue_draw()
 
 
+    # TODO move config-only switches to  self.config
     def switch_start_blanked(self, widget=None, event=None):
         """ Switch the blanked mode of the content screen at startup.
         """

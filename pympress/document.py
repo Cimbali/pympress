@@ -63,7 +63,7 @@ else:
     opener = "open" if sys.platform == "darwin" else "xdg-open"
     fileopen = lambda f: subprocess.call([opener, f])
 
-from pympress import ui
+from pympress import ui, extras
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
 
@@ -189,7 +189,7 @@ class Page(object):
                     relative_margins.y2 = 1.0 - annotation.area.y2 / self.ph # top
                     media = (relative_margins, filepath, movie.show_controls())
                     self.medias.append(media)
-                    action = lambda: ui.UI.play_media(hash(media))
+                    action = lambda: extras.media.play_media(hash(media))
                 else:
                     logger.error(_("Pympress can not find file ") + movie.get_filename())
                     continue
@@ -313,7 +313,7 @@ class Page(object):
 
             media = (relative_margins, filename, False)
             self.medias.append(media)
-            return lambda: ui.UI.play_media(hash(media))
+            return lambda: extras.Media.play_media(hash(media))
 
         else:
             return self.get_link_action(link_type, action)

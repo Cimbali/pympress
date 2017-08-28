@@ -33,7 +33,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, GdkPixbuf
 
-from pympress import util, ui
+from pympress import util, ui, extras
 
 
 POINTER_OFF = -1
@@ -125,14 +125,14 @@ class Pointer(object):
 
         if ctrl_pressed and event.type == Gdk.EventType.BUTTON_PRESS:
             self.show_pointer = POINTER_SHOW
-            ui.UI.set_cursor(widget, 'invisible')
+            extras.Cursor.set_cursor(widget, 'invisible')
 
             # Immediately place & draw the pointer
             return self.track_pointer(widget, event)
 
         elif self.show_pointer == POINTER_SHOW and event.type == Gdk.EventType.BUTTON_RELEASE:
             self.show_pointer = POINTER_HIDE
-            ui.UI.set_cursor(widget, 'parent')
+            extras.Cursor.set_cursor(widget, 'parent')
             ui.UI.redraw_current_slide()
             return True
 
