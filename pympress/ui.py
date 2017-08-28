@@ -35,17 +35,15 @@ from __future__ import print_function
 import logging
 logger = logging.getLogger(__name__)
 
-import os
-import sys
+import os.path
 import importlib
-import subprocess
 
 import pkg_resources
 
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import GObject, Gtk, Gdk, Pango, GLib, GdkPixbuf
+from gi.repository import GObject, Gtk, Gdk, GLib
 
 #: "Regular" PDF file (without notes)
 PDF_REGULAR      = 0
@@ -56,25 +54,7 @@ PDF_NOTES_PAGE   = 2
 
 
 from pympress import document, surfacecache, util, pointer, config, builder, talk_time, extras
-from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 
-if IS_WINDOWS:
-    try:
-        import winreg
-    except ImportError:
-        import _winreg as winreg
-else:
-    try:
-        gi.require_version('GdkX11', '3.0')
-        from gi.repository import GdkX11
-    except:
-        pass
-
-try:
-    PermissionError()
-except NameError:
-    class PermissionError(Exception):
-        pass
 
 class UI(builder.Builder):
     """ Pympress GUI management.
@@ -154,9 +134,6 @@ class UI(builder.Builder):
 
     #: number of page currently displayed in Controller window's miniatures
     page_preview_nb = 0
-
-    #: remember DPMS setting before we change it
-    dpms_was_enabled = None
 
     #: track state of preview window
     p_win_maximized = True
@@ -1211,74 +1188,6 @@ class UI(builder.Builder):
         self.restore_current_label()
 
 
-    def set_screensaver(self, must_disable):
-        """ Enable or disable the screensaver.
-
-        Args:
-            must_disable (boolean):  if ``True``, indicates that the screensaver must be disabled; otherwise it will be enabled
-        """
-        if IS_MAC_OS:
-            # On Mac OS X we can use caffeinate to prevent the display from sleeping
-            if must_disable:
-                if self.dpms_was_enabled == None or self.dpms_was_enabled.poll():
-                    self.dpms_was_enabled = subprocess.Popen(['caffeinate', '-d', '-w', str(os.getpid())])
-            else:
-                if self.dpms_was_enabled and not self.dpms_was_enabled.poll():
-                    self.dpms_was_enabled.kill()
-                    self.dpms_was_enabled.poll()
-                    self.dpms_was_enabled = None
-
-        elif IS_POSIX:
-            # On Linux, set screensaver with xdg-screensaver
-            # (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
-            cmd = "suspend" if must_disable else "resume"
-            status = os.system("xdg-screensaver {} {}".format(cmd, self.c_win.get_window().get_xid()))
-            if status != 0:
-                logger.warning(_("Could not set screensaver status: got status ")+str(status))
-
-            # Also manage screen blanking via DPMS
-            if must_disable:
-                # Get current DPMS status
-                pipe = os.popen("xset q") # TODO: check if this works on all locales
-                dpms_status = "Disabled"
-                for line in pipe.readlines():
-                    if line.count("DPMS is") > 0:
-                        dpms_status = line.split()[-1]
-                        break
-                pipe.close()
-
-                # Set the new value correctly
-                if dpms_status == "Enabled":
-                    self.dpms_was_enabled = True
-                    status = os.system("xset -dpms")
-                    if status != 0:
-                        logger.warning(_("Could not disable DPMS screen blanking: got status ")+str(status))
-                else:
-                    self.dpms_was_enabled = False
-
-            elif self.dpms_was_enabled:
-                # Re-enable DPMS
-                status = os.system("xset +dpms")
-                if status != 0:
-                    logger.warning(_("Could not enable DPMS screen blanking: got status ")+str(status))
-
-        elif IS_WINDOWS:
-            try:
-                with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Control Panel\Desktop', 0, winreg.KEY_QUERY_VALUE|winreg.KEY_SET_VALUE) as key:
-                    if must_disable:
-                        (value,type) = winreg.QueryValueEx(key, "ScreenSaveActive")
-                        assert(type == winreg.REG_SZ)
-                        self.dpms_was_enabled = (value == "1")
-                        if self.dpms_was_enabled:
-                            winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "0")
-                    elif self.dpms_was_enabled:
-                        winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "1")
-            except (OSError, PermissionError):
-                logger.exception(_("access denied when trying to access screen saver settings in registry!"))
-        else:
-            logger.warning(_("Unsupported OS: can't enable/disable screensaver"))
-
-
     def switch_fullscreen(self, widget=None, event=None):
         """ Switch the Content window to fullscreen (if in normal mode)
         or to normal mode (if fullscreen).
@@ -1312,7 +1221,7 @@ class UI(builder.Builder):
             self.p_win_fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
         elif widget.get_name() == self.c_win.get_name():
             self.c_win_fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
-            self.set_screensaver(self.c_win_fullscreen)
+            util.set_screensaver(self.c_win_fullscreen, self.c_win.get_window())
 
 
     def update_frame_position(self, widget=None, user_data=None):

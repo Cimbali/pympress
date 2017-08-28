@@ -29,8 +29,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import gi
-import locale
-import ctypes
+import subprocess
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
 import pkg_resources
@@ -40,6 +39,26 @@ import os, os.path, sys
 IS_POSIX = os.name == 'posix'
 IS_MAC_OS = sys.platform == 'darwin'
 IS_WINDOWS = os.name == 'nt'
+
+
+if IS_WINDOWS:
+    try:
+        import winreg
+    except ImportError:
+        import _winreg as winreg
+else:
+    try:
+        gi.require_version('GdkX11', '3.0')
+        from gi.repository import GdkX11
+    except:
+        pass
+
+try:
+    PermissionError()
+except NameError:
+    class PermissionError(Exception):
+        pass
+
 
 
 def __get_resource_path(*path_parts):
@@ -119,6 +138,78 @@ def load_icons():
             logger.exception('Error loading icons')
 
     return icons
+
+
+def set_screensaver(must_disable, window):
+    """ Enable or disable the screensaver.
+
+    Args:
+        must_disable (boolean):  if ``True``, indicates that the screensaver must be disabled; otherwise it will be enabled
+    """
+    if IS_MAC_OS:
+        # On Mac OS X we can use caffeinate to prevent the display from sleeping
+        if must_disable:
+            if set_screensaver.dpms_was_enabled == None or set_screensaver.dpms_was_enabled.poll():
+                set_screensaver.dpms_was_enabled = subprocess.Popen(['caffeinate', '-d', '-w', str(os.getpid())])
+        else:
+            if set_screensaver.dpms_was_enabled and not set_screensaver.dpms_was_enabled.poll():
+                set_screensaver.dpms_was_enabled.kill()
+                set_screensaver.dpms_was_enabled.poll()
+                set_screensaver.dpms_was_enabled = None
+
+    elif IS_POSIX:
+        # On Linux, set screensaver with xdg-screensaver
+        # (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
+        cmd = "suspend" if must_disable else "resume"
+        status = os.system("xdg-screensaver {} {}".format(cmd, window.get_xid()))
+        if status != 0:
+            logger.warning(_("Could not set screensaver status: got status ")+str(status))
+
+        # Also manage screen blanking via DPMS
+        if must_disable:
+            # Get current DPMS status
+            pipe = os.popen("xset q") # TODO: check if this works on all locales
+            dpms_status = "Disabled"
+            for line in pipe.readlines():
+                if line.count("DPMS is") > 0:
+                    dpms_status = line.split()[-1]
+                    break
+            pipe.close()
+
+            # Set the new value correctly
+            if dpms_status == "Enabled":
+                set_screensaver.dpms_was_enabled = True
+                status = os.system("xset -dpms")
+                if status != 0:
+                    logger.warning(_("Could not disable DPMS screen blanking: got status ")+str(status))
+            else:
+                set_screensaver.dpms_was_enabled = False
+
+        elif set_screensaver.dpms_was_enabled:
+            # Re-enable DPMS
+            status = os.system("xset +dpms")
+            if status != 0:
+                logger.warning(_("Could not enable DPMS screen blanking: got status ")+str(status))
+
+    elif IS_WINDOWS:
+        try:
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Control Panel\Desktop', 0, winreg.KEY_QUERY_VALUE|winreg.KEY_SET_VALUE) as key:
+                if must_disable:
+                    (value,type) = winreg.QueryValueEx(key, "ScreenSaveActive")
+                    assert(type == winreg.REG_SZ)
+                    set_screensaver.dpms_was_enabled = (value == "1")
+                    if set_screensaver.dpms_was_enabled:
+                        winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "0")
+                elif set_screensaver.dpms_was_enabled:
+                    winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "1")
+        except (OSError, PermissionError):
+            logger.exception(_("access denied when trying to access screen saver settings in registry!"))
+    else:
+        logger.warning(_("Unsupported OS: can't enable/disable screensaver"))
+
+
+#: remember DPMS setting before we change it
+set_screensaver.dpms_was_enabled = None
 
 
 ##
