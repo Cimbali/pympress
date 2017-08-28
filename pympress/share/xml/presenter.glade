@@ -360,7 +360,8 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Content blanked</property>
                         <property name="use_underline">True</property>
-                        <signal name="toggled" handler="switch_start_blanked" swapped="no"/>
+                        <property name="name">content.start_blanked</property>
+                        <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -369,7 +370,8 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Content fullscreen</property>
                         <property name="use_underline">True</property>
-                        <signal name="toggled" handler="switch_start_cwin_full" swapped="no"/>
+                        <property name="name">content.start_fullscreen</property>
+                        <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -378,7 +380,8 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Presenter fullscreen</property>
                         <property name="use_underline">True</property>
-                        <signal name="toggled" handler="switch_start_pwin_full" swapped="no"/>
+                        <property name="name">presenter.start_fullscreen</property>
+                        <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
                   </object>

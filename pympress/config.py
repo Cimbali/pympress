@@ -179,6 +179,16 @@ class Config(configparser.ConfigParser):
             self.write(configfile)
 
 
+    def toggle_start(self, check_item):
+        """ Generic function to toggle some boolean startup configuration.
+
+            Args:
+                check_item (:class:`Gtk.:CheckMenuItem`): the check button triggering the call
+        """
+        window, start_conf = check_item.get_name().split('.')
+        self.set(window, start_conf, 'on' if check_item.get_active() else 'off')
+
+
     def validate_layout(self, layout, expected_widgets):
         """ Validate layout: check whether the layout of widgets built from the config string is valid.
 

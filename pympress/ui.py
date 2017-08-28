@@ -1106,36 +1106,6 @@ class UI(builder.Builder):
         self.c_da.queue_draw()
 
 
-    # TODO move config-only switches to  self.config
-    def switch_start_blanked(self, widget=None, event=None):
-        """ Switch the blanked mode of the content screen at startup.
-        """
-        if self.config.getboolean('content', 'start_blanked'):
-            self.config.set('content', 'start_blanked', 'off')
-        else:
-            self.config.set('content', 'start_blanked', 'on')
-
-
-    def switch_start_cwin_full(self, widget=None):
-        """ Switch the fullscreen mode of the content screen at startup.
-        """
-
-        if self.config.getboolean('content', 'start_fullscreen'):
-            self.config.set('content', 'start_fullscreen', 'off')
-        else:
-            self.config.set('content', 'start_fullscreen', 'on')
-
-
-    def switch_start_pwin_full(self, widget=None):
-        """ Switch the fullscreen mode of the presenter screen at startup.
-        """
-
-        if self.config.getboolean('presenter', 'start_fullscreen'):
-            self.config.set('presenter', 'start_fullscreen', 'off')
-        else:
-            self.config.set('presenter', 'start_fullscreen', 'on')
-
-
     def switch_mode(self, widget=None, event=None):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
         """
