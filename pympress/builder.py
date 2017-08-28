@@ -154,3 +154,114 @@ class Builder(Gtk.Builder):
         for n in (attr for attr in dir(target) if getattr(target, attr) is None and attr[:2] + attr[-2:] != '____'):
             setattr(target, n, self.get_object(n))
 
+
+    def replace_layout(self, layout, top_widget, leaf_widgets, pane_resize_handler = None):
+        """ Remix the layout below top_widget with the layout configuration given in 'layout' (assumed to be valid!).
+
+            Args:
+                layout (dict): the json-parsed config string, thus a hierarchy of lists/dicts, with strings as leaves
+                top_widget (:class:`Gtk.Container`): The top-level widget under which we build the hierachyy
+                leaf_widgets (dict): the map of valid leaf identifiers (strings) to the corresponding :class:`Gtk.Widget`s
+
+            Returns:
+                dict: The mapping of the used :class:`Gtk.Paned` widgets to their relative handle position (float between 0 and 1)
+        """
+        # take apart the previous/default layout
+        containers = []
+        widgets = top_widget.get_children()
+        i = 0
+        while i < len(widgets):
+            w = widgets[i]
+            if issubclass(type(w), Gtk.Box) or issubclass(type(w), Gtk.Paned):
+                widgets.extend(w.get_children())
+                containers.append(w)
+            w.get_parent().remove(w)
+            i += 1
+
+        # cleanup widgets
+        del widgets[:]
+        while containers:
+            containers.pop().destroy()
+
+        # iterate over new layout to build it, using a BFS
+        widgets_to_add = [(top_widget, layout)]
+        pane_resize = set()
+        pane_handle_pos = {}
+
+        while widgets_to_add:
+            parent, w_desc = widgets_to_add.pop(0)
+
+            if type(w_desc) is str:
+                w = leaf_widgets[w_desc]
+
+            else:
+                # get new container widget, attempt to recycle the containers we removed
+                if 'resizeable' in w_desc and w_desc['resizeable']:
+                    orientation = getattr(Gtk.Orientation, w_desc['orientation'].upper())
+                    w = Gtk.Paned.new(orientation)
+                    w.set_wide_handle(True)
+
+                    # Add on resize events
+                    if pane_resize_handler:
+                        w.connect("notify::position", pane_resize_handler)
+                        w.connect("button-release-event", pane_resize_handler)
+
+                    # left pane is first child
+                    widgets_to_add.append((w, w_desc['children'].pop()))
+
+                    if 'proportions' in w_desc:
+                        right_pane = w_desc['proportions'].pop()
+                        left_pane  = w_desc['proportions'].pop()
+                        w_desc['proportions'].append(left_pane + right_pane)
+
+                        pane_handle_pos[w] = float(left_pane) / (left_pane + right_pane)
+                        pane_resize.add(w)
+                    else:
+                        pane_handle_pos[w] = 0.5
+
+                    # if more than 2 children are to be added, add the 2+ from the right side in a new child Gtk.Paned
+                    widgets_to_add.append((w, w_desc['children'][0] if len(w_desc['children']) == 1 else w_desc))
+                else:
+                    w = Gtk.Box.new(getattr(Gtk.Orientation, w_desc['orientation'].upper()), 5)
+                    w.set_homogeneous(True)
+                    w.set_spacing(10)
+
+                    widgets_to_add += [(w, c) for c in w_desc['children']]
+
+            if issubclass(type(parent), Gtk.Box):
+                parent.pack_start(w, True, True, 0)
+            else: #it's a Gtk.Paned
+                if parent.get_child2() is None:
+                    parent.pack2(w, True, True)
+                    if parent.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                        w.set_margin_start(8)
+                    else:
+                        w.set_margin_top(8)
+                else:
+                    parent.pack1(w, True, True)
+                    if parent.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                        w.set_margin_end(8)
+                    else:
+                        w.set_margin_bottom(8)
+
+            # hierarchichally ordered list of widgets
+            widgets.append(w)
+
+        for w in widgets:
+            w.queue_resize()
+            w.show_now()
+            w.get_parent().check_resize()
+
+        for p in (w for w in widgets if issubclass(type(w), Gtk.Box) or issubclass(type(w), Gtk.Paned)):
+            p.check_resize()
+            if p in pane_resize:
+                if p.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                    pane_pos = int(round(Gtk.Widget.get_allocated_width(p) * pane_handle_pos[p]))
+                else:
+                    pane_pos = int(round(Gtk.Widget.get_allocated_height(p) * pane_handle_pos[p]))
+
+                p.set_position(pane_pos)
+
+        return pane_handle_pos
+
+
