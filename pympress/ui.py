@@ -55,7 +55,7 @@ PDF_NOTES_PAGE   = 2
 from pympress import document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number
 
 
-class UI(scribble.Scribbler, builder.Builder):
+class UI(builder.Builder):
     """ Pympress GUI management.
     """
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
@@ -134,6 +134,8 @@ class UI(scribble.Scribbler, builder.Builder):
     #: Map of :class:`Gtk.Paned` to the relative position (float between 0 and 1) of its handle
     pane_handle_pos = {}
 
+    #: Class :class:`pympress.scribble.Scribble` managing drawing by the user on top of the current slide.
+    scribbler = scribble.Scribbler()
     #: Class :class:`pympress.extras.Annotations` managing the display of annotations
     annotations = extras.Annotations()
     #: Class :class:`pympress.extras.Media` managing keeping track of and callbacks on media overlays
@@ -181,8 +183,11 @@ class UI(scribble.Scribbler, builder.Builder):
         self.load_ui('presenter')
         self.load_ui('content')
 
+        self.scribbler.setup_scribbling(self.config, self, self.notes_mode)
         self.laser.default_pointer(self.config, self)
         self.medias.setup(self)
+
+        self.scribbler.cache.swap_document(self.doc)
 
         # Get placeable widgets. NB, ids are slightly shorter than names.
         self.placeable_widgets = {
@@ -196,7 +201,6 @@ class UI(scribble.Scribbler, builder.Builder):
 
         self.make_cwin()
         self.make_pwin()
-        self.setup_scribbling(self.config, self)
 
         self.connect_signals(self)
 
@@ -245,6 +249,7 @@ class UI(scribble.Scribbler, builder.Builder):
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
+        self.scribbler.cache.swap_document(self.doc)
         self.page_number.set_last(self.doc.pages_number())
 
         # Draw the new page(s)
@@ -384,7 +389,7 @@ class UI(scribble.Scribbler, builder.Builder):
     def save_and_quit(self, *args):
         """ Save configuration and exit the main loop.
         """
-        self.disable_scribbling()
+        self.scribbler.disable_scribbling()
 
         self.doc.cleanup_media_files()
 
@@ -401,6 +406,14 @@ class UI(scribble.Scribbler, builder.Builder):
         """ Remove the current document.
         """
         self.swap_document(None)
+
+
+    @classmethod
+    def get_current_page(cls):
+        """ Statically get page and page type
+        """
+        self = cls._instance
+        return self.doc.current_page(), PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR
 
 
     def pick_file(self, *args):
@@ -541,8 +554,8 @@ class UI(scribble.Scribbler, builder.Builder):
         self.p_da_next.queue_draw()
 
         # Remove scribbles and scribbling mode
-        self.disable_scribbling()
-        self.clear_scribble()
+        self.scribbler.disable_scribbling()
+        self.scribbler.clear_scribble()
 
         # Start counter if needed
         if unpause:
@@ -705,13 +718,13 @@ class UI(scribble.Scribbler, builder.Builder):
             widget (:class:`Gtk.Widget`):  the window which has been moved or resized
             event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
-
         if widget is self.p_win:
             p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_frame_cur.get_parent_window())
             self.config.set('presenter', 'monitor', str(p_monitor))
             cw = self.p_central.get_allocated_width()
             ch = self.p_central.get_allocated_height()
-            self.off_render.set_size_request(cw, ch)
+            self.scribbler.off_render.set_size_request(cw, ch)
+
         elif widget is self.c_win:
             c_monitor = self.c_win.get_screen().get_monitor_at_window(self.c_frame.get_parent_window())
             self.config.set('content', 'monitor', str(c_monitor))
@@ -735,7 +748,7 @@ class UI(scribble.Scribbler, builder.Builder):
             return True
         elif self.talk_time.on_label_ett_keypress(widget, event):
             return True
-        elif self.nav_scribble(name, ctrl_pressed):
+        elif self.scribbler.nav_scribble(name, ctrl_pressed):
             return True
 
         if name == 'space' and self.talk_time.unpause():
@@ -768,7 +781,7 @@ class UI(scribble.Scribbler, builder.Builder):
         # presenter window, so we must handle them in the content window only
         # to prevent them from double-firing
         elif widget is self.c_win:
-            if self.switch_scribbling(widget, event, name):
+            if self.scribbler.switch_scribbling(widget, event, name):
                 return True
             elif self.talk_time.on_label_ett_event(widget, event, name):
                 return True
@@ -822,7 +835,7 @@ class UI(scribble.Scribbler, builder.Builder):
     def track_motions(self, widget = None, event = None):
         """ Track mouse motion events
         """
-        if self.track_scribble(widget, event):
+        if self.scribbler.track_scribble(widget, event):
             return True
         elif self.laser.track_pointer(widget, event):
             return True
@@ -833,7 +846,7 @@ class UI(scribble.Scribbler, builder.Builder):
     def track_clicks(self, widget = None, event = None):
         """ Track mouse press and release events
         """
-        if self.toggle_scribble(widget, event):
+        if self.scribbler.toggle_scribble(widget, event):
             return True
         elif self.laser.toggle_pointer(widget, event):
             return True
@@ -1071,14 +1084,14 @@ class UI(scribble.Scribbler, builder.Builder):
     def switch_mode(self, widget=None, event=None):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
         """
-        self.disable_scribbling()
+        self.scribbler.scribbler.disable_scribbling()
 
         if self.notes_mode:
             self.notes_mode = False
             self.cache.set_widget_type("c_da", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
             self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
-            self.cache.set_widget_type("scribble_p_da", PDF_REGULAR)
+            self.scribbler.cache.set_widget_type("scribble_p_da", PDF_REGULAR)
             self.cache.disable_prerender("p_da_cur")
 
             self.cache.disable_prerender("p_da_notes")
@@ -1091,7 +1104,7 @@ class UI(scribble.Scribbler, builder.Builder):
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_cur", PDF_CONTENT_PAGE)
-            self.cache.set_widget_type("scribble_p_da", PDF_CONTENT_PAGE)
+            self.scribbler.cache.set_widget_type("scribble_p_da", PDF_CONTENT_PAGE)
             self.cache.enable_prerender("p_da_cur")
 
             self.cache.set_widget_type("p_da_notes", PDF_NOTES_PAGE)

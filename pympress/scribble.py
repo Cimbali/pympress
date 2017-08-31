@@ -34,7 +34,7 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
-from pympress import util, builder
+from pympress import ui, util, builder, surfacecache, document
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
 
@@ -67,12 +67,17 @@ class Scribbler(builder.Builder):
     c_overlay = None
     #: A :class:`Gtk.OffscreenWindow` where we render the scribbling interface when it's not shown
     off_render = None
+    #: :class:`~Gtk.Box` in the Presenter window, where we insert scribbling.
+    p_central = None
 
+    #: :class:`~pympress.surfacecache.SurfaceCache` instance.
+    cache = None
 
     def __init__(self):
         super(Scribbler, self).__init__()
 
         self.load_ui('highlight')
+        self.connect_signals(self)
 
 
     def nav_scribble(self, name, ctrl_pressed):
@@ -126,14 +131,13 @@ class Scribbler(builder.Builder):
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
         if widget is not self.scribble_c_da:
-            page = self.doc.current_page()
+            page, wtype = ui.UI.get_current_page()
             nb = page.number()
             pb = self.cache.get("scribble_p_da", nb)
 
             if pb is None:
                 # Cache miss: render the page, and save it to the cache
                 pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
-                wtype = PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR
 
                 cairo_prerender = cairo.Context(pb)
                 page.render_cairo(cairo_prerender, ww, wh, wtype)
@@ -182,8 +186,7 @@ class Scribbler(builder.Builder):
         """
         del self.scribble_list[:]
 
-        self.scribble_c_da.queue_draw()
-        self.scribble_p_da.queue_draw()
+        ui.UI.redraw_current_slide()
 
 
     def pop_scribble(self, widget = None):
@@ -192,21 +195,41 @@ class Scribbler(builder.Builder):
         if self.scribble_list:
             self.scribble_list.pop()
 
-        self.scribble_c_da.queue_draw()
+        ui.UI.redraw_current_slide()
         self.scribble_p_da.queue_draw()
 
 
-    def setup_scribbling(self, config, builder):
+    def setup_scribbling(self, config, builder, notes_mode):
         """ Setup all the necessary for scribbling
         """
+        # Surface cache
+        self.cache = surfacecache.SurfaceCache(document.EmptyDocument(), config.getint('cache', 'maxpages'))
+
         self.scribble_color = Gdk.RGBA()
         self.scribble_color.parse(config.get('scribble', 'color'))
         self.scribble_width = config.getint('scribble', 'width')
-        self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR, False)
+        self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if notes_mode else PDF_REGULAR, False)
+
+        self.config = config
+        builder.load_widgets(self)
 
         # Presenter-size setup
         self.get_object("scribble_color").set_rgba(self.scribble_color)
         self.get_object("scribble_width").set_value(self.scribble_width)
+
+
+    def on_configure_da(self, widget, event):
+        """ Transfer configure resize to the cache.
+
+        Args:
+            widget (:class:`Gtk.Widget`):  the widget which has been resized
+            event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
+        """
+        # Don't trust those
+        if not event.send_event:
+            return
+
+        self.cache.resize_widget(widget.get_name(), event.width, event.height)
 
 
     def switch_scribbling(self, widget = None, event = None, name = None):
@@ -237,7 +260,8 @@ class Scribbler(builder.Builder):
         if self.scribbling_mode:
             return False
 
-        pr = self.doc.current_page().get_aspect_ratio(self.notes_mode)
+        page, wtype = ui.UI.get_current_page()
+        pr = page.get_aspect_ratio(wtype)
         self.scribble_p_frame.set_property('ratio', pr)
 
         p_layout = self.p_central.get_children()[0]

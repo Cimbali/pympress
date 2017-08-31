@@ -54,7 +54,7 @@
                   <object class="GtkDrawingArea" id="scribble_c_da">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <signal name="draw" handler="draw_scribble" swapped="no"/>
+                    <signal name="draw" handler="scribbler.draw_scribble" swapped="no"/>
                   </object>
                 </child>
               </object>

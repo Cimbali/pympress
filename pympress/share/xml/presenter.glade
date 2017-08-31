@@ -216,7 +216,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Highlight</property>
                         <property name="use_underline">True</property>
-                        <signal name="toggled" handler="switch_scribbling" swapped="no"/>
+                        <signal name="toggled" handler="scribbler.switch_scribbling" swapped="no"/>
                         <accelerator key="h" signal="activate"/>
                       </object>
                     </child>
@@ -806,7 +806,7 @@
                 <style>
                   <class name="info-label"/>
                 </style>
-                <signal name="clicked" handler="switch_scribbling" swapped="no"/>
+                <signal name="clicked" handler="scribbler.switch_scribbling" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
