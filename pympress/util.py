@@ -48,8 +48,8 @@ except ImportError:
 
 
 def recursive_translate_widgets(a_widget):
-    ''' Calls gettext on all strings we can find in widgets, recursively.
-    '''
+    """ Calls gettext on all strings we can find in widgets, recursively.
+    """
     for str_prop in (prop.name for prop in a_widget.props if prop.value_type == GObject.TYPE_STRING):
         try:
             setattr(a_widget.props, str_prop, _(getattr(a_widget.props, str_prop)))
@@ -67,9 +67,9 @@ def recursive_translate_widgets(a_widget):
 
 
 def get_resource_path(*path_parts):
-    ''' Return the resource path based on whether its frozen or not.
+    """ Return the resource path based on whether its frozen or not.
     Paths parts given should be relative to the pympress package dir.
-    '''
+    """
     if getattr(sys, 'frozen', False):
         return os.path.join(os.path.dirname(sys.executable), *path_parts)
     else:
@@ -78,9 +78,9 @@ def get_resource_path(*path_parts):
 
 
 def get_resource_list(*path_parts):
-    ''' Return the list of elements in a directory based on whether its frozen or not.
+    """ Return the list of elements in a directory based on whether its frozen or not.
     Paths parts given should be relative to the pympress package dir.
-    '''
+    """
     if getattr(sys, 'frozen', False):
         return os.listdir(os.path.join(os.path.dirname(sys.executable), *path_parts))
     else:
@@ -89,8 +89,8 @@ def get_resource_list(*path_parts):
 
 
 def get_style_provider():
-    ''' Load the css and return corresponding style provider.
-    '''
+    """ Load the css and return corresponding style provider.
+    """
     if IS_MAC_OS:
         css_fn = get_resource_path('share', 'css', 'macos.css')
     else:
@@ -102,26 +102,26 @@ def get_style_provider():
 
 
 def get_icon_pixbuf(name):
-    ''' Load an image from pympress' resources in a Gdk Pixbuf.
-    '''
+    """ Load an image from pympress' resources in a Gdk Pixbuf.
+    """
     return GdkPixbuf.Pixbuf.new_from_file(get_resource_path('share', 'pixmaps', name))
 
 
 def list_icons():
-    ''' List the icons from pympress' resources.
-    '''
+    """ List the icons from pympress' resources.
+    """
     icons = get_resource_list('share', 'pixmaps')
 
     return [i for i in icons if os.path.splitext(i)[1].lower() == '.png' and i[:9] == 'pympress-']
 
 
 def load_icons():
-    ''' Load pympress icons from the pixmaps directory (usually
+    """ Load pympress icons from the pixmaps directory (usually
     :file:`/usr/share/pixmaps` or something similar).
 
     Returns:
         list of :class:`GdkPixbuf.Pixbuf`: loaded icons
-    '''
+    """
     icons = []
     for icon_name in list_icons():
         try:
@@ -134,8 +134,8 @@ def load_icons():
 
 
 def path_to_config():
-    ''' Return the OS-specific path to the configuration file.
-    '''
+    """ Return the OS-specific path to the configuration file.
+    """
     if IS_POSIX:
         conf_dir=os.path.expanduser('~/.config')
         conf_file_nodir=os.path.expanduser('~/.pympress')
@@ -155,8 +155,8 @@ def path_to_config():
 
 
 def load_config():
-    ''' Get the configuration from its file.
-    '''
+    """ Get the configuration from its file.
+    """
     config = configparser.ConfigParser()
     config.add_section('content')
     config.add_section('presenter')
@@ -215,9 +215,9 @@ def load_config():
 
 
 def recursive_unicode_to_str(obj):
-    ''' Recursively convert unicode to str (for python2)
+    """ Recursively convert unicode to str (for python2)
         Raises NameError in python3 as 'unicode' is undefined
-    '''
+    """
     if isinstance(obj, unicode):
         return str(obj)
     elif isinstance(obj, dict):
@@ -229,9 +229,9 @@ def recursive_unicode_to_str(obj):
 
 
 def layout_from_json(layout_string):
-    ''' Load the layout from config, with all strings cast to type 'str' (even on python2 where they default to 'unicode')
+    """ Load the layout from config, with all strings cast to type 'str' (even on python2 where they default to 'unicode')
         Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on invalid input.
-    '''
+    """
 
     if not layout_string:
         raise ValueError('No layout string passed. Ignore this error if you just upgraded pympress or reset your configuration file.')
@@ -247,8 +247,8 @@ def layout_from_json(layout_string):
 
 
 def save_config(config):
-    ''' Save the configuration to its file.
-    '''
+    """ Save the configuration to its file.
+    """
     with open(path_to_config(), 'w') as configfile:
         config.write(configfile)
 
