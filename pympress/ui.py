@@ -58,9 +58,6 @@ from pympress import document, surfacecache, util, pointer, scribble, config, bu
 class UI(builder.Builder):
     """ Pympress GUI management.
     """
-    #: :class:`~pympress.surfacecache.SurfaceCache` instance.
-    cache = None
-
     #: Content window, as a :class:`Gtk.Window` instance.
     c_win = None
     #: :class:`~Gtk.AspectFrame` for the Content window.
@@ -93,21 +90,19 @@ class UI(builder.Builder):
     c_win_fullscreen = False
     #: Fullscreen toggle for presenter window. By config value, start in fullscreen mode.
     p_win_fullscreen = False
+    #: track state of preview window
+    p_win_maximized = True
 
     #: Indicates whether we should delay redraws on some drawing areas to fluidify resizing gtk.paned
     resize_panes = False
     #: Tracks return values of GLib.timeout_add to cancel gtk.paned's redraw callbacks
     redraw_timeout = 0
 
-    #: Current :class:`~pympress.document.Document` instance.
-    doc = None
-
     #: Whether to use notes mode or not
     notes_mode = False
 
     #: Whether to display annotations or not
     show_annotations = True
-
     #: Whether to display big buttons or not
     show_bigbuttons = True
     #: :class:`Gtk.ToolButton` big button for touch screens, go to previous slide
@@ -120,12 +115,6 @@ class UI(builder.Builder):
     #: number of page currently displayed in Controller window's miniatures
     page_preview_nb = 0
 
-    #: track state of preview window
-    p_win_maximized = True
-
-    #: :class:`pympress.config.Config` to remember preferences
-    config = config.Config()
-
     #: track whether we blank the screen
     blanked = False
 
@@ -133,6 +122,15 @@ class UI(builder.Builder):
     placeable_widgets = {}
     #: Map of :class:`Gtk.Paned` to the relative position (float between 0 and 1) of its handle
     pane_handle_pos = {}
+
+    #: :class:`pympress.config.Config` to remember preferences
+    config = config.Config()
+
+    #: :class:`~pympress.surfacecache.SurfaceCache` instance.
+    cache = None
+
+    #: Current :class:`~pympress.document.Document` instance.
+    doc = None
 
     #: Class :class:`pympress.scribble.Scribble` managing drawing by the user on top of the current slide.
     scribbler = scribble.Scribbler()
@@ -152,6 +150,11 @@ class UI(builder.Builder):
 
     # The :class:`UI` singleton, since there is only one (as a class variable). Used by classmethods only.
     _instance = None
+
+
+    ##############################################################################
+    #############################      UI setup      #############################
+    ##############################################################################
 
     def __init__(self, ett = 0, docpath = None):
         """
@@ -230,43 +233,6 @@ class UI(builder.Builder):
         self.next_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
         self.p_frame_annot.set_visible(self.show_annotations)
-
-
-    def swap_document(self, docpath):
-        """ Replace the currently open document with a new one
-
-        The new document is possibly and EmptyDocument if docpath is None.
-        The state of the ui and cache are updated accordingly.
-
-        Args:
-            docpath (str): the absolute path to the new document
-        """
-        self.doc = document.Document.create(docpath)
-
-        # Use notes mode by default if the document has notes
-        if self.notes_mode != self.doc.has_notes():
-            self.switch_mode()
-
-        # Some things that need updating
-        self.cache.swap_document(self.doc)
-        self.scribbler.cache.swap_document(self.doc)
-        self.page_number.set_last(self.doc.pages_number())
-
-        # Draw the new page(s)
-        self.talk_time.pause()
-        self.talk_time.reset_timer()
-        self.on_page_change(False)
-
-
-    def recent_document(self, recent_menu):
-        """ Callback for the recent document menu.
-
-        Gets the URI and requests the document swap.
-
-        Args:
-            recent_menu (:class:`~Gtk.RecentChooserMenu`): the recent docs menu
-        """
-        self.swap_document(recent_menu.get_current_uri())
 
 
     def make_cwin(self):
@@ -369,16 +335,89 @@ class UI(builder.Builder):
             self.c_win.fullscreen()
 
 
-    def on_drag_drop(self, widget, drag_context, x, y, data,info, time):
-        """ Receive the drag-drops (as text only). If a file is dropped, open it.
+    ##############################################################################
+    ############################   Dynamic resize   ##############################
+    ##############################################################################
+
+    def on_configure_da(self, widget, event):
+        """ Manage "configure" events for all drawing areas.
+
+        In the GTK world, this event is triggered when a widget's configuration
+        is modified, for example when its size changes. So, when this event is
+        triggered, we tell the local :class:`~pympress.surfacecache.SurfaceCache`
+        instance about it, so that it can invalidate its internal cache for the
+        specified widget and pre-render next pages at a correct size.
+
+        Warning: Some not-explicitely sent signals contain wrong values! Just don't resize in that case,
+        since these always seem to happen after a correct signal that was sent explicitely.
+
+        Args:
+            widget (:class:`Gtk.Widget`):  the widget which has been resized
+            event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
-        received = data.get_text()
-        if received.startswith('file://'):
-            received = received[len('file://'):]
 
-        if os.path.isfile(received) and received.lower().endswith('.pdf'):
-            self.swap_document(os.path.abspath(received))
+        # Don't trust those
+        if not event.send_event:
+            return
 
+        self.cache.resize_widget(widget.get_name(), event.width, event.height)
+
+        if widget is self.c_da:
+            self.medias.resize()
+
+
+    def on_configure_win(self, widget, event):
+        """ Manage "configure" events for both window widgets.
+
+        Args:
+            widget (:class:`Gtk.Widget`):  the window which has been moved or resized
+            event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
+        """
+        if widget is self.p_win:
+            p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_frame_cur.get_parent_window())
+            self.config.set('presenter', 'monitor', str(p_monitor))
+            cw = self.p_central.get_allocated_width()
+            ch = self.p_central.get_allocated_height()
+            self.scribbler.off_render.set_size_request(cw, ch)
+
+        elif widget is self.c_win:
+            c_monitor = self.c_win.get_screen().get_monitor_at_window(self.c_frame.get_parent_window())
+            self.config.set('content', 'monitor', str(c_monitor))
+
+
+    def redraw_panes(self):
+        """ Callback to redraw gtk.paned's drawing areas, used for delayed drawing events
+        """
+        self.resize_panes = False
+        self.p_da_cur.queue_draw()
+        self.p_da_next.queue_draw()
+        if self.notes_mode:
+            self.p_da_notes.queue_draw()
+        if self.redraw_timeout:
+            self.redraw_timeout = 0
+
+        # Temporarily, while p_frame_annot's configure-event is not working
+        self.annotations.on_configure_annot(self.p_frame_annot, None)
+
+
+    def on_pane_event(self, widget, evt):
+        """ Signal handler for gtk.paned events
+
+        This function allows to delay drawing events when resizing, and to speed up redrawing when
+        moving the middle pane is done (which happens at the end of a mouse resize)
+        """
+        if type(evt) == Gdk.EventButton and evt.type == Gdk.EventType.BUTTON_RELEASE:
+            self.redraw_panes()
+        elif type(evt) == GObject.GParamSpec and evt.name == "position":
+            self.resize_panes = True
+            if self.redraw_timeout:
+                GLib.Source.remove(self.redraw_timeout)
+            self.redraw_timeout = GLib.timeout_add(200, self.redraw_panes)
+
+
+    ############################################################################
+    ############################  Program lifetime  ############################
+    ############################################################################
 
     def run(self):
         """ Run the GTK main loop.
@@ -402,18 +441,75 @@ class UI(builder.Builder):
         Gtk.main_quit()
 
 
-    def close_file(self, *args):
-        """ Remove the current document.
+    def menu_about(self, widget=None, event=None):
+        """ Display the "About pympress" dialog.
         """
-        self.swap_document(None)
+        about = Gtk.AboutDialog()
+        about.set_program_name('pympress')
+        about.set_version(pympress.__version__)
+        about.set_copyright(_('Contributors:') + '\n' + pympress.__copyright__)
+        about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n')
+                         + _('Some preferences are saved in ') + util.Config.path_to_config() + '\n\n'
+                         + (_('Video support using VLC is enabled.') if vlc_enabled else _('Video support using VLC is disabled.')))
+        about.set_website('http://www.pympress.xyz/')
+        try:
+            about.set_logo(util.get_icon_pixbuf('pympress-128.png'))
+        except Exception as e:
+            logger.exception(_('Error loading icon for about window'))
+        about.run()
+        about.destroy()
 
 
-    @classmethod
-    def get_current_page(cls):
-        """ Statically get page and page type
+    ##############################################################################
+    ############################ Document manangement ############################
+    ##############################################################################
+
+    def swap_document(self, docpath):
+        """ Replace the currently open document with a new one
+
+        The new document is possibly and EmptyDocument if docpath is None.
+        The state of the ui and cache are updated accordingly.
+
+        Args:
+            docpath (str): the absolute path to the new document
         """
-        self = cls._instance
-        return self.doc.current_page(), PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR
+        self.doc = document.Document.create(docpath)
+
+        # Use notes mode by default if the document has notes
+        if self.notes_mode != self.doc.has_notes():
+            self.switch_mode()
+
+        # Some things that need updating
+        self.cache.swap_document(self.doc)
+        self.scribbler.cache.swap_document(self.doc)
+        self.page_number.set_last(self.doc.pages_number())
+
+        # Draw the new page(s)
+        self.talk_time.pause()
+        self.talk_time.reset_timer()
+        self.on_page_change(False)
+
+
+    def recent_document(self, recent_menu):
+        """ Callback for the recent document menu.
+
+        Gets the URI and requests the document swap.
+
+        Args:
+            recent_menu (:class:`~Gtk.RecentChooserMenu`): the recent docs menu
+        """
+        self.swap_document(recent_menu.get_current_uri())
+
+
+    def on_drag_drop(self, widget, drag_context, x, y, data,info, time):
+        """ Receive the drag-drops (as text only). If a file is dropped, open it.
+        """
+        received = data.get_text()
+        if received.startswith('file://'):
+            received = received[len('file://'):]
+
+        if os.path.isfile(received) and received.lower().endswith('.pdf'):
+            self.swap_document(os.path.abspath(received))
 
 
     def pick_file(self, *args):
@@ -446,24 +542,23 @@ class UI(builder.Builder):
         dialog.destroy()
 
 
-    def menu_about(self, widget=None, event=None):
-        """ Display the "About pympress" dialog.
+    def close_file(self, *args):
+        """ Remove the current document.
         """
-        about = Gtk.AboutDialog()
-        about.set_program_name('pympress')
-        about.set_version(pympress.__version__)
-        about.set_copyright(_('Contributors:') + '\n' + pympress.__copyright__)
-        about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n')
-                         + _('Some preferences are saved in ') + util.Config.path_to_config() + '\n\n'
-                         + (_('Video support using VLC is enabled.') if vlc_enabled else _('Video support using VLC is disabled.')))
-        about.set_website('http://www.pympress.xyz/')
-        try:
-            about.set_logo(util.get_icon_pixbuf('pympress-128.png'))
-        except Exception as e:
-            logger.exception(_('Error loading icon for about window'))
-        about.run()
-        about.destroy()
+        self.swap_document(None)
 
+
+    @classmethod
+    def get_current_page(cls):
+        """ Statically get page and page type
+        """
+        self = cls._instance
+        return self.doc.current_page(), PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR
+
+
+    ##############################################################################
+    ############################  Displaying content  ############################
+    ##############################################################################
 
     def page_preview(self, widget, *args):
         """ Switch to another page and display it.
@@ -573,53 +668,6 @@ class UI(builder.Builder):
         self.medias.replace_media_overlays(self.doc.current_page())
 
 
-    @classmethod
-    def notify_page_change(cls, unpause = True):
-        """ Statically notify the UI of a page change (typically from document)
-        """
-        cls._instance.on_page_change(unpause)
-
-
-    def redraw_panes(self):
-        """ Callback to redraw gtk.paned's drawing areas, used for delayed drawing events
-        """
-        self.resize_panes = False
-        self.p_da_cur.queue_draw()
-        self.p_da_next.queue_draw()
-        if self.notes_mode:
-            self.p_da_notes.queue_draw()
-        if self.redraw_timeout:
-            self.redraw_timeout = 0
-
-        # Temporarily, while p_frame_annot's configure-event is not working
-        self.annotations.on_configure_annot(self.p_frame_annot, None)
-
-
-    @classmethod
-    def redraw_current_slide(cls):
-        """ Static way to queue a redraw of the current slides (in both winows)
-        """
-        self = cls._instance
-
-        self.c_da.queue_draw()
-        self.p_da_cur.queue_draw()
-
-
-    def on_pane_event(self, widget, evt):
-        """ Signal handler for gtk.paned events
-
-        This function allows to delay drawing events when resizing, and to speed up redrawing when
-        moving the middle pane is done (which happens at the end of a mouse resize)
-        """
-        if type(evt) == Gdk.EventButton and evt.type == Gdk.EventType.BUTTON_RELEASE:
-            self.redraw_panes()
-        elif type(evt) == GObject.GParamSpec and evt.name == "position":
-            self.resize_panes = True
-            if self.redraw_timeout:
-                GLib.Source.remove(self.redraw_timeout)
-            self.redraw_timeout = GLib.timeout_add(200, self.redraw_panes)
-
-
     def on_draw(self, widget, cairo_context):
         """ Manage draw events for both windows.
 
@@ -684,51 +732,26 @@ class UI(builder.Builder):
         cairo_context.paint()
 
 
-    def on_configure_da(self, widget, event):
-        """ Manage "configure" events for all drawing areas.
-
-        In the GTK world, this event is triggered when a widget's configuration
-        is modified, for example when its size changes. So, when this event is
-        triggered, we tell the local :class:`~pympress.surfacecache.SurfaceCache`
-        instance about it, so that it can invalidate its internal cache for the
-        specified widget and pre-render next pages at a correct size.
-
-        Warning: Some not-explicitely sent signals contain wrong values! Just don't resize in that case,
-        since these always seem to happen after a correct signal that was sent explicitely.
-
-        Args:
-            widget (:class:`Gtk.Widget`):  the widget which has been resized
-            event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
+    @classmethod
+    def notify_page_change(cls, unpause = True):
+        """ Statically notify the UI of a page change (typically from document)
         """
-
-        # Don't trust those
-        if not event.send_event:
-            return
-
-        self.cache.resize_widget(widget.get_name(), event.width, event.height)
-
-        if widget is self.c_da:
-            self.medias.resize()
+        cls._instance.on_page_change(unpause)
 
 
-    def on_configure_win(self, widget, event):
-        """ Manage "configure" events for both window widgets.
-
-        Args:
-            widget (:class:`Gtk.Widget`):  the window which has been moved or resized
-            event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
+    @classmethod
+    def redraw_current_slide(cls):
+        """ Static way to queue a redraw of the current slides (in both winows)
         """
-        if widget is self.p_win:
-            p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_frame_cur.get_parent_window())
-            self.config.set('presenter', 'monitor', str(p_monitor))
-            cw = self.p_central.get_allocated_width()
-            ch = self.p_central.get_allocated_height()
-            self.scribbler.off_render.set_size_request(cw, ch)
+        self = cls._instance
 
-        elif widget is self.c_win:
-            c_monitor = self.c_win.get_screen().get_monitor_at_window(self.c_frame.get_parent_window())
-            self.config.set('content', 'monitor', str(c_monitor))
+        self.c_da.queue_draw()
+        self.p_da_cur.queue_draw()
 
+
+    ##############################################################################
+    ############################     User inputs      ############################
+    ##############################################################################
 
     def on_navigation(self, widget, event):
         """ Manage key presses for both windows
@@ -825,7 +848,6 @@ class UI(builder.Builder):
         # send to spinner if it is active
         elif self.page_number.on_scroll(widget, event):
             return True
-
         elif self.annotations.on_scroll(widget, event):
             return True
         else:
@@ -939,22 +961,6 @@ class UI(builder.Builder):
         self.page_number.on_label_event(True)
 
 
-    @classmethod
-    def stop_editing_slide(cls):
-        """ Make sure that the current page number is not being edited.
-        """
-        cls._instance.page_number.restore_current_label()
-
-
-    @classmethod
-    def stop_editing_time(cls):
-        """ Make sure that the estiamte talk time is not being edited.
-        """
-        cls._instance.talk_time.restore_current_label_ett()
-
-
-
-
     def switch_fullscreen(self, widget=None, event=None):
         """ Switch the Content window to fullscreen (if in normal mode)
         or to normal mode (if fullscreen).
@@ -1033,6 +1039,24 @@ class UI(builder.Builder):
             self.config.set('content', prop, str(button.get_value()))
 
 
+    @classmethod
+    def stop_editing_slide(cls):
+        """ Make sure that the current page number is not being edited.
+        """
+        cls._instance.page_number.restore_current_label()
+
+
+    @classmethod
+    def stop_editing_time(cls):
+        """ Make sure that the estiamte talk time is not being edited.
+        """
+        cls._instance.talk_time.restore_current_label_ett()
+
+
+    ##############################################################################
+    ############################    Option toggles    ############################
+    ##############################################################################
+
     def swap_screens(self, widget=None, event=None):
         """ Swap the monitors on which each window is displayed (if there are 2 monitors at least).
         """
@@ -1084,7 +1108,7 @@ class UI(builder.Builder):
     def switch_mode(self, widget=None, event=None):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
         """
-        self.scribbler.scribbler.disable_scribbling()
+        self.scribbler.disable_scribbling()
 
         if self.notes_mode:
             self.notes_mode = False
