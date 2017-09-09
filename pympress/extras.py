@@ -87,7 +87,7 @@ class Annotations(object):
     def on_configure_annot(self, widget, event):
         """ Adjust wrap width in annotations when they are resized.
         """
-        self.annotation_renderer.props.wrap_width = widget.get_allocated_width() - 10
+        self.annotation_renderer.props.wrap_width = max(30, widget.get_allocated_width() - 10)
         self.scrolled_window.queue_resize()
         self.scrollable_treelist.get_column(0).queue_resize()
 
