@@ -97,10 +97,11 @@ include_files += [(f,  f.split(os.path.sep, 1)[1]) for f in glob.glob(os.path.jo
 buildOptions = dict(
     includes = [],
     excludes = [],
-    packages = ['gi', 'vlc', 'six'],
+    packages = ['gi', 'six', 'packaging', 'appdirs'],
     include_files = include_files,
     silent = True
 )
+
 
 include_vlc = None
 while include_vlc not in ['y', 'n', '']:
