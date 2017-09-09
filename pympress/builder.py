@@ -147,12 +147,23 @@ class Builder(Gtk.Builder):
                     setattr(self, obj_id, obj)
 
 
+    def list_attributes(self, target):
+        """
+        """
+        for attr in dir(target):
+            try:
+                if attr[:2] + attr[-2:] != '____' and getattr(target, attr) is None:
+                    yield attr
+            except RuntimeError:
+                pass
+
+
     def load_widgets(self, target):
         """ Fill in target with the missing elements introspectively.
             This means that all attributes of target that are None at this time must exist under the same name in the builder.
         """
-        for n in (attr for attr in dir(target) if getattr(target, attr) is None and attr[:2] + attr[-2:] != '____'):
-            setattr(target, n, self.get_object(n))
+        for attr in self.list_attributes(target):
+            setattr(target, attr, self.get_object(attr))
 
 
     def replace_layout(self, layout, top_widget, leaf_widgets, pane_resize_handler = None):
