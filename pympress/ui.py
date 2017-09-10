@@ -52,7 +52,7 @@ PDF_CONTENT_PAGE = 1
 PDF_NOTES_PAGE   = 2
 
 
-from pympress import document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number
+from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number
 
 
 class UI(builder.Builder):

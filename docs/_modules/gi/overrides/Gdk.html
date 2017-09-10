@@ -1,0 +1,672 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>gi.overrides.Gdk &mdash; Pympress developer documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Pympress developer documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
+	<br />
+	<a href="../../../index.html" class="icon icon-home"> Docs home</a>
+	<div class="version">
+		v1.0.4
+	</div>
+
+	
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+	
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html#installing">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pympress.html">Pympress package</a></li>
+</ul>
+
+            
+          
+	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
+	<a href="../../../genindex.html">Index</a>
+	<a href="../../../py-modindex.html">Module index</a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Pympress</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>gi.overrides.Gdk</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/Cimbali/pympress/blob/master/docs/source/_modules/gi/overrides/Gdk" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gi.overrides.Gdk</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- Mode: Python; py-indent-offset: 4 -*-</span>
+<span class="c1"># vim: tabstop=4 shiftwidth=4 expandtab</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C) 2009 Johan Dahlin &lt;johan@gnome.org&gt;</span>
+<span class="c1">#               2010 Simon van der Linden &lt;svdlinden@src.gnome.org&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># This library is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU Lesser General Public</span>
+<span class="c1"># License as published by the Free Software Foundation; either</span>
+<span class="c1"># version 2.1 of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This library is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</span>
+<span class="c1"># Lesser General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public</span>
+<span class="c1"># License along with this library; if not, write to the Free Software</span>
+<span class="c1"># Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301</span>
+<span class="c1"># USA</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">..overrides</span> <span class="k">import</span> <span class="n">override</span><span class="p">,</span> <span class="n">strip_boolean_result</span>
+<span class="kn">from</span> <span class="nn">..module</span> <span class="k">import</span> <span class="n">get_introspection_module</span>
+<span class="kn">from</span> <span class="nn">gi</span> <span class="k">import</span> <span class="n">PyGIDeprecationWarning</span><span class="p">,</span> <span class="n">require_version</span>
+
+<span class="n">Gdk</span> <span class="o">=</span> <span class="n">get_introspection_module</span><span class="p">(</span><span class="s1">&#39;Gdk&#39;</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<span class="c1"># https://bugzilla.gnome.org/show_bug.cgi?id=673396</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">require_version</span><span class="p">(</span><span class="s2">&quot;GdkX11&quot;</span><span class="p">,</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">GdkX11</span>
+    <span class="n">GdkX11</span>  <span class="c1"># pyflakes</span>
+<span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Gdk</span><span class="p">,</span> <span class="s1">&#39;Color&#39;</span><span class="p">):</span>
+    <span class="c1"># Gdk.Color was deprecated since 3.14 and dropped in Gtk+-4.0</span>
+    <span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Color</span><span class="p">):</span>
+        <span class="n">MAX_VALUE</span> <span class="o">=</span> <span class="mi">65535</span>
+
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">):</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">red</span> <span class="o">=</span> <span class="n">red</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">green</span> <span class="o">=</span> <span class="n">green</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blue</span> <span class="o">=</span> <span class="n">blue</span>
+
+        <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;Gdk.Color(red=</span><span class="si">%d</span><span class="s1">, green=</span><span class="si">%d</span><span class="s1">, blue=</span><span class="si">%d</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blue</span><span class="p">)</span>
+
+        <span class="n">red_float</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">red</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">),</span>
+                             <span class="n">fset</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">)))</span>
+
+        <span class="n">green_float</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">green</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">),</span>
+                               <span class="n">fset</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">)))</span>
+
+        <span class="n">blue_float</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">blue</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">),</span>
+                              <span class="n">fset</span><span class="o">=</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">)))</span>
+
+        <span class="k">def</span> <span class="nf">to_floats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Return (red_float, green_float, blue_float) triple.&quot;&quot;&quot;</span>
+
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">red_float</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">green_float</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blue_float</span><span class="p">)</span>
+
+        <span class="nd">@staticmethod</span>
+        <span class="k">def</span> <span class="nf">from_floats</span><span class="p">(</span><span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Return a new Color object from red/green/blue values from 0.0 to 1.0.&quot;&quot;&quot;</span>
+
+            <span class="k">return</span> <span class="n">Color</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">red</span> <span class="o">*</span> <span class="n">Color</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">),</span>
+                         <span class="nb">int</span><span class="p">(</span><span class="n">green</span> <span class="o">*</span> <span class="n">Color</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">),</span>
+                         <span class="nb">int</span><span class="p">(</span><span class="n">blue</span> <span class="o">*</span> <span class="n">Color</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">))</span>
+
+
+    <span class="n">Color</span> <span class="o">=</span> <span class="n">override</span><span class="p">(</span><span class="n">Color</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Color&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Gdk</span><span class="p">,</span> <span class="s1">&#39;RGBA&#39;</span><span class="p">):</span>
+    <span class="c1"># Introduced since Gtk+-3.0</span>
+    <span class="k">class</span> <span class="nc">RGBA</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">RGBA</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">red</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">green</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">blue</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">RGBA</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">red</span> <span class="o">=</span> <span class="n">red</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">green</span> <span class="o">=</span> <span class="n">green</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blue</span> <span class="o">=</span> <span class="n">blue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+
+        <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;Gdk.RGBA(red=</span><span class="si">%f</span><span class="s1">, green=</span><span class="si">%f</span><span class="s1">, blue=</span><span class="si">%f</span><span class="s1">, alpha=</span><span class="si">%f</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Iterator which allows easy conversion to tuple and list types.&quot;&quot;&quot;</span>
+
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">red</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">green</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">blue</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
+
+        <span class="k">def</span> <span class="nf">to_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Converts this RGBA into a Color instance which excludes alpha.&quot;&quot;&quot;</span>
+
+            <span class="k">return</span> <span class="n">Color</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">red</span> <span class="o">*</span> <span class="n">Color</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">),</span>
+                         <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">green</span> <span class="o">*</span> <span class="n">Color</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">),</span>
+                         <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blue</span> <span class="o">*</span> <span class="n">Color</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">))</span>
+
+        <span class="nd">@classmethod</span>
+        <span class="k">def</span> <span class="nf">from_color</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Returns a new RGBA instance given a Color instance.&quot;&quot;&quot;</span>
+
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">color</span><span class="o">.</span><span class="n">red_float</span><span class="p">,</span> <span class="n">color</span><span class="o">.</span><span class="n">green_float</span><span class="p">,</span> <span class="n">color</span><span class="o">.</span><span class="n">blue_float</span><span class="p">)</span>
+
+    <span class="n">RGBA</span> <span class="o">=</span> <span class="n">override</span><span class="p">(</span><span class="n">RGBA</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;RGBA&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="s1">&#39;2.0&#39;</span><span class="p">:</span>
+    <span class="k">class</span> <span class="nc">Rectangle</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">):</span>
+
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">Rectangle</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+
+        <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;Gdk.Rectangle(x=</span><span class="si">%d</span><span class="s1">, y=</span><span class="si">%d</span><span class="s1">, width=</span><span class="si">%d</span><span class="s1">, height=</span><span class="si">%d</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+
+    <span class="n">Rectangle</span> <span class="o">=</span> <span class="n">override</span><span class="p">(</span><span class="n">Rectangle</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Rectangle&#39;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Newer GTK+/gobject-introspection (3.17.x) include GdkRectangle in the</span>
+    <span class="c1"># typelib. See https://bugzilla.gnome.org/show_bug.cgi?id=748832 and</span>
+    <span class="c1"># https://bugzilla.gnome.org/show_bug.cgi?id=748833</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Gdk</span><span class="p">,</span> <span class="s1">&#39;Rectangle&#39;</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">cairo</span> <span class="k">as</span> <span class="n">_cairo</span>
+        <span class="n">Rectangle</span> <span class="o">=</span> <span class="n">_cairo</span><span class="o">.</span><span class="n">RectangleInt</span>
+
+        <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Rectangle&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># https://bugzilla.gnome.org/show_bug.cgi?id=756364</span>
+        <span class="c1"># These methods used to be functions, keep aliases for backwards compat</span>
+        <span class="n">rectangle_intersect</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Rectangle</span><span class="o">.</span><span class="n">intersect</span>
+        <span class="n">rectangle_union</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Rectangle</span><span class="o">.</span><span class="n">union</span>
+
+        <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;rectangle_intersect&#39;</span><span class="p">)</span>
+        <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;rectangle_union&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="s1">&#39;2.0&#39;</span><span class="p">:</span>
+    <span class="k">class</span> <span class="nc">Drawable</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Drawable</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">cairo_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">cairo_create</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="n">Drawable</span> <span class="o">=</span> <span class="n">override</span><span class="p">(</span><span class="n">Drawable</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Drawable&#39;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Window</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">attributes_mask</span><span class="p">):</span>
+            <span class="c1"># Gdk.Window had to be made abstract,</span>
+            <span class="c1"># this override allows using the standard constructor</span>
+            <span class="k">return</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Window</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">attributes_mask</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">attributes_mask</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="k">def</span> <span class="nf">cairo_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">cairo_create</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="n">Window</span> <span class="o">=</span> <span class="n">override</span><span class="p">(</span><span class="n">Window</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Window&#39;</span><span class="p">)</span>
+
+<span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_2BUTTON_PRESS</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="p">,</span> <span class="s2">&quot;2BUTTON_PRESS&quot;</span><span class="p">)</span>
+<span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_3BUTTON_PRESS</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="p">,</span> <span class="s2">&quot;3BUTTON_PRESS&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Event</span><span class="p">):</span>
+    <span class="n">_UNION_MEMBERS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DELETE</span><span class="p">:</span> <span class="s1">&#39;any&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DESTROY</span><span class="p">:</span> <span class="s1">&#39;any&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">EXPOSE</span><span class="p">:</span> <span class="s1">&#39;expose&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">MOTION_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;motion&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_PRESS</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_2BUTTON_PRESS</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_3BUTTON_PRESS</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_RELEASE</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">KEY_PRESS</span><span class="p">:</span> <span class="s1">&#39;key&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">KEY_RELEASE</span><span class="p">:</span> <span class="s1">&#39;key&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">ENTER_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;crossing&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">LEAVE_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;crossing&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">FOCUS_CHANGE</span><span class="p">:</span> <span class="s1">&#39;focus_change&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">CONFIGURE</span><span class="p">:</span> <span class="s1">&#39;configure&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">MAP</span><span class="p">:</span> <span class="s1">&#39;any&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">UNMAP</span><span class="p">:</span> <span class="s1">&#39;any&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">PROPERTY_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;property&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">SELECTION_CLEAR</span><span class="p">:</span> <span class="s1">&#39;selection&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">SELECTION_REQUEST</span><span class="p">:</span> <span class="s1">&#39;selection&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">SELECTION_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;selection&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">PROXIMITY_IN</span><span class="p">:</span> <span class="s1">&#39;proximity&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">PROXIMITY_OUT</span><span class="p">:</span> <span class="s1">&#39;proximity&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DRAG_ENTER</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DRAG_LEAVE</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DRAG_MOTION</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DRAG_STATUS</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DROP_START</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DROP_FINISHED</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">CLIENT_EVENT</span><span class="p">:</span> <span class="s1">&#39;client&#39;</span><span class="p">,</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">VISIBILITY_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;visibility&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="s1">&#39;2.0&#39;</span><span class="p">:</span>
+        <span class="n">_UNION_MEMBERS</span><span class="p">[</span><span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">NO_EXPOSE</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;no_expose&#39;</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="p">,</span> <span class="s1">&#39;TOUCH_BEGIN&#39;</span><span class="p">):</span>
+        <span class="n">_UNION_MEMBERS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">TOUCH_BEGIN</span><span class="p">:</span> <span class="s1">&#39;touch&#39;</span><span class="p">,</span>
+                <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">TOUCH_UPDATE</span><span class="p">:</span> <span class="s1">&#39;touch&#39;</span><span class="p">,</span>
+                <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">TOUCH_END</span><span class="p">:</span> <span class="s1">&#39;touch&#39;</span><span class="p">,</span>
+                <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">TOUCH_CANCEL</span><span class="p">:</span> <span class="s1">&#39;touch&#39;</span><span class="p">,</span>
+            <span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">real_event</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_UNION_MEMBERS&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">real_event</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">real_event</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; object has no attribute &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">real_event</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_UNION_MEMBERS&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">real_event</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">real_event</span><span class="p">),</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">Event</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">base_repr</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Event</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&gt;&lt;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2"> type=</span><span class="si">%r</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">base_repr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+
+<span class="n">Event</span> <span class="o">=</span> <span class="n">override</span><span class="p">(</span><span class="n">Event</span><span class="p">)</span>
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Event&#39;</span><span class="p">)</span>
+
+<span class="c1"># manually bind GdkEvent members to GdkEvent</span>
+
+<span class="n">modname</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;__name__&#39;</span><span class="p">]</span>
+<span class="n">module</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">modname</span><span class="p">]</span>
+
+<span class="c1"># right now we can&#39;t get the type_info from the</span>
+<span class="c1"># field info so manually list the class names</span>
+<span class="n">event_member_classes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EventAny&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventExpose&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventVisibility&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventMotion&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventButton&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventScroll&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventKey&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventCrossing&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventFocus&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventConfigure&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventProperty&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventSelection&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventOwnerChange&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventProximity&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventDND&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventWindowState&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventSetting&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;EventGrabBroken&#39;</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="s1">&#39;2.0&#39;</span><span class="p">:</span>
+    <span class="n">event_member_classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;EventNoExpose&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Gdk</span><span class="p">,</span> <span class="s1">&#39;EventTouch&#39;</span><span class="p">):</span>
+    <span class="n">event_member_classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;EventTouch&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># whitelist all methods that have a success return we want to mask</span>
+<span class="n">gsuccess_mask_funcs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;get_state&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;get_axis&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;get_coords&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;get_root_coords&#39;</span><span class="p">]</span>
+
+
+<span class="k">for</span> <span class="n">event_class</span> <span class="ow">in</span> <span class="n">event_member_classes</span><span class="p">:</span>
+    <span class="n">override_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">event_class</span><span class="p">,</span> <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">Gdk</span><span class="p">,</span> <span class="n">event_class</span><span class="p">),),</span> <span class="p">{})</span>
+    <span class="c1"># add the event methods</span>
+    <span class="k">for</span> <span class="n">method_info</span> <span class="ow">in</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Event</span><span class="o">.</span><span class="n">__info__</span><span class="o">.</span><span class="n">get_methods</span><span class="p">():</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">method_info</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+        <span class="n">event_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="c1"># python2 we need to use the __func__ attr to avoid internal</span>
+        <span class="c1"># instance checks</span>
+        <span class="n">event_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">event_method</span><span class="p">,</span> <span class="s1">&#39;__func__&#39;</span><span class="p">,</span> <span class="n">event_method</span><span class="p">)</span>
+
+        <span class="c1"># use the _gsuccess_mask decorator if this method is whitelisted</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">gsuccess_mask_funcs</span><span class="p">:</span>
+            <span class="n">event_method</span> <span class="o">=</span> <span class="n">strip_boolean_result</span><span class="p">(</span><span class="n">event_method</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">override_class</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">event_method</span><span class="p">)</span>
+
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">event_class</span><span class="p">,</span> <span class="n">override_class</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_class</span><span class="p">)</span>
+
+<span class="c1"># end GdkEvent overrides</span>
+
+
+<span class="k">class</span> <span class="nc">DragContext</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">DragContext</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success</span><span class="p">,</span> <span class="n">del_</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="n">Gtk</span> <span class="o">=</span> <span class="n">get_introspection_module</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">)</span>
+        <span class="n">Gtk</span><span class="o">.</span><span class="n">drag_finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success</span><span class="p">,</span> <span class="n">del_</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+
+
+<span class="n">DragContext</span> <span class="o">=</span> <span class="n">override</span><span class="p">(</span><span class="n">DragContext</span><span class="p">)</span>
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;DragContext&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Cursor</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Cursor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="n">arg_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">kwd_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwds</span><span class="p">)</span>
+        <span class="n">total_len</span> <span class="o">=</span> <span class="n">arg_len</span> <span class="o">+</span> <span class="n">kwd_len</span>
+
+        <span class="k">if</span> <span class="n">total_len</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Since g_object_newv (super.__new__) does not seem valid for</span>
+            <span class="c1"># direct use with GdkCursor, we must assume usage of at least</span>
+            <span class="c1"># one of the C constructors to be valid.</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">total_len</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Calling &quot;Gdk.Cursor(display, cursor_type)&quot; has been deprecated. &#39;</span>
+                          <span class="s1">&#39;Please use Gdk.Cursor.new_for_display(display, cursor_type). &#39;</span>
+                          <span class="s1">&#39;See: https://wiki.gnome.org/PyGObject/InitializerDeprecations&#39;</span><span class="p">,</span>
+                          <span class="n">PyGIDeprecationWarning</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">new_for_display</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">total_len</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Calling &quot;Gdk.Cursor(display, pixbuf, x, y)&quot; has been deprecated. &#39;</span>
+                          <span class="s1">&#39;Please use Gdk.Cursor.new_from_pixbuf(display, pixbuf, x, y). &#39;</span>
+                          <span class="s1">&#39;See: https://wiki.gnome.org/PyGObject/InitializerDeprecations&#39;</span><span class="p">,</span>
+                          <span class="n">PyGIDeprecationWarning</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">new_from_pixbuf</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">total_len</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="o">!=</span> <span class="s1">&#39;2.0&#39;</span><span class="p">:</span>
+                <span class="c1"># pixmaps don&#39;t exist in Gdk 3.0</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong number of parameters&quot;</span><span class="p">)</span>
+
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Calling &quot;Gdk.Cursor(source, mask, fg, bg, x, y)&quot; has been deprecated. &#39;</span>
+                          <span class="s1">&#39;Please use Gdk.Cursor.new_from_pixmap(source, mask, fg, bg, x, y). &#39;</span>
+                          <span class="s1">&#39;See: https://wiki.gnome.org/PyGObject/InitializerDeprecations&#39;</span><span class="p">,</span>
+                          <span class="n">PyGIDeprecationWarning</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">new_from_pixmap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong number of parameters&quot;</span><span class="p">)</span>
+
+
+<span class="n">Cursor</span> <span class="o">=</span> <span class="n">override</span><span class="p">(</span><span class="n">Cursor</span><span class="p">)</span>
+<span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Cursor&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Gdk</span><span class="p">,</span> <span class="s1">&#39;color_parse&#39;</span><span class="p">):</span>
+    <span class="c1"># Gdk.Color was deprecated since 3.14 and dropped in Gtk+-4.0</span>
+    <span class="n">color_parse</span> <span class="o">=</span> <span class="n">strip_boolean_result</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">color_parse</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;color_parse&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># Note, we cannot override the entire class as Gdk.Atom has no gtype, so just</span>
+<span class="c1"># hack some individual methods</span>
+<span class="k">def</span> <span class="nf">_gdk_atom_str</span><span class="p">(</span><span class="n">atom</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">n</span>
+    <span class="c1"># fall back to atom index</span>
+    <span class="k">return</span> <span class="s1">&#39;Gdk.Atom&lt;</span><span class="si">%i</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="nb">hash</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_gdk_atom_repr</span><span class="p">(</span><span class="n">atom</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;Gdk.Atom.intern(&quot;</span><span class="si">%s</span><span class="s1">&quot;, False)&#39;</span> <span class="o">%</span> <span class="n">n</span>
+    <span class="c1"># fall back to atom index</span>
+    <span class="k">return</span> <span class="s1">&#39;&lt;Gdk.Atom(</span><span class="si">%i</span><span class="s1">)&gt;&#39;</span> <span class="o">%</span> <span class="nb">hash</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+
+
+<span class="n">Gdk</span><span class="o">.</span><span class="n">Atom</span><span class="o">.</span><span class="fm">__str__</span> <span class="o">=</span> <span class="n">_gdk_atom_str</span>
+<span class="n">Gdk</span><span class="o">.</span><span class="n">Atom</span><span class="o">.</span><span class="fm">__repr__</span> <span class="o">=</span> <span class="n">_gdk_atom_repr</span>
+
+
+<span class="c1"># constants</span>
+<span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="o">&gt;=</span> <span class="s1">&#39;3.0&#39;</span><span class="p">:</span>
+    <span class="n">SELECTION_PRIMARY</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_PRIMARY&#39;</span><span class="p">)</span>
+
+    <span class="n">SELECTION_SECONDARY</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;SECONDARY&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_SECONDARY&#39;</span><span class="p">)</span>
+
+    <span class="n">SELECTION_CLIPBOARD</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;CLIPBOARD&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_CLIPBOARD&#39;</span><span class="p">)</span>
+
+    <span class="n">TARGET_BITMAP</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;BITMAP&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;TARGET_BITMAP&#39;</span><span class="p">)</span>
+
+    <span class="n">TARGET_COLORMAP</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;COLORMAP&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;TARGET_COLORMAP&#39;</span><span class="p">)</span>
+
+    <span class="n">TARGET_DRAWABLE</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;DRAWABLE&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;TARGET_DRAWABLE&#39;</span><span class="p">)</span>
+
+    <span class="n">TARGET_PIXMAP</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;PIXMAP&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;TARGET_PIXMAP&#39;</span><span class="p">)</span>
+
+    <span class="n">TARGET_STRING</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;STRING&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;TARGET_STRING&#39;</span><span class="p">)</span>
+
+    <span class="n">SELECTION_TYPE_ATOM</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;ATOM&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_TYPE_ATOM&#39;</span><span class="p">)</span>
+
+    <span class="n">SELECTION_TYPE_BITMAP</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;BITMAP&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_TYPE_BITMAP&#39;</span><span class="p">)</span>
+
+    <span class="n">SELECTION_TYPE_COLORMAP</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;COLORMAP&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_TYPE_COLORMAP&#39;</span><span class="p">)</span>
+
+    <span class="n">SELECTION_TYPE_DRAWABLE</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;DRAWABLE&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_TYPE_DRAWABLE&#39;</span><span class="p">)</span>
+
+    <span class="n">SELECTION_TYPE_INTEGER</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;INTEGER&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_TYPE_INTEGER&#39;</span><span class="p">)</span>
+
+    <span class="n">SELECTION_TYPE_PIXMAP</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;PIXMAP&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_TYPE_PIXMAP&#39;</span><span class="p">)</span>
+
+    <span class="n">SELECTION_TYPE_WINDOW</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;WINDOW&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_TYPE_WINDOW&#39;</span><span class="p">)</span>
+
+    <span class="n">SELECTION_TYPE_STRING</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;STRING&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_TYPE_STRING&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;2.0&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="n">initialized</span><span class="p">,</span> <span class="n">argv</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">init_check</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'b&#39;0.6-200-g5b381e9&#39;',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

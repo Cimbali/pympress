@@ -83,7 +83,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html#hacking">Hacking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#contributing">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
 </ul>
 
@@ -204,24 +204,30 @@
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">vlc</span>
 
-<span class="kn">import</span> <span class="nn">pympress.util</span>
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">util</span>
 
 <span class="n">vlc_opts</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;--no-video-title-show&#39;</span><span class="p">]</span>
-<span class="k">if</span> <span class="n">pympress</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">IS_POSIX</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">util</span><span class="o">.</span><span class="n">IS_POSIX</span><span class="p">:</span>
     <span class="n">vlc_opts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;--no-xlib&#39;</span><span class="p">)</span>
 
-<span class="k">if</span> <span class="n">pympress</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">IS_WINDOWS</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">util</span><span class="o">.</span><span class="n">IS_WINDOWS</span><span class="p">:</span>
     <span class="c1"># let python find the DLLs</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vlc</span><span class="o">.</span><span class="n">plugin_path</span> <span class="o">+</span> <span class="s1">&#39;;&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span>
 
-<span class="c1"># Create a single vlc.Instance() to be shared by (possible) multiple players.</span>
+<span class="c1">#: A single vlc.Instance() to be shared by (possible) multiple players.</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">vlc</span><span class="o">.</span><span class="n">Instance</span><span class="p">(</span><span class="n">vlc_opts</span><span class="p">)</span>
 
 <div class="viewcode-block" id="get_window_handle"><a class="viewcode-back" href="../../pympress.html#pympress.vlcvideo.get_window_handle">[docs]</a><span class="k">def</span> <span class="nf">get_window_handle</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; Uses ctypes to call gdk_win32_window_get_handle which is not available</span>
+    <span class="sd">&quot;&quot;&quot; Uses ctypes to call gdk_win32_window_get_handle which is not available</span>
 <span class="sd">    in python gobject introspection porting (yet ?)</span>
 <span class="sd">    Solution from http://stackoverflow.com/a/27236258/1387346</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        window (:class:`~Gdk.Window`): The window for which we want to get the handle</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The handle to the win32 window</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># get the c gpointer of the gdk window</span>
     <span class="n">ctypes</span><span class="o">.</span><span class="n">pythonapi</span><span class="o">.</span><span class="n">PyCapsule_GetPointer</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span>
     <span class="n">ctypes</span><span class="o">.</span><span class="n">pythonapi</span><span class="o">.</span><span class="n">PyCapsule_GetPointer</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">py_object</span><span class="p">]</span>
@@ -232,11 +238,16 @@
 
 
 <div class="viewcode-block" id="VLCVideo"><a class="viewcode-back" href="../../pympress.html#pympress.vlcvideo.VLCVideo">[docs]</a><span class="k">class</span> <span class="nc">VLCVideo</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">VBox</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; Simple VLC widget.</span>
+    <span class="sd">&quot;&quot;&quot; Simple VLC widget.</span>
 
 <span class="sd">    Its player can be controlled through the &#39;player&#39; attribute, which</span>
 <span class="sd">    is a vlc.MediaPlayer() instance.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        overlay (:class:`~Gtk.Overlay`): The overlay with the slide, at the top of which we add the movie area</span>
+<span class="sd">        show_controls (`bool`): whether to display controls on the video player</span>
+<span class="sd">        relative_margins (:class:`~Poppler.Rectangle`): the margins defining the position of the video in the frame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">player</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">overlay</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">controls</span> <span class="o">=</span> <span class="kc">None</span>
@@ -275,9 +286,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">movie_zone</span><span class="o">.</span><span class="n">add_events</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">EventMask</span><span class="o">.</span><span class="n">BUTTON_PRESS_MASK</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">movie_zone</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;button-press-event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_click</span><span class="p">)</span>
 
+
 <div class="viewcode-block" id="VLCVideo.get_player_control_toolbar"><a class="viewcode-back" href="../../pympress.html#pympress.vlcvideo.VLCVideo.get_player_control_toolbar">[docs]</a>    <span class="k">def</span> <span class="nf">get_player_control_toolbar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Return a player control toolbar.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Return a player control toolbar.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tb</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Toolbar</span><span class="p">()</span>
         <span class="n">tb</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ToolbarStyle</span><span class="o">.</span><span class="n">ICONS</span><span class="p">)</span>
         <span class="n">tb</span><span class="o">.</span><span class="n">modify_bg</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">StateType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
@@ -292,6 +304,7 @@
             <span class="n">tb</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tb</span></div>
 
+
 <div class="viewcode-block" id="VLCVideo.resize"><a class="viewcode-back" href="../../pympress.html#pympress.vlcvideo.VLCVideo.resize">[docs]</a>    <span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="p">:</span>
@@ -302,15 +315,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">margin_bottom</span> <span class="o">=</span> <span class="n">ph</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">y1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">margin_top</span>    <span class="o">=</span> <span class="n">ph</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">y2</span></div>
 
+
 <div class="viewcode-block" id="VLCVideo.set_file"><a class="viewcode-back" href="../../pympress.html#pympress.vlcvideo.VLCVideo.set_file">[docs]</a>    <span class="k">def</span> <span class="nf">set_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Sets the media file to be played bu the widget.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Sets the media file to be played bu the widget.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath (`str`): The path to the media file path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">set_media</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">media_new</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span></div>
 
+
 <div class="viewcode-block" id="VLCVideo.play"><a class="viewcode-back" href="../../pympress.html#pympress.vlcvideo.VLCVideo.play">[docs]</a>    <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Start playing the media file.</span>
+        <span class="sd">&quot;&quot;&quot; Start playing the media file.</span>
 <span class="sd">        Bring the widget to the top of the overlays if necessary.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">movie_zone</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parent</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">overlay</span><span class="o">.</span><span class="n">add_overlay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -321,9 +339,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">overlay</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
         <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">play</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="VLCVideo.on_click"><a class="viewcode-back" href="../../pympress.html#pympress.vlcvideo.VLCVideo.on_click">[docs]</a>    <span class="k">def</span> <span class="nf">on_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; React to click events by playing or pausing the media.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; React to click events by playing or pausing the media.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget (:class:`~Gtk.Widget`): the widget which has received the click.</span>
+<span class="sd">            event (:class:`~Gdk.Event`): the GTK event containing the position.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parent</span><span class="p">():</span>
             <span class="c1"># How was this even clicked on?</span>
             <span class="k">return</span>
@@ -333,9 +356,10 @@
         <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DOUBLE_BUTTON_PRESS</span><span class="p">:</span>
             <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">set_time</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c1"># in ms</span></div>
 
+
 <div class="viewcode-block" id="VLCVideo.hide"><a class="viewcode-back" href="../../pympress.html#pympress.vlcvideo.VLCVideo.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Remove widget from overlays. Needs to be callded via GLib.idle_add</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Remove widget from overlays. Needs to be callded via GLib.idle_add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">movie_zone</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
 
@@ -378,7 +402,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-168-g8fc219a&#39;',
+            VERSION:'b&#39;0.6-200-g5b381e9&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
