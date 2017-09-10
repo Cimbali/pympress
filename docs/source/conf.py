@@ -39,6 +39,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -138,6 +139,17 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
+
+# Link to outside documentations
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3.4', None),
+    'Gtk': ('https://lazka.github.io/pgi-docs/Gtk-3.0', None),
+    'Gdk': ('https://lazka.github.io/pgi-docs/Gdk-3.0', None),
+    'GdkPixbuf': ('https://lazka.github.io/pgi-docs/GdkPixbuf-2.0', None),
+    'GObject': ('https://lazka.github.io/pgi-docs/GObject-2.0', None),
+    'Poppler': ('https://lazka.github.io/pgi-docs/Poppler-0.18', None),
+    'cairo': ('https://www.cairographics.org/documentation/pycairo/3', None),
+}
 
 # -- Options for HTML output ----------------------------------------------
 

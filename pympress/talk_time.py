@@ -48,14 +48,14 @@ class TalkTime(object):
     label_time = None
     #: Clock :class:`~Gtk.Label`.
     label_clock = None
-    #: Estimated talk time :class:`~gtk.Label` for the talk.
+    #: Estimated talk time :class:`~Gtk.Label` for the talk.
     label_ett = None
-    #: :class:`~gtk.EventBox` associated with the estimated talk time.
+    #: :class:`~Gtk.EventBox` associated with the estimated talk time.
     eb_ett = None
 
     #: forward keystrokes to the Content window even if the window manager puts Presenter on top
     editing_cur_ett = False
-    #: :class:`~gtk.Entry` used to set the estimated talk time.
+    #: :class:`~Gtk.Entry` used to set the estimated talk time.
     entry_ett = Gtk.Entry()
 
     #: Time at which the counter was started.
