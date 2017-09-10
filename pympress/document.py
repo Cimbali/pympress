@@ -105,6 +105,7 @@ class Link(object):
         self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
         self.follow = action
 
+
     def is_over(self, x, y):
         """ Tell if the input coordinates are on the link rectangle.
 
@@ -116,6 +117,7 @@ class Link(object):
             boolean: ``True`` if the input coordinates are within the link rectangle, ``False`` otherwise
         """
         return ( (self.x1 <= x) and (x <= self.x2) and (self.y1 <= y) and (y <= self.y2) )
+
 
     def follow(self):
         """ Follow the link to its destination.
@@ -213,6 +215,7 @@ class Page(object):
             my_annotation = Link(annotation.area.x1, annotation.area.y1, annotation.area.x2, annotation.area.y2, action)
             self.links.append(my_annotation)
 
+
     def get_link_action(self, link_type, action):
         """ Get the function to be called when the link is followed.
         """
@@ -284,6 +287,7 @@ class Page(object):
 
         return fun
 
+
     def get_annot_action(self, link_type, action, rect):
         """ Get the function to be called when the link is followed.
         """
@@ -318,10 +322,12 @@ class Page(object):
         else:
             return self.get_link_action(link_type, action)
 
+
     def number(self):
         """ Get the page number.
         """
         return self.page_nb
+
 
     def get_link_at(self, x, y):
         """ Get the :class:`~pympress.document.Link` corresponding to the given
@@ -344,6 +350,7 @@ class Page(object):
 
         return None
 
+
     def get_size(self, dtype=PDF_REGULAR):
         """ Get the page size.
 
@@ -357,6 +364,7 @@ class Page(object):
             return (self.pw, self.ph)
         else:
             return (self.pw/2., self.ph)
+
 
     def get_aspect_ratio(self, dtype=PDF_REGULAR):
         """ Get the page aspect ratio.
@@ -372,6 +380,7 @@ class Page(object):
         else:
             return (self.pw/2.) / self.ph
 
+
     def get_annotations(self):
         """ Get the list of text annotations on this page.
 
@@ -380,6 +389,7 @@ class Page(object):
         """
         return self.annotations
 
+
     def get_media(self):
         """ Get the list of medias this page might want to play.
 
@@ -387,6 +397,7 @@ class Page(object):
             list of tuples of area and filenames: page aspect ratio
         """
         return self.medias
+
 
     def render_cairo(self, cr, ww, wh, dtype=PDF_REGULAR):
         """ Render the page on a Cairo surface.
@@ -488,6 +499,7 @@ class Document(object):
             ar = page0.get_aspect_ratio()
             self.notes = (ar >= 2)
 
+
     @staticmethod
     def create(path, page=0):
         """ Initializes a Document by passing it a :class:`Poppler.Document`
@@ -511,6 +523,7 @@ class Document(object):
             poppler_doc = Poppler.Document.new_from_file(uri, None)
             return Document(poppler_doc, path, page)
 
+
     def has_notes(self):
         """ Get the document mode.
 
@@ -518,6 +531,7 @@ class Document(object):
             boolean: ``True`` if the document has notes, ``False`` otherwise
         """
         return self.notes
+
 
     def page(self, number):
         """ Get the specified page.
@@ -543,6 +557,7 @@ class Document(object):
             :class:`pympress.document.Page`: the current page
         """
         return self.page(self.cur_page)
+
 
     def next_page(self):
         """ Get the next page.
@@ -594,25 +609,30 @@ class Document(object):
                 self.history = self.history[:self.hist_pos]
             self.history.append(number)
 
+
     def goto_next(self, *args):
         """ Switch to the next page.
         """
         self.goto(self.cur_page + 1)
+
 
     def goto_prev(self, *args):
         """ Switch to the previous page.
         """
         self.goto(self.cur_page - 1)
 
+
     def goto_home(self, *args):
         """ Switch to the first page.
         """
         self.goto(0)
 
+
     def goto_end(self, *args):
         """ Switch to the last page.
         """
         self.goto(self.nb_pages-1)
+
 
     def hist_next(self, *args):
         """ Switch to the page we viewed next
@@ -623,6 +643,7 @@ class Document(object):
         self.hist_pos += 1
         self._do_page_change(self.history[self.hist_pos])
 
+
     def hist_prev(self, *args):
         """ Switch to the page we viewed before
         """
@@ -631,6 +652,7 @@ class Document(object):
 
         self.hist_pos -= 1
         self._do_page_change(self.history[self.hist_pos])
+
 
     def get_full_path(self, filename):
         """ Returns full path, extrapolated from a path relative to this document
@@ -651,10 +673,12 @@ class Document(object):
             if os.path.exists(filepath):
                 return filepath
 
+
     def remove_on_exit(self, filename):
         """ Remember a temporary file to delete later
         """
         self.temp_files.add(filename)
+
 
     def cleanup_media_files(self):
         """ Removes all files that were extracted from the pdf into the filesystem

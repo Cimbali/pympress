@@ -116,6 +116,7 @@ class VLCVideo(Gtk.VBox):
         self.movie_zone.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self.movie_zone.connect('button-press-event', self.on_click)
 
+
     def get_player_control_toolbar(self):
         """ Return a player control toolbar.
         """
@@ -133,6 +134,7 @@ class VLCVideo(Gtk.VBox):
             tb.insert(b, -1)
         return tb
 
+
     def resize(self):
         parent = self.get_parent()
         if not parent:
@@ -143,10 +145,12 @@ class VLCVideo(Gtk.VBox):
         self.props.margin_bottom = ph * self.relative_margins.y1
         self.props.margin_top    = ph * self.relative_margins.y2
 
+
     def set_file(self, filepath):
         """ Sets the media file to be played bu the widget.
         """
         GLib.idle_add(self.player.set_media, instance.media_new(filepath))
+
 
     def play(self):
         """ Start playing the media file.
@@ -162,6 +166,7 @@ class VLCVideo(Gtk.VBox):
             self.overlay.show_all()
         GLib.idle_add(self.player.play)
 
+
     def on_click(self, widget, event):
         """ React to click events by playing or pausing the media.
         """
@@ -173,6 +178,7 @@ class VLCVideo(Gtk.VBox):
             GLib.idle_add(lambda p: p.pause() if p.is_playing() else p.play(), self.player)
         elif event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
             GLib.idle_add(self.player.set_time, 0) # in ms
+
 
     def hide(self, *args):
         """ Remove widget from overlays. Needs to be callded via GLib.idle_add

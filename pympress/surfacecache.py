@@ -103,6 +103,7 @@ class SurfaceCache(object):
         self.doc = doc
         self.doc_lock = threading.Lock()
 
+
     def add_widget(self, widget_name, wtype, start_enabled = True):
         """ Add a widget to the list of widgets that have to be managed (for caching
         and prerendering).
@@ -149,6 +150,7 @@ class SurfaceCache(object):
         """
         self.active_widgets.discard(widget_name)
 
+
     def enable_prerender(self, widget_name):
         """ Add a widget to the ones to be prerendered.
 
@@ -156,6 +158,7 @@ class SurfaceCache(object):
             widget_name (string):  string used to identify a widget
         """
         self.active_widgets.add(widget_name)
+
 
     def set_widget_type(self, widget_name, wtype):
         """ Set the document type of a widget.
@@ -169,6 +172,7 @@ class SurfaceCache(object):
                 self.surface_type[widget_name] = wtype
                 self.surface_cache[widget_name].clear()
 
+
     def get_widget_type(self, widget_name):
         """ Get the document type of a widget.
 
@@ -179,6 +183,7 @@ class SurfaceCache(object):
             integer: type of document handled by the widget (see :attr:`surface_type`)
         """
         return self.surface_type[widget_name]
+
 
     def resize_widget(self, widget_name, width, height):
         """ Change the size of a registered widget, thus invalidating all the cached pages.
@@ -192,6 +197,7 @@ class SurfaceCache(object):
             if (width, height) != self.surface_size[widget_name]:
                 self.surface_cache[widget_name].clear()
                 self.surface_size[widget_name] = (width, height)
+
 
     def get(self, widget_name, page_nb):
         """ Fetch a cached, prerendered page for the specified widget.
@@ -211,6 +217,7 @@ class SurfaceCache(object):
             else:
                 return None
 
+
     def set(self, widget_name, page_nb, val):
         """ Store a rendered page in the cache.
 
@@ -227,6 +234,7 @@ class SurfaceCache(object):
             while len(pc) > self.max_pages:
                 pc.popitem(False)
 
+
     def prerender(self, page_nb):
         """ Queue a page for prerendering.
 
@@ -237,6 +245,7 @@ class SurfaceCache(object):
         """
         for name in self.active_widgets:
             GLib.idle_add(self.renderer, name, page_nb)
+
 
     def renderer(self, widget_name, page_nb):
         """ Rendering thread.
