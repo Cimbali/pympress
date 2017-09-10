@@ -69,6 +69,12 @@ from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
 def get_extension(mime_type):
     """ Returns a valid filename extension (recognized by python) for a given mime type.
+
+    Args:
+        mimetype (`str`): The mime type for which to find an extension
+
+    Returns:
+        `str`: A file extension used for the given mimetype
     """
     if not mimetypes.inited:
         mimetypes.init()
@@ -79,29 +85,27 @@ def get_extension(mime_type):
 
 class Link(object):
     """ This class encapsulates one hyperlink of the document.
+
+    Args:
+        x1 (`float`):  first x coordinate of the link rectangle
+        y1 (`float`):  first y coordinate of the link rectangle
+        x2 (`float`):  second x coordinate of the link rectangle
+        y2 (`float`):  second y coordinate of the link rectangle
+        action (function):  action to perform when the link is clicked
     """
 
-    #: First x coordinate of the link rectangle, as a float number
+    #: `float`, first x coordinate of the link rectangle
     x1 = None
-    #: First y coordinate of the link rectangle, as a float number
+    #: `float`, first y coordinate of the link rectangle
     y1 = None
-    #: Second x coordinate of the link rectangle, as a float number
+    #: `float`, second x coordinate of the link rectangle
     x2 = None
-    #: Second y coordinate of the link rectangle, as a float number
+    #: `float`, second y coordinate of the link rectangle
     y2 = None
-    #: Action to be perform to follow this link
+    #: `function`, action to be perform to follow this link
     follow = lambda *args: logger.error(_("no action defined for this link!"))
 
     def __init__(self, x1, y1, x2, y2, action):
-        """
-
-        Args:
-            x1 (float):  first x coordinate of the link rectangle
-            y1 (float):  first y coordinate of the link rectangle
-            x2 (float):  second x coordinate of the link rectangle
-            y2 (float):  second y coordinate of the link rectangle
-            action (function):  action to perform when the link is clicked
-        """
         self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
         self.follow = action
 
@@ -110,11 +114,11 @@ class Link(object):
         """ Tell if the input coordinates are on the link rectangle.
 
         Args:
-            x (float):  input x coordinate
-            y (float):  input y coordinate
+            x (`float`):  input x coordinate
+            y (`float`):  input y coordinate
 
         Returns:
-            boolean: ``True`` if the input coordinates are within the link rectangle, ``False`` otherwise
+            `bool`: `True` if the input coordinates are within the link rectangle, `False` otherwise
         """
         return ( (self.x1 <= x) and (x <= self.x2) and (self.y1 <= y) and (y <= self.y2) )
 
@@ -131,32 +135,30 @@ class Page(object):
     It provides several methods used by the GUI for preparing windows for
     displaying pages, managing hyperlinks, etc.
 
+    Args:
+        doc (:class:`~Poppler.Page`):  the poppler object around the page
+        number (`int`):  number of the page to fetch in the document
+        parent (:class:`~pympress.document.Document`):  the parent Document class
     """
 
-    #: Page handled by this class (instance of :class:`Poppler.Page`)
+    #: Page handled by this class (instance of :class:`~Poppler.Page`)
     page = None
-    #: Number of the current page (starting from 0)
+    #: `int`, number of the current page (starting from 0)
     page_nb = -1
-    #: All the links in the page, as a list of :class:`~pympress.document.Link` instances
+    #: All the links in the page, as a `list` of :class:`~pympress.document.Link` instances
     links = []
-    #: All the media in the page, as a list of tuples of (area, filename)
+    #: All the media in the page, as a `list` of tuples of (area, filename)
     medias = []
-    #: Page width as a float
+    #: `float`, page width
     pw = 0.
-    #: Page height as a float
+    #: `float`, page height
     ph = 0.
     #: All text annotations
     annotations = []
-    #: Instance of :class:`pympress.document.Document` that contains this page.
+    #: Instance of :class:`~pympress.document.Document` that contains this page.
     parent = None
 
     def __init__(self, page, number, parent):
-        """
-        Args:
-            doc (:class:`Poppler.Page`):  the poppler object around the page
-            number (integer):  number of the page to fetch in the document
-            parent (:class:`pympress.document.Document`):  the parent Document class
-        """
         self.page = page
         self.page_nb = number
         self.parent = parent
@@ -218,6 +220,13 @@ class Page(object):
 
     def get_link_action(self, link_type, action):
         """ Get the function to be called when the link is followed.
+
+        Args:
+            link_type (:class:`~Poppler.ActionType`): The type of action to be performed
+            action (:class:`~Poppler.Action`): The atcion to be performed
+
+        Returns:
+            `function`: The function to be called to follow the link
         """
         # Poppler.ActionType.RENDITION should only appear in annotations, right? Otherwise how do we know
         # where to render it? Any documentation on which action types are admissible in links vs in annots
@@ -290,6 +299,14 @@ class Page(object):
 
     def get_annot_action(self, link_type, action, rect):
         """ Get the function to be called when the link is followed.
+
+        Args:
+            link_type (:class:`~Poppler.ActionType`): The link type
+            action (:class:`~Poppler.Action`): The action to be performed when the link is clicked
+            rect (:class:`~Poppler.Rectangle`): The region of the page where the link is
+
+        Returns:
+            `function`: The function to be called to follow the link
         """
         if link_type == Poppler.ActionType.RENDITION:
             media = action.rendition.media
@@ -331,15 +348,15 @@ class Page(object):
 
     def get_link_at(self, x, y):
         """ Get the :class:`~pympress.document.Link` corresponding to the given
-        position, or ``None`` if there is no link at this position.
+        position, or `None` if there is no link at this position.
 
         Args:
-            x (float):  horizontal coordinate
-            y (float):  vertical coordinate
+            x (`float`):  horizontal coordinate
+            y (`float`):  vertical coordinate
 
         Returns:
-            :class:`pympress.document.Link`: the link at the given coordinates
-            if one exists, ``None`` otherwise
+            :class:`~pympress.document.Link`: the link at the given coordinates
+            if one exists, `None` otherwise
         """
         xx = self.pw * x
         yy = self.ph * (1. - y)
@@ -355,10 +372,10 @@ class Page(object):
         """ Get the page size.
 
         Args:
-            dtype (integer):  the type of document to consider
+            dtype (`int`):  the type of document to consider
 
         Returns:
-            (float, float): page size
+            `(float, float)`: page size
         """
         if dtype == PDF_REGULAR:
             return (self.pw, self.ph)
@@ -370,10 +387,10 @@ class Page(object):
         """ Get the page aspect ratio.
 
         Args:
-            dtype (integer):  the type of document to consider
+            dtype (`int`):  the type of document to consider
 
         Returns:
-            float: page aspect ratio
+            `float`: page aspect ratio
         """
         if dtype == PDF_REGULAR:
             return self.pw / self.ph
@@ -385,7 +402,7 @@ class Page(object):
         """ Get the list of text annotations on this page.
 
         Returns:
-            list of tuples of area and filenames: page aspect ratio
+            `list` of `str`: annotations on this page
         """
         return self.annotations
 
@@ -394,7 +411,7 @@ class Page(object):
         """ Get the list of medias this page might want to play.
 
         Returns:
-            list of tuples of area and filenames: page aspect ratio
+            `list`: medias in this page
         """
         return self.medias
 
@@ -403,10 +420,10 @@ class Page(object):
         """ Render the page on a Cairo surface.
 
         Args:
-            cr (:class:`Gdk.CairoContext`):  target surface
-            ww (integer):  target width in pixels
-            wh (integer):  target height in pixels
-            dtype (integer):  the type of document that should be rendered
+            cr (:class:`~Gdk.CairoContext`):  target surface
+            ww (`int`):  target width in pixels
+            wh (`int`):  target height in pixels
+            dtype (`int`):  the type of document that should be rendered
         """
 
         pw, ph = self.get_size(dtype)
@@ -433,6 +450,9 @@ class Page(object):
 
     def can_render(self):
         """ Informs that rendering *is* necessary (avoids checking the type)
+
+        Returns:
+            `bool`: `True`, do rendering
         """
         return True
 
@@ -442,9 +462,14 @@ class Document(object):
 
     .. note:: The internal page numbering scheme is the same as in Poppler: it
        starts at 0.
+
+    Args:
+        pop_doc (:class:`~pympress.Poppler.Document`):  Instance of the Poppler document that this class will wrap
+        path (`str`):  Absolute path to the PDF file to open
+        page (`int`):  page number to which the file should be opened
     """
 
-    #: Current PDF document (:class:`Poppler.Document` instance)
+    #: Current PDF document (:class:`~Poppler.Document` instance)
     doc = None
     #: Path to pdf
     path = None
@@ -454,7 +479,7 @@ class Document(object):
     cur_page = -1
     #: Document with notes or not
     notes = False
-    #: Pages cache (dictionary of :class:`pympress.document.Page`). This makes
+    #: Pages cache (`dict` of :class:`~pympress.document.Page`). This makes
     #: navigation in the document faster by avoiding calls to Poppler when loading
     #: a page that has already been loaded.
     pages_cache = {}
@@ -466,14 +491,6 @@ class Document(object):
     hist_pos = -1
 
     def __init__(self, pop_doc, path, page=0):
-        """
-
-        Args:
-            pop_doc (Poppler.Document):  Instance of the Poppler document at path that this class will wrap
-            path (string):  Absolute path to the PDF file to open
-            page (integer):  page number to which the file should be opened
-        """
-
         self.path = path
 
         # Open PDF file
@@ -502,14 +519,14 @@ class Document(object):
 
     @staticmethod
     def create(path, page=0):
-        """ Initializes a Document by passing it a :class:`Poppler.Document`
+        """ Initializes a Document by passing it a :class:`~Poppler.Document`
 
         Args:
-            path (string):  Absolute path to the PDF file to open
-            page (integer):  page number to which the file should be opened
+            path (`str`):  Absolute path to the PDF file to open
+            page (`int`):  page number to which the file should be opened
 
         Returns:
-            Pympress.Document: The initialized document
+            :class:`~pympress.document.Document`: The initialized document
         """
         if path is None:
             return EmptyDocument()
@@ -528,7 +545,7 @@ class Document(object):
         """ Get the document mode.
 
         Returns:
-            boolean: ``True`` if the document has notes, ``False`` otherwise
+            `bool`: `True` if the document has notes, `False` otherwise
         """
         return self.notes
 
@@ -537,10 +554,10 @@ class Document(object):
         """ Get the specified page.
 
         Args:
-            number (integer):  number of the page to return
+            number (`int`):  number of the page to return
 
         Returns:
-            :class:`pympress.document.Page`: the wanted page, or ``None`` if it does not exist
+            :class:`~pympress.document.Page`: the wanted page, or `None` if it does not exist
         """
         if number >= self.nb_pages or number < 0:
             return None
@@ -554,7 +571,7 @@ class Document(object):
         """ Get the current page.
 
         Returns:
-            :class:`pympress.document.Page`: the current page
+            :class:`~pympress.document.Page`: the current page
         """
         return self.page(self.cur_page)
 
@@ -563,7 +580,7 @@ class Document(object):
         """ Get the next page.
 
         Returns:
-            :class:`pympress.document.Page`: the next page, or ``None`` if this is the last page
+            :class:`~pympress.document.Page`: the next page, or `None` if this is the last page
         """
         return self.page(self.cur_page + 1)
 
@@ -572,7 +589,7 @@ class Document(object):
         """ Get the number of pages in the document.
 
         Returns:
-            integer: the number of pages in the document
+            `int`: the number of pages in the document
         """
         return self.nb_pages
 
@@ -583,7 +600,7 @@ class Document(object):
         The page number is **not** checked here, so it must be within bounds already.
 
         Args:
-            number (integer):  number of the destination page
+            number (`int`):  number of the destination page
         """
         self.cur_page = number
         ui.UI.notify_page_change()
@@ -593,7 +610,7 @@ class Document(object):
         """ Switch to another page.
 
         Args:
-            number (integer):  number of the destination page
+            number (`int`):  number of the destination page
         """
         if number < 0:
             number = 0
@@ -659,10 +676,10 @@ class Document(object):
         or to the current directory.
 
         Args:
-            filename (string):  Name of the file or relative path to it
+            filename (`str`):  Name of the file or relative path to it
 
         Returns:
-            string: the full path to the file or None if it doesn't exist
+            `str`: the full path to the file or None if it doesn't exist
         """
         filepath = None
         if os.path.isabs(filename):
@@ -676,6 +693,9 @@ class Document(object):
 
     def remove_on_exit(self, filename):
         """ Remember a temporary file to delete later
+
+        Args:
+            filename (`str`): The path to the file to delete
         """
         self.temp_files.add(filename)
 
@@ -691,8 +711,8 @@ class Document(object):
 class EmptyPage(Page):
     """ A dummy page, placeholder for when there are no valid pages around.
 
-        This page is a non-notes page with an aspect ratio of 1.3 and nothing else inside.
-        Also, it has no "rendering" capability, and is made harmless by overriding its render function.
+    This page is a non-notes page with an aspect ratio of 1.3 and nothing else inside.
+    Also, it has no "rendering" capability, and is made harmless by overriding its render function.
     """
 
     def __init__(self):
@@ -711,16 +731,19 @@ class EmptyPage(Page):
         """ Overriding this purely for safety: make sure we do not accidentally try to render
 
         Args:
-            cr (:class:`Gdk.CairoContext`):  target surface
-            ww (integer):  target width in pixels
-            wh (integer):  target height in pixels
-            dtype (integer):  the type of document that should be rendered
+            cr (:class:`~Gdk.CairoContext`):  target surface
+            ww (`int`):  target width in pixels
+            wh (`int`):  target height in pixels
+            dtype (`int`):  the type of document that should be rendered
         """
         pass
 
 
     def can_render(self):
         """ Informs that rendering is *not* necessary (avoids checking the type)
+
+        Returns:
+            `bool`: `False`, no rendering
         """
         return False
 
@@ -739,7 +762,13 @@ class EmptyDocument(Document):
 
 
     def page(self, number):
-        """ Informs that rendering is *not* necessary (avoids checking the type)
+        """ Retreive a page from the document.
+
+        Args:
+            number (`int`): page number to be retreived
+
+        Returns:
+            :class:`~pympress.document.EmptyPage` or `None`: -1 returns the empty page so we can display something.
         """
         return self.pages_cache[number] if number in self.pages_cache else None
 

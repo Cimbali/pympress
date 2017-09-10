@@ -18,10 +18,8 @@
 #       MA 02110-1301, USA.
 
 """
-:mod:`pympress.page_number` -- Manages the display of page numbers:
-------------------------------------
-
-This module contains
+:mod:`pympress.page_number` -- Manages the display of page numbers
+------------------------------------------------------------------
 """
 
 from __future__ import print_function
@@ -53,6 +51,9 @@ class PageNumber(object):
 
     def setup(self, builder):
         """ Load all the widgets we need from the spinner.
+
+        Args:
+            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
         """
         builder.load_widgets(self)
 
@@ -62,19 +63,26 @@ class PageNumber(object):
 
     def set_last(self, num_pages):
         """ Set the max number of pages, both on display and as the range of values for the spinner.
+
+        Args:
+            num_pages (`int`): The maximum page number
         """
         self.label_last.set_text("/{}".format(num_pages))
         self.spin_cur.set_range(1, num_pages)
 
 
-    def on_label_event(self, widget = None, event = None, name = None):
+    def on_label_event(self, widget, event = None, name = None):
         """ Manage events on the current slide label/entry.
 
         This function replaces the label with an entry when clicked.
 
         Args:
-            widget (:class:`Gtk.Widget`):  the widget in which the event occured
-            event (:class:`Gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
+            event (:class:`~Gtk.Event` or None):  the event that occured, None if tf we called from a menu item
+            name (`str`): name of the key in the casae of a key press
+
+        Returns:
+            `bool`: whether the event was consumed
         """
 
         if issubclass(type(widget), Gtk.Actionable):
@@ -123,8 +131,11 @@ class PageNumber(object):
         and otherwise fall back to the spin button's normal behaviour.
 
         Args:
-            widget (:class:`Gtk.Widget`):  the widget which has received the key stroke.
-            event (:class:`Gdk.Event`):  the GTK event, which contains the ket stroke information.
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         if not self.editing_cur or event.type != Gdk.EventType.KEY_PRESS:
             return False
@@ -157,8 +168,15 @@ class PageNumber(object):
         return True
 
 
-    def on_scroll(self, widget = None, event = None):
+    def on_scroll(self, widget, event):
         """ Scroll event. Pass it on to the spin button if we're currently editing the page number.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         if not self.editing_cur:
             return False
@@ -180,6 +198,9 @@ class PageNumber(object):
 
     def update_page_numbers(self, cur_nb):
         """ Update the displayed page numbers.
+
+        Args:
+            cur_nb (`int`): The current page number, in documentation numbering (range [0..max - 1])
         """
         cur = str(cur_nb+1)
 

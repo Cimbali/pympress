@@ -18,10 +18,8 @@
 #       MA 02110-1301, USA.
 
 """
-:mod:`pympress.pointer` -- Manage when and where to draw a pointer on screen
-------------------------------------
-
-This module contains
+:mod:`pympress.scribble` -- Manage user drawings on the current slide
+---------------------------------------------------------------------
 """
 
 from __future__ import print_function
@@ -41,11 +39,11 @@ from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 class Scribbler(builder.Builder):
     #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
     scribbling_mode = False
-    #: list of scribbles to be drawn, as pairs of  :class:`Gdk.RGBA`
+    #: `list` of scribbles to be drawn, as tuples of color :class:`~Gdk.RGBA`, width `int`, and a `list` of points.
     scribble_list = []
     #: Whether the current mouse movements are drawing strokes or should be ignored
     scribble_drawing = False
-    #: :class:`Gdk.RGBA` current color of the scribbling tool
+    #: :class:`~Gdk.RGBA` current color of the scribbling tool
     scribble_color = Gdk.RGBA()
     #: `int` current stroke width of the scribbling tool
     scribble_width = 1
@@ -65,7 +63,7 @@ class Scribbler(builder.Builder):
 
     #: :class:`~Gtk.Overlay` for the Content window.
     c_overlay = None
-    #: A :class:`Gtk.OffscreenWindow` where we render the scribbling interface when it's not shown
+    #: A :class:`~Gtk.OffscreenWindow` where we render the scribbling interface when it's not shown
     off_render = None
     #: :class:`~Gtk.Box` in the Presenter window, where we insert scribbling.
     p_central = None
@@ -81,6 +79,15 @@ class Scribbler(builder.Builder):
 
 
     def nav_scribble(self, name, ctrl_pressed):
+        """ Handles an key press event: undo or disable scribbling.
+
+        Args:
+            name (`str`): The name of the key pressed
+            ctrl_pressed (`bool`): whether the ctrl modifier key was pressed
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
         if not self.scribbling_mode:
             return False
         elif name.upper() == 'Z' and ctrl_pressed:
@@ -94,6 +101,13 @@ class Scribbler(builder.Builder):
 
     def track_scribble(self, widget, event):
         """ Draw the scribble following the mouse's moves.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         if self.scribble_drawing:
             ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
@@ -109,6 +123,13 @@ class Scribbler(builder.Builder):
 
     def toggle_scribble(self, widget, event):
         """ Start/stop drawing scribbles.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         if not self.scribbling_mode:
             return False
@@ -126,7 +147,11 @@ class Scribbler(builder.Builder):
 
 
     def draw_scribble(self, widget, cairo_context):
-        """ Drawings by user
+        """ Perform the drawings by user.
+
+        Args:
+            widget (:class:`~Gtk.DrawingArea`): The widget where to draw the scribbles.
+            cairo_context (:class:`~cairo.Context`): The canvas on which to render the drawings
         """
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
@@ -165,23 +190,29 @@ class Scribbler(builder.Builder):
             cairo_context.stroke()
 
 
-    def update_color(self, widget = None):
+    def update_color(self, widget):
         """ Callback for the color chooser button, to set scribbling color
+
+        Args:
+            widget (:class:`~Gtk.ColorButton`):  the clicked button to trigger this event, if any
         """
-        if widget:
-            self.scribble_color = widget.get_rgba()
-            self.config.set('scribble', 'color', self.scribble_color.to_string())
+        self.scribble_color = widget.get_rgba()
+        self.config.set('scribble', 'color', self.scribble_color.to_string())
 
 
-    def update_width(self, widget = None, event = None, value = None):
+    def update_width(self, widget, event, value):
         """ Callback for the width chooser slider, to set scribbling width
+
+        Args:
+            widget (:class:`~Gtk.Scale`): The slider control used to select the scribble width
+            event (:class:`~Gdk.Event`):  the GTK event triggering this update.
+            value (`int`): the width of the scribbles to be drawn
         """
-        if widget:
-            self.scribble_width = int(value)
-            self.config.set('scribble', 'width', str(self.scribble_width))
+        self.scribble_width = int(value)
+        self.config.set('scribble', 'width', str(self.scribble_width))
 
 
-    def clear_scribble(self, widget = None):
+    def clear_scribble(self, *args):
         """ Callback for the scribble clear button, to remove all scribbles
         """
         del self.scribble_list[:]
@@ -189,7 +220,7 @@ class Scribbler(builder.Builder):
         ui.UI.redraw_current_slide()
 
 
-    def pop_scribble(self, widget = None):
+    def pop_scribble(self, *args):
         """ Callback for the scribble undo button, to undo the last scribble
         """
         if self.scribble_list:
@@ -201,6 +232,11 @@ class Scribbler(builder.Builder):
 
     def setup_scribbling(self, config, builder, notes_mode):
         """ Setup all the necessary for scribbling
+
+        Args:
+            config (:class:`~pympress.config.Config`): A config object containing preferences
+            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+            notes_mode (`bool`): The current notes mode, i.e. whether we display the notes on second slide
         """
         # Surface cache
         self.cache = surfacecache.SurfaceCache(document.EmptyDocument(), config.getint('cache', 'maxpages'))
@@ -222,8 +258,8 @@ class Scribbler(builder.Builder):
         """ Transfer configure resize to the cache.
 
         Args:
-            widget (:class:`Gtk.Widget`):  the widget which has been resized
-            event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
+            widget (:class:`~Gtk.Widget`):  the widget which has been resized
+            event (:class:`~Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
         # Don't trust those
         if not event.send_event:
@@ -232,8 +268,16 @@ class Scribbler(builder.Builder):
         self.cache.resize_widget(widget.get_name(), event.width, event.height)
 
 
-    def switch_scribbling(self, widget = None, event = None, name = None):
+    def switch_scribbling(self, widget, event = None, name = None):
         """ Starts the mode where one can read on top of the screen
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event` or None):  the GTK event., None when called through a menu item
+            name (`str`): The name of the key pressed
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         if issubclass(type(widget), Gtk.Actionable):
             # A button or menu item, etc. directly connected to this action
@@ -257,6 +301,11 @@ class Scribbler(builder.Builder):
 
 
     def enable_scribbling(self):
+        """ Enable the scribbling mode.
+
+        Returns:
+            `bool`: whether it was possible to enable (thus if it was not enabled already)
+        """
         if self.scribbling_mode:
             return False
 
@@ -284,6 +333,11 @@ class Scribbler(builder.Builder):
 
 
     def disable_scribbling(self):
+        """ Disable the scribbling mode.
+
+        Returns:
+            `bool`: whether it was possible to disable (thus if it was not disabled already)
+        """
         if not self.scribbling_mode:
             return False
 

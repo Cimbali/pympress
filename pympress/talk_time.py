@@ -19,9 +19,7 @@
 
 """
 :mod:`pympress.talk_time` -- Manages the clock of elapsed talk time
-------------------------------------
-
-This module contains
+-------------------------------------------------------------------
 """
 
 from __future__ import print_function
@@ -37,13 +35,13 @@ import time
 from pympress import ui
 
 class TalkTime(object):
-    #: :class:`Gdk.RGBA` The default color of the info labels
+    #: :class:`~Gdk.RGBA` The default color of the info labels
     label_color_default = None
-    #: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is reached
+    #: :class:`~Gdk.RGBA` The color of the elapsed time label if the estimated talk time is reached
     label_color_ett_reached = None
-    #: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is exceeded by 2:30 minutes
+    #: :class:`~Gdk.RGBA` The color of the elapsed time label if the estimated talk time is exceeded by 2:30 minutes
     label_color_ett_info = None
-    #: :class:`Gdk.RGBA` The color of the elapsed time label if the estimated talk time is exceeded by 5 minutes
+    #: :class:`~Gdk.RGBA` The color of the elapsed time label if the estimated talk time is exceeded by 5 minutes
     label_color_ett_warn = None
 
     #: Elapsed time :class:`~Gtk.Label`.
@@ -71,6 +69,12 @@ class TalkTime(object):
 
 
     def setup(self, builder, ett):
+        """ Setup the talk time.
+
+        Args:
+            builder (builder.Builder): The builder from which to load widgets.
+            ett (`int`): the estimated time for the talk, in seconds.
+        """
         self.est_time = ett
         builder.load_widgets(self)
 
@@ -89,6 +93,13 @@ class TalkTime(object):
 
     def load_color_from_css(self, style_context, class_name):
         """ Add class class_name to the time label and return its color.
+
+        Args:
+            style_context (:class:`~Gtk.StyleContext`): the CSS context managing the color of the label
+            class_name (`str`): The name of the class
+
+        Returns:
+            :class:`~Gdk.RGBA`: The color of the label with class "class_name"
         """
         style_context.add_class(class_name)
         self.label_time.show();
@@ -98,8 +109,11 @@ class TalkTime(object):
         return color
 
 
-    def switch_pause(self, widget = None, event = None):
+    def switch_pause(self, *args):
         """ Switch the timer between paused mode and running (normal) mode.
+
+        Returns:
+            `bool`: whether the clock's pause was toggled.
         """
         if self.paused:
             self.start_time = time.time() - self.delta
@@ -107,11 +121,14 @@ class TalkTime(object):
         else:
             self.paused = True
         self.update_time()
+        return True
 
 
     def pause(self):
         """ Pause the timer if it is not paused, otherwise do nothing.
-            Returns whether it did anything.
+
+        Returns:
+            `bool`: whether the clock's pause was toggled.
         """
         if not self.paused:
             self.switch_pause()
@@ -122,7 +139,9 @@ class TalkTime(object):
 
     def unpause(self):
         """ Unpause the timer if it is paused, otherwise do nothing.
-            Returns whether it did anything.
+
+        Returns:
+            `bool`: whether the clock's pause was toggled.
         """
         if self.paused:
             self.switch_pause()
@@ -131,7 +150,7 @@ class TalkTime(object):
             return False
 
 
-    def reset_timer(self, widget=None, event=None):
+    def reset_timer(self, *args):
         """ Reset the timer.
         """
         self.start_time = time.time()
@@ -143,7 +162,7 @@ class TalkTime(object):
         """ Update the timer and clock labels.
 
         Returns:
-            boolean: ``True`` (to prevent the timer from stopping)
+            `bool`: `True` (to prevent the timer from stopping)
         """
         # Current time
         clock = time.strftime("%X") #"%H:%M:%S"
@@ -167,12 +186,12 @@ class TalkTime(object):
         """ Compute the interpolation between two colors.
 
         Args:
-            from_color (:class:`Gdk.RGBA`):  the color when position = 0
-            to_color (:class:`Gdk.RGBA`):  the color when position = 1
-            position (float):  A floating point value in the interval [0.0, 1.0]
+            from_color (:class:`~Gdk.RGBA`):  the color when position = 0
+            to_color (:class:`~Gdk.RGBA`):  the color when position = 1
+            position (`float`):  A value between 0 and 1 expressing how far from
 
         Returns:
-            :class:`Gdk.RGBA`: The color that is between from_color and to_color
+            :class:`~Gdk.RGBA`: The color that is between from_color and to_color
         """
         color_tuple = lambda color: ( color.red, color.green, color.blue, color.alpha )
         interpolate = lambda start, end: start + (end - start) * position
@@ -218,14 +237,18 @@ class TalkTime(object):
             self.label_time.get_style_context().remove_class("time-warn")
 
 
-    def on_label_ett_event(self, widget = None, event = None, name = None):
+    def on_label_ett_event(self, widget, event = None, name = None):
         """ Manage events on the current slide label/entry.
 
         This function replaces the label with an entry when clicked, or otherwise toggled.
 
         Args:
-            widget (:class:`gtk.Widget`):  the widget in which the event occured
-            event (:class:`gtk.gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
+            event (:class:`~Gtk.Event` or None):  the event that occured, None if tf we called from a menu item
+            name (`str`): The name of the key pressed
+
+        Returns:
+            `bool`: whether the event was consumed.
         """
 
         if issubclass(type(widget), Gtk.Actionable):
@@ -267,11 +290,14 @@ class TalkTime(object):
 
     def on_label_ett_keypress(self, widget, event):
         """ If we are editing the ett, intercept some key presses (to validate or cancel editing),
-            otherwise pass the key presses on to the Gtk.Entry.
+        otherwise pass the key presses on to the Gtk.Entry.
 
         Args:
-            widget (:class:`gtk.Widget`):  the widget in which the event occured
-            event (:class:`gtk.gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
+            event (:class:`~Gdk.Event`):  the event that occured
+
+        Returns:
+            `bool`: whether the event was consumed.
         """
         if not self.editing_cur_ett:
             return False
@@ -321,7 +347,7 @@ class TalkTime(object):
 
 
     def stop_editing(self):
-        """
+        """ Disable the editing of the label if it was enabled.
         """
         if self.editing_cur_ett:
             self.restore_current_label_ett()

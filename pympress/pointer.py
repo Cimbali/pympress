@@ -18,10 +18,8 @@
 #       MA 02110-1301, USA.
 
 """
-:mod:`pympress.pointer` -- Manage when and where to draw a pointer on screen
-------------------------------------
-
-This module contains
+:mod:`pympress.pointer` -- Manage when and where to draw a software-emulated laser pointer on screen
+----------------------------------------------------------------------------------------------------
 """
 
 from __future__ import print_function
@@ -44,15 +42,18 @@ POINTER_SHOW = 1
 class Pointer(object):
     #: :class:`~GdkPixbuf.Pixbuf` to read XML descriptions of GUIs and load them.
     pointer = GdkPixbuf.Pixbuf()
-    #: tuple of position relative to slide, where the pointer should appear
+    #: `(float, float)` of position relative to slide, where the pointer should appear
     pointer_pos = (.5, .5)
-    #: boolean indicating whether we should show the pointer
+    #: `bool` indicating whether we should show the pointer
     show_pointer = POINTER_OFF
-    #: A reference to the UI's :class:`pympress.config.Config`, to update the pointer preference
+    #: A reference to the UI's :class:`~pympress.config.Config`, to update the pointer preference
     config = None
 
     def load_pointer(self, name):
         """ Perform the change of pointer using its name
+
+        Args:
+            name (`str`): Name of the pointer to load
         """
         if name in ['pointer_red', 'pointer_green', 'pointer_blue']:
             self.show_pointer = POINTER_HIDE
@@ -63,6 +64,9 @@ class Pointer(object):
 
     def change_pointer(self, widget):
         """ Callback for a radio item selection as pointer color
+
+        Args:
+            widget (:class:`~Gtk.RadioMenuItem`): the selected radio item in the pointer type selection menu
         """
         if widget.get_active():
             assert(widget.get_name().startswith('pointer_'))
@@ -71,6 +75,12 @@ class Pointer(object):
 
 
     def default_pointer(self, config, builder):
+        """ Setup the pointer management, and load the default pointer
+
+        Args:
+            config (:class:`~pympress.config.Config`): A config object containing preferences
+            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+        """
         self.config = config
 
         default = 'pointer_' + config.get('presenter', 'pointer')
@@ -84,25 +94,28 @@ class Pointer(object):
 
 
     def render_pointer(self, cairo_context, ww, wh):
+        """ Draw the laser pointer on screen
+
+        Args:
+            cairo_context (:class:`~cairo.Context`): The canvas on which to render the pointer
+            ww (`int`): The widget width
+            wh (`int`): The widget height
+        """
         if self.show_pointer == POINTER_SHOW:
             x = ww * self.pointer_pos[0] - self.pointer.get_width() / 2
             y = wh * self.pointer_pos[1] - self.pointer.get_height() / 2
             Gdk.cairo_set_source_pixbuf(cairo_context, self.pointer, x, y)
 
 
-    def toggle_pointer(event_type):
-        if event_type == Gdk.EventType.BUTTON_PRESS:
-            self.show_pointer = POINTER_SHOW
-        elif event_type == Gdk.EventType.BUTTON_RELEASE:
-            self.show_pointer = POINTER_HIDE
-        else:
-            return True
-
-        return False
-
-
     def track_pointer(self, widget, event):
         """ Move the laser pointer at the mouse location.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         if self.show_pointer == POINTER_SHOW:
             ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
@@ -117,6 +130,13 @@ class Pointer(object):
 
     def toggle_pointer(self, widget, event):
         """ Track events defining when the laser is pointing.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         if self.show_pointer == POINTER_OFF:
             return False

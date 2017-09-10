@@ -18,10 +18,8 @@
 #       MA 02110-1301, USA.
 
 """
-:mod:`pympress.annotations` -- Manages the display of annotations and videos
-------------------------------------
-
-This module contains
+:mod:`pympress.extras` -- Manages the display of fancy extras such as annotations, videos and cursors
+-----------------------------------------------------------------------------------------------------
 """
 
 from __future__ import print_function
@@ -55,6 +53,9 @@ class Annotations(object):
 
     def setup(self, builder):
         """ Load the widgets and setup for the annotations' display.
+
+        Args:
+            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
         """
         builder.load_widgets(self)
 
@@ -73,6 +74,9 @@ class Annotations(object):
 
     def add_annotations(self, annotations):
         """ Insert text annotations into the tree view that displays them.
+
+        Args:
+            annotations (`list`): A list of strings, that are the annotations to be displayed
         """
         list_annot = Gtk.ListStore(str)
 
@@ -86,6 +90,10 @@ class Annotations(object):
 
     def on_configure_annot(self, widget, event):
         """ Adjust wrap width in annotations when they are resized.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which was resized.
+            event (:class:`~Gdk.Event`):  the GTK event.
         """
         self.annotation_renderer.props.wrap_width = max(30, widget.get_allocated_width() - 10)
         self.scrolled_window.queue_resize()
@@ -94,6 +102,13 @@ class Annotations(object):
 
     def on_scroll(self, widget, event):
         """ Try scrolling the annotations window.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         adj = self.scrolled_window.get_vadjustment()
         if event.direction == Gdk.ScrollDirection.UP:
@@ -106,7 +121,7 @@ class Annotations(object):
 
 
 class Media(object):
-    #: Static dictionary of :class:`pympress.vlcvideo.VLCVideo` ready to be added on top of the slides
+    #: Static `dict` of :class:`~pympress.vlcvideo.VLCVideo` ready to be added on top of the slides
     _media_overlays = {}
 
     #: :class:`~Gtk.Overlay` for the Content window.
@@ -114,6 +129,9 @@ class Media(object):
 
     def setup(self, builder):
         """ Set up the required widgets and queue an initial draw.
+
+        Args:
+            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
         """
         builder.load_widgets(self)
 
@@ -122,6 +140,9 @@ class Media(object):
 
     def replace_media_overlays(self, current_page):
         """ Remove current media overlays, add new ones if page contains media.
+
+        Args:
+            current_page (:class:`~pympress.document.Page`): The page for twhich to prepare medias
         """
         if not vlc_enabled:
             return
@@ -152,13 +173,16 @@ class Media(object):
     @classmethod
     def play_media(cls, media_id):
         """ Static way of starting (playing) a media. Used by callbacks.
+
+        Args:
+            media_id (`int`): A unique idientifier of the media to start playing
         """
         if media_id in cls._media_overlays:
             cls._media_overlays[media_id].play()
 
 
 class Cursor(object):
-    #: a static :dict: of :class:`~Gdk.Cursor`s, ready to use
+    #: a static `dict` of :class:`~Gdk.Cursor`s, ready to use
     _cursors = {
         'parent': None,
         'default': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'default'),
@@ -169,6 +193,10 @@ class Cursor(object):
     @classmethod
     def set_cursor(cls, widget, cursor_name = 'parent'):
         """ Set the cursor named cursor_name'
+
+        Args:
+            widget (:class:`~Gtk.Widget`): The widget triggering the cursor change, used to retrieve a Gdk.Window
+            cursor_name (`str`): Name of the cursor to be set
         """
         widget.get_window().set_cursor(cls._cursors[cursor_name])
 

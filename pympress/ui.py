@@ -57,15 +57,19 @@ from pympress import document, surfacecache, util, pointer, scribble, config, bu
 
 class UI(builder.Builder):
     """ Pympress GUI management.
+
+    Args:
+        ett (`int`):  the estimated (intended) talk time
+        docpath (`str`): path to the file passed on the command line
     """
-    #: Content window, as a :class:`Gtk.Window` instance.
+    #: Content window, as a :class:`~Gtk.Window` instance.
     c_win = None
     #: :class:`~Gtk.AspectFrame` for the Content window.
     c_frame = None
     #: :class:`~Gtk.DrawingArea` for the Content window.
     c_da = None
 
-    #: Presenter window, as a :class:`Gtk.Window` instance.
+    #: Presenter window, as a :class:`~Gtk.Window` instance.
     p_win = None
     #: :class:`~Gtk.Box` for the Presenter window.
     p_central = None
@@ -105,11 +109,11 @@ class UI(builder.Builder):
     show_annotations = True
     #: Whether to display big buttons or not
     show_bigbuttons = True
-    #: :class:`Gtk.ToolButton` big button for touch screens, go to previous slide
+    #: :class:`~Gtk.ToolButton` big button for touch screens, go to previous slide
     prev_button = None
-    #: :class:`Gtk.ToolButton` big button for touch screens, go to next slide
+    #: :class:`~Gtk.ToolButton` big button for touch screens, go to next slide
     next_button = None
-    #: :class:`Gtk.ToolButton` big button for touch screens, go to scribble on screen
+    #: :class:`~Gtk.ToolButton` big button for touch screens, go to scribble on screen
     highlight_button = None
 
     #: number of page currently displayed in Controller window's miniatures
@@ -118,12 +122,12 @@ class UI(builder.Builder):
     #: track whether we blank the screen
     blanked = False
 
-    #: Dictionary of :class:`Gtk.Widget` from the presenter window that can be dynamically rearranged
+    #: Dictionary of :class:`~Gtk.Widget` from the presenter window that can be dynamically rearranged
     placeable_widgets = {}
-    #: Map of :class:`Gtk.Paned` to the relative position (float between 0 and 1) of its handle
+    #: Map of :class:`~Gtk.Paned` to the relative position (`float` between 0 and 1) of its handle
     pane_handle_pos = {}
 
-    #: :class:`pympress.config.Config` to remember preferences
+    #: :class:`~pympress.config.Config` to remember preferences
     config = config.Config()
 
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
@@ -132,14 +136,14 @@ class UI(builder.Builder):
     #: Current :class:`~pympress.document.Document` instance.
     doc = None
 
-    #: Class :class:`pympress.scribble.Scribble` managing drawing by the user on top of the current slide.
+    #: Class :class:`~pympress.scribble.Scribble` managing drawing by the user on top of the current slide.
     scribbler = scribble.Scribbler()
-    #: Class :class:`pympress.extras.Annotations` managing the display of annotations
+    #: Class :class:`~pympress.extras.Annotations` managing the display of annotations
     annotations = extras.Annotations()
-    #: Class :class:`pympress.extras.Media` managing keeping track of and callbacks on media overlays
+    #: Class :class:`~pympress.extras.Media` managing keeping track of and callbacks on media overlays
     medias = extras.Media()
 
-    #: Software-implemented laser pointer, :class:`pympress.pointer.Pointer`
+    #: Software-implemented laser pointer, :class:`~pympress.pointer.Pointer`
     laser = pointer.Pointer()
 
     #: Counter diplaying current and max page numbers
@@ -148,7 +152,7 @@ class UI(builder.Builder):
     #: Clock tracking talk time (elapsed, and remaining)
     talk_time = talk_time.TalkTime()
 
-    # The :class:`UI` singleton, since there is only one (as a class variable). Used by classmethods only.
+    # The :class:`~pympress.ui.UI` singleton, since there is only one (as a class variable). Used by classmethods only.
     _instance = None
 
 
@@ -157,10 +161,6 @@ class UI(builder.Builder):
     ##############################################################################
 
     def __init__(self, ett = 0, docpath = None):
-        """
-        Args:
-            ett (int):  the estimated (intended) talk time
-        """
         super(UI, self).__init__()
         UI._instance = self
 
@@ -340,20 +340,17 @@ class UI(builder.Builder):
     ##############################################################################
 
     def on_configure_da(self, widget, event):
-        """ Manage "configure" events for all drawing areas.
+        """ Manage "configure" events for all drawing areas, e.g. resizes.
 
-        In the GTK world, this event is triggered when a widget's configuration
-        is modified, for example when its size changes. So, when this event is
-        triggered, we tell the local :class:`~pympress.surfacecache.SurfaceCache`
-        instance about it, so that it can invalidate its internal cache for the
-        specified widget and pre-render next pages at a correct size.
+        We tell the local :class:`~pympress.surfacecache.SurfaceCache` cache about it, so that it can
+        invalidate its internal cache for the specified widget and pre-render next pages at a correct size.
 
         Warning: Some not-explicitely sent signals contain wrong values! Just don't resize in that case,
         since these always seem to happen after a correct signal that was sent explicitely.
 
         Args:
-            widget (:class:`Gtk.Widget`):  the widget which has been resized
-            event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
+            widget (:class:`~Gtk.Widget`):  the widget which has been resized
+            event (:class:`~Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
 
         # Don't trust those
@@ -370,8 +367,8 @@ class UI(builder.Builder):
         """ Manage "configure" events for both window widgets.
 
         Args:
-            widget (:class:`Gtk.Widget`):  the window which has been moved or resized
-            event (:class:`Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
+            widget (:class:`~Gtk.Widget`):  the window which has been moved or resized
+            event (:class:`~Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
         if widget is self.p_win:
             p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_frame_cur.get_parent_window())
@@ -405,6 +402,10 @@ class UI(builder.Builder):
 
         This function allows to delay drawing events when resizing, and to speed up redrawing when
         moving the middle pane is done (which happens at the end of a mouse resize)
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occured (ignored)
+            evt (:class:`~Gdk.Event`):  the event that occured
         """
         if type(evt) == Gdk.EventButton and evt.type == Gdk.EventType.BUTTON_RELEASE:
             self.redraw_panes()
@@ -441,8 +442,10 @@ class UI(builder.Builder):
         Gtk.main_quit()
 
 
-    def menu_about(self, widget=None, event=None):
+    def menu_about(self, *args):
         """ Display the "About pympress" dialog.
+
+        Handles clicks on the "about" menu.
         """
         about = Gtk.AboutDialog()
         about.set_program_name('pympress')
@@ -471,7 +474,7 @@ class UI(builder.Builder):
         The state of the ui and cache are updated accordingly.
 
         Args:
-            docpath (str): the absolute path to the new document
+            docpath (`str`): the absolute path to the new document
         """
         self.doc = document.Document.create(docpath)
 
@@ -501,8 +504,17 @@ class UI(builder.Builder):
         self.swap_document(recent_menu.get_current_uri())
 
 
-    def on_drag_drop(self, widget, drag_context, x, y, data,info, time):
+    def on_drag_drop(self, widget, drag_context, x, y, data, info, time):
         """ Receive the drag-drops (as text only). If a file is dropped, open it.
+
+        Args:
+            widget (:class:`~Gtk.Widget`): The widget on which the dragged item was dropped
+            drag_context (:class:`~Gdk.DragContext`):
+            x (`float`):
+            y (`float`):
+            data (:class:`~Gtk.SelectionData`): container for the dropped data
+            info (`int`):
+            time (`int`):
         """
         received = data.get_text()
         if received.startswith('file://'):
@@ -617,7 +629,7 @@ class UI(builder.Builder):
         :class:`~pympress.document.Document` class.
 
         Args:
-            unpause (boolean):  ``True`` if the page change should unpause the timer, ``False`` otherwise
+            unpause (`bool`):  `True` if the page change should unpause the timer, `False` otherwise
         """
         page_cur = self.doc.current_page()
         page_next = self.doc.next_page()
@@ -677,8 +689,8 @@ class UI(builder.Builder):
         :class:`~pympress.surfacecache.SurfaceCache` if possible.
 
         Args:
-            widget (:class:`Gtk.Widget`):  the widget to update
-            cairo_context (:class:`cairo.Context`):  the Cairo context (or ``None`` if called directly)
+            widget (:class:`~Gtk.Widget`):  the widget to update
+            cairo_context (:class:`~cairo.Context`):  the Cairo context (or `None` if called directly)
         """
 
         if widget is self.c_da:
@@ -735,6 +747,9 @@ class UI(builder.Builder):
     @classmethod
     def notify_page_change(cls, unpause = True):
         """ Statically notify the UI of a page change (typically from document)
+
+        Args:
+            unpause (bool): whether to unpause the click while updating the page
         """
         cls._instance.on_page_change(unpause)
 
@@ -757,8 +772,11 @@ class UI(builder.Builder):
         """ Manage key presses for both windows
 
         Args:
-            widget (:class:`Gtk.Widget`):  the widget in which the event occured (ignored)
-            event (:class:`Gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occured (ignored)
+            event (:class:`~Gdk.Event`):  the event that occured
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         if event.type != Gdk.EventType.KEY_PRESS:
             return
@@ -839,8 +857,11 @@ class UI(builder.Builder):
         """ Manage scroll events
 
         Args:
-            widget (:class:`Gtk.Widget`):  the widget in which the event occured (ignored)
-            event (:class:`Gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occured (ignored)
+            event (:class:`~Gdk.Event`):  the event that occured
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         if event.type != Gdk.EventType.SCROLL:
             return False
@@ -854,8 +875,17 @@ class UI(builder.Builder):
             return False
 
 
-    def track_motions(self, widget = None, event = None):
+    def track_motions(self, widget, event):
         """ Track mouse motion events
+
+        Handles mouse motions on the "about" menu.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget that received the mouse motion
+            event (:class:`~Gdk.Event`):  the GTK event containing the mouse position
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         if self.scribbler.track_scribble(widget, event):
             return True
@@ -865,8 +895,17 @@ class UI(builder.Builder):
             return self.hover_link(widget, event)
 
 
-    def track_clicks(self, widget = None, event = None):
+    def track_clicks(self, widget, event):
         """ Track mouse press and release events
+
+        Handles clicks on the slides.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget that received the click
+            event (:class:`~Gdk.Event`):  the GTK event containing the click position
+
+        Returns:
+            `bool`: whether the event was consumed
         """
         if self.scribbler.toggle_scribble(widget, event):
             return True
@@ -877,7 +916,15 @@ class UI(builder.Builder):
 
 
     def mouse_pos_in_page(self, widget, event, page):
-        """ Normalize event coordinates and get link
+        """ Normalize event coordinates from widget size and notes mode
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget that received the click
+            event (:class:`~Gdk.Event`):  the GTK event containing the click position
+            page (:class:`~pympress.document.Page`): The page that was clicked
+
+        Returns:
+            `(float, float)`: the relative position in the full slide
         """
         x, y = event.get_coords()
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
@@ -895,10 +942,14 @@ class UI(builder.Builder):
 
     def click_link(self, widget, event):
         """ Check whether a link was clicked and follow it.
+        Handles a click on a slide.
 
         Args:
-            widget (:class:`Gtk.Widget`):  the widget in which the event occured
-            event (:class:`Gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
+            event (:class:`~Gdk.Event`):  the event that occured
+
+        Returns:
+            `bool`: whether the event was consumed
         """
 
         if event.type == Gdk.EventType.BUTTON_RELEASE:
@@ -923,11 +974,15 @@ class UI(builder.Builder):
 
 
     def hover_link(self, widget, event):
-        """ Manage events related to hyperlinks.
+        """ Manage events related to hyperlinks, setting the cursor to a pointer if
+        the hovered region is clickable.
 
         Args:
-            widget (:class:`Gtk.Widget`):  the widget in which the event occured
-            event (:class:`Gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
+            event (:class:`~Gdk.Event`):  the event that occured
+
+        Returns:
+            `bool`: whether the event was consumed
         """
 
         if event.type != Gdk.EventType.MOTION_NOTIFY:
@@ -961,12 +1016,19 @@ class UI(builder.Builder):
         self.page_number.on_label_event(True)
 
 
-    def switch_fullscreen(self, widget=None, event=None):
+    def switch_fullscreen(self, widget, event):
         """ Switch the Content window to fullscreen (if in normal mode)
         or to normal mode (if fullscreen).
 
         Screensaver will be disabled when entering fullscreen mode, and enabled
         when leaving fullscreen mode.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
+            event (:class:`~Gtk.Event`):  the event that occured
+
+        Returns:
+            `bool`: whether the event was consumed.
         """
         if isinstance(widget, Gtk.CheckMenuItem):
             # Called from menu -> use c_win
@@ -978,16 +1040,25 @@ class UI(builder.Builder):
             fullscreen = self.p_win_fullscreen
         else:
             logger.error(_("Unknow widget {} to be fullscreened, aborting.").format(widget))
-            return
+            return False
 
         if fullscreen:
             widget.unfullscreen()
         else:
             widget.fullscreen()
 
+        return True
 
-    def on_window_state_event(self, widget, event, user_data=None):
+
+    def on_window_state_event(self, widget, event):
         """ Track whether the preview window is maximized.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
+            event (:class:`~Gtk.Event`):  the event that occured
+
+        Returns:
+            `bool`: whether the event was consumed.
         """
         if widget.get_name() == self.p_win.get_name():
             self.p_win_maximized = (Gdk.WindowState.MAXIMIZED & event.new_window_state) != 0
@@ -995,16 +1066,22 @@ class UI(builder.Builder):
         elif widget.get_name() == self.c_win.get_name():
             self.c_win_fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
             util.set_screensaver(self.c_win_fullscreen, self.c_win.get_window())
+        else:
+            return False
+        return True
 
 
-    def update_frame_position(self, widget=None, user_data=None):
-        """ Callback to preview the frame alignement, called from the spinbutton.
+    def update_frame_position(self, widget, user_data):
+        """ Callback to preview the frame alignement, called from the Gtk.SpinButton.
+
+        Args:
+            widget (:class:`~Gtk.SpinButton`): The button updating the slide alignement in the drawing area widget
+            user_data (`str`): The property being set, either the x or y alignement (resp. xalign and yalign).
         """
-        if widget and user_data:
-            self.c_frame.set_property(user_data, widget.get_value())
+        self.c_frame.set_property(user_data, widget.get_value())
 
 
-    def adjust_frame_position(self, widget=None, event=None):
+    def adjust_frame_position(self, *args):
         """ Select how to align the frame on screen.
         """
         win_aspect_ratio = float(self.c_win.get_allocated_width()) / self.c_win.get_allocated_height()
@@ -1057,7 +1134,7 @@ class UI(builder.Builder):
     ############################    Option toggles    ############################
     ##############################################################################
 
-    def swap_screens(self, widget=None, event=None):
+    def swap_screens(self, *args):
         """ Swap the monitors on which each window is displayed (if there are 2 monitors at least).
         """
         c_win_was_fullscreen = self.c_win_fullscreen
@@ -1098,14 +1175,14 @@ class UI(builder.Builder):
                 self.c_win.fullscreen()
 
 
-    def switch_blanked(self, widget=None, event=None):
+    def switch_blanked(self, *args):
         """ Switch the blanked mode of the content screen.
         """
         self.blanked = not self.blanked
         self.c_da.queue_draw()
 
 
-    def switch_mode(self, widget=None, event=None):
+    def switch_mode(self, *args):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
         """
         self.scribbler.disable_scribbling()
@@ -1144,7 +1221,7 @@ class UI(builder.Builder):
         self.on_page_change(False)
 
 
-    def switch_annotations(self, widget=None, event=None):
+    def switch_annotations(self, *args):
         """ Switch the display to show annotations or to hide them.
         """
         self.show_annotations = not self.show_annotations
@@ -1164,7 +1241,7 @@ class UI(builder.Builder):
         self.on_page_change(False)
 
 
-    def switch_bigbuttons(self, widget=None, event=None):
+    def switch_bigbuttons(self, *args):
         """ Toggle the display of big buttons (nice for touch screens)
         """
         self.show_bigbuttons = not self.show_bigbuttons

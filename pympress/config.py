@@ -19,7 +19,7 @@
 
 """
 :mod:`pympress.config` -- Configuration
-------------------------------------
+---------------------------------------
 
 """
 
@@ -45,7 +45,10 @@ from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 
 def recursive_unicode_to_str(obj):
     """ Recursively convert unicode to str (for python2)
-        Raises NameError in python3 as 'unicode' is undefined
+    Raises NameError in python3 as 'unicode' is undefined
+
+    Args:
+        obj (`unicode` or `str` or `dict` or `list`): A unicode string to transform, or a container whose children to transform
     """
     if isinstance(obj, unicode):
         return str(obj)
@@ -58,8 +61,11 @@ def recursive_unicode_to_str(obj):
 
 
 def layout_from_json(layout_string):
-    """ Load the layout from config, with all strings cast to type 'str' (even on python2 where they default to 'unicode')
-        Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on invalid input.
+    """ Load the layout from config, with all strings cast to type `str` (even on python2 where they default to `unicode`)
+    Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on invalid input.
+
+    Args:
+        layout_string (`str`): A JSON string to be loaded.
     """
     if not layout_string:
         raise ValueError('No layout string passed. Ignore this error if you just upgraded pympress or reset your configuration file.')
@@ -75,14 +81,14 @@ def layout_from_json(layout_string):
 
 
 class Config(configparser.ConfigParser):
-    """ Manage configuration
+    """ Manage configuration :Get the configuration from its file and store its back.
     """
-    #: dict-tree of presenter layout for the notes mode
+    #: `dict`-tree of presenter layout for the notes mode
     notes_layout = {}
-    #: dict-tree of presenter layout for the non-notes mode
+    #: `dict`-tree of presenter layout for the non-notes mode
     plain_layout = {}
 
-    #: Set of :str: that are the valid names of widgets from the presenter window that can be dynamically rearranged
+    #: Set of strings that are the valid names of widgets from the presenter window that can be dynamically rearranged
     placeable_widgets = {"notes", "current", "next", "annotations"}
 
     @staticmethod
@@ -108,8 +114,6 @@ class Config(configparser.ConfigParser):
 
 
     def __init__(config):
-        """ Get the configuration from its file.
-        """
         super(Config, config).__init__()
 
         config.add_section('content')
@@ -182,8 +186,8 @@ class Config(configparser.ConfigParser):
     def toggle_start(self, check_item):
         """ Generic function to toggle some boolean startup configuration.
 
-            Args:
-                check_item (:class:`Gtk.:CheckMenuItem`): the check button triggering the call
+        Args:
+            check_item (:class:`~Gtk.:CheckMenuItem`): the check button triggering the call
         """
         window, start_conf = check_item.get_name().split('.')
         self.set(window, start_conf, 'on' if check_item.get_active() else 'off')
@@ -192,20 +196,20 @@ class Config(configparser.ConfigParser):
     def validate_layout(self, layout, expected_widgets):
         """ Validate layout: check whether the layout of widgets built from the config string is valid.
 
-            Args:
-                layout (dict): the json-parsed config string
-                expected_widgets (set): strings with the names of widgets for this layout
+        Args:
+            layout (`dict`): the json-parsed config string
+            expected_widgets (`set`): strings with the names of widgets for this layout
 
 
-            Layout must have all self.placeable_widgets (leaves of the tree, as strings) and only allowed properties
-            on the nodes of the tree (as dicts).
+        Layout must have all self.placeable_widgets (leaves of the tree, as `str`) and only allowed properties
+        on the nodes of the tree (as `dict`).
 
-            Contraints on the only allowed properties of the nodes are:
-                resizeable: bool (optional, defaults to no),
-                orientation: "vertical" or "horizontal" (mandatory)
-                children: list (mandatory), of size >= 2, containing strings or dicts
-                proportions: list of floats (optional, only if resizeable) with sum = 1, length == len(children), representing
-                    the relative sizes of all the resizeable items.
+        Contraints on the only allowed properties of the nodes are:
+        - resizeable: `bool` (optional, defaults to no),
+        - orientation: `str`, either "vertical" or "horizontal" (mandatory)
+        - children: `list` of size >= 2, containing `str`s or `dict`s (mandatory)
+        - proportions: `list` of `float` with sum = 1, length == len(children), representing the relative sizes
+        of all the resizeable items (if and only if resizeable).
         """
 
         next_visits = [layout]
@@ -264,14 +268,15 @@ class Config(configparser.ConfigParser):
 
 
     def widget_layout_to_tree(self, widget, pane_handle_pos):
-        """ Returns a tree representing a widget hierarchy, leaves are strings and nodes are dicts.
+        """ Build a tree representing a widget hierarchy, leaves are strings and nodes are `dict`.
+        Recursive function. See validate_layout() for more info on the tree structure.
 
-            Args:
-                self (:class:`pympress.config.Config`): the class holding the configuration
-                widget (:class:`Gtk.Widget`): the widget where to start
-                pane_handle_pos (:dict:): Map of :class:`Gtk.Paned` to the relative position (float between 0 and 1) of its handle
+        Args:
+            widget (:class:`~Gtk.Widget`): the widget where to start
+            pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative position (float between 0 and 1) of its handle
 
-            Recursive function. See validate_layout() for more info on the tree structure.
+        Returns:
+            `dict`: A tree of dicts reprensenting the widget hierarchy
         """
         orientation_names = {Gtk.Orientation.HORIZONTAL:'horizontal', Gtk.Orientation.VERTICAL:'vertical'}
 
@@ -331,12 +336,20 @@ class Config(configparser.ConfigParser):
 
     def update_notes_layout(self, widget, pane_handle_pos):
         """ Setter for the notes layout.
+
+        Args:
+            widget (:class:`~Gtk.Widget`): the widget that will contain the layout.
+            pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative position (float between 0 and 1) of its handle
         """
         self.notes_layout = self.widget_layout_to_tree(widget, pane_handle_pos)
 
 
     def update_plain_layout(self, widget, pane_handle_pos):
         """ Setter for the plain layout.
+
+        Args:
+            widget (:class:`~Gtk.Widget`): the widget that will contain the layout.
+            pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative position (float between 0 and 1) of its handle
         """
         self.plain_layout = self.widget_layout_to_tree(widget, pane_handle_pos)
 

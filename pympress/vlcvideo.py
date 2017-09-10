@@ -55,13 +55,19 @@ if util.IS_WINDOWS:
     # let python find the DLLs
     os.environ['PATH'] = vlc.plugin_path + ';' + os.environ['PATH']
 
-# Create a single vlc.Instance() to be shared by (possible) multiple players.
+#: A single vlc.Instance() to be shared by (possible) multiple players.
 instance = vlc.Instance(vlc_opts)
 
 def get_window_handle(window):
     """ Uses ctypes to call gdk_win32_window_get_handle which is not available
     in python gobject introspection porting (yet ?)
     Solution from http://stackoverflow.com/a/27236258/1387346
+
+    Args:
+        window (:class:`~Gdk.Window`): The window for which we want to get the handle
+
+    Returns:
+        The handle to the win32 window
     """
     # get the c gpointer of the gdk window
     ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
@@ -77,6 +83,11 @@ class VLCVideo(Gtk.VBox):
 
     Its player can be controlled through the 'player' attribute, which
     is a vlc.MediaPlayer() instance.
+
+    Args:
+        overlay (:class:`~Gtk.Overlay`): The overlay with the slide, at the top of which we add the movie area
+        show_controls (`bool`): whether to display controls on the video player
+        relative_margins (:class:`~Poppler.Rectangle`): the margins defining the position of the video in the frame.
     """
     player = None
     overlay = None
@@ -148,6 +159,9 @@ class VLCVideo(Gtk.VBox):
 
     def set_file(self, filepath):
         """ Sets the media file to be played bu the widget.
+
+        Args:
+            filepath (`str`): The path to the media file path
         """
         GLib.idle_add(self.player.set_media, instance.media_new(filepath))
 
@@ -169,6 +183,10 @@ class VLCVideo(Gtk.VBox):
 
     def on_click(self, widget, event):
         """ React to click events by playing or pausing the media.
+
+        Args:
+            widget (:class:`~Gtk.Widget`): the widget which has received the click.
+            event (:class:`~Gdk.Event`): the GTK event containing the position.
         """
         if not self.get_parent():
             # How was this even clicked on?

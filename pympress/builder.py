@@ -19,7 +19,7 @@
 
 """
 :mod:`pympress.ui_builder` -- abstract GUI management
-------------------------------------
+-----------------------------------------------------
 
 This module contains the tools to load the graphical user interface of pympress,
 building the widgets/objects from XML (glade) files, applying translation "manually"
@@ -41,7 +41,7 @@ from pympress import util
 class Builder(Gtk.Builder):
     """ GUI builder, inherits from :class:`~Gtk.Builder` to read XML descriptions of GUIs and load them.
     """
-    #: :set: of :class:`~Gtk.Widget`s that have been built by the builder, and translated
+    #: `set` of :class:`~Gtk.Widget`s that have been built by the builder, and translated
     __built_widgets = set()
 
     def __init__(self):
@@ -51,6 +51,9 @@ class Builder(Gtk.Builder):
     @staticmethod
     def __translate_widget_strings(a_widget):
         """ Calls gettext on all strings we can find in a_widgets.
+
+        Args:
+            a_widget (:class:`~GObject.Object`): an object built by the builder, usually a widget
         """
         for str_prop in (prop.name for prop in a_widget.props if prop.value_type == GObject.TYPE_STRING):
             try:
@@ -61,7 +64,10 @@ class Builder(Gtk.Builder):
 
     @staticmethod
     def __recursive_translate_widgets(a_widget):
-        """ Calls gettext on all strings we can find in widgets, recursively.
+        """ Calls gettext on all strings we can find in widgets, and recursively on its children.
+
+        Args:
+            a_widget (:class:`~GObject.Object`): an object built by the builder, usually a widget
         """
         Builder.__translate_widget_strings(a_widget)
 
@@ -77,11 +83,17 @@ class Builder(Gtk.Builder):
     def signal_resolver(self, attr_list):
         """ Dynamically resolves a signal that is self.a.b.c() when attr_list is ['a', 'b', 'c'].
 
-            This allows to specify multi-level signals in the XML files, instead of targeting everything at the main UI object.
+        This allows to specify multi-level signals in the XML files, instead of targeting everything at the main UI object.
 
-            Also, resolving signals dynamically means the object properties of the top-level object can be replaced, and the signal
-            will still connect to something meaningful. The downside is that this connection is done at runtime, thus probably less
-            efficient and might fail to find the target if any attribute along the way has an unexpected value.
+        Also, resolving signals dynamically means the object properties of the top-level object can be replaced, and the signal
+        will still connect to something meaningful. The downside is that this connection is done at runtime, thus probably less
+        efficient and might fail to find the target if any attribute along the way has an unexpected value.
+
+        Args:
+            attr_list (`list`): a list of attribute names, designating objects except the last one designating a function
+
+        Returns:
+            function: The function to which we want to connect
         """
         try:
             target = self
@@ -95,7 +107,17 @@ class Builder(Gtk.Builder):
 
 
     def signal_connector(self, builder, object, signal_name, handler_name, connect_object, flags, *user_data):
-        """ Callback for signal connection. Parse handler names and split on '.' to use some level of recursion
+        """ Callback for signal connection. Parse handler names and split on '.' to use some level of recursion.
+        Implements the Gtk.BuilderConnectFunc function interface.
+
+        Args:
+            builder (:class:`~pympress.builder.Builder`): The builder, unused
+            object (:class:`~GObject.Object`): The object (usually a wiget) that has a signal to be connected
+            signal_name (`str`): The name of the signal
+            handler_name (`str`): The name of the function to be connected to the signal
+            connect_object (:class:`~GObject.Object`): unused
+            flags (:class:`~GObject.ConnectFlags`): unused
+            user_data (`tuple`): supplementary positional arguments to be passed to the handler
         """
         try:
             try:
@@ -122,12 +144,18 @@ class Builder(Gtk.Builder):
 
     def connect_signals(self, base_target):
         """ Override default signal connector so we can map signals to the methods of (any depth of) object that are properties of self
+
+        Args:
+            base_target (:class:`~pympress.builder.Builder`): The target object, that has functions to be connected to signals loaded in this builder.
         """
         Builder.connect_signals_full(base_target, self.signal_connector)
 
 
     def load_ui(self, resource_name):
         """ Loads the UI defined in the file named resource_name using the builder.
+
+        Args:
+            resource_name (`str`): the name of the glade file (basename without extension), identifying which resource to load.
         """
         self.add_from_file(util.get_ui_resource_file(resource_name))
 
@@ -148,7 +176,10 @@ class Builder(Gtk.Builder):
 
 
     def list_attributes(self, target):
-        """
+        """ List the None-valued attributes of target.
+
+        Args:
+            target (`dict`): An object with None-valued attributes
         """
         for attr in dir(target):
             try:
@@ -160,7 +191,10 @@ class Builder(Gtk.Builder):
 
     def load_widgets(self, target):
         """ Fill in target with the missing elements introspectively.
-            This means that all attributes of target that are None at this time must exist under the same name in the builder.
+        This means that all attributes of target that are None at this time must exist under the same name in the builder.
+
+        Args:
+            target (`dict`): An object with None-valued attributes that have the same name as built widgets, loaded from the glade file.
         """
         for attr in self.list_attributes(target):
             setattr(target, attr, self.get_object(attr))
@@ -169,13 +203,14 @@ class Builder(Gtk.Builder):
     def replace_layout(self, layout, top_widget, leaf_widgets, pane_resize_handler = None):
         """ Remix the layout below top_widget with the layout configuration given in 'layout' (assumed to be valid!).
 
-            Args:
-                layout (dict): the json-parsed config string, thus a hierarchy of lists/dicts, with strings as leaves
-                top_widget (:class:`Gtk.Container`): The top-level widget under which we build the hierachyy
-                leaf_widgets (dict): the map of valid leaf identifiers (strings) to the corresponding :class:`Gtk.Widget`s
+        Args:
+            layout (`dict`): the json-parsed config string, thus a hierarchy of lists/dicts, with strings as leaves
+            top_widget (:class:`~Gtk.Container`): The top-level widget under which we build the hierachyy
+            leaf_widgets (`dict`): the map of valid leaf identifiers (strings) to the corresponding :class:`~Gtk.Widget`
+            pane_resize_handler (function): callback function to be called when the panes are resized
 
-            Returns:
-                dict: The mapping of the used :class:`Gtk.Paned` widgets to their relative handle position (float between 0 and 1)
+        Returns:
+            `dict`: The mapping of the used :class:`~Gtk.Paned` widgets to their relative handle position (float between 0 and 1)
         """
         # take apart the previous/default layout
         containers = []
