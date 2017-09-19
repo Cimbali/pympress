@@ -90,13 +90,6 @@ class UI(builder.Builder):
     #: :class:`~Gtk.Frame` for the annotations in the Presenter window.
     p_frame_annot = None
 
-    #: Fullscreen toggle for content window. By config value, start in fullscreen mode.
-    c_win_fullscreen = False
-    #: Fullscreen toggle for presenter window. By config value, start in fullscreen mode.
-    p_win_fullscreen = False
-    #: track state of preview window
-    p_win_maximized = True
-
     #: Indicates whether we should delay redraws on some drawing areas to fluidify resizing gtk.paned
     resize_panes = False
     #: Tracks return values of GLib.timeout_add to cancel gtk.paned's redraw callbacks
@@ -807,7 +800,7 @@ class UI(builder.Builder):
         elif name.upper() == 'F11' or name == 'F' \
             or (name == 'Return' and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
             or (name.upper() == 'L' and ctrl_pressed) \
-            or (name.upper() == 'F5' and not self.c_win_fullscreen):
+            or (name.upper() == 'F5' and (self.c_win.get_window().get_state() & Gdk.WindowState.FULLSCREEN) == 0):
             self.switch_fullscreen(self.c_win)
         elif name.upper() == 'F' and ctrl_pressed:
             self.switch_fullscreen(self.p_win)
@@ -1016,7 +1009,7 @@ class UI(builder.Builder):
         self.page_number.on_label_event(True)
 
 
-    def switch_fullscreen(self, widget, event):
+    def switch_fullscreen(self, widget):
         """ Switch the Content window to fullscreen (if in normal mode)
         or to normal mode (if fullscreen).
 
@@ -1025,24 +1018,19 @@ class UI(builder.Builder):
 
         Args:
             widget (:class:`~Gtk.Widget`):  the widget in which the event occured
-            event (:class:`~Gtk.Event`):  the event that occured
 
         Returns:
-            `bool`: whether the event was consumed.
+            `bool`: whether some window's full screen status got toggled
         """
         if isinstance(widget, Gtk.CheckMenuItem):
             # Called from menu -> use c_win
             widget = self.c_win
-            fullscreen = self.c_win_fullscreen
-        elif widget == self.c_win:
-            fullscreen = self.c_win_fullscreen
-        elif widget == self.p_win:
-            fullscreen = self.p_win_fullscreen
-        else:
+
+        if widget != self.c_win and widget != self.p_win:
             logger.error(_("Unknow widget {} to be fullscreened, aborting.").format(widget))
             return False
 
-        if fullscreen:
+        if (widget.get_window().get_state() & Gdk.WindowState.FULLSCREEN) != 0:
             widget.unfullscreen()
         else:
             widget.fullscreen()
@@ -1060,15 +1048,10 @@ class UI(builder.Builder):
         Returns:
             `bool`: whether the event was consumed.
         """
-        if widget.get_name() == self.p_win.get_name():
-            self.p_win_maximized = (Gdk.WindowState.MAXIMIZED & event.new_window_state) != 0
-            self.p_win_fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
-        elif widget.get_name() == self.c_win.get_name():
-            self.c_win_fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
-            util.set_screensaver(self.c_win_fullscreen, self.c_win.get_window())
-        else:
-            return False
-        return True
+        if widget.get_name() == self.c_win.get_name():
+            fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
+            util.set_screensaver(fullscreen, self.c_win.get_window())
+        return False
 
 
     def update_frame_position(self, widget, user_data):
@@ -1137,42 +1120,44 @@ class UI(builder.Builder):
     def swap_screens(self, *args):
         """ Swap the monitors on which each window is displayed (if there are 2 monitors at least).
         """
-        c_win_was_fullscreen = self.c_win_fullscreen
-        p_win_was_fullscreen = self.p_win_fullscreen
-        p_win_was_maximized  = self.p_win_maximized
-        if c_win_was_fullscreen:
+        screen = self.p_win.get_screen()
+
+        # Though Gtk.Window is a Gtk.Widget get_parent_window() actually returns None on self.{c,p}_win
+        p_monitor = screen.get_monitor_at_window(self.p_frame_cur.get_parent_window())
+        c_monitor = screen.get_monitor_at_window(self.c_frame.get_parent_window())
+
+        if screen.get_n_monitors() == 1 or p_monitor == c_monitor:
+            return
+
+        p_win_state = self.p_win.get_window().get_state()
+        c_win_state = self.c_win.get_window().get_state()
+        if (c_win_state & Gdk.WindowState.FULLSCREEN) != 0:
             self.c_win.unfullscreen()
-        if p_win_was_fullscreen:
+        if (p_win_state & Gdk.WindowState.FULLSCREEN) != 0:
             self.p_win.unfullscreen()
-        if p_win_was_maximized:
+        if (c_win_state & Gdk.WindowState.MAXIMIZED) != 0:
+            self.c_win.unmaximize()
+        if (p_win_state & Gdk.WindowState.MAXIMIZED) != 0:
             self.p_win.unmaximize()
 
-        screen = self.p_win.get_screen()
-        if screen.get_n_monitors() > 1:
-            # Though Gtk.Window is a Gtk.Widget get_parent_window() actually returns None on self.{c,p}_win
-            p_monitor = screen.get_monitor_at_window(self.p_frame_cur.get_parent_window())
-            c_monitor = screen.get_monitor_at_window(self.c_frame.get_parent_window())
+        p_monitor, c_monitor = (c_monitor, p_monitor)
 
-            if p_monitor == c_monitor:
-                return
+        cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
+        px, py, pw, ph = self.p_win.get_position() + self.p_win.get_size()
 
-            p_monitor, c_monitor = (c_monitor, p_monitor)
+        c_bounds = screen.get_monitor_geometry(c_monitor)
+        p_bounds = screen.get_monitor_geometry(p_monitor)
+        self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
+        self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
 
-            cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
-            px, py, pw, ph = self.p_win.get_position() + self.p_win.get_size()
-
-            c_bounds = screen.get_monitor_geometry(c_monitor)
-            p_bounds = screen.get_monitor_geometry(p_monitor)
-            self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
-            self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
-
-            if p_win_was_fullscreen:
-                self.p_win.fullscreen()
-            elif p_win_was_maximized:
-                self.p_win.maximize()
-
-            if c_win_was_fullscreen:
-                self.c_win.fullscreen()
+        if (c_win_state & Gdk.WindowState.MAXIMIZED) != 0:
+            self.c_win.maximize()
+        if (p_win_state & Gdk.WindowState.MAXIMIZED) != 0:
+            self.p_win.maximize()
+        if (c_win_state & Gdk.WindowState.FULLSCREEN) != 0:
+            self.c_win.fullscreen()
+        if (p_win_state & Gdk.WindowState.FULLSCREEN) != 0:
+            self.p_win.fullscreen()
 
 
     def switch_blanked(self, *args):
