@@ -703,8 +703,8 @@
                             <property name="update_policy">if-valid</property>
                             <signal name="changed" handler="page_preview" swapped="no"/>
                             <signal name="insert-text" handler="page_preview" swapped="no"/>
-                            <signal name="key-press-event" handler="on_spin_nav" swapped="no"/>
-                            <signal name="key-release-event" handler="on_spin_nav" swapped="no"/>
+                            <signal name="key-press-event" handler="page_number.on_spin_nav" swapped="no"/>
+                            <signal name="key-release-event" handler="page_number.on_spin_nav" swapped="no"/>
                             <style>
                               <class name="big-info-label"/>
                             </style>
