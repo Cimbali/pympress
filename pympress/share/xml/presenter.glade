@@ -138,7 +138,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Set talk _Time</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="talk_time.on_label_ett_event" swapped="no"/>
+                        <signal name="activate" handler="est_time.on_label_event" swapped="no"/>
                         <accelerator key="t" signal="activate"/>
                       </object>
                     </child>
@@ -703,8 +703,8 @@
                             <property name="update_policy">if-valid</property>
                             <signal name="changed" handler="page_preview" swapped="no"/>
                             <signal name="insert-text" handler="page_preview" swapped="no"/>
-                            <signal name="key-press-event" handler="page_number.on_spin_nav" swapped="no"/>
-                            <signal name="key-release-event" handler="page_number.on_spin_nav" swapped="no"/>
+                            <signal name="key-press-event" handler="page_number.on_keypress" swapped="no"/>
+                            <signal name="key-release-event" handler="page_number.on_keypress" swapped="no"/>
                             <style>
                               <class name="big-info-label"/>
                             </style>
@@ -865,8 +865,8 @@
                   <object class="GtkEventBox" id="eb_ett">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <signal name="button-press-event" handler="talk_time.on_label_ett_event" swapped="no"/>
-                    <signal name="key-press-event" handler="talk_time.on_label_ett_keypress" swapped="no"/>
+                    <signal name="button-press-event" handler="est_time.on_label_event" swapped="no"/>
+                    <signal name="key-press-event" handler="est_time.on_keypress" swapped="no"/>
                     <child>
                       <object class="GtkLabel" id="label_ett">
                         <property name="visible">True</property>

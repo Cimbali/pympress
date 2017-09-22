@@ -28,4 +28,4 @@ __copyright__= """2009, 2010 Thomas Jost <thomas.jost@gmail.com>
 2016 Epithumia <endless@airelle.info>
 """
 
-__all__ = ['builder', 'config', 'document', 'extras', 'page_number', 'pointer', 'scribble', 'surfacecache', 'talk_time', 'ui', 'util', 'vlcvideo']
+__all__ = ['builder', 'config', 'document', 'editable_label', 'extras', 'pointer', 'scribble', 'surfacecache', 'talk_time', 'ui', 'util', 'vlcvideo']

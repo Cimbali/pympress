@@ -52,7 +52,7 @@ PDF_CONTENT_PAGE = 1
 PDF_NOTES_PAGE   = 2
 
 
-from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number
+from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, editable_label
 
 
 class UI(builder.Builder):
@@ -142,7 +142,9 @@ class UI(builder.Builder):
     #: Counter diplaying current and max page numbers
     page_number = None
 
-    #: Clock tracking talk time (elapsed, and remaining)
+    #: :class:`~pympress.editable_label.EstimatedTalkTime` to set estimated/remaining talk time
+    est_time = None
+    #: :class:`~pympress.talk_time.TalkTime` clock tracking talk time (elapsed, and remaining)
     talk_time = None
 
     # The :class:`~pympress.ui.UI` singleton, since there is only one (as a class variable). Used by classmethods only.
@@ -183,8 +185,9 @@ class UI(builder.Builder):
         self.annotations = extras.Annotations(self)
         self.medias = extras.Media(self)
         self.laser = pointer.Pointer(self.config, self)
-        self.page_number = page_number.PageNumber(self)
-        self.talk_time = talk_time.TalkTime(self, self.est_time, ett)
+        self.page_number = editable_label.PageNumber(self)
+        self.est_time = editable_label.EstimatedTalkTime(self, ett)
+        self.talk_time = talk_time.TimeCounter(self, self.est_time)
 
         self.scribbler.cache.swap_document(self.doc)
 
@@ -207,10 +210,6 @@ class UI(builder.Builder):
         icon_list = util.load_icons()
         self.c_win.set_icon_list(icon_list)
         self.p_win.set_icon_list(icon_list)
-
-        # Setup timer for clocks
-        self.talk_time.setup(self, ett)
-        GObject.timeout_add(250, self.talk_time.update_time)
 
         # Show all windows
         self.c_win.show_all()
@@ -778,9 +777,9 @@ class UI(builder.Builder):
         ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
 
         # Try passing events to spinner or ett if they are enabled
-        if self.page_number.on_spin_nav(widget, event):
+        if self.page_number.on_keypress(widget, event):
             return True
-        elif self.talk_time.on_label_ett_keypress(widget, event):
+        elif self.est_time.on_keypress(widget, event):
             return True
         elif self.scribbler.nav_scribble(name, ctrl_pressed):
             return True
@@ -817,7 +816,7 @@ class UI(builder.Builder):
         elif widget is self.c_win:
             if self.scribbler.switch_scribbling(widget, event, name):
                 return True
-            elif self.talk_time.on_label_ett_event(widget, event, name):
+            elif self.est_time.on_label_event(widget, event, name):
                 return True
             elif self.page_number.on_label_event(widget, event, name):
                 return True
