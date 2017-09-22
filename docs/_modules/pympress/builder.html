@@ -265,9 +265,34 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Can not reach target of signal </span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">()&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attr_list</span><span class="p">)),</span> <span class="n">exc_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Builder.get_callback_handler"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.get_callback_handler">[docs]</a>    <span class="k">def</span> <span class="nf">get_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the handler its name. Parse handler names and split on &#39;.&#39; to use some level of recursion.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            handler_name (`str`): The name of the function to be connected to the signal</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `function`: A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">attr_list</span> <span class="o">=</span>  <span class="n">handler_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">attr_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Handler name not in target object. Expected &quot;.&quot; but got: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">handler_name</span><span class="p">),</span> <span class="n">exc_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="k">raise</span>
+
+            <span class="c1"># Dynamically resolved handler for &#39;doc&#39; (only) since self.doc may change</span>
+            <span class="k">if</span> <span class="s1">&#39;doc&#39;</span> <span class="ow">in</span> <span class="n">attr_list</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Builder</span><span class="o">.</span><span class="n">signal_resolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_list</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>  <span class="n">Builder</span><span class="o">.</span><span class="n">signal_resolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_list</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Builder.signal_connector"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.signal_connector">[docs]</a>    <span class="k">def</span> <span class="nf">signal_connector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">,</span> <span class="n">connect_object</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="o">*</span><span class="n">user_data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Callback for signal connection. Parse handler names and split on &#39;.&#39; to use some level of recursion.</span>
-<span class="sd">        Implements the Gtk.BuilderConnectFunc function interface.</span>
+        <span class="sd">&quot;&quot;&quot; Callback for signal connection. Implements the `~Gtk.BuilderConnectFunc` function interface.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            builder (:class:`~pympress.builder.Builder`): The builder, unused</span>
@@ -279,22 +304,7 @@
 <span class="sd">            user_data (`tuple`): supplementary positional arguments to be passed to the handler</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">handler</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">)</span>
-
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="n">attr_list</span> <span class="o">=</span>  <span class="n">handler_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">attr_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Handler name not in target object. Expected &quot;.&quot; but got: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">handler_name</span><span class="p">),</span> <span class="n">exc_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-                    <span class="k">raise</span>
-
-                <span class="c1"># Dynamically resolved handler for &#39;doc&#39; (only) since self.doc may change</span>
-                <span class="k">if</span> <span class="s1">&#39;doc&#39;</span> <span class="ow">in</span> <span class="n">attr_list</span><span class="p">:</span>
-                    <span class="n">handler</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Builder</span><span class="o">.</span><span class="n">signal_resolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_list</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">handler</span> <span class="o">=</span> <span class="n">Builder</span><span class="o">.</span><span class="n">signal_resolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_list</span><span class="p">)</span>
-
+            <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="n">handler_name</span><span class="p">)</span>
             <span class="nb">object</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">signal_name</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="o">*</span><span class="n">user_data</span><span class="p">)</span>
 
         <span class="k">except</span><span class="p">:</span>
@@ -506,7 +516,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-200-g5b381e9&#39;',
+            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -39,7 +39,7 @@ Retructured text (rst) can be used inside the comments and docstrings.
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: pympress.page_number
+.. automodule:: pympress.editable_label
     :members:
     :undoc-members:
     :show-inheritance:

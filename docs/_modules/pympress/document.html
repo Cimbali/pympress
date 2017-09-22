@@ -222,7 +222,6 @@
     <span class="n">opener</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span> <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span> <span class="k">else</span> <span class="s2">&quot;xdg-open&quot;</span>
     <span class="n">fileopen</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="n">opener</span><span class="p">,</span> <span class="n">f</span><span class="p">])</span>
 
-<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">ui</span><span class="p">,</span> <span class="n">extras</span>
 <span class="kn">from</span> <span class="nn">pympress.ui</span> <span class="k">import</span> <span class="n">PDF_REGULAR</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">,</span> <span class="n">PDF_NOTES_PAGE</span>
 
 
@@ -352,7 +351,7 @@
                     <span class="n">relative_margins</span><span class="o">.</span><span class="n">y2</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">annotation</span><span class="o">.</span><span class="n">area</span><span class="o">.</span><span class="n">y2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ph</span> <span class="c1"># top</span>
                     <span class="n">media</span> <span class="o">=</span> <span class="p">(</span><span class="n">relative_margins</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">movie</span><span class="o">.</span><span class="n">show_controls</span><span class="p">())</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">media</span><span class="p">)</span>
-                    <span class="n">action</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">extras</span><span class="o">.</span><span class="n">media</span><span class="o">.</span><span class="n">play_media</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">media</span><span class="p">))</span>
+                    <span class="n">action</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">play_media</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">media</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Pympress can not find file &quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">movie</span><span class="o">.</span><span class="n">get_filename</span><span class="p">())</span>
                     <span class="k">continue</span>
@@ -415,7 +414,7 @@
                 <span class="n">fun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">hist_next</span>
             <span class="k">elif</span> <span class="n">dest_name</span> <span class="o">==</span> <span class="s2">&quot;GoToPage&quot;</span><span class="p">:</span>
                 <span class="c1"># Same as the &quot;G&quot; action which allows to pick a page to jump to</span>
-                <span class="n">fun</span> <span class="o">=</span> <span class="n">ui</span><span class="o">.</span><span class="n">UI</span><span class="o">.</span><span class="n">notify_label_event</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_editing_page_number</span><span class="p">()</span>
             <span class="k">elif</span> <span class="n">dest_name</span> <span class="o">==</span> <span class="s2">&quot;Find&quot;</span><span class="p">:</span>
                 <span class="c1">#TODO popup a text box and search results with Page.find_text</span>
                 <span class="c1"># http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text</span>
@@ -493,7 +492,7 @@
 
             <span class="n">media</span> <span class="o">=</span> <span class="p">(</span><span class="n">relative_margins</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">media</span><span class="p">)</span>
-            <span class="k">return</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">extras</span><span class="o">.</span><span class="n">Media</span><span class="o">.</span><span class="n">play_media</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">media</span><span class="p">))</span>
+            <span class="k">return</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">play_media</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">media</span><span class="p">))</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_link_action</span><span class="p">(</span><span class="n">link_type</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span></div>
@@ -649,6 +648,13 @@
     <span class="c1">#: Our position in the history</span>
     <span class="n">hist_pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
+    <span class="c1">#: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`</span>
+    <span class="n">page_change</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="c1">#: callback, to be connected to :func:`~pympress.extras.Media.play`</span>
+    <span class="n">play_media</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">h</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="c1">#: callback, to be connected to :func:`~pympress.editable_label.PageNumber.start_editing`</span>
+    <span class="n">start_editing_page_number</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop_doc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
 
@@ -677,10 +683,11 @@
 
 
 <div class="viewcode-block" id="Document.create"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.create">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">builder</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Initializes a Document by passing it a :class:`~Poppler.Document`</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            builder (:class:`pympress.builder.Builder`):  A builder to load callbacks</span>
 <span class="sd">            path (`str`):  Absolute path to the PDF file to open</span>
 <span class="sd">            page (`int`):  page number to which the file should be opened</span>
 
@@ -688,7 +695,7 @@
 <span class="sd">            :class:`~pympress.document.Document`: The initialized document</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">EmptyDocument</span><span class="p">()</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">EmptyDocument</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Do not trust urlsplit, manually check we have an URI</span>
             <span class="n">pos</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">path</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
@@ -697,7 +704,14 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">uri</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="s1">&#39;file:&#39;</span><span class="p">,</span> <span class="n">pathname2url</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
             <span class="n">poppler_doc</span> <span class="o">=</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">new_from_file</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="n">poppler_doc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span></div>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">poppler_doc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
+
+        <span class="c1"># Connect callbacks</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">play_media</span>                <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;medias.play&#39;</span><span class="p">)</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">page_change</span>               <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;on_page_change&#39;</span><span class="p">)</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">start_editing_page_number</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;page_number.start_editing&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">doc</span></div>
 
 
 <div class="viewcode-block" id="Document.has_notes"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.has_notes">[docs]</a>    <span class="k">def</span> <span class="nf">has_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -762,7 +776,7 @@
 <span class="sd">            number (`int`):  number of the destination page</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span> <span class="o">=</span> <span class="n">number</span>
-        <span class="n">ui</span><span class="o">.</span><span class="n">UI</span><span class="o">.</span><span class="n">notify_page_change</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_change</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="Document.goto"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.goto">[docs]</a>    <span class="k">def</span> <span class="nf">goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
@@ -975,7 +989,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-200-g5b381e9&#39;',
+            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

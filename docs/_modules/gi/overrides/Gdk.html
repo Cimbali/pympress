@@ -237,7 +237,6 @@
                          <span class="nb">int</span><span class="p">(</span><span class="n">green</span> <span class="o">*</span> <span class="n">Color</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">),</span>
                          <span class="nb">int</span><span class="p">(</span><span class="n">blue</span> <span class="o">*</span> <span class="n">Color</span><span class="o">.</span><span class="n">MAX_VALUE</span><span class="p">))</span>
 
-
     <span class="n">Color</span> <span class="o">=</span> <span class="n">override</span><span class="p">(</span><span class="n">Color</span><span class="p">)</span>
     <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Color&#39;</span><span class="p">)</span>
 
@@ -481,12 +480,15 @@
 
 
 <span class="k">class</span> <span class="nc">Cursor</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Cursor</span><span class="p">):</span>
+
     <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
         <span class="n">arg_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="n">kwd_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwds</span><span class="p">)</span>
         <span class="n">total_len</span> <span class="o">=</span> <span class="n">arg_len</span> <span class="o">+</span> <span class="n">kwd_len</span>
 
         <span class="k">if</span> <span class="n">total_len</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="s2">&quot;4.0&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong number of parameters&quot;</span><span class="p">)</span>
             <span class="c1"># Since g_object_newv (super.__new__) does not seem valid for</span>
             <span class="c1"># direct use with GdkCursor, we must assume usage of at least</span>
             <span class="c1"># one of the C constructors to be valid.</span>
@@ -641,7 +643,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'b&#39;0.6-200-g5b381e9&#39;',
+            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

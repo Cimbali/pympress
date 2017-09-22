@@ -190,15 +190,18 @@
 <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GdkPixbuf</span>
 
-<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">util</span><span class="p">,</span> <span class="n">ui</span><span class="p">,</span> <span class="n">extras</span>
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">util</span><span class="p">,</span> <span class="n">extras</span>
 
 
+<span class="c1">#: Pointer disabled, will not be drawn</span>
 <span class="n">POINTER_OFF</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="c1">#: Pointer enabled but hidden, will be drawn on ctrl + click</span>
 <span class="n">POINTER_HIDE</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1">#: Draw the pointer on the current slide</span>
 <span class="n">POINTER_SHOW</span> <span class="o">=</span> <span class="mi">1</span>
 
 
-<div class="viewcode-block" id="Pointer"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Pointer">[docs]</a><span class="k">class</span> <span class="nc">Pointer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Pointer"><a class="viewcode-back" href="../../pympress.html#pympress.pointer.Pointer">[docs]</a><span class="k">class</span> <span class="nc">Pointer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="c1">#: :class:`~GdkPixbuf.Pixbuf` to read XML descriptions of GUIs and load them.</span>
     <span class="n">pointer</span> <span class="o">=</span> <span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">Pixbuf</span><span class="p">()</span>
     <span class="c1">#: `(float, float)` of position relative to slide, where the pointer should appear</span>
@@ -208,7 +211,32 @@
     <span class="c1">#: A reference to the UI&#39;s :class:`~pympress.config.Config`, to update the pointer preference</span>
     <span class="n">config</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Pointer.load_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Pointer.load_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">load_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="c1">#: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`</span>
+    <span class="n">redraw_current_slide</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Setup the pointer management, and load the default pointer</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (:class:`~pympress.config.Config`): A config object containing preferences</span>
+<span class="sd">            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Pointer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">redraw_current_slide</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;redraw_current_slide&#39;</span><span class="p">)</span>
+
+        <span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;pointer_&#39;</span> <span class="o">+</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_pointer</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">radio_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pointer_red&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer_blue&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer_green&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer_none&#39;</span><span class="p">]:</span>
+            <span class="n">radio</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">radio_name</span><span class="p">)</span>
+            <span class="n">radio</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="n">radio_name</span><span class="p">)</span>
+
+            <span class="n">radio</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="n">radio_name</span> <span class="o">==</span> <span class="n">default</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Pointer.load_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.pointer.Pointer.load_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">load_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Perform the change of pointer using its name</span>
 
 <span class="sd">        Args:</span>
@@ -221,7 +249,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">show_pointer</span> <span class="o">=</span> <span class="n">POINTER_OFF</span></div>
 
 
-<div class="viewcode-block" id="Pointer.change_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Pointer.change_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">change_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+<div class="viewcode-block" id="Pointer.change_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.pointer.Pointer.change_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">change_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Callback for a radio item selection as pointer color</span>
 
 <span class="sd">        Args:</span>
@@ -233,26 +261,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer&#39;</span><span class="p">,</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_name</span><span class="p">()[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;pointer_&#39;</span><span class="p">):])</span></div>
 
 
-<div class="viewcode-block" id="Pointer.default_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Pointer.default_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">default_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Setup the pointer management, and load the default pointer</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            config (:class:`~pympress.config.Config`): A config object containing preferences</span>
-<span class="sd">            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
-
-        <span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;pointer_&#39;</span> <span class="o">+</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">load_pointer</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">radio_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pointer_red&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer_blue&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer_green&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer_none&#39;</span><span class="p">]:</span>
-            <span class="n">radio</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">radio_name</span><span class="p">)</span>
-            <span class="n">radio</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="n">radio_name</span><span class="p">)</span>
-
-            <span class="n">radio</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="n">radio_name</span> <span class="o">==</span> <span class="n">default</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Pointer.render_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Pointer.render_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">render_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cairo_context</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">):</span>
+<div class="viewcode-block" id="Pointer.render_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.pointer.Pointer.render_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">render_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cairo_context</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Draw the laser pointer on screen</span>
 
 <span class="sd">        Args:</span>
@@ -266,7 +275,7 @@
             <span class="n">Gdk</span><span class="o">.</span><span class="n">cairo_set_source_pixbuf</span><span class="p">(</span><span class="n">cairo_context</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Pointer.track_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Pointer.track_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">track_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="Pointer.track_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.pointer.Pointer.track_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">track_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Move the laser pointer at the mouse location.</span>
 
 <span class="sd">        Args:</span>
@@ -280,14 +289,14 @@
             <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">(),</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_allocated_height</span><span class="p">()</span>
             <span class="n">ex</span><span class="p">,</span> <span class="n">ey</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get_coords</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pointer_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">ex</span> <span class="o">/</span> <span class="n">ww</span><span class="p">,</span> <span class="n">ey</span> <span class="o">/</span> <span class="n">wh</span><span class="p">)</span>
-            <span class="n">ui</span><span class="o">.</span><span class="n">UI</span><span class="o">.</span><span class="n">redraw_current_slide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">redraw_current_slide</span><span class="p">()</span>
             <span class="k">return</span> <span class="kc">True</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="Pointer.toggle_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Pointer.toggle_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="Pointer.toggle_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.pointer.Pointer.toggle_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Track events defining when the laser is pointing.</span>
 
 <span class="sd">        Args:</span>
@@ -312,7 +321,7 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_pointer</span> <span class="o">==</span> <span class="n">POINTER_SHOW</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_RELEASE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">show_pointer</span> <span class="o">=</span> <span class="n">POINTER_HIDE</span>
             <span class="n">extras</span><span class="o">.</span><span class="n">Cursor</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="s1">&#39;parent&#39;</span><span class="p">)</span>
-            <span class="n">ui</span><span class="o">.</span><span class="n">UI</span><span class="o">.</span><span class="n">redraw_current_slide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">redraw_current_slide</span><span class="p">()</span>
             <span class="k">return</span> <span class="kc">True</span>
 
         <span class="k">else</span><span class="p">:</span>
@@ -355,7 +364,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-200-g5b381e9&#39;',
+            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
