@@ -147,9 +147,6 @@ class UI(builder.Builder):
     #: :class:`~pympress.talk_time.TalkTime` clock tracking talk time (elapsed, and remaining)
     talk_time = None
 
-    # The :class:`~pympress.ui.UI` singleton, since there is only one (as a class variable). Used by classmethods only.
-    _instance = None
-
 
     ##############################################################################
     #############################      UI setup      #############################
@@ -157,8 +154,6 @@ class UI(builder.Builder):
 
     def __init__(self, ett = 0, docpath = None):
         super(UI, self).__init__()
-        UI._instance = self
-
         self.blanked = self.config.getboolean('content', 'start_blanked')
 
         Gtk.StyleContext.add_provider_for_screen(
@@ -168,7 +163,7 @@ class UI(builder.Builder):
         )
 
         # Use notes mode by default if the document has notes
-        self.doc = document.Document.create(docpath)
+        self.doc = document.Document.create(self, docpath)
         self.notes_mode = self.doc.has_notes()
         self.show_annotations = (not self.notes_mode) and self.config.getboolean('presenter', 'show_annotations')
         self.page_preview_nb = self.doc.current_page().number()
@@ -375,7 +370,8 @@ class UI(builder.Builder):
 
 
     def redraw_panes(self):
-        """ Callback to redraw gtk.paned's drawing areas, used for delayed drawing events
+        """ Handler for :class:`~Gtk.Paned`'s resizing signal, used for delayed drawing events of drawing areas inside the panes.
+        This is very useful on windows where resizing gets sluggish if we try to redraw while resizing.
         """
         self.resize_panes = False
         self.p_da_cur.queue_draw()
@@ -468,7 +464,7 @@ class UI(builder.Builder):
         Args:
             docpath (`str`): the absolute path to the new document
         """
-        self.doc = document.Document.create(docpath)
+        self.doc = document.Document.create(self, docpath)
 
         # Use notes mode by default if the document has notes
         if self.notes_mode != self.doc.has_notes():
@@ -552,12 +548,20 @@ class UI(builder.Builder):
         self.swap_document(None)
 
 
-    @classmethod
-    def get_current_page(cls):
-        """ Statically get page and page type
+    def get_current_page(self):
+        """ Callback to get page and page type
         """
-        self = cls._instance
         return self.doc.current_page(), PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR
+
+
+    def goto_page(self, page_number):
+        """ Callback to go to the given page number.
+
+        Args:
+                page_number (`int`): the desired page number.
+        """
+        self.doc.goto(page_number)
+
 
 
     ##############################################################################
@@ -736,22 +740,9 @@ class UI(builder.Builder):
         cairo_context.paint()
 
 
-    @classmethod
-    def notify_page_change(cls, unpause = True):
-        """ Statically notify the UI of a page change (typically from document)
-
-        Args:
-            unpause (bool): whether to unpause the click while updating the page
+    def redraw_current_slide(self):
+        """ Callback to queue a redraw of the current slides (in both winows)
         """
-        cls._instance.on_page_change(unpause)
-
-
-    @classmethod
-    def redraw_current_slide(cls):
-        """ Static way to queue a redraw of the current slides (in both winows)
-        """
-        self = cls._instance
-
         self.c_da.queue_draw()
         self.p_da_cur.queue_draw()
 
@@ -998,16 +989,6 @@ class UI(builder.Builder):
             return True
 
 
-    @classmethod
-    def notify_label_event(cls):
-        """ Static way to start the "go to" label editing.
-
-        Typically used as callbacks from document links.
-        """
-        self = cls._instance
-        self.page_number.on_label_event(True)
-
-
     def switch_fullscreen(self, widget):
         """ Switch the Content window to fullscreen (if in normal mode)
         or to normal mode (if fullscreen).
@@ -1096,20 +1077,6 @@ class UI(builder.Builder):
             self.c_frame.set_property(prop, val)
         else:
             self.config.set('content', prop, str(button.get_value()))
-
-
-    @classmethod
-    def stop_editing_slide(cls):
-        """ Make sure that the current page number is not being edited.
-        """
-        cls._instance.page_number.restore_current_label()
-
-
-    @classmethod
-    def stop_editing_time(cls):
-        """ Make sure that the estiamte talk time is not being edited.
-        """
-        cls._instance.talk_time.restore_current_label_ett()
 
 
     ##############################################################################

@@ -31,7 +31,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, GdkPixbuf
 
-from pympress import util, ui, extras
+from pympress import util, extras
 
 
 POINTER_OFF = -1
@@ -49,6 +49,9 @@ class Pointer(object):
     #: A reference to the UI's :class:`~pympress.config.Config`, to update the pointer preference
     config = None
 
+    #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
+    redraw_current_slide = lambda: None
+
     def __init__(self, config, builder):
         """ Setup the pointer management, and load the default pointer
 
@@ -58,6 +61,8 @@ class Pointer(object):
         """
         super(Pointer, self).__init__()
         self.config = config
+
+        self.redraw_current_slide = builder.get_callback_handler('redraw_current_slide')
 
         default = 'pointer_' + config.get('presenter', 'pointer')
         self.load_pointer(default)
@@ -122,7 +127,7 @@ class Pointer(object):
             ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
             ex, ey = event.get_coords()
             self.pointer_pos = (ex / ww, ey / wh)
-            ui.UI.redraw_current_slide()
+            self.redraw_current_slide()
             return True
 
         else:
@@ -154,7 +159,7 @@ class Pointer(object):
         elif self.show_pointer == POINTER_SHOW and event.type == Gdk.EventType.BUTTON_RELEASE:
             self.show_pointer = POINTER_HIDE
             extras.Cursor.set_cursor(widget, 'parent')
-            ui.UI.redraw_current_slide()
+            self.redraw_current_slide()
             return True
 
         else:

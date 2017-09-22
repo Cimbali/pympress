@@ -32,8 +32,6 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib
 import time
 
-from pympress import ui
-
 
 class EditableLabel(object):
     #: single uppercase character `str` containing the key used as a shortcut for editing this button
@@ -170,6 +168,13 @@ class PageNumber(EditableLabel):
     #: `int` holding the maximum page number in the document
     max_page_number = 1
 
+    #: callback, to be connected to :func:`~pympress.document.Document.goto`
+    goto_page = lambda p: None
+    #: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`
+    page_change = lambda b: None
+    #: callback, to be connected to :func:`~pympress.editable_label.EstimatedTalkTime.stop_editing`
+    stop_editing_est_time = lambda: None
+
     def __init__(self, builder):
         """ Load all the widgets we need from the spinner.
 
@@ -179,6 +184,10 @@ class PageNumber(EditableLabel):
         super(PageNumber, self).__init__()
 
         builder.load_widgets(self)
+
+        self.goto_page             = builder.get_callback_handler('doc.goto')
+        self.page_change           = builder.get_callback_handler('on_page_change')
+        self.stop_editing_est_time = builder.get_callback_handler('est_time.stop_editing')
 
         # Initially (from XML) both the spinner and the current page label are visible.
         self.hb_cur.remove(self.spin_cur)
@@ -205,13 +214,13 @@ class PageNumber(EditableLabel):
             page_nb = int(self.spin_cur.get_buffer().get_text()) - 1
         except:
             page_nb = int(self.spin_cur.get_value()) - 1
-        ui.UI._instance.doc.goto(page_nb) #TODO setup a better callback
+        self.goto_page(page_nb)
 
 
     def cancel(self):
         """ Make the UI re-display the pages from before editing the current page.
         """
-        GLib.idle_add(ui.UI.notify_page_change, False)
+        GLib.idle_add(self.page_change, False)
 
 
     def more_actions(self, event, name):
@@ -250,7 +259,7 @@ class PageNumber(EditableLabel):
     def swap_label_for_entry(self):
         """ Perform the actual work of starting the editing.
         """
-        ui.UI.stop_editing_time()
+        self.stop_editing_est_time()
 
         # Replace label with entry
         self.hb_cur.remove(self.label_cur)
@@ -302,6 +311,9 @@ class EstimatedTalkTime(EditableLabel):
     #: :class:`~Gtk.Entry` used to set the estimated talk time.
     entry_ett = Gtk.Entry()
 
+    #: callback, to be connected to :func:`~pympress.editable_label.PageNumber.stop_editing`
+    stop_editing_page_number = lambda: None
+
 
     def __init__(self, builder, ett):
         """ Setup the talk time.
@@ -313,6 +325,8 @@ class EstimatedTalkTime(EditableLabel):
         super(EstimatedTalkTime, self).__init__()
 
         builder.load_widgets(self)
+
+        self.stop_editing_page_number = builder.get_callback_handler('page_number.stop_editing')
 
         self.label_ett.set_text("{:02}:{:02}".format(*divmod(ett, 60)))
 
@@ -349,7 +363,7 @@ class EstimatedTalkTime(EditableLabel):
     def swap_label_for_entry(self):
         """ Perform the actual work of starting the editing.
         """
-        ui.UI.stop_editing_slide()
+        self.stop_editing_page_number()
 
         # Set entry text
         self.entry_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))

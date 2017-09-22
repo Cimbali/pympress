@@ -106,9 +106,34 @@ class Builder(Gtk.Builder):
             logger.error('Can not reach target of signal {}.{}()'.format(self, '.'.join(attr_list)), exc_info = True)
 
 
+    def get_callback_handler(self, handler_name):
+        """ Returns the handler its name. Parse handler names and split on '.' to use some level of recursion.
+
+        Args:
+            handler_name (`str`): The name of the function to be connected to the signal
+
+        Returns:
+            `function`: A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object
+        """
+        try:
+            return getattr(self, handler_name)
+
+        except AttributeError:
+            attr_list =  handler_name.split('.')
+
+            if len(attr_list) == 1:
+                logger.error('Handler name not in target object. Expected "." but got: {}'.format(handler_name), exc_info = True)
+                raise
+
+            # Dynamically resolved handler for 'doc' (only) since self.doc may change
+            if 'doc' in attr_list:
+                return lambda *args: Builder.signal_resolver(self, attr_list)(*args)
+            else:
+                return  Builder.signal_resolver(self, attr_list)
+
+
     def signal_connector(self, builder, object, signal_name, handler_name, connect_object, flags, *user_data):
-        """ Callback for signal connection. Parse handler names and split on '.' to use some level of recursion.
-        Implements the Gtk.BuilderConnectFunc function interface.
+        """ Callback for signal connection. Implements the `~Gtk.BuilderConnectFunc` function interface.
 
         Args:
             builder (:class:`~pympress.builder.Builder`): The builder, unused
@@ -120,22 +145,7 @@ class Builder(Gtk.Builder):
             user_data (`tuple`): supplementary positional arguments to be passed to the handler
         """
         try:
-            try:
-                handler = getattr(self, handler_name)
-
-            except AttributeError:
-                attr_list =  handler_name.split('.')
-
-                if len(attr_list) == 1:
-                    logger.error('Handler name not in target object. Expected "." but got: {}'.format(handler_name), exc_info = True)
-                    raise
-
-                # Dynamically resolved handler for 'doc' (only) since self.doc may change
-                if 'doc' in attr_list:
-                    handler = lambda *args: Builder.signal_resolver(self, attr_list)(*args)
-                else:
-                    handler = Builder.signal_resolver(self, attr_list)
-
+            handler = self.get_callback_handler(handler_name)
             object.connect(signal_name, handler, *user_data)
 
         except:

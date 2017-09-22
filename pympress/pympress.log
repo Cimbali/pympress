@@ -1,0 +1,70 @@
+CRITICAL:pympress.__main__:Uncaught exception:
+Traceback (most recent call last):
+  File "/home/ljaulmes/.local/bin/pympress", line 11, in <module>
+    load_entry_point('pympress', 'gui_scripts', 'pympress')()
+  File "/home/ljaulmes/projects/pympress/pympress/__main__.py", line 117, in main
+    from pympress import ui
+  File "/home/ljaulmes/projects/pympress/pympress/ui.py", line 55, in <module>
+    from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, editable_label
+  File "/home/ljaulmes/projects/pympress/pympress/document.py", line 493
+    page_change = lambda p: raise NotImplementedError
+                                ^
+SyntaxError: invalid syntax
+CRITICAL:pympress.__main__:Uncaught exception:
+Traceback (most recent call last):
+  File "/home/ljaulmes/.local/bin/pympress", line 11, in <module>
+    load_entry_point('pympress', 'gui_scripts', 'pympress')()
+  File "/home/ljaulmes/projects/pympress/pympress/__main__.py", line 118, in main
+    gui = ui.UI(ett, name)
+  File "/home/ljaulmes/projects/pympress/pympress/ui.py", line 166, in __init__
+    self.doc = document.Document.create(docpath)
+TypeError: create() missing 1 required positional argument: 'path'
+CRITICAL:pympress.__main__:Uncaught exception:
+Traceback (most recent call last):
+  File "/home/ljaulmes/.local/bin/pympress", line 11, in <module>
+    load_entry_point('pympress', 'gui_scripts', 'pympress')()
+  File "/home/ljaulmes/projects/pympress/pympress/__main__.py", line 118, in main
+    gui = ui.UI(ett, name)
+  File "/home/ljaulmes/projects/pympress/pympress/ui.py", line 166, in __init__
+    self.doc = document.Document.create(self, docpath)
+  File "/home/ljaulmes/projects/pympress/pympress/document.py", line 543, in create
+    return EmptyDocument()
+  File "/home/ljaulmes/projects/pympress/pympress/document.py", line 767, in __init__
+    super(EmptyDocument, self).__init__()
+TypeError: __init__() missing 2 required positional arguments: 'pop_doc' and 'path'
+ERROR:pympress.builder:Can not reach target of signal <ui.UI object at 0x7efe4177cd38 (pympress+ui+UI at 0x55ef6ec9a250)>.medias.play()
+Traceback (most recent call last):
+  File "/home/ljaulmes/projects/pympress/pympress/builder.py", line 119, in get_callback_handler
+    return getattr(self, handler_name)
+AttributeError: 'UI' object has no attribute 'medias.play'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ljaulmes/projects/pympress/pympress/builder.py", line 101, in signal_resolver
+    target = getattr(target, attr)
+AttributeError: 'NoneType' object has no attribute 'play'
+ERROR:pympress.builder:Can not reach target of signal <ui.UI object at 0x7efe4177cd38 (pympress+ui+UI at 0x55ef6ec9a250)>.page_number.start_editing()
+Traceback (most recent call last):
+  File "/home/ljaulmes/projects/pympress/pympress/builder.py", line 119, in get_callback_handler
+    return getattr(self, handler_name)
+AttributeError: 'UI' object has no attribute 'page_number.start_editing'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ljaulmes/projects/pympress/pympress/builder.py", line 101, in signal_resolver
+    target = getattr(target, attr)
+AttributeError: 'NoneType' object has no attribute 'start_editing'
+ERROR:pympress.builder:Can not reach target of signal <ui.UI object at 0x7efe4177cd38 (pympress+ui+UI at 0x55ef6ec9a250)>.est_time.stop_editing()
+Traceback (most recent call last):
+  File "/home/ljaulmes/projects/pympress/pympress/builder.py", line 119, in get_callback_handler
+    return getattr(self, handler_name)
+AttributeError: 'UI' object has no attribute 'est_time.stop_editing'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ljaulmes/projects/pympress/pympress/builder.py", line 101, in signal_resolver
+    target = getattr(target, attr)
+AttributeError: 'NoneType' object has no attribute 'stop_editing'

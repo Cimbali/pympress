@@ -32,7 +32,7 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
-from pympress import ui, util, builder, surfacecache, document
+from pympress import builder, surfacecache, document
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
 
@@ -71,6 +71,11 @@ class Scribbler(builder.Builder):
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
     cache = None
 
+    #: callback, to be connected to :func:`~pympress.ui.UI.get_current_page`
+    get_current_page = lambda: None
+    #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
+    redraw_current_slide = lambda: None
+
     def __init__(self, config, builder, notes_mode):
         """ Setup all the necessary for scribbling
 
@@ -84,6 +89,9 @@ class Scribbler(builder.Builder):
         self.load_ui('highlight')
         self.connect_signals(self)
         builder.load_widgets(self)
+
+        self.get_current_page = builder.get_callback_handler('get_current_page')
+        self.redraw_current_slide = builder.get_callback_handler('redraw_current_slide')
 
         # Surface cache
         self.cache = surfacecache.SurfaceCache(document.EmptyDocument(), config.getint('cache', 'maxpages'))
@@ -178,7 +186,7 @@ class Scribbler(builder.Builder):
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
         if widget is not self.scribble_c_da:
-            page, wtype = ui.UI.get_current_page()
+            page, wtype = self.get_current_page()
             nb = page.number()
             pb = self.cache.get("scribble_p_da", nb)
 
@@ -239,7 +247,7 @@ class Scribbler(builder.Builder):
         """
         del self.scribble_list[:]
 
-        ui.UI.redraw_current_slide()
+        self.redraw_current_slide()
 
 
     def pop_scribble(self, *args):
@@ -248,7 +256,7 @@ class Scribbler(builder.Builder):
         if self.scribble_list:
             self.scribble_list.pop()
 
-        ui.UI.redraw_current_slide()
+        self.redraw_current_slide()
         self.scribble_p_da.queue_draw()
 
 
@@ -307,7 +315,7 @@ class Scribbler(builder.Builder):
         if self.scribbling_mode:
             return False
 
-        page, wtype = ui.UI.get_current_page()
+        page, wtype = self.get_current_page()
         pr = page.get_aspect_ratio(wtype)
         self.scribble_p_frame.set_property('ratio', pr)
 

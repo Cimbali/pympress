@@ -32,8 +32,6 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, Pango
 
-from pympress import ui
-
 try:
     from pympress import vlcvideo
     vlc_enabled = True
@@ -57,7 +55,6 @@ class Annotations(object):
         Args:
             builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
         """
-        super(Annotations, self).__init__()
         builder.load_widgets(self)
 
         # wrap text
@@ -134,7 +131,6 @@ class Media(object):
         Args:
             builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
         """
-        super(Media, self).__init__()
         builder.load_widgets(self)
 
         self.c_overlay.queue_draw()
@@ -172,15 +168,14 @@ class Media(object):
         self.c_overlay.foreach(lambda child, *ignored: child.resize() if type(child) is vlcvideo.VLCVideo else None, None)
 
 
-    @classmethod
-    def play_media(cls, media_id):
-        """ Static way of starting (playing) a media. Used by callbacks.
+    def play(self, media_id):
+        """ Starts playing a media. Used as a callback.
 
         Args:
             media_id (`int`): A unique idientifier of the media to start playing
         """
-        if media_id in cls._media_overlays:
-            cls._media_overlays[media_id].play()
+        if media_id in self._media_overlays:
+            self._media_overlays[media_id].play()
 
 
 class Cursor(object):

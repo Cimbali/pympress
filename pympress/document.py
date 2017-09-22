@@ -63,7 +63,6 @@ else:
     opener = "open" if sys.platform == "darwin" else "xdg-open"
     fileopen = lambda f: subprocess.call([opener, f])
 
-from pympress import ui, extras
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
 
@@ -193,7 +192,7 @@ class Page(object):
                     relative_margins.y2 = 1.0 - annotation.area.y2 / self.ph # top
                     media = (relative_margins, filepath, movie.show_controls())
                     self.medias.append(media)
-                    action = lambda: extras.media.play_media(hash(media))
+                    action = lambda: self.parent.play_media(hash(media))
                 else:
                     logger.error(_("Pympress can not find file ") + movie.get_filename())
                     continue
@@ -256,7 +255,7 @@ class Page(object):
                 fun = self.parent.hist_next
             elif dest_name == "GoToPage":
                 # Same as the "G" action which allows to pick a page to jump to
-                fun = ui.UI.notify_label_event
+                fun = lambda: self.start_editing_page_number()
             elif dest_name == "Find":
                 #TODO popup a text box and search results with Page.find_text
                 # http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text
@@ -334,7 +333,7 @@ class Page(object):
 
             media = (relative_margins, filename, False)
             self.medias.append(media)
-            return lambda: extras.Media.play_media(hash(media))
+            return lambda: self.parent.play_media(hash(media))
 
         else:
             return self.get_link_action(link_type, action)
@@ -490,6 +489,13 @@ class Document(object):
     #: Our position in the history
     hist_pos = -1
 
+    #: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`
+    page_change = lambda p: None
+    #: callback, to be connected to :func:`~pympress.extras.Media.play`
+    play_media = lambda h: None
+    #: callback, to be connected to :func:`~pympress.editable_label.PageNumber.start_editing`
+    start_editing_page_number = lambda: None
+
     def __init__(self, pop_doc, path, page=0):
         self.path = path
 
@@ -518,10 +524,11 @@ class Document(object):
 
 
     @staticmethod
-    def create(path, page=0):
+    def create(builder, path, page=0):
         """ Initializes a Document by passing it a :class:`~Poppler.Document`
 
         Args:
+            builder (:class:`pympress.builder.Builder`):  A builder to load callbacks
             path (`str`):  Absolute path to the PDF file to open
             page (`int`):  page number to which the file should be opened
 
@@ -529,7 +536,7 @@ class Document(object):
             :class:`~pympress.document.Document`: The initialized document
         """
         if path is None:
-            return EmptyDocument()
+            doc = EmptyDocument()
         else:
             # Do not trust urlsplit, manually check we have an URI
             pos = path.index(':') if ':' in path else -1
@@ -538,7 +545,14 @@ class Document(object):
             else:
                 uri = urljoin('file:', pathname2url(path))
             poppler_doc = Poppler.Document.new_from_file(uri, None)
-            return Document(poppler_doc, path, page)
+            doc = Document(poppler_doc, path, page)
+
+        # Connect callbacks
+        doc.play_media                = builder.get_callback_handler('medias.play')
+        doc.page_change               = builder.get_callback_handler('on_page_change')
+        doc.start_editing_page_number = builder.get_callback_handler('page_number.start_editing')
+
+        return doc
 
 
     def has_notes(self):
@@ -603,7 +617,7 @@ class Document(object):
             number (`int`):  number of the destination page
         """
         self.cur_page = number
-        ui.UI.notify_page_change()
+        self.page_change()
 
 
     def goto(self, number):

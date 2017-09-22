@@ -1,0 +1,518 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	Development	//
+Annotations	extras.py	/^class Annotations(object):$/;"	c
+Builder	builder.py	/^class Builder(Gtk.Builder):$/;"	c
+Config	config.py	/^class Config(configparser.ConfigParser):$/;"	c
+Cursor	extras.py	/^class Cursor(object):$/;"	c
+Document	document.py	/^class Document(object):$/;"	c
+EmptyDocument	document.py	/^class EmptyDocument(Document):$/;"	c
+EmptyPage	document.py	/^class EmptyPage(Page):$/;"	c
+GLib	__main__.py	/^from gi.repository import Gtk, Gdk, GLib$/;"	i
+GLib	page_number.py	/^from gi.repository import Gtk, Gdk, GLib$/;"	i
+GLib	surfacecache.py	/^from gi.repository import Gtk, Gdk, GLib$/;"	i
+GLib	ui.py	/^from gi.repository import GObject, Gtk, Gdk, GLib$/;"	i
+GLib	vlcvideo.py	/^from gi.repository import Gtk, Gdk, GObject, GLib$/;"	i
+GObject	builder.py	/^from gi.repository import Gtk, GObject$/;"	i
+GObject	ui.py	/^from gi.repository import GObject, Gtk, Gdk, GLib$/;"	i
+GObject	util.py	/^from gi.repository import Gtk, Gdk, GObject, GdkPixbuf$/;"	i
+GObject	vlcvideo.py	/^from gi.repository import Gtk, Gdk, GObject, GLib$/;"	i
+Gdk	__main__.py	/^from gi.repository import Gtk, Gdk, GLib$/;"	i
+Gdk	extras.py	/^from gi.repository import Gtk, Gdk, Pango$/;"	i
+Gdk	page_number.py	/^from gi.repository import Gtk, Gdk, GLib$/;"	i
+Gdk	pointer.py	/^from gi.repository import Gdk, GdkPixbuf$/;"	i
+Gdk	scribble.py	/^from gi.repository import Gtk, Gdk$/;"	i
+Gdk	surfacecache.py	/^from gi.repository import Gtk, Gdk, GLib$/;"	i
+Gdk	talk_time.py	/^from gi.repository import Gtk, Gdk$/;"	i
+Gdk	ui.py	/^from gi.repository import GObject, Gtk, Gdk, GLib$/;"	i
+Gdk	util.py	/^from gi.repository import Gtk, Gdk, GObject, GdkPixbuf$/;"	i
+Gdk	vlcvideo.py	/^from gi.repository import Gtk, Gdk, GObject, GLib$/;"	i
+GdkPixbuf	pointer.py	/^from gi.repository import Gdk, GdkPixbuf$/;"	i
+GdkPixbuf	util.py	/^from gi.repository import Gtk, Gdk, GObject, GdkPixbuf$/;"	i
+GdkX11	util.py	/^        from gi.repository import GdkX11$/;"	i
+GdkX11	vlcvideo.py	/^    from gi.repository import GdkX11$/;"	i
+Gtk	__main__.py	/^from gi.repository import Gtk, Gdk, GLib$/;"	i
+Gtk	builder.py	/^from gi.repository import Gtk, GObject$/;"	i
+Gtk	config.py	/^from gi.repository import Gtk$/;"	i
+Gtk	extras.py	/^from gi.repository import Gtk, Gdk, Pango$/;"	i
+Gtk	page_number.py	/^from gi.repository import Gtk, Gdk, GLib$/;"	i
+Gtk	scribble.py	/^from gi.repository import Gtk, Gdk$/;"	i
+Gtk	surfacecache.py	/^from gi.repository import Gtk, Gdk, GLib$/;"	i
+Gtk	talk_time.py	/^from gi.repository import Gtk, Gdk$/;"	i
+Gtk	ui.py	/^from gi.repository import GObject, Gtk, Gdk, GLib$/;"	i
+Gtk	util.py	/^from gi.repository import Gtk, Gdk, GObject, GdkPixbuf$/;"	i
+Gtk	vlcvideo.py	/^from gi.repository import Gtk, Gdk, GObject, GLib$/;"	i
+IS_MAC_OS	config.py	/^from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS$/;"	i
+IS_POSIX	config.py	/^from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS$/;"	i
+IS_WINDOWS	config.py	/^from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS$/;"	i
+Link	document.py	/^class Link(object):$/;"	c
+Media	extras.py	/^class Media(object):$/;"	c
+OrderedDict	surfacecache.py	/^class OrderedDict(collections.OrderedDict):$/;"	c
+PDF_CONTENT_PAGE	document.py	/^from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE$/;"	i
+PDF_CONTENT_PAGE	scribble.py	/^from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE$/;"	i
+PDF_CONTENT_PAGE	ui.py	/^PDF_CONTENT_PAGE = 1$/;"	v
+PDF_NOTES_PAGE	document.py	/^from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE$/;"	i
+PDF_NOTES_PAGE	scribble.py	/^from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE$/;"	i
+PDF_NOTES_PAGE	ui.py	/^PDF_NOTES_PAGE   = 2$/;"	v
+PDF_REGULAR	document.py	/^from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE$/;"	i
+PDF_REGULAR	scribble.py	/^from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE$/;"	i
+PDF_REGULAR	ui.py	/^PDF_REGULAR      = 0$/;"	v
+POINTER_HIDE	pointer.py	/^POINTER_HIDE = 0$/;"	v
+POINTER_OFF	pointer.py	/^POINTER_OFF = -1$/;"	v
+POINTER_SHOW	pointer.py	/^POINTER_SHOW = 1$/;"	v
+Page	document.py	/^class Page(object):$/;"	c
+PageNumber	page_number.py	/^class PageNumber(object):$/;"	c
+Pango	extras.py	/^from gi.repository import Gtk, Gdk, Pango$/;"	i
+PermissionError	util.py	/^    class PermissionError(Exception):$/;"	c
+Pointer	pointer.py	/^class Pointer(object):$/;"	c
+Poppler	document.py	/^from gi.repository import Poppler$/;"	i
+Scribbler	scribble.py	/^class Scribbler(builder.Builder):$/;"	c
+SurfaceCache	surfacecache.py	/^class SurfaceCache(object):$/;"	c
+TalkTime	talk_time.py	/^class TalkTime(object):$/;"	c
+UI	ui.py	/^class UI(builder.Builder):$/;"	c
+VLCVideo	vlcvideo.py	/^class VLCVideo(Gtk.VBox):$/;"	c
+__all__	__init__.py	/^__all__ = ['builder', 'config', 'document', 'extras', 'page_number', 'pointer', 'scribble', 'surfacecache', 'talk_time', 'ui', 'util', 'vlcvideo']$/;"	v
+__built_widgets	builder.py	/^    __built_widgets = set()$/;"	v	class:Builder
+__get_resource_list	util.py	/^def __get_resource_list(*path_parts):$/;"	f	file:
+__get_resource_path	util.py	/^def __get_resource_path(*path_parts):$/;"	f	file:
+__init__	builder.py	/^    def __init__(self):$/;"	m	class:Builder
+__init__	config.py	/^    def __init__(config):$/;"	m	class:Config
+__init__	document.py	/^    def __init__(self):$/;"	m	class:EmptyDocument
+__init__	document.py	/^    def __init__(self):$/;"	m	class:EmptyPage
+__init__	document.py	/^    def __init__(self, page, number, parent):$/;"	m	class:Page
+__init__	document.py	/^    def __init__(self, pop_doc, path, page=0):$/;"	m	class:Document
+__init__	document.py	/^    def __init__(self, x1, y1, x2, y2, action):$/;"	m	class:Link
+__init__	scribble.py	/^    def __init__(self):$/;"	m	class:Scribbler
+__init__	surfacecache.py	/^    def __init__(self, doc, max_pages):$/;"	m	class:SurfaceCache
+__init__	ui.py	/^    def __init__(self, ett = 0, docpath = None):$/;"	m	class:UI
+__init__	vlcvideo.py	/^    def __init__(self, overlay, show_controls, relative_margins):$/;"	m	class:VLCVideo
+__main__	ui.py	/^from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number$/;"	i
+__recursive_translate_widgets	builder.py	/^    def __recursive_translate_widgets(a_widget):$/;"	m	class:Builder	file:
+__translate_widget_strings	builder.py	/^    def __translate_widget_strings(a_widget):$/;"	m	class:Builder	file:
+__version__	__init__.py	/^__version__ = '1.0.4'$/;"	v
+_cursors	extras.py	/^    _cursors = {$/;"	v	class:Cursor
+_do_page_change	document.py	/^    def _do_page_change(self, number):$/;"	m	class:Document
+_instance	ui.py	/^    _instance = None$/;"	v	class:UI
+_media_overlays	extras.py	/^    _media_overlays = {}$/;"	v	class:Media
+active_widgets	surfacecache.py	/^    active_widgets = set()$/;"	v	class:SurfaceCache
+add_annotations	extras.py	/^    def add_annotations(self, annotations):$/;"	m	class:Annotations
+add_widget	surfacecache.py	/^    def add_widget(self, widget_name, wtype, start_enabled = True):$/;"	m	class:SurfaceCache
+adjust_frame_position	ui.py	/^    def adjust_frame_position(self, *args):$/;"	m	class:UI
+annotation_renderer	extras.py	/^    annotation_renderer = Gtk.CellRendererText()$/;"	v	class:Annotations
+annotations	document.py	/^    annotations = []$/;"	v	class:Page
+annotations	ui.py	/^    annotations = extras.Annotations()$/;"	v	class:UI
+blanked	ui.py	/^    blanked = False$/;"	v	class:UI
+builder	scribble.py	/^from pympress import ui, util, builder, surfacecache, document$/;"	i
+builder	ui.py	/^from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number$/;"	i
+c_da	ui.py	/^    c_da = None$/;"	v	class:UI
+c_frame	ui.py	/^    c_frame = None$/;"	v	class:UI
+c_overlay	extras.py	/^    c_overlay = None$/;"	v	class:Media
+c_overlay	scribble.py	/^    c_overlay = None$/;"	v	class:Scribbler
+c_win	ui.py	/^    c_win = None$/;"	v	class:UI
+c_win_fullscreen	ui.py	/^    c_win_fullscreen = False$/;"	v	class:UI
+cache	scribble.py	/^    cache = None$/;"	v	class:Scribbler
+cache	ui.py	/^    cache = None$/;"	v	class:UI
+cairo	scribble.py	/^import cairo$/;"	i
+cairo	surfacecache.py	/^import cairo$/;"	i
+cairo	ui.py	/^import cairo$/;"	i
+calc_color	talk_time.py	/^    def calc_color(self, from_color, to_color, position):$/;"	m	class:TalkTime
+can_render	document.py	/^    def can_render(self):$/;"	m	class:EmptyPage
+can_render	document.py	/^    def can_render(self):$/;"	m	class:Page
+change_pointer	pointer.py	/^    def change_pointer(self, widget):$/;"	m	class:Pointer
+cleanup_media_files	document.py	/^    def cleanup_media_files(self):$/;"	m	class:Document
+clear_scribble	scribble.py	/^    def clear_scribble(self, *args):$/;"	m	class:Scribbler
+click_link	ui.py	/^    def click_link(self, widget, event):$/;"	m	class:UI
+close_file	ui.py	/^    def close_file(self, *args):$/;"	m	class:UI
+collections	surfacecache.py	/^import collections$/;"	i
+config	pointer.py	/^    config = None$/;"	v	class:Pointer
+config	ui.py	/^    config = config.Config()$/;"	v	class:UI
+config	ui.py	/^from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number$/;"	i
+configparser	config.py	/^    import ConfigParser as configparser$/;"	i
+configparser	config.py	/^    import configparser$/;"	i
+connect_signals	builder.py	/^    def connect_signals(self, base_target):$/;"	m	class:Builder
+controls	vlcvideo.py	/^    controls = None$/;"	v	class:VLCVideo
+create	document.py	/^    def create(path, page=0):$/;"	m	class:Document
+ctypes	__main__.py	/^import ctypes$/;"	i
+ctypes	vlcvideo.py	/^import ctypes$/;"	i
+cur_page	document.py	/^    cur_page = -1$/;"	v	class:Document
+current_page	document.py	/^    def current_page(self):$/;"	m	class:Document
+default_pointer	pointer.py	/^    def default_pointer(self, config, builder):$/;"	m	class:Pointer
+delta	talk_time.py	/^    delta = 0$/;"	v	class:TalkTime
+disable_prerender	surfacecache.py	/^    def disable_prerender(self, widget_name):$/;"	m	class:SurfaceCache
+disable_scribbling	scribble.py	/^    def disable_scribbling(self):$/;"	m	class:Scribbler
+doc	document.py	/^    doc = None$/;"	v	class:Document
+doc	surfacecache.py	/^    doc = None$/;"	v	class:SurfaceCache
+doc	ui.py	/^    doc = None$/;"	v	class:UI
+doc_lock	surfacecache.py	/^    doc_lock = None$/;"	v	class:SurfaceCache
+document	scribble.py	/^from pympress import ui, util, builder, surfacecache, document$/;"	i
+document	ui.py	/^from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number$/;"	i
+draw_scribble	scribble.py	/^    def draw_scribble(self, widget, cairo_context):$/;"	m	class:Scribbler
+eb_cur	page_number.py	/^    eb_cur = None$/;"	v	class:PageNumber
+eb_ett	talk_time.py	/^    eb_ett = None$/;"	v	class:TalkTime
+editing_cur	page_number.py	/^    editing_cur = False$/;"	v	class:PageNumber
+editing_cur_ett	talk_time.py	/^    editing_cur_ett = False$/;"	v	class:TalkTime
+enable_prerender	surfacecache.py	/^    def enable_prerender(self, widget_name):$/;"	m	class:SurfaceCache
+enable_scribbling	scribble.py	/^    def enable_scribbling(self):$/;"	m	class:Scribbler
+entry_ett	talk_time.py	/^    entry_ett = Gtk.Entry()$/;"	v	class:TalkTime
+est_time	talk_time.py	/^    est_time = 0$/;"	v	class:TalkTime
+extras	document.py	/^from pympress import ui, extras$/;"	i
+extras	pointer.py	/^from pympress import util, ui, extras$/;"	i
+extras	ui.py	/^from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number$/;"	i
+fileopen	document.py	/^    fileopen = lambda f: subprocess.call([opener, f])$/;"	v
+fileopen	document.py	/^    fileopen = os.startfile$/;"	v
+follow	document.py	/^    def follow(self):$/;"	m	class:Link
+follow	document.py	/^    follow = lambda *args: logger.error(_("no action defined for this link!"))$/;"	v	class:Link
+get	surfacecache.py	/^    def get(self, widget_name, page_nb):$/;"	m	class:SurfaceCache
+get_annot_action	document.py	/^    def get_annot_action(self, link_type, action, rect):$/;"	m	class:Page
+get_annotations	document.py	/^    def get_annotations(self):$/;"	m	class:Page
+get_aspect_ratio	document.py	/^    def get_aspect_ratio(self, dtype=PDF_REGULAR):$/;"	m	class:Page
+get_current_page	ui.py	/^    def get_current_page(cls):$/;"	m	class:UI
+get_extension	document.py	/^def get_extension(mime_type):$/;"	f
+get_full_path	document.py	/^    def get_full_path(self, filename):$/;"	m	class:Document
+get_icon_pixbuf	util.py	/^def get_icon_pixbuf(name):$/;"	f
+get_link_action	document.py	/^    def get_link_action(self, link_type, action):$/;"	m	class:Page
+get_link_at	document.py	/^    def get_link_at(self, x, y):$/;"	m	class:Page
+get_locale_dir	util.py	/^def get_locale_dir():$/;"	f
+get_media	document.py	/^    def get_media(self):$/;"	m	class:Page
+get_notes_layout	config.py	/^    def get_notes_layout(self):$/;"	m	class:Config
+get_plain_layout	config.py	/^    def get_plain_layout(self):$/;"	m	class:Config
+get_player_control_toolbar	vlcvideo.py	/^    def get_player_control_toolbar(self):$/;"	m	class:VLCVideo
+get_size	document.py	/^    def get_size(self, dtype=PDF_REGULAR):$/;"	m	class:Page
+get_style_provider	util.py	/^def get_style_provider():$/;"	f
+get_ui_resource_file	util.py	/^def get_ui_resource_file(name):$/;"	f
+get_widget_type	surfacecache.py	/^    def get_widget_type(self, widget_name):$/;"	m	class:SurfaceCache
+get_window_handle	vlcvideo.py	/^def get_window_handle(window):$/;"	f
+getopt	__main__.py	/^import getopt$/;"	i
+gettext	__main__.py	/^import gettext$/;"	i
+gi	__main__.py	/^import gi$/;"	i
+gi	builder.py	/^import gi$/;"	i
+gi	config.py	/^import gi$/;"	i
+gi	document.py	/^import gi$/;"	i
+gi	extras.py	/^import gi$/;"	i
+gi	page_number.py	/^import gi$/;"	i
+gi	pointer.py	/^import gi$/;"	i
+gi	scribble.py	/^import gi$/;"	i
+gi	surfacecache.py	/^import gi$/;"	i
+gi	talk_time.py	/^import gi$/;"	i
+gi	ui.py	/^import gi$/;"	i
+gi	util.py	/^import gi$/;"	i
+gi	vlcvideo.py	/^import gi$/;"	i
+goto	document.py	/^    def goto(self, number):$/;"	m	class:Document
+goto_end	document.py	/^    def goto_end(self, *args):$/;"	m	class:Document
+goto_home	document.py	/^    def goto_home(self, *args):$/;"	m	class:Document
+goto_next	document.py	/^    def goto_next(self, *args):$/;"	m	class:Document
+goto_prev	document.py	/^    def goto_prev(self, *args):$/;"	m	class:Document
+handle_embed	vlcvideo.py	/^        def handle_embed(*args):$/;"	f	function:VLCVideo.__init__
+has_notes	document.py	/^    def has_notes(self):$/;"	m	class:Document
+hb_cur	page_number.py	/^    hb_cur = None$/;"	v	class:PageNumber
+hide	vlcvideo.py	/^    def hide(self, *args):$/;"	m	class:VLCVideo
+highlight_button	ui.py	/^    highlight_button = None$/;"	v	class:UI
+hist_next	document.py	/^    def hist_next(self, *args):$/;"	m	class:Document
+hist_pos	document.py	/^    hist_pos = -1$/;"	v	class:Document
+hist_prev	document.py	/^    def hist_prev(self, *args):$/;"	m	class:Document
+history	document.py	/^    history = []$/;"	v	class:Document
+hover_link	ui.py	/^    def hover_link(self, widget, event):$/;"	m	class:UI
+instance	vlcvideo.py	/^instance = vlc.Instance(vlc_opts)$/;"	v
+is_over	document.py	/^    def is_over(self, x, y):$/;"	m	class:Link
+json	config.py	/^import json$/;"	i
+label_clock	talk_time.py	/^    label_clock = None$/;"	v	class:TalkTime
+label_color_default	talk_time.py	/^    label_color_default = None$/;"	v	class:TalkTime
+label_color_ett_info	talk_time.py	/^    label_color_ett_info = None$/;"	v	class:TalkTime
+label_color_ett_reached	talk_time.py	/^    label_color_ett_reached = None$/;"	v	class:TalkTime
+label_color_ett_warn	talk_time.py	/^    label_color_ett_warn = None$/;"	v	class:TalkTime
+label_cur	page_number.py	/^    label_cur = None$/;"	v	class:PageNumber
+label_ett	talk_time.py	/^    label_ett = None$/;"	v	class:TalkTime
+label_last	page_number.py	/^    label_last = None$/;"	v	class:PageNumber
+label_time	talk_time.py	/^    label_time = None$/;"	v	class:TalkTime
+laser	ui.py	/^    laser = pointer.Pointer()$/;"	v	class:UI
+layout_from_json	config.py	/^def layout_from_json(layout_string):$/;"	f
+links	document.py	/^    links = []$/;"	v	class:Page
+list_attributes	builder.py	/^    def list_attributes(self, target):$/;"	m	class:Builder
+list_icons	util.py	/^def list_icons():$/;"	f
+load_color_from_css	talk_time.py	/^    def load_color_from_css(self, style_context, class_name):$/;"	m	class:TalkTime
+load_icons	util.py	/^def load_icons():$/;"	f
+load_pointer	pointer.py	/^    def load_pointer(self, name):$/;"	m	class:Pointer
+load_ui	builder.py	/^    def load_ui(self, resource_name):$/;"	m	class:Builder
+load_widgets	builder.py	/^    def load_widgets(self, target):$/;"	m	class:Builder
+load_window_layouts	config.py	/^    def load_window_layouts(self):$/;"	m	class:Config
+locale	__main__.py	/^import locale$/;"	i
+locks	surfacecache.py	/^    locks = {}$/;"	v	class:SurfaceCache
+logger	__main__.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	builder.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	config.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	document.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	extras.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	page_number.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	pointer.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	scribble.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	surfacecache.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	talk_time.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	ui.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	util.py	/^logger = logging.getLogger(__name__)$/;"	v
+logger	vlcvideo.py	/^logger = logging.getLogger(__name__)$/;"	v
+logging	__main__.py	/^import logging$/;"	i
+logging	builder.py	/^import logging$/;"	i
+logging	config.py	/^import logging$/;"	i
+logging	document.py	/^import logging$/;"	i
+logging	extras.py	/^import logging$/;"	i
+logging	page_number.py	/^import logging$/;"	i
+logging	pointer.py	/^import logging$/;"	i
+logging	scribble.py	/^import logging$/;"	i
+logging	surfacecache.py	/^import logging$/;"	i
+logging	talk_time.py	/^import logging$/;"	i
+logging	ui.py	/^import logging$/;"	i
+logging	util.py	/^import logging$/;"	i
+logging	vlcvideo.py	/^import logging$/;"	i
+main	__main__.py	/^def main(argv = sys.argv[1:]):$/;"	f
+make_cwin	ui.py	/^    def make_cwin(self):$/;"	m	class:UI
+make_pwin	ui.py	/^    def make_pwin(self):$/;"	m	class:UI
+max_pages	surfacecache.py	/^    max_pages = 200$/;"	v	class:SurfaceCache
+medias	document.py	/^    medias = []$/;"	v	class:Page
+medias	ui.py	/^    medias = extras.Media()$/;"	v	class:UI
+menu_about	ui.py	/^    def menu_about(self, *args):$/;"	m	class:UI
+mimetypes	document.py	/^import mimetypes$/;"	i
+mouse_pos_in_page	ui.py	/^    def mouse_pos_in_page(self, widget, event, page):$/;"	m	class:UI
+move_to_end	surfacecache.py	/^    def move_to_end(self, key):$/;"	m	class:OrderedDict
+movie_zone	vlcvideo.py	/^    movie_zone = None$/;"	v	class:VLCVideo
+nav_scribble	scribble.py	/^    def nav_scribble(self, name, ctrl_pressed):$/;"	m	class:Scribbler
+nb_pages	document.py	/^    nb_pages = -1$/;"	v	class:Document
+next_button	ui.py	/^    next_button = None$/;"	v	class:UI
+next_page	document.py	/^    def next_page(self):$/;"	m	class:Document
+notes	document.py	/^    notes = False$/;"	v	class:Document
+notes_layout	config.py	/^    notes_layout = {}$/;"	v	class:Config
+notes_mode	ui.py	/^    notes_mode = False$/;"	v	class:UI
+notify_label_event	ui.py	/^    def notify_label_event(cls):$/;"	m	class:UI
+notify_page_change	ui.py	/^    def notify_page_change(cls, unpause = True):$/;"	m	class:UI
+number	document.py	/^    def number(self):$/;"	m	class:Page
+off_render	scribble.py	/^    off_render = None$/;"	v	class:Scribbler
+on_click	vlcvideo.py	/^    def on_click(self, widget, event):$/;"	m	class:VLCVideo
+on_configure_annot	extras.py	/^    def on_configure_annot(self, widget, event):$/;"	m	class:Annotations
+on_configure_da	scribble.py	/^    def on_configure_da(self, widget, event):$/;"	m	class:Scribbler
+on_configure_da	ui.py	/^    def on_configure_da(self, widget, event):$/;"	m	class:UI
+on_configure_win	ui.py	/^    def on_configure_win(self, widget, event):$/;"	m	class:UI
+on_drag_drop	ui.py	/^    def on_drag_drop(self, widget, drag_context, x, y, data, info, time):$/;"	m	class:UI
+on_draw	ui.py	/^    def on_draw(self, widget, cairo_context):$/;"	m	class:UI
+on_label_ett_event	talk_time.py	/^    def on_label_ett_event(self, widget, event = None, name = None):$/;"	m	class:TalkTime
+on_label_ett_keypress	talk_time.py	/^    def on_label_ett_keypress(self, widget, event):$/;"	m	class:TalkTime
+on_label_event	page_number.py	/^    def on_label_event(self, widget, event = None, name = None):$/;"	m	class:PageNumber
+on_navigation	ui.py	/^    def on_navigation(self, widget, event):$/;"	m	class:UI
+on_page_change	ui.py	/^    def on_page_change(self, unpause=True):$/;"	m	class:UI
+on_pane_event	ui.py	/^    def on_pane_event(self, widget, evt):$/;"	m	class:UI
+on_scroll	extras.py	/^    def on_scroll(self, widget, event):$/;"	m	class:Annotations
+on_scroll	page_number.py	/^    def on_scroll(self, widget, event):$/;"	m	class:PageNumber
+on_scroll	ui.py	/^    def on_scroll(self, widget, event):$/;"	m	class:UI
+on_spin_nav	page_number.py	/^    def on_spin_nav(self, widget, event):$/;"	m	class:PageNumber
+on_window_state_event	ui.py	/^    def on_window_state_event(self, widget, event):$/;"	m	class:UI
+os	__main__.py	/^import os.path$/;"	i
+os	config.py	/^import os.path$/;"	i
+os	document.py	/^import os$/;"	i
+os	ui.py	/^import os.path$/;"	i
+os	util.py	/^import os, os.path, sys$/;"	i
+os	vlcvideo.py	/^import sys, os$/;"	i
+overlay	vlcvideo.py	/^    overlay = None$/;"	v	class:VLCVideo
+p_central	scribble.py	/^    p_central = None$/;"	v	class:Scribbler
+p_central	ui.py	/^    p_central = None$/;"	v	class:UI
+p_da_cur	ui.py	/^    p_da_cur = None$/;"	v	class:UI
+p_da_next	ui.py	/^    p_da_next = None$/;"	v	class:UI
+p_da_notes	ui.py	/^    p_da_notes = None$/;"	v	class:UI
+p_frame_annot	ui.py	/^    p_frame_annot = None$/;"	v	class:UI
+p_frame_cur	ui.py	/^    p_frame_cur = None$/;"	v	class:UI
+p_frame_next	ui.py	/^    p_frame_next = None$/;"	v	class:UI
+p_frame_notes	ui.py	/^    p_frame_notes = None$/;"	v	class:UI
+p_win	ui.py	/^    p_win = None$/;"	v	class:UI
+p_win_fullscreen	ui.py	/^    p_win_fullscreen = False$/;"	v	class:UI
+page	document.py	/^    def page(self, number):$/;"	m	class:Document
+page	document.py	/^    def page(self, number):$/;"	m	class:EmptyDocument
+page	document.py	/^    page = None$/;"	v	class:Page
+page_nb	document.py	/^    page_nb = -1$/;"	v	class:Page
+page_number	ui.py	/^    page_number = page_number.PageNumber()$/;"	v	class:UI
+page_number	ui.py	/^from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number$/;"	i
+page_preview	ui.py	/^    def page_preview(self, widget, *args):$/;"	m	class:UI
+page_preview_nb	ui.py	/^    page_preview_nb = 0$/;"	v	class:UI
+pages_cache	document.py	/^    pages_cache = {}$/;"	v	class:Document
+pages_number	document.py	/^    def pages_number(self):$/;"	m	class:Document
+pane_handle_pos	ui.py	/^    pane_handle_pos = {}$/;"	v	class:UI
+parent	document.py	/^    parent = None$/;"	v	class:Page
+path	__main__.py	/^import os.path$/;"	i
+path	config.py	/^import os.path$/;"	i
+path	document.py	/^    path = None$/;"	v	class:Document
+path	ui.py	/^import os.path$/;"	i
+path	util.py	/^import os, os.path, sys$/;"	i
+path_to_config	config.py	/^    def path_to_config():$/;"	m	class:Config
+pathname2url	document.py	/^    from urllib import pathname2url$/;"	i
+pathname2url	document.py	/^    from urllib.request import pathname2url$/;"	i
+pause	talk_time.py	/^    def pause(self):$/;"	m	class:TalkTime
+paused	talk_time.py	/^    paused = True$/;"	v	class:TalkTime
+ph	document.py	/^    ph = 0.$/;"	v	class:Page
+pick_file	ui.py	/^    def pick_file(self, *args):$/;"	m	class:UI
+pkg_resources	ui.py	/^import pkg_resources$/;"	i
+pkg_resources	util.py	/^import pkg_resources$/;"	i
+placeable_widgets	config.py	/^    placeable_widgets = {"notes", "current", "next", "annotations"}$/;"	v	class:Config
+placeable_widgets	ui.py	/^    placeable_widgets = {}$/;"	v	class:UI
+plain_layout	config.py	/^    plain_layout = {}$/;"	v	class:Config
+play	vlcvideo.py	/^    def play(self):$/;"	m	class:VLCVideo
+play_media	extras.py	/^    def play_media(cls, media_id):$/;"	m	class:Media
+player	vlcvideo.py	/^    player = None$/;"	v	class:VLCVideo
+pointer	pointer.py	/^    pointer = GdkPixbuf.Pixbuf()$/;"	v	class:Pointer
+pointer	ui.py	/^from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number$/;"	i
+pointer_pos	pointer.py	/^    pointer_pos = (.5, .5)$/;"	v	class:Pointer
+pop_scribble	scribble.py	/^    def pop_scribble(self, *args):$/;"	m	class:Scribbler
+prerender	surfacecache.py	/^    def prerender(self, page_nb):$/;"	m	class:SurfaceCache
+prev_button	ui.py	/^    prev_button = None$/;"	v	class:UI
+print_function	__main__.py	/^from __future__ import print_function$/;"	i
+print_function	builder.py	/^from __future__ import print_function$/;"	i
+print_function	config.py	/^from __future__ import print_function$/;"	i
+print_function	document.py	/^from __future__ import print_function$/;"	i
+print_function	extras.py	/^from __future__ import print_function$/;"	i
+print_function	page_number.py	/^from __future__ import print_function$/;"	i
+print_function	pointer.py	/^from __future__ import print_function$/;"	i
+print_function	scribble.py	/^from __future__ import print_function$/;"	i
+print_function	talk_time.py	/^from __future__ import print_function$/;"	i
+print_function	ui.py	/^from __future__ import print_function$/;"	i
+print_function	util.py	/^from __future__ import print_function$/;"	i
+print_function	vlcvideo.py	/^from __future__ import print_function$/;"	i
+pw	document.py	/^    pw = 0.$/;"	v	class:Page
+recent_document	ui.py	/^    def recent_document(self, recent_menu):$/;"	m	class:UI
+recursive_unicode_to_str	config.py	/^def recursive_unicode_to_str(obj):$/;"	f
+redraw_current_slide	ui.py	/^    def redraw_current_slide(cls):$/;"	m	class:UI
+redraw_panes	ui.py	/^    def redraw_panes(self):$/;"	m	class:UI
+redraw_timeout	ui.py	/^    redraw_timeout = 0$/;"	v	class:UI
+relative_margins	vlcvideo.py	/^    relative_margins = None$/;"	v	class:VLCVideo
+remove_on_exit	document.py	/^    def remove_on_exit(self, filename):$/;"	m	class:Document
+render_cairo	document.py	/^    def render_cairo(self, cr, ww, wh, dtype=PDF_REGULAR):$/;"	m	class:EmptyPage
+render_cairo	document.py	/^    def render_cairo(self, cr, ww, wh, dtype=PDF_REGULAR):$/;"	m	class:Page
+render_pointer	pointer.py	/^    def render_pointer(self, cairo_context, ww, wh):$/;"	m	class:Pointer
+renderer	surfacecache.py	/^    def renderer(self, widget_name, page_nb):$/;"	m	class:SurfaceCache
+replace_layout	builder.py	/^    def replace_layout(self, layout, top_widget, leaf_widgets, pane_resize_handler = None):$/;"	m	class:Builder
+replace_media_overlays	extras.py	/^    def replace_media_overlays(self, current_page):$/;"	m	class:Media
+reset_timer	talk_time.py	/^    def reset_timer(self, *args):$/;"	m	class:TalkTime
+resize	extras.py	/^    def resize(self):$/;"	m	class:Media
+resize	vlcvideo.py	/^    def resize(self):$/;"	m	class:VLCVideo
+resize_panes	ui.py	/^    resize_panes = False$/;"	v	class:UI
+resize_widget	surfacecache.py	/^    def resize_widget(self, widget_name, width, height):$/;"	m	class:SurfaceCache
+restore_current_label	page_number.py	/^    def restore_current_label(self):$/;"	m	class:PageNumber
+restore_current_label_ett	talk_time.py	/^    def restore_current_label_ett(self):$/;"	m	class:TalkTime
+run	ui.py	/^    def run(self):$/;"	m	class:UI
+save_and_quit	ui.py	/^    def save_and_quit(self, *args):$/;"	m	class:UI
+save_config	config.py	/^    def save_config(self):$/;"	m	class:Config
+scheme_chars	document.py	/^    from urllib.parse import urljoin, scheme_chars$/;"	i
+scheme_chars	document.py	/^    from urlparse import urljoin, scheme_chars$/;"	i
+scribble	ui.py	/^from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number$/;"	i
+scribble_c_da	scribble.py	/^    scribble_c_da = None$/;"	v	class:Scribbler
+scribble_c_eb	scribble.py	/^    scribble_c_eb = None$/;"	v	class:Scribbler
+scribble_color	scribble.py	/^    scribble_color = Gdk.RGBA()$/;"	v	class:Scribbler
+scribble_drawing	scribble.py	/^    scribble_drawing = False$/;"	v	class:Scribbler
+scribble_list	scribble.py	/^    scribble_list = []$/;"	v	class:Scribbler
+scribble_overlay	scribble.py	/^    scribble_overlay = None$/;"	v	class:Scribbler
+scribble_p_da	scribble.py	/^    scribble_p_da = None$/;"	v	class:Scribbler
+scribble_p_eb	scribble.py	/^    scribble_p_eb = None$/;"	v	class:Scribbler
+scribble_p_frame	scribble.py	/^    scribble_p_frame = None$/;"	v	class:Scribbler
+scribble_width	scribble.py	/^    scribble_width = 1$/;"	v	class:Scribbler
+scribbler	ui.py	/^    scribbler = scribble.Scribbler()$/;"	v	class:UI
+scribbling_mode	scribble.py	/^    scribbling_mode = False$/;"	v	class:Scribbler
+scrollable_treelist	extras.py	/^    scrollable_treelist = None$/;"	v	class:Annotations
+scrolled_window	extras.py	/^    scrolled_window = None$/;"	v	class:Annotations
+set	surfacecache.py	/^    def set(self, widget_name, page_nb, val):$/;"	m	class:SurfaceCache
+set_cursor	extras.py	/^    def set_cursor(cls, widget, cursor_name = 'parent'):$/;"	m	class:Cursor
+set_file	vlcvideo.py	/^    def set_file(self, filepath):$/;"	m	class:VLCVideo
+set_last	page_number.py	/^    def set_last(self, num_pages):$/;"	m	class:PageNumber
+set_screensaver	util.py	/^def set_screensaver(must_disable, window):$/;"	f
+set_widget_type	surfacecache.py	/^    def set_widget_type(self, widget_name, wtype):$/;"	m	class:SurfaceCache
+setup	extras.py	/^    def setup(self, builder):$/;"	m	class:Annotations
+setup	extras.py	/^    def setup(self, builder):$/;"	m	class:Media
+setup	page_number.py	/^    def setup(self, builder):$/;"	m	class:PageNumber
+setup	talk_time.py	/^    def setup(self, builder, ett):$/;"	m	class:TalkTime
+setup_screens	ui.py	/^    def setup_screens(self):$/;"	m	class:UI
+setup_scribbling	scribble.py	/^    def setup_scribbling(self, config, builder, notes_mode):$/;"	m	class:Scribbler
+show_annotations	ui.py	/^    show_annotations = True$/;"	v	class:UI
+show_bigbuttons	ui.py	/^    show_bigbuttons = True$/;"	v	class:UI
+show_pointer	pointer.py	/^    show_pointer = POINTER_OFF$/;"	v	class:Pointer
+shutil	document.py	/^import shutil$/;"	i
+signal	__main__.py	/^import signal$/;"	i
+signal_connector	builder.py	/^    def signal_connector(self, builder, object, signal_name, handler_name, connect_object, flags, *user_data):$/;"	m	class:Builder
+signal_resolver	builder.py	/^    def signal_resolver(self, attr_list):$/;"	m	class:Builder
+spin_cur	page_number.py	/^    spin_cur = None$/;"	v	class:PageNumber
+start_time	talk_time.py	/^    start_time = 0$/;"	v	class:TalkTime
+stop_editing	talk_time.py	/^    def stop_editing(self):$/;"	m	class:TalkTime
+stop_editing_slide	ui.py	/^    def stop_editing_slide(cls):$/;"	m	class:UI
+stop_editing_time	ui.py	/^    def stop_editing_time(cls):$/;"	m	class:UI
+subprocess	document.py	/^import subprocess$/;"	i
+subprocess	util.py	/^import subprocess$/;"	i
+surface_cache	surfacecache.py	/^    surface_cache = {}$/;"	v	class:SurfaceCache
+surface_size	surfacecache.py	/^    surface_size = {}$/;"	v	class:SurfaceCache
+surface_type	surfacecache.py	/^    surface_type = {}$/;"	v	class:SurfaceCache
+surfacecache	scribble.py	/^from pympress import ui, util, builder, surfacecache, document$/;"	i
+surfacecache	ui.py	/^from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number$/;"	i
+swap_document	surfacecache.py	/^    def swap_document(self, new_doc):$/;"	m	class:SurfaceCache
+swap_document	ui.py	/^    def swap_document(self, docpath):$/;"	m	class:UI
+swap_screens	ui.py	/^    def swap_screens(self, *args):$/;"	m	class:UI
+switch_annotations	ui.py	/^    def switch_annotations(self, *args):$/;"	m	class:UI
+switch_bigbuttons	ui.py	/^    def switch_bigbuttons(self, *args):$/;"	m	class:UI
+switch_blanked	ui.py	/^    def switch_blanked(self, *args):$/;"	m	class:UI
+switch_fullscreen	ui.py	/^    def switch_fullscreen(self, widget):$/;"	m	class:UI
+switch_mode	ui.py	/^    def switch_mode(self, *args):$/;"	m	class:UI
+switch_pause	talk_time.py	/^    def switch_pause(self, *args):$/;"	m	class:TalkTime
+switch_scribbling	scribble.py	/^    def switch_scribbling(self, widget, event = None, name = None):$/;"	m	class:Scribbler
+sys	__main__.py	/^import sys$/;"	i
+sys	document.py	/^import sys$/;"	i
+sys	extras.py	/^import sys$/;"	i
+sys	util.py	/^import os, os.path, sys$/;"	i
+sys	vlcvideo.py	/^import sys, os$/;"	i
+talk_time	ui.py	/^    talk_time = talk_time.TalkTime()$/;"	v	class:UI
+talk_time	ui.py	/^from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number$/;"	i
+temp_files	document.py	/^    temp_files = set()$/;"	v	class:Document
+tempfile	document.py	/^import tempfile$/;"	i
+threading	surfacecache.py	/^import threading$/;"	i
+time	page_number.py	/^import time$/;"	i
+time	surfacecache.py	/^import time$/;"	i
+time	talk_time.py	/^import time$/;"	i
+toggle_pointer	pointer.py	/^    def toggle_pointer(self, widget, event):$/;"	m	class:Pointer
+toggle_scribble	scribble.py	/^    def toggle_scribble(self, widget, event):$/;"	m	class:Scribbler
+toggle_start	config.py	/^    def toggle_start(self, check_item):$/;"	m	class:Config
+track_clicks	ui.py	/^    def track_clicks(self, widget, event):$/;"	m	class:UI
+track_motions	ui.py	/^    def track_motions(self, widget, event):$/;"	m	class:UI
+track_pointer	pointer.py	/^    def track_pointer(self, widget, event):$/;"	m	class:Pointer
+track_scribble	scribble.py	/^    def track_scribble(self, widget, event):$/;"	m	class:Scribbler
+ui	__main__.py	/^    from pympress import ui$/;"	i
+ui	document.py	/^from pympress import ui, extras$/;"	i
+ui	extras.py	/^from pympress import ui$/;"	i
+ui	page_number.py	/^from pympress import ui$/;"	i
+ui	pointer.py	/^from pympress import util, ui, extras$/;"	i
+ui	scribble.py	/^from pympress import ui, util, builder, surfacecache, document$/;"	i
+ui	talk_time.py	/^from pympress import ui$/;"	i
+uncaught_handler	__main__.py	/^def uncaught_handler(*exc_info):$/;"	f
+unpause	talk_time.py	/^    def unpause(self):$/;"	m	class:TalkTime
+update_color	scribble.py	/^    def update_color(self, widget):$/;"	m	class:Scribbler
+update_frame_position	ui.py	/^    def update_frame_position(self, widget, user_data):$/;"	m	class:UI
+update_notes_layout	config.py	/^    def update_notes_layout(self, widget, pane_handle_pos):$/;"	m	class:Config
+update_page_numbers	page_number.py	/^    def update_page_numbers(self, cur_nb):$/;"	m	class:PageNumber
+update_plain_layout	config.py	/^    def update_plain_layout(self, widget, pane_handle_pos):$/;"	m	class:Config
+update_time	talk_time.py	/^    def update_time(self):$/;"	m	class:TalkTime
+update_time_color	talk_time.py	/^    def update_time_color(self):$/;"	m	class:TalkTime
+update_width	scribble.py	/^    def update_width(self, widget, event, value):$/;"	m	class:Scribbler
+urljoin	document.py	/^    from urllib.parse import urljoin, scheme_chars$/;"	i
+urljoin	document.py	/^    from urlparse import urljoin, scheme_chars$/;"	i
+usage	__main__.py	/^def usage():$/;"	f
+util	__main__.py	/^from pympress import util$/;"	i
+util	builder.py	/^from pympress import util$/;"	i
+util	pointer.py	/^from pympress import util, ui, extras$/;"	i
+util	scribble.py	/^from pympress import ui, util, builder, surfacecache, document$/;"	i
+util	ui.py	/^from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, page_number$/;"	i
+util	vlcvideo.py	/^from pympress import util$/;"	i
+validate_layout	config.py	/^    def validate_layout(self, layout, expected_widgets):$/;"	m	class:Config
+vlc	vlcvideo.py	/^import vlc$/;"	i
+vlc_enabled	extras.py	/^    vlc_enabled = False$/;"	v
+vlc_enabled	extras.py	/^    vlc_enabled = True$/;"	v
+vlc_opts	vlcvideo.py	/^vlc_opts=['--no-video-title-show']$/;"	v
+vlcvideo	extras.py	/^    from pympress import vlcvideo$/;"	i
+webbrowser	document.py	/^import webbrowser$/;"	i
+widget_layout_to_tree	config.py	/^    def widget_layout_to_tree(self, widget, pane_handle_pos):$/;"	m	class:Config
+winreg	util.py	/^        import _winreg as winreg$/;"	i
+winreg	util.py	/^        import winreg$/;"	i
+x1	document.py	/^    x1 = None$/;"	v	class:Link
+x2	document.py	/^    x2 = None$/;"	v	class:Link
+y1	document.py	/^    y1 = None$/;"	v	class:Link
+y2	document.py	/^    y2 = None$/;"	v	class:Link
