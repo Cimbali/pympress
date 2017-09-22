@@ -51,12 +51,13 @@ class Annotations(object):
     #: Text renderer for the annotations
     annotation_renderer = Gtk.CellRendererText()
 
-    def setup(self, builder):
+    def __init__(self, builder):
         """ Load the widgets and setup for the annotations' display.
 
         Args:
             builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
         """
+        super(Annotations, self).__init__()
         builder.load_widgets(self)
 
         # wrap text
@@ -127,12 +128,13 @@ class Media(object):
     #: :class:`~Gtk.Overlay` for the Content window.
     c_overlay = None
 
-    def setup(self, builder):
+    def __init__(self, builder):
         """ Set up the required widgets and queue an initial draw.
 
         Args:
             builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
         """
+        super(Media, self).__init__()
         builder.load_widgets(self)
 
         self.c_overlay.queue_draw()

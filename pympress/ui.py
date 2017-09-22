@@ -130,20 +130,20 @@ class UI(builder.Builder):
     doc = None
 
     #: Class :class:`~pympress.scribble.Scribble` managing drawing by the user on top of the current slide.
-    scribbler = scribble.Scribbler()
+    scribbler = None
     #: Class :class:`~pympress.extras.Annotations` managing the display of annotations
-    annotations = extras.Annotations()
+    annotations = None
     #: Class :class:`~pympress.extras.Media` managing keeping track of and callbacks on media overlays
-    medias = extras.Media()
+    medias = None
 
     #: Software-implemented laser pointer, :class:`~pympress.pointer.Pointer`
-    laser = pointer.Pointer()
+    laser = None
 
     #: Counter diplaying current and max page numbers
-    page_number = page_number.PageNumber()
+    page_number = None
 
     #: Clock tracking talk time (elapsed, and remaining)
-    talk_time = talk_time.TalkTime()
+    talk_time = None
 
     # The :class:`~pympress.ui.UI` singleton, since there is only one (as a class variable). Used by classmethods only.
     _instance = None
@@ -179,9 +179,12 @@ class UI(builder.Builder):
         self.load_ui('presenter')
         self.load_ui('content')
 
-        self.scribbler.setup_scribbling(self.config, self, self.notes_mode)
-        self.laser.default_pointer(self.config, self)
-        self.medias.setup(self)
+        self.scribbler = scribble.Scribbler(self.config, self, self.notes_mode)
+        self.annotations = extras.Annotations(self)
+        self.medias = extras.Media(self)
+        self.laser = pointer.Pointer(self.config, self)
+        self.page_number = page_number.PageNumber(self)
+        self.talk_time = talk_time.TalkTime(self, self.est_time, ett)
 
         self.scribbler.cache.swap_document(self.doc)
 
@@ -281,9 +284,6 @@ class UI(builder.Builder):
             self.cache.add_widget("p_da_next", PDF_REGULAR)
             self.cache.add_widget("p_da_notes", PDF_REGULAR, False)
 
-
-        self.annotations.setup(self)
-        self.page_number.setup(self)
 
         # set default value
         self.page_number.set_last(self.doc.pages_number())

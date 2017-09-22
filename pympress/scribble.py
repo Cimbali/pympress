@@ -71,11 +71,33 @@ class Scribbler(builder.Builder):
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
     cache = None
 
-    def __init__(self):
+    def __init__(self, config, builder, notes_mode):
+        """ Setup all the necessary for scribbling
+
+        Args:
+            config (:class:`~pympress.config.Config`): A config object containing preferences
+            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+            notes_mode (`bool`): The current notes mode, i.e. whether we display the notes on second slide
+        """
         super(Scribbler, self).__init__()
 
         self.load_ui('highlight')
         self.connect_signals(self)
+        builder.load_widgets(self)
+
+        # Surface cache
+        self.cache = surfacecache.SurfaceCache(document.EmptyDocument(), config.getint('cache', 'maxpages'))
+
+        self.scribble_color = Gdk.RGBA()
+        self.scribble_color.parse(config.get('scribble', 'color'))
+        self.scribble_width = config.getint('scribble', 'width')
+        self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if notes_mode else PDF_REGULAR, False)
+
+        self.config = config
+
+        # Presenter-size setup
+        self.get_object("scribble_color").set_rgba(self.scribble_color)
+        self.get_object("scribble_width").set_value(self.scribble_width)
 
 
     def nav_scribble(self, name, ctrl_pressed):
@@ -228,30 +250,6 @@ class Scribbler(builder.Builder):
 
         ui.UI.redraw_current_slide()
         self.scribble_p_da.queue_draw()
-
-
-    def setup_scribbling(self, config, builder, notes_mode):
-        """ Setup all the necessary for scribbling
-
-        Args:
-            config (:class:`~pympress.config.Config`): A config object containing preferences
-            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
-            notes_mode (`bool`): The current notes mode, i.e. whether we display the notes on second slide
-        """
-        # Surface cache
-        self.cache = surfacecache.SurfaceCache(document.EmptyDocument(), config.getint('cache', 'maxpages'))
-
-        self.scribble_color = Gdk.RGBA()
-        self.scribble_color.parse(config.get('scribble', 'color'))
-        self.scribble_width = config.getint('scribble', 'width')
-        self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if notes_mode else PDF_REGULAR, False)
-
-        self.config = config
-        builder.load_widgets(self)
-
-        # Presenter-size setup
-        self.get_object("scribble_color").set_rgba(self.scribble_color)
-        self.get_object("scribble_width").set_value(self.scribble_width)
 
 
     def on_configure_da(self, widget, event):

@@ -68,13 +68,14 @@ class TalkTime(object):
     paused = True
 
 
-    def setup(self, builder, ett):
+    def __init__(self, builder, ett):
         """ Setup the talk time.
 
         Args:
             builder (builder.Builder): The builder from which to load widgets.
             ett (`int`): the estimated time for the talk, in seconds.
         """
+        super(TalkTime, self).__init__()
         self.est_time = ett
         builder.load_widgets(self)
 

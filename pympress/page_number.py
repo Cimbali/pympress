@@ -49,12 +49,13 @@ class PageNumber(object):
     spin_cur = None
 
 
-    def setup(self, builder):
+    def __init__(self, builder):
         """ Load all the widgets we need from the spinner.
 
         Args:
             builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
         """
+        super(PageNumber, self).__init__()
         builder.load_widgets(self)
 
         # Initially (from XML) both the spinner and the current page label are visible.

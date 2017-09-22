@@ -49,6 +49,26 @@ class Pointer(object):
     #: A reference to the UI's :class:`~pympress.config.Config`, to update the pointer preference
     config = None
 
+    def __init__(self, config, builder):
+        """ Setup the pointer management, and load the default pointer
+
+        Args:
+            config (:class:`~pympress.config.Config`): A config object containing preferences
+            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+        """
+        super(Pointer, self).__init__()
+        self.config = config
+
+        default = 'pointer_' + config.get('presenter', 'pointer')
+        self.load_pointer(default)
+
+        for radio_name in ['pointer_red', 'pointer_blue', 'pointer_green', 'pointer_none']:
+            radio = builder.get_object(radio_name)
+            radio.set_name(radio_name)
+
+            radio.set_active(radio_name == default)
+
+
     def load_pointer(self, name):
         """ Perform the change of pointer using its name
 
@@ -72,25 +92,6 @@ class Pointer(object):
             assert(widget.get_name().startswith('pointer_'))
             self.load_pointer(widget.get_name())
             self.config.set('presenter', 'pointer', widget.get_name()[len('pointer_'):])
-
-
-    def default_pointer(self, config, builder):
-        """ Setup the pointer management, and load the default pointer
-
-        Args:
-            config (:class:`~pympress.config.Config`): A config object containing preferences
-            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
-        """
-        self.config = config
-
-        default = 'pointer_' + config.get('presenter', 'pointer')
-        self.load_pointer(default)
-
-        for radio_name in ['pointer_red', 'pointer_blue', 'pointer_green', 'pointer_none']:
-            radio = builder.get_object(radio_name)
-            radio.set_name(radio_name)
-
-            radio.set_active(radio_name == default)
 
 
     def render_pointer(self, cairo_context, ww, wh):
