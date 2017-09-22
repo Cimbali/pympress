@@ -129,7 +129,7 @@ def get_icon_pixbuf(name):
         name (`str`): The name of the icon to load
 
     Returns:
-        :class:`~Gdk.Pixbuf`: The loaded icon
+        :class:`~GdkPixbuf.Pixbuf`: The loaded icon
     """
     return GdkPixbuf.Pixbuf.new_from_file(__get_resource_path('share', 'pixmaps', name))
 

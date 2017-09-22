@@ -34,8 +34,11 @@ from gi.repository import Gdk, GdkPixbuf
 from pympress import util, extras
 
 
+#: Pointer disabled, will not be drawn
 POINTER_OFF = -1
+#: Pointer enabled but hidden, will be drawn on ctrl + click
 POINTER_HIDE = 0
+#: Draw the pointer on the current slide
 POINTER_SHOW = 1
 
 

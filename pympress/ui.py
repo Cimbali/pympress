@@ -139,7 +139,7 @@ class UI(builder.Builder):
     #: Software-implemented laser pointer, :class:`~pympress.pointer.Pointer`
     laser = None
 
-    #: Counter diplaying current and max page numbers
+    #: :class:`~pympress.editable_label.PageNumber` displaying current and max page numbers and setting current page number
     page_number = None
 
     #: :class:`~pympress.editable_label.EstimatedTalkTime` to set estimated/remaining talk time

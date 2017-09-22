@@ -248,6 +248,7 @@ class Scribbler(builder.Builder):
         del self.scribble_list[:]
 
         self.redraw_current_slide()
+        self.scribble_p_da.queue_draw()
 
 
     def pop_scribble(self, *args):

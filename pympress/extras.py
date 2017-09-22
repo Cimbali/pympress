@@ -46,7 +46,7 @@ class Annotations(object):
     #: Making the annotations list scroll if it's too long
     scrolled_window = None
 
-    #: Text renderer for the annotations
+    #: :class:`~Gtk.CellRendererText` Text renderer for the annotations
     annotation_renderer = Gtk.CellRendererText()
 
     def __init__(self, builder):
@@ -119,7 +119,7 @@ class Annotations(object):
 
 
 class Media(object):
-    #: Static `dict` of :class:`~pympress.vlcvideo.VLCVideo` ready to be added on top of the slides
+    #: `dict` of :class:`~pympress.vlcvideo.VLCVideo` ready to be added on top of the slides
     _media_overlays = {}
 
     #: :class:`~Gtk.Overlay` for the Content window.

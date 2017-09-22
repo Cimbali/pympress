@@ -148,6 +148,10 @@ intersphinx_mapping = {
     'GdkPixbuf': ('https://lazka.github.io/pgi-docs/GdkPixbuf-2.0', None),
     'GObject': ('https://lazka.github.io/pgi-docs/GObject-2.0', None),
     'Poppler': ('https://lazka.github.io/pgi-docs/Poppler-0.18', None),
+    'Pango': ('https://lazka.github.io/pgi-docs/Pango-1.0', None),
+    'GLib': ('https://lazka.github.io/pgi-docs/GLib-2.0', None),
+    'GdkX11': ('https://lazka.github.io/pgi-docs/GdkX11-3.0', None),
+    'python': ('https://docs.python.org/3.4', None),
     'cairo': ('https://www.cairographics.org/documentation/pycairo/3', None),
 }
 
