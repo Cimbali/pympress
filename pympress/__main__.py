@@ -101,17 +101,7 @@ def main(argv = sys.argv[1:]):
     logging.basicConfig(filename='pympress.log', level=log_level)
 
     # PDF file to open passed on command line?
-    name = None
-    if len(args) > 0:
-        name = os.path.abspath(args[0])
-
-        # Check if the path is valid
-        if not os.path.exists(name):
-            msg=_("Could not find the file \"{}\"").format(name)
-            dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg)
-            dialog.set_position(Gtk.WindowPosition.CENTER)
-            dialog.run()
-            name = None
+    name = os.path.abspath(args[0]) if len(args) > 0 else None
 
     # Create windows
     from pympress import ui

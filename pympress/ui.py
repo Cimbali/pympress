@@ -461,7 +461,11 @@ class UI(builder.Builder):
         Args:
             docpath (`str`): the absolute path to the new document
         """
-        self.doc = document.Document.create(self, docpath)
+        try:
+            self.doc = document.Document.create(self, docpath)
+        except GLib.Error:
+            self.doc = document.Document.create(self, None)
+            self.error_opening_file(docpath)
 
         # Use notes mode by default if the document has notes
         if self.notes_mode != self.doc.has_notes():
@@ -536,6 +540,21 @@ class UI(builder.Builder):
         if response == Gtk.ResponseType.OK:
             self.swap_document(os.path.abspath(dialog.get_filename()))
 
+        dialog.destroy()
+
+
+    def error_opening_file(self, filename):
+        """ Remove the current document.
+        """
+        # Check if the path is valid
+        if not os.path.exists(filename):
+            msg=_('Could not find the file "{}"').format(filename)
+        else:
+            msg=_('Error opening the file "{}"').format(filename)
+        dialog = Gtk.MessageDialog(self.p_win, Gtk.DialogFlags.MODAL,
+                                    Gtk.MessageType.ERROR, Gtk.ButtonsType.CLOSE, msg)
+        dialog.set_position(Gtk.WindowPosition.CENTER)
+        dialog.run()
         dialog.destroy()
 
 
