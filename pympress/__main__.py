@@ -58,8 +58,11 @@ def usage():
     print(_("Usage: {} [options] <presentation_file>").format(sys.argv[0]))
     print("")
     print(_("Options:"))
-    print("    -h, --help: " + _("This help"))
-    print("    -t xx, --talk-time=xx: " + _("The estimated (intended) talk time in minutes"))
+    print("    -h, --help                       " + _("This help"))
+    print("    -t mm[:ss], --talk-time=mm[:ss]  " + _("The estimated (intended) talk time in minutes"))
+    print("                                       " + _("(and optionally seconds)"))
+    print("    --log=level:                     " + _("Set level of verbosity in log file:"))
+    print("                                       " + _("{}, {}, {}, {}, or {}").format("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"))
     print("")
 
 def main(argv = sys.argv[1:]):
