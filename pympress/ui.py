@@ -816,6 +816,8 @@ class UI(builder.Builder):
                     self.switch_fullscreen(self.c_win)
             elif name.upper() == 'B':
                 self.switch_blanked()
+            elif ctrl_pressed and name.upper() == 'W':
+                self.close_file()
             else:
                 return False
 
