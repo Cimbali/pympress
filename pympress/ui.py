@@ -545,20 +545,13 @@ class UI(builder.Builder):
         self.swap_document(None)
 
 
-    def get_current_page(self):
-        """ Callback to get page and page type
+    def get_notes_mode(self):
+        """ Simple getter.
+
+        Returns (bool):
+            Whether we split slides in content + notes
         """
-        return self.doc.current_page(), PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR
-
-
-    def goto_page(self, page_number):
-        """ Callback to go to the given page number.
-
-        Args:
-                page_number (`int`): the desired page number.
-        """
-        self.doc.goto(page_number)
-
+        return self.notes_mode
 
 
     ##############################################################################

@@ -71,8 +71,10 @@ class Scribbler(builder.Builder):
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
     cache = None
 
-    #: callback, to be connected to :func:`~pympress.ui.UI.get_current_page`
+    #: callback, to be connected to :func:`~pympress.document.Document.current_page`
     get_current_page = lambda: None
+    #: callback, to be connected to :func:`~pympress.ui.UI.notes_mode`
+    get_notes_mode = lambda: None
     #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
     redraw_current_slide = lambda: None
 
@@ -90,7 +92,8 @@ class Scribbler(builder.Builder):
         self.connect_signals(self)
         builder.load_widgets(self)
 
-        self.get_current_page = builder.get_callback_handler('get_current_page')
+        self.get_notes_mode = builder.get_callback_handler('get_notes_mode')
+        self.get_current_page = builder.get_callback_handler('doc.current_page')
         self.redraw_current_slide = builder.get_callback_handler('redraw_current_slide')
 
         # Surface cache
@@ -186,7 +189,8 @@ class Scribbler(builder.Builder):
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
         if widget is not self.scribble_c_da:
-            page, wtype = self.get_current_page()
+            page = self.get_current_page()
+            wtype = PDF_CONTENT_PAGE if self.get_notes_mode() else PDF_REGULAR
             nb = page.number()
             pb = self.cache.get("scribble_p_da", nb)
 
@@ -316,7 +320,8 @@ class Scribbler(builder.Builder):
         if self.scribbling_mode:
             return False
 
-        page, wtype = self.get_current_page()
+        page = self.get_current_page()
+        wtype = PDF_CONTENT_PAGE if self.get_notes_mode() else PDF_REGULAR
         pr = page.get_aspect_ratio(wtype)
         self.scribble_p_frame.set_property('ratio', pr)
 
