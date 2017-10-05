@@ -2,6 +2,7 @@
 build/
 dist/
 
+pympress.log
 MANIFEST
 pympress.egg-info/
 
