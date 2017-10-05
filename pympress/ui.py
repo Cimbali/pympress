@@ -110,7 +110,7 @@ class UI(builder.Builder):
     highlight_button = None
 
     #: number of page currently displayed in Controller window's miniatures
-    page_preview_nb = 0
+    page_preview_nb = -1
 
     #: track whether we blank the screen
     blanked = False
@@ -127,7 +127,7 @@ class UI(builder.Builder):
     cache = None
 
     #: Current :class:`~pympress.document.Document` instance.
-    doc = None
+    doc = document.EmptyDocument()
 
     #: Class :class:`~pympress.scribble.Scribble` managing drawing by the user on top of the current slide.
     scribbler = None
@@ -162,15 +162,10 @@ class UI(builder.Builder):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-        # Use notes mode by default if the document has notes
-        self.doc = document.Document.create(self, docpath)
-        self.notes_mode = self.doc.has_notes()
-        self.show_annotations = (not self.notes_mode) and self.config.getboolean('presenter', 'show_annotations')
-        self.page_preview_nb = self.doc.current_page().number()
+        self.show_annotations = self.config.getboolean('presenter', 'show_annotations')
 
         # Surface cache
         self.cache = surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
-
 
         # Make and populate windows
         self.load_ui('presenter')
@@ -180,11 +175,12 @@ class UI(builder.Builder):
         self.annotations = extras.Annotations(self)
         self.medias = extras.Media(self)
         self.laser = pointer.Pointer(self.config, self)
-        self.page_number = editable_label.PageNumber(self)
         self.est_time = editable_label.EstimatedTalkTime(self, ett)
+        self.page_number = editable_label.PageNumber(self)
         self.talk_time = talk_time.TimeCounter(self, self.est_time)
 
-        self.scribbler.cache.swap_document(self.doc)
+        # solve circular creation-time dependency
+        self.est_time.delayed_callback_connection(self)
 
         # Get placeable widgets. NB, ids are slightly shorter than names.
         self.placeable_widgets = {
@@ -210,8 +206,9 @@ class UI(builder.Builder):
         self.c_win.show_all()
         self.p_win.show_all()
 
-        # Add media
-        self.medias.replace_media_overlays(self.doc.current_page())
+        # Initialize doc last. Use notes mode by default if the document has notes
+        self.swap_document(docpath)
+        self.scribbler.cache.swap_document(docpath)
 
         # Queue some redraws
         self.c_da.queue_draw()

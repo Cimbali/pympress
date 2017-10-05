@@ -255,7 +255,7 @@ class Page(object):
                 fun = self.parent.hist_next
             elif dest_name == "GoToPage":
                 # Same as the "G" action which allows to pick a page to jump to
-                fun = lambda: self.start_editing_page_number()
+                fun = lambda: self.parent.start_editing_page_number()
             elif dest_name == "Find":
                 #TODO popup a text box and search results with Page.find_text
                 # http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text
