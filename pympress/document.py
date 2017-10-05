@@ -176,6 +176,10 @@ class Page(object):
 
         # Read annotations, in particular those that indicate media
         for annotation in self.page.get_annot_mapping():
+            content = annotation.annot.get_contents()
+            if content:
+                self.annotations.append(content)
+
             annot_type = annotation.annot.get_annot_type()
             if annot_type == Poppler.AnnotType.LINK:
                 # just an Annot, not subclassed -- probably redundant with links
@@ -201,13 +205,30 @@ class Page(object):
                 action = self.get_annot_action(action_obj.any.type, action_obj, annotation.area)
                 if not action:
                     continue
-            elif annot_type == Poppler.AnnotType.TEXT:
-                self.annotations.append(annotation.annot.get_contents())
-                # hide post-it sort of button on screen
+            elif annot_type == Poppler.AnnotType.FILE_ATTACHMENT:
+                attachment = annotation.annot.get_attachment()
+                prefix, ext = os.path.splitext(attachment.name)
+                with tempfile.NamedTemporaryFile('wb', suffix=ext, prefix=prefix, delete=False) as f:
+                    # now the file name is shotgunned
+                    filename=f.name
+                    self.parent.remove_on_exit(filename)
+                if not attachment.save(filename):
+                    logger.error(_("Pympress can not extract attached file"))
+                    continue
+                action = lambda: fileopen(filename)
+            elif annot_type in {Poppler.AnnotType.TEXT, Poppler.AnnotType.POPUP,
+                                Poppler.AnnotType.FREE_TEXT}:
+                # text-only annotations, hide them from screen
                 self.page.remove_annot(annotation.annot)
                 continue
-            elif annot_type == Poppler.AnnotType.FREE_TEXT:
-                # Poppler already renders annotation of this type
+            elif annot_type in {Poppler.AnnotType.STRIKE_OUT, Poppler.AnnotType.HIGHLIGHT,
+                                Poppler.AnnotType.UNDERLINE, Poppler.AnnotType.SQUIGGLY,
+                                Poppler.AnnotType.POLYGON, Poppler.AnnotType.POLY_LINE,
+                                Poppler.AnnotType.SQUARE, Poppler.AnnotType.CIRCLE,
+                                Poppler.AnnotType.CARET, Poppler.AnnotType.LINE,
+                                Poppler.AnnotType.STAMP, Poppler.AnnotType.INK}:
+                # Poppler already renders annotation of these types, nothing more can be done
+                # even though the rendering isn't always perfect.
                 continue
             else:
                 logger.warning(_("Pympress can not interpret annotation of type:") + " {} ".format(annot_type))
@@ -253,8 +274,16 @@ class Page(object):
                 fun = self.parent.hist_prev
             elif dest_name == "GoForward":
                 fun = self.parent.hist_next
+            elif dest_name == "FirstPage":
+                fun = lambda: self.parent.goto(0)
+            elif dest_name == "PrevPage":
+                fun = lambda: self.parent.goto(self.page_nb - 1)
+            elif dest_name == "NextPage":
+                fun = lambda: self.parent.goto(self.page_nb + 1)
+            elif dest_name == "LastPage":
+                fun = lambda: self.parent.goto(self.parent.pages_number() - 1)
             elif dest_name == "GoToPage":
-                # Same as the "G" action which allows to pick a page to jump to
+                # Same as the 'G' action which allows to pick a page to jump to
                 fun = lambda: self.parent.start_editing_page_number()
             elif dest_name == "Find":
                 #TODO popup a text box and search results with Page.find_text
