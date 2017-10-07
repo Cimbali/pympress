@@ -32,6 +32,7 @@ import signal
 import locale
 import gettext
 import ctypes
+import tempfile
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -98,7 +99,7 @@ def main(argv = sys.argv[1:]):
                     arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"
                 ))
 
-    logging.basicConfig(filename='pympress.log', level=log_level)
+    logging.basicConfig(filename=os.path.join(tempfile.gettempdir(), 'pympress.log'), level=log_level)
 
     # PDF file to open passed on command line?
     name = None
