@@ -51,7 +51,7 @@ vlc_opts=['--no-video-title-show']
 if util.IS_POSIX:
     vlc_opts.append('--no-xlib')
 
-if util.IS_WINDOWS:
+if util.IS_WINDOWS and vlc.plugin_path:
     # let python find the DLLs
     os.environ['PATH'] = vlc.plugin_path + ';' + os.environ['PATH']
 
