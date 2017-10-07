@@ -1,0 +1,424 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pympress.extras &mdash; Pympress developer documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Pympress developer documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
+	<br />
+	<a href="../../index.html" class="icon icon-home"> Docs home</a>
+	<div class="version">
+		v1.0.4
+	</div>
+
+	
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+	
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
+</ul>
+
+            
+          
+	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
+	<a href="../../genindex.html">Index</a>
+	<a href="../../py-modindex.html">Module index</a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pympress</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>pympress.extras</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/Cimbali/pympress/blob/master/docs/source/_modules/pympress/extras" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pympress.extras</h1><div class="highlight"><pre>
+<span></span><span class="c1">#       extras.py</span>
+<span class="c1">#</span>
+<span class="c1">#       Copyright 2017 Cimbali &lt;me@cimba.li&gt;</span>
+<span class="c1">#</span>
+<span class="c1">#       This program is free software; you can redistribute it and/or modify</span>
+<span class="c1">#       it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#       the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1">#       (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#       This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#       but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#       GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#       You should have received a copy of the GNU General Public License</span>
+<span class="c1">#       along with this program; if not, write to the Free Software</span>
+<span class="c1">#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,</span>
+<span class="c1">#       MA 02110-1301, USA.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:mod:`pympress.extras` -- Manages the display of fancy extras such as annotations, videos and cursors</span>
+<span class="sd">-----------------------------------------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">gi</span>
+<span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">Pango</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">vlcvideo</span>
+    <span class="n">vlc_enabled</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">vlc_enabled</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;video support is disabled&quot;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="Annotations"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Annotations">[docs]</a><span class="k">class</span> <span class="nc">Annotations</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="c1">#: The containing widget for the annotations</span>
+    <span class="n">scrollable_treelist</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: Making the annotations list scroll if it&#39;s too long</span>
+    <span class="n">scrolled_window</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: :class:`~Gtk.CellRendererText` Text renderer for the annotations</span>
+    <span class="n">annotation_renderer</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Load the widgets and setup for the annotations&#39; display.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">builder</span><span class="o">.</span><span class="n">load_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># wrap text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annotation_renderer</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">wrap_mode</span> <span class="o">=</span> <span class="n">Pango</span><span class="o">.</span><span class="n">WrapMode</span><span class="o">.</span><span class="n">WORD_CHAR</span>
+
+        <span class="n">column</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotation_renderer</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">column</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">sizing</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumnSizing</span><span class="o">.</span><span class="n">AUTOSIZE</span>
+        <span class="n">column</span><span class="o">.</span><span class="n">set_fixed_width</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scrollable_treelist</span><span class="o">.</span><span class="n">set_model</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scrollable_treelist</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scrolled_window</span><span class="o">.</span><span class="n">set_hexpand</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Annotations.add_annotations"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Annotations.add_annotations">[docs]</a>    <span class="k">def</span> <span class="nf">add_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotations</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Insert text annotations into the tree view that displays them.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            annotations (`list`): A list of strings, that are the annotations to be displayed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">list_annot</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+        <span class="n">bullet</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xe2\x97\x8f</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="se">\xe2\x97\x8f</span><span class="s1"> &#39;</span>
+
+        <span class="k">for</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
+            <span class="n">list_annot</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">bullet</span> <span class="o">+</span> <span class="n">annot</span><span class="p">,))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scrollable_treelist</span><span class="o">.</span><span class="n">set_model</span><span class="p">(</span><span class="n">list_annot</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Annotations.on_configure_annot"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Annotations.on_configure_annot">[docs]</a>    <span class="k">def</span> <span class="nf">on_configure_annot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Adjust wrap width in annotations when they are resized.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget (:class:`~Gtk.Widget`):  the widget which was resized.</span>
+<span class="sd">            event (:class:`~Gdk.Event`):  the GTK event.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annotation_renderer</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">wrap_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">()</span> <span class="o">-</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scrolled_window</span><span class="o">.</span><span class="n">queue_resize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scrollable_treelist</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">queue_resize</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Annotations.on_scroll"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Annotations.on_scroll">[docs]</a>    <span class="k">def</span> <span class="nf">on_scroll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Try scrolling the annotations window.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget (:class:`~Gtk.Widget`):  the widget which has received the event.</span>
+<span class="sd">            event (:class:`~Gdk.Event`):  the GTK event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether the event was consumed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scrolled_window</span><span class="o">.</span><span class="n">get_vadjustment</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ScrollDirection</span><span class="o">.</span><span class="n">UP</span><span class="p">:</span>
+            <span class="n">adj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span> <span class="o">-</span> <span class="n">adj</span><span class="o">.</span><span class="n">get_step_increment</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ScrollDirection</span><span class="o">.</span><span class="n">DOWN</span><span class="p">:</span>
+            <span class="n">adj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span> <span class="o">+</span> <span class="n">adj</span><span class="o">.</span><span class="n">get_step_increment</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+
+<div class="viewcode-block" id="Media"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media">[docs]</a><span class="k">class</span> <span class="nc">Media</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="c1">#: `dict` of :class:`~pympress.vlcvideo.VLCVideo` ready to be added on top of the slides</span>
+    <span class="n">_media_overlays</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1">#: :class:`~Gtk.Overlay` for the Content window.</span>
+    <span class="n">c_overlay</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set up the required widgets and queue an initial draw.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">builder</span><span class="o">.</span><span class="n">load_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Media.replace_media_overlays"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.replace_media_overlays">[docs]</a>    <span class="k">def</span> <span class="nf">replace_media_overlays</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_page</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Remove current media overlays, add new ones if page contains media.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current_page (:class:`~pympress.document.Page`): The page for twhich to prepare medias</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">vlc_enabled</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="o">.</span><span class="n">foreach</span><span class="p">(</span><span class="k">lambda</span> <span class="n">child</span><span class="p">,</span> <span class="o">*</span><span class="n">ignored</span><span class="p">:</span> <span class="n">child</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ow">is</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">pw</span><span class="p">,</span> <span class="n">ph</span> <span class="o">=</span> <span class="n">current_page</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">show_controls</span> <span class="ow">in</span> <span class="n">current_page</span><span class="o">.</span><span class="n">get_media</span><span class="p">():</span>
+            <span class="n">media_id</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">((</span><span class="n">relative_margins</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">media_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
+                <span class="n">v_da</span> <span class="o">=</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">)</span>
+                <span class="n">v_da</span><span class="o">.</span><span class="n">set_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_da</span></div>
+
+
+<div class="viewcode-block" id="Media.resize"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.resize">[docs]</a>    <span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Resize all media overlays that are a child of c_overlay</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">vlc_enabled</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="o">.</span><span class="n">foreach</span><span class="p">(</span><span class="k">lambda</span> <span class="n">child</span><span class="p">,</span> <span class="o">*</span><span class="n">ignored</span><span class="p">:</span> <span class="n">child</span><span class="o">.</span><span class="n">resize</span><span class="p">()</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ow">is</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Media.play"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.play">[docs]</a>    <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Starts playing a media. Used as a callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            media_id (`int`): A unique idientifier of the media to start playing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Cursor"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Cursor">[docs]</a><span class="k">class</span> <span class="nc">Cursor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="c1">#: a static `dict` of :class:`~Gdk.Cursor`s, ready to use</span>
+    <span class="n">_cursors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;parent&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Cursor</span><span class="o">.</span><span class="n">new_from_name</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Display</span><span class="o">.</span><span class="n">get_default</span><span class="p">(),</span> <span class="s1">&#39;default&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;pointer&#39;</span><span class="p">:</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Cursor</span><span class="o">.</span><span class="n">new_from_name</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Display</span><span class="o">.</span><span class="n">get_default</span><span class="p">(),</span> <span class="s1">&#39;pointer&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;invisible&#39;</span><span class="p">:</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">Cursor</span><span class="o">.</span><span class="n">new_from_name</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Display</span><span class="o">.</span><span class="n">get_default</span><span class="p">(),</span> <span class="s1">&#39;none&#39;</span><span class="p">),</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="Cursor.set_cursor"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Cursor.set_cursor">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_cursor</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">cursor_name</span> <span class="o">=</span> <span class="s1">&#39;parent&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set the cursor named cursor_name&#39;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget (:class:`~Gtk.Widget`): The widget triggering the cursor change, used to retrieve a Gdk.Window</span>
+<span class="sd">            cursor_name (`str`): Name of the cursor to be set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">get_window</span><span class="p">()</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_cursors</span><span class="p">[</span><span class="n">cursor_name</span><span class="p">])</span></div></div>
+
+
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

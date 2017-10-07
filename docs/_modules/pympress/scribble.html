@@ -1,0 +1,586 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pympress.scribble &mdash; Pympress developer documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Pympress developer documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
+	<br />
+	<a href="../../index.html" class="icon icon-home"> Docs home</a>
+	<div class="version">
+		v1.0.4
+	</div>
+
+	
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+	
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
+</ul>
+
+            
+          
+	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
+	<a href="../../genindex.html">Index</a>
+	<a href="../../py-modindex.html">Module index</a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pympress</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>pympress.scribble</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/Cimbali/pympress/blob/master/docs/source/_modules/pympress/scribble" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pympress.scribble</h1><div class="highlight"><pre>
+<span></span><span class="c1">#       pointer.py</span>
+<span class="c1">#</span>
+<span class="c1">#       Copyright 2017 Cimbali &lt;me@cimba.li&gt;</span>
+<span class="c1">#</span>
+<span class="c1">#       This program is free software; you can redistribute it and/or modify</span>
+<span class="c1">#       it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#       the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1">#       (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#       This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#       but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#       GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#       You should have received a copy of the GNU General Public License</span>
+<span class="c1">#       along with this program; if not, write to the Free Software</span>
+<span class="c1">#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,</span>
+<span class="c1">#       MA 02110-1301, USA.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:mod:`pympress.scribble` -- Manage user drawings on the current slide</span>
+<span class="sd">---------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">gi</span>
+<span class="kn">import</span> <span class="nn">cairo</span>
+<span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span>
+
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">builder</span><span class="p">,</span> <span class="n">surfacecache</span><span class="p">,</span> <span class="n">document</span>
+<span class="kn">from</span> <span class="nn">pympress.ui</span> <span class="k">import</span> <span class="n">PDF_REGULAR</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">,</span> <span class="n">PDF_NOTES_PAGE</span>
+
+
+<div class="viewcode-block" id="Scribbler"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler">[docs]</a><span class="k">class</span> <span class="nc">Scribbler</span><span class="p">(</span><span class="n">builder</span><span class="o">.</span><span class="n">Builder</span><span class="p">):</span>
+    <span class="c1">#: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles</span>
+    <span class="n">scribbling_mode</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1">#: `list` of scribbles to be drawn, as tuples of color :class:`~Gdk.RGBA`, width `int`, and a `list` of points.</span>
+    <span class="n">scribble_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1">#: Whether the current mouse movements are drawing strokes or should be ignored</span>
+    <span class="n">scribble_drawing</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1">#: :class:`~Gdk.RGBA` current color of the scribbling tool</span>
+    <span class="n">scribble_color</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">RGBA</span><span class="p">()</span>
+    <span class="c1">#: `int` current stroke width of the scribbling tool</span>
+    <span class="n">scribble_width</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1">#: :class:`~Gtk.HBox` that is replaces normal panes when scribbling is toggled, contains buttons and scribble drawing area</span>
+    <span class="n">scribble_overlay</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: :class:`~Gtk.DrawingArea` for the scribbling in the Presenter window. Actually redraws the slide.</span>
+    <span class="n">scribble_c_da</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: :class:`~Gtk.DrawingArea` for the scribbles in the Content window. On top of existing overlays and slide.</span>
+    <span class="n">scribble_p_da</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: :class:`~Gtk.EventBox` for the scribbling in the Presenter window, captures freehand drawing</span>
+    <span class="n">scribble_c_eb</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: :class:`~Gtk.EventBox` for the scribbling in the Content window, captures freehand drawing</span>
+    <span class="n">scribble_p_eb</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: :class:`~Gtk.AspectFrame` for the slide in the Presenter&#39;s highlight mode</span>
+    <span class="n">scribble_p_frame</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: :class:`~Gtk.Overlay` for the Content window.</span>
+    <span class="n">c_overlay</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: A :class:`~Gtk.OffscreenWindow` where we render the scribbling interface when it&#39;s not shown</span>
+    <span class="n">off_render</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: :class:`~Gtk.Box` in the Presenter window, where we insert scribbling.</span>
+    <span class="n">p_central</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: :class:`~pympress.surfacecache.SurfaceCache` instance.</span>
+    <span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: callback, to be connected to :func:`~pympress.ui.UI.get_current_page`</span>
+    <span class="n">get_current_page</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="c1">#: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`</span>
+    <span class="n">redraw_current_slide</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">builder</span><span class="p">,</span> <span class="n">notes_mode</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Setup all the necessary for scribbling</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (:class:`~pympress.config.Config`): A config object containing preferences</span>
+<span class="sd">            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets</span>
+<span class="sd">            notes_mode (`bool`): The current notes mode, i.e. whether we display the notes on second slide</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Scribbler</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_ui</span><span class="p">(</span><span class="s1">&#39;highlight&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">builder</span><span class="o">.</span><span class="n">load_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_current_page</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;get_current_page&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redraw_current_slide</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;redraw_current_slide&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Surface cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">surfacecache</span><span class="o">.</span><span class="n">SurfaceCache</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">EmptyDocument</span><span class="p">(),</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;maxpages&#39;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scribble_color</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">RGBA</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scribble_color</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scribble_width</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="s2">&quot;scribble_p_da&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span> <span class="k">if</span> <span class="n">notes_mode</span> <span class="k">else</span> <span class="n">PDF_REGULAR</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="c1"># Presenter-size setup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s2">&quot;scribble_color&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_rgba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s2">&quot;scribble_width&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_width</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Scribbler.nav_scribble"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.nav_scribble">[docs]</a>    <span class="k">def</span> <span class="nf">nav_scribble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ctrl_pressed</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Handles an key press event: undo or disable scribbling.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (`str`): The name of the key pressed</span>
+<span class="sd">            ctrl_pressed (`bool`): whether the ctrl modifier key was pressed</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether the event was consumed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Z&#39;</span> <span class="ow">and</span> <span class="n">ctrl_pressed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pop_scribble</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Escape&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disable_scribbling</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Scribbler.track_scribble"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.track_scribble">[docs]</a>    <span class="k">def</span> <span class="nf">track_scribble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Draw the scribble following the mouse&#39;s moves.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget (:class:`~Gtk.Widget`):  the widget which has received the event.</span>
+<span class="sd">            event (:class:`~Gdk.Event`):  the GTK event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether the event was consumed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribble_drawing</span><span class="p">:</span>
+            <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">(),</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_allocated_height</span><span class="p">()</span>
+            <span class="n">ex</span><span class="p">,</span> <span class="n">ey</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get_coords</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scribble_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ex</span> <span class="o">/</span> <span class="n">ww</span><span class="p">,</span> <span class="n">ey</span> <span class="o">/</span> <span class="n">wh</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">scribble_c_da</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scribble_p_da</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Scribbler.toggle_scribble"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.toggle_scribble">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_scribble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Start/stop drawing scribbles.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget (:class:`~Gtk.Widget`):  the widget which has received the event.</span>
+<span class="sd">            event (:class:`~Gdk.Event`):  the GTK event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether the event was consumed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">get_event_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_PRESS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scribble_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_color</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribble_width</span><span class="p">,</span> <span class="p">[])</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scribble_drawing</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_scribble</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">get_event_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_RELEASE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scribble_drawing</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Scribbler.draw_scribble"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.draw_scribble">[docs]</a>    <span class="k">def</span> <span class="nf">draw_scribble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">cairo_context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Perform the drawings by user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget (:class:`~Gtk.DrawingArea`): The widget where to draw the scribbles.</span>
+<span class="sd">            cairo_context (:class:`~cairo.Context`): The canvas on which to render the drawings</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">(),</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_allocated_height</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribble_c_da</span><span class="p">:</span>
+            <span class="n">page</span><span class="p">,</span> <span class="n">wtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_page</span><span class="p">()</span>
+            <span class="n">nb</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">number</span><span class="p">()</span>
+            <span class="n">pb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scribble_p_da&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">pb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Cache miss: render the page, and save it to the cache</span>
+                <span class="n">pb</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_window</span><span class="p">()</span><span class="o">.</span><span class="n">create_similar_surface</span><span class="p">(</span><span class="n">cairo</span><span class="o">.</span><span class="n">CONTENT_COLOR</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">)</span>
+
+                <span class="n">cairo_prerender</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">Context</span><span class="p">(</span><span class="n">pb</span><span class="p">)</span>
+                <span class="n">page</span><span class="o">.</span><span class="n">render_cairo</span><span class="p">(</span><span class="n">cairo_prerender</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">,</span> <span class="n">wtype</span><span class="p">)</span>
+
+                <span class="n">cairo_context</span><span class="o">.</span><span class="n">set_source_surface</span><span class="p">(</span><span class="n">pb</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">cairo_context</span><span class="o">.</span><span class="n">paint</span><span class="p">()</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;scribble_p_da&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">,</span> <span class="n">pb</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Cache hit: draw the surface from the cache to the widget</span>
+                <span class="n">cairo_context</span><span class="o">.</span><span class="n">set_source_surface</span><span class="p">(</span><span class="n">pb</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">cairo_context</span><span class="o">.</span><span class="n">paint</span><span class="p">()</span>
+
+        <span class="n">cairo_context</span><span class="o">.</span><span class="n">set_line_cap</span><span class="p">(</span><span class="n">cairo</span><span class="o">.</span><span class="n">LINE_CAP_ROUND</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">points</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribble_list</span><span class="p">:</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="p">[(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">ww</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">wh</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+
+            <span class="n">cairo_context</span><span class="o">.</span><span class="n">set_source_rgba</span><span class="p">(</span><span class="o">*</span><span class="n">color</span><span class="p">)</span>
+            <span class="n">cairo_context</span><span class="o">.</span><span class="n">set_line_width</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+            <span class="n">cairo_context</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="o">*</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="n">cairo_context</span><span class="o">.</span><span class="n">line_to</span><span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">cairo_context</span><span class="o">.</span><span class="n">stroke</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Scribbler.update_color"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.update_color">[docs]</a>    <span class="k">def</span> <span class="nf">update_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Callback for the color chooser button, to set scribbling color</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget (:class:`~Gtk.ColorButton`):  the clicked button to trigger this event, if any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scribble_color</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_rgba</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribble_color</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Scribbler.update_width"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.update_width">[docs]</a>    <span class="k">def</span> <span class="nf">update_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Callback for the width chooser slider, to set scribbling width</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget (:class:`~Gtk.Scale`): The slider control used to select the scribble width</span>
+<span class="sd">            event (:class:`~Gdk.Event`):  the GTK event triggering this update.</span>
+<span class="sd">            value (`int`): the width of the scribbles to be drawn</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scribble_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_width</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Scribbler.clear_scribble"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.clear_scribble">[docs]</a>    <span class="k">def</span> <span class="nf">clear_scribble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Callback for the scribble clear button, to remove all scribbles</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribble_list</span><span class="p">[:]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">redraw_current_slide</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scribble_p_da</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Scribbler.pop_scribble"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.pop_scribble">[docs]</a>    <span class="k">def</span> <span class="nf">pop_scribble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Callback for the scribble undo button, to undo the last scribble</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribble_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scribble_list</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">redraw_current_slide</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scribble_p_da</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Scribbler.on_configure_da"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.on_configure_da">[docs]</a>    <span class="k">def</span> <span class="nf">on_configure_da</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Transfer configure resize to the cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget (:class:`~Gtk.Widget`):  the widget which has been resized</span>
+<span class="sd">            event (:class:`~Gdk.Event`):  the GTK event, which contains the new dimensions of the widget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Don&#39;t trust those</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">send_event</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">resize_widget</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">height</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Scribbler.switch_scribbling"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.switch_scribbling">[docs]</a>    <span class="k">def</span> <span class="nf">switch_scribbling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Starts the mode where one can read on top of the screen</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget (:class:`~Gtk.Widget`):  the widget which has received the event.</span>
+<span class="sd">            event (:class:`~Gdk.Event` or None):  the GTK event., None when called through a menu item</span>
+<span class="sd">            name (`str`): The name of the key pressed</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether the event was consumed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Actionable</span><span class="p">):</span>
+            <span class="c1"># A button or menu item, etc. directly connected to this action</span>
+            <span class="k">pass</span>
+
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">KEY_PRESS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">keyval_name</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">keyval</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;H&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Perform the state toggle</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">disable_scribbling</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_scribbling</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Scribbler.enable_scribbling"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.enable_scribbling">[docs]</a>    <span class="k">def</span> <span class="nf">enable_scribbling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Enable the scribbling mode.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether it was possible to enable (thus if it was not enabled already)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">page</span><span class="p">,</span> <span class="n">wtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_page</span><span class="p">()</span>
+        <span class="n">pr</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">get_aspect_ratio</span><span class="p">(</span><span class="n">wtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scribble_p_frame</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;ratio&#39;</span><span class="p">,</span> <span class="n">pr</span><span class="p">)</span>
+
+        <span class="n">p_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_central</span><span class="o">.</span><span class="n">get_children</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_central</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">p_layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">off_render</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_overlay</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_central</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_overlay</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">off_render</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">p_layout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_central</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
+
+        <span class="c1"># Also make sure our overlay on Content window is visible</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="o">.</span><span class="n">reorder_overlay</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_c_eb</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="Scribbler.disable_scribbling"><a class="viewcode-back" href="../../pympress.html#pympress.scribble.Scribbler.disable_scribbling">[docs]</a>    <span class="k">def</span> <span class="nf">disable_scribbling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Disable the scribbling mode.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether it was possible to disable (thus if it was not disabled already)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">p_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_render</span><span class="o">.</span><span class="n">get_child</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_central</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_overlay</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">off_render</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">p_layout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">off_render</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_overlay</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_central</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">p_layout</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

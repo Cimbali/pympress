@@ -39,6 +39,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -55,7 +56,7 @@ source_parsers = {
     '.md': CommonMarkParser,
 }
 
-github_doc_root = 'https://cimbali.github.io/pympress/'
+github_doc_root = 'https://pympress.xyz/'
 def setup(app):
     app.add_config_value('recommonmark_config', {
             'url_resolver': lambda url: github_doc_root + url,
@@ -110,7 +111,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
 #
-# default_role = None
+default_role = 'obj'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #
@@ -139,19 +140,30 @@ pygments_style = 'sphinx'
 todo_include_todos = True
 
 
+# Link to outside documentations
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3.4', None),
+    'Gtk': ('https://lazka.github.io/pgi-docs/Gtk-3.0', None),
+    'Gdk': ('https://lazka.github.io/pgi-docs/Gdk-3.0', None),
+    'GdkPixbuf': ('https://lazka.github.io/pgi-docs/GdkPixbuf-2.0', None),
+    'GObject': ('https://lazka.github.io/pgi-docs/GObject-2.0', None),
+    'Poppler': ('https://lazka.github.io/pgi-docs/Poppler-0.18', None),
+    'Pango': ('https://lazka.github.io/pgi-docs/Pango-1.0', None),
+    'GLib': ('https://lazka.github.io/pgi-docs/GLib-2.0', None),
+    'GdkX11': ('https://lazka.github.io/pgi-docs/GdkX11-3.0', None),
+    'python': ('https://docs.python.org/3.4', None),
+    'cairo': ('https://www.cairographics.org/documentation/pycairo/3', None),
+}
+
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'alabaster'
+html_theme = "sphinx_rtd_theme"
 
 # Read the docs theme
 import sphinx_rtd_theme
-html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_theme_options = {
-}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -160,7 +172,7 @@ html_theme_options = {
 # html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-# html_theme_path = []
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.

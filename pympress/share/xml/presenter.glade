@@ -118,7 +118,7 @@
                         <property name="label" translatable="yes">_Pause timer</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
-                        <signal name="toggled" handler="switch_pause" swapped="no"/>
+                        <signal name="toggled" handler="talk_time.switch_pause" swapped="no"/>
                         <accelerator key="p" signal="activate"/>
                       </object>
                     </child>
@@ -128,7 +128,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Reset timer</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="reset_timer" swapped="no"/>
+                        <signal name="activate" handler="talk_time.reset_timer" swapped="no"/>
                         <accelerator key="r" signal="activate"/>
                       </object>
                     </child>
@@ -138,7 +138,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Set talk _Time</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_label_ett_event" swapped="no"/>
+                        <signal name="activate" handler="est_time.on_label_event" swapped="no"/>
                         <accelerator key="t" signal="activate"/>
                       </object>
                     </child>
@@ -216,7 +216,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Highlight</property>
                         <property name="use_underline">True</property>
-                        <signal name="toggled" handler="switch_scribbling" swapped="no"/>
+                        <signal name="toggled" handler="scribbler.switch_scribbling" swapped="no"/>
                         <accelerator key="h" signal="activate"/>
                       </object>
                     </child>
@@ -237,7 +237,7 @@
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">pointer_none</property>
-                                <signal name="toggled" handler="change_pointer" swapped="no"/>
+                                <signal name="toggled" handler="laser.change_pointer" swapped="no"/>
                               </object>
                             </child>
                             <child>
@@ -248,7 +248,7 @@
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">pointer_none</property>
-                                <signal name="toggled" handler="change_pointer" swapped="no"/>
+                                <signal name="toggled" handler="laser.change_pointer" swapped="no"/>
                               </object>
                             </child>
                             <child>
@@ -259,7 +259,7 @@
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">pointer_none</property>
-                                <signal name="toggled" handler="change_pointer" swapped="no"/>
+                                <signal name="toggled" handler="laser.change_pointer" swapped="no"/>
                               </object>
                             </child>
                             <child>
@@ -269,7 +269,7 @@
                                 <property name="label" translatable="yes">_Disabled</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
-                                <signal name="toggled" handler="change_pointer" swapped="no"/>
+                                <signal name="toggled" handler="laser.change_pointer" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -296,7 +296,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Next</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="goto_next" swapped="no"/>
+                        <signal name="activate" handler="doc.goto_next" swapped="no"/>
                         <accelerator key="Right" signal="activate"/>
                       </object>
                     </child>
@@ -306,7 +306,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Previous</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="goto_prev" swapped="no"/>
+                        <signal name="activate" handler="doc.goto_prev" swapped="no"/>
                         <accelerator key="Left" signal="activate"/>
                       </object>
                     </child>
@@ -316,7 +316,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_First</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="goto_home" swapped="no"/>
+                        <signal name="activate" handler="doc.goto_home" swapped="no"/>
                         <accelerator key="Home" signal="activate"/>
                       </object>
                     </child>
@@ -326,7 +326,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Last</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="goto_end" swapped="no"/>
+                        <signal name="activate" handler="doc.goto_end" swapped="no"/>
                         <accelerator key="End" signal="activate"/>
                       </object>
                     </child>
@@ -336,7 +336,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Go to...</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_label_event" swapped="no"/>
+                        <signal name="activate" handler="page_number.on_label_event" swapped="no"/>
                         <accelerator key="g" signal="activate"/>
                       </object>
                     </child>
@@ -360,7 +360,8 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Content blanked</property>
                         <property name="use_underline">True</property>
-                        <signal name="toggled" handler="switch_start_blanked" swapped="no"/>
+                        <property name="name">content.start_blanked</property>
+                        <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -369,7 +370,8 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Content fullscreen</property>
                         <property name="use_underline">True</property>
-                        <signal name="toggled" handler="switch_start_cwin_full" swapped="no"/>
+                        <property name="name">content.start_fullscreen</property>
+                        <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -378,7 +380,8 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Presenter fullscreen</property>
                         <property name="use_underline">True</property>
-                        <signal name="toggled" handler="switch_start_pwin_full" swapped="no"/>
+                        <property name="name">presenter.start_fullscreen</property>
+                        <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -439,6 +442,7 @@
                 <property name="wide_handle">True</property>
                 <child>
                   <object class="GtkAspectFrame" id="p_frame_notes">
+                    <property name="name">p_frame_notes</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_right">5</property>
@@ -491,6 +495,7 @@
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkAspectFrame" id="p_frame_cur">
+                            <property name="name">p_frame_current</property>
                             <property name="height_request">200</property>
                             <property name="can_focus">False</property>
                             <property name="label_xalign">0</property>
@@ -532,6 +537,7 @@
                         </child>
                         <child>
                           <object class="GtkAspectFrame" id="p_frame_next">
+                            <property name="name">p_frame_next</property>
                             <property name="height_request">200</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -576,11 +582,12 @@
                     </child>
                     <child>
                       <object class="GtkFrame" id="p_frame_annot">
+                        <property name="name">p_frame_annotations</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label_xalign">0</property>
                         <property name="shadow_type">in</property>
-                        <signal name="configure-event" handler="on_configure_annot" swapped="no"/>
+                        <signal name="configure-event" handler="annotations.on_configure_annot" swapped="no"/>
                         <child>
                           <object class="GtkScrolledWindow" id="scrolled_window">
                             <property name="visible">True</property>
@@ -654,7 +661,7 @@
                 <property name="receives_default">True</property>
                 <property name="margin_top">10</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="goto_prev" swapped="no"/>
+                <signal name="clicked" handler="doc.goto_prev" swapped="no"/>
                 <style>
                   <class name="info-label"/>
                 </style>
@@ -678,7 +685,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="receives_default">True</property>
-                    <signal name="event" handler="on_label_event" swapped="no"/>
+                    <signal name="event" handler="page_number.on_label_event" swapped="no"/>
                     <child>
                       <object class="GtkBox" id="hb_cur">
                         <property name="visible">True</property>
@@ -696,8 +703,8 @@
                             <property name="update_policy">if-valid</property>
                             <signal name="changed" handler="page_preview" swapped="no"/>
                             <signal name="insert-text" handler="page_preview" swapped="no"/>
-                            <signal name="key-press-event" handler="on_spin_nav" swapped="no"/>
-                            <signal name="key-release-event" handler="on_spin_nav" swapped="no"/>
+                            <signal name="key-press-event" handler="page_number.on_keypress" swapped="no"/>
+                            <signal name="key-release-event" handler="page_number.on_keypress" swapped="no"/>
                             <style>
                               <class name="big-info-label"/>
                             </style>
@@ -777,7 +784,7 @@
                 <property name="receives_default">True</property>
                 <property name="margin_top">10</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="goto_next" swapped="no"/>
+                <signal name="clicked" handler="doc.goto_next" swapped="no"/>
                 <style>
                   <class name="info-label"/>
                 </style>
@@ -799,7 +806,7 @@
                 <style>
                   <class name="info-label"/>
                 </style>
-                <signal name="clicked" handler="switch_scribbling" swapped="no"/>
+                <signal name="clicked" handler="scribbler.switch_scribbling" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -858,8 +865,8 @@
                   <object class="GtkEventBox" id="eb_ett">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <signal name="button-press-event" handler="on_label_ett_event" swapped="no"/>
-                    <signal name="key-press-event" handler="on_label_ett_event" swapped="no"/>
+                    <signal name="button-press-event" handler="est_time.on_label_event" swapped="no"/>
+                    <signal name="key-press-event" handler="est_time.on_keypress" swapped="no"/>
                     <child>
                       <object class="GtkLabel" id="label_ett">
                         <property name="visible">True</property>

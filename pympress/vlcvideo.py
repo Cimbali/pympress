@@ -45,23 +45,29 @@ import ctypes
 import sys, os
 import vlc
 
-from pympress import util
+from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 
 vlc_opts=['--no-video-title-show']
-if util.IS_POSIX:
+if IS_POSIX:
     vlc_opts.append('--no-xlib')
 
-if util.IS_WINDOWS and vlc.plugin_path:
+if IS_WINDOWS and vlc.plugin_path:
     # let python find the DLLs
     os.environ['PATH'] = vlc.plugin_path + ';' + os.environ['PATH']
 
-# Create a single vlc.Instance() to be shared by (possible) multiple players.
+#: A single vlc.Instance() to be shared by (possible) multiple players.
 instance = vlc.Instance(vlc_opts)
 
 def get_window_handle(window):
     """ Uses ctypes to call gdk_win32_window_get_handle which is not available
     in python gobject introspection porting (yet ?)
     Solution from http://stackoverflow.com/a/27236258/1387346
+
+    Args:
+        window (:class:`~Gdk.Window`): The window for which we want to get the handle
+
+    Returns:
+        The handle to the win32 window
     """
     # get the c gpointer of the gdk window
     ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
@@ -77,6 +83,11 @@ class VLCVideo(Gtk.VBox):
 
     Its player can be controlled through the 'player' attribute, which
     is a vlc.MediaPlayer() instance.
+
+    Args:
+        overlay (:class:`~Gtk.Overlay`): The overlay with the slide, at the top of which we add the movie area
+        show_controls (`bool`): whether to display controls on the video player
+        relative_margins (:class:`~Poppler.Rectangle`): the margins defining the position of the video in the frame.
     """
     player = None
     overlay = None
@@ -116,6 +127,7 @@ class VLCVideo(Gtk.VBox):
         self.movie_zone.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self.movie_zone.connect('button-press-event', self.on_click)
 
+
     def get_player_control_toolbar(self):
         """ Return a player control toolbar.
         """
@@ -133,6 +145,7 @@ class VLCVideo(Gtk.VBox):
             tb.insert(b, -1)
         return tb
 
+
     def resize(self):
         parent = self.get_parent()
         if not parent:
@@ -143,10 +156,15 @@ class VLCVideo(Gtk.VBox):
         self.props.margin_bottom = ph * self.relative_margins.y1
         self.props.margin_top    = ph * self.relative_margins.y2
 
+
     def set_file(self, filepath):
         """ Sets the media file to be played bu the widget.
+
+        Args:
+            filepath (`str`): The path to the media file path
         """
         GLib.idle_add(self.player.set_media, instance.media_new(filepath))
+
 
     def play(self):
         """ Start playing the media file.
@@ -162,8 +180,13 @@ class VLCVideo(Gtk.VBox):
             self.overlay.show_all()
         GLib.idle_add(self.player.play)
 
+
     def on_click(self, widget, event):
         """ React to click events by playing or pausing the media.
+
+        Args:
+            widget (:class:`~Gtk.Widget`): the widget which has received the click.
+            event (:class:`~Gdk.Event`): the GTK event containing the position.
         """
         if not self.get_parent():
             # How was this even clicked on?
@@ -173,6 +196,7 @@ class VLCVideo(Gtk.VBox):
             GLib.idle_add(lambda p: p.pause() if p.is_playing() else p.play(), self.player)
         elif event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
             GLib.idle_add(self.player.set_time, 0) # in ms
+
 
     def hide(self, *args):
         """ Remove widget from overlays. Needs to be callded via GLib.idle_add

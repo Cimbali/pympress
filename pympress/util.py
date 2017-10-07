@@ -29,46 +29,48 @@ import logging
 logger = logging.getLogger(__name__)
 
 import gi
-import json
-import locale
-import ctypes
+import subprocess
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
 import pkg_resources
 import os, os.path, sys
 
+
 IS_POSIX = os.name == 'posix'
 IS_MAC_OS = sys.platform == 'darwin'
 IS_WINDOWS = os.name == 'nt'
 
+
+if IS_WINDOWS:
+    try:
+        import winreg
+    except ImportError:
+        import _winreg as winreg
+else:
+    try:
+        gi.require_version('GdkX11', '3.0')
+        from gi.repository import GdkX11
+    except:
+        pass
+
 try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
+    PermissionError()
+except NameError:
+    class PermissionError(Exception):
+        pass
 
 
-def recursive_translate_widgets(a_widget):
-    """ Calls gettext on all strings we can find in widgets, recursively.
-    """
-    for str_prop in (prop.name for prop in a_widget.props if prop.value_type == GObject.TYPE_STRING):
-        try:
-            setattr(a_widget.props, str_prop, _(getattr(a_widget.props, str_prop)))
-        except TypeError:
-            # Thrown when a string property is not readable
-            pass
 
-    if issubclass(type(a_widget), Gtk.Container):
-        #NB: Parent-loop in widgets would cause infinite loop here, but that's absurd (right?)
-        #NB2: maybe forall instead of foreach if we miss some strings?
-        a_widget.foreach(recursive_translate_widgets)
-
-    if issubclass(type(a_widget), Gtk.MenuItem) and a_widget.get_submenu() is not None:
-        recursive_translate_widgets(a_widget.get_submenu())
-
-
-def get_resource_path(*path_parts):
+def __get_resource_path(*path_parts):
     """ Return the resource path based on whether its frozen or not.
     Paths parts given should be relative to the pympress package dir.
+
+    Args:
+        name (`tuple` of `str`): The directories and filename that constitute the path
+        to the resource, relative to the pympress distribution
+
+    Returns:
+        `str`: The path to the resource
     """
     if getattr(sys, 'frozen', False):
         return os.path.join(os.path.dirname(sys.executable), *path_parts)
@@ -77,9 +79,16 @@ def get_resource_path(*path_parts):
         return pkg_resources.resource_filename(req, os.path.join('pympress', *path_parts))
 
 
-def get_resource_list(*path_parts):
+def __get_resource_list(*path_parts):
     """ Return the list of elements in a directory based on whether its frozen or not.
     Paths parts given should be relative to the pympress package dir.
+
+    Args:
+        name (`tuple` of `str`): The directories that constitute the path to the resource,
+        relative to the pympress distribution
+
+    Returns:
+        `list` of `str`: The paths to the resources in the directory
     """
     if getattr(sys, 'frozen', False):
         return os.listdir(os.path.join(os.path.dirname(sys.executable), *path_parts))
@@ -88,13 +97,25 @@ def get_resource_list(*path_parts):
         return pkg_resources.resource_listdir(req, os.path.join('pympress', *path_parts))
 
 
+def get_locale_dir():
+    """ Returns the path to the locale directory
+
+    Returns:
+        str: The path to the locale directory
+    """
+    return __get_resource_path('share', 'locale')
+
+
 def get_style_provider():
     """ Load the css and return corresponding style provider.
+
+    Returns:
+        :class:`~Gtk.CssProvider`: The style provider with CSS loaded
     """
     if IS_MAC_OS:
-        css_fn = get_resource_path('share', 'css', 'macos.css')
+        css_fn = __get_resource_path('share', 'css', 'macos.css')
     else:
-        css_fn = get_resource_path('share', 'css', 'default.css')
+        css_fn = __get_resource_path('share', 'css', 'default.css')
 
     style_provider = Gtk.CssProvider()
     style_provider.load_from_path(css_fn)
@@ -103,14 +124,35 @@ def get_style_provider():
 
 def get_icon_pixbuf(name):
     """ Load an image from pympress' resources in a Gdk Pixbuf.
+
+    Args:
+        name (`str`): The name of the icon to load
+
+    Returns:
+        :class:`~GdkPixbuf.Pixbuf`: The loaded icon
     """
-    return GdkPixbuf.Pixbuf.new_from_file(get_resource_path('share', 'pixmaps', name))
+    return GdkPixbuf.Pixbuf.new_from_file(__get_resource_path('share', 'pixmaps', name))
+
+
+def get_ui_resource_file(name):
+    """ Load an UI definition file from pympress' resources.
+
+    Args:
+        name (`str`): The name of the UI to load
+
+    Returns:
+        `str`: The full path to the glade file
+    """
+    return __get_resource_path('share', 'xml', name + '.glade')
 
 
 def list_icons():
     """ List the icons from pympress' resources.
+
+    Returns:
+        `list` of `str`: The paths to the icons in the pixmaps directory
     """
-    icons = get_resource_list('share', 'pixmaps')
+    icons = __get_resource_list('share', 'pixmaps')
 
     return [i for i in icons if os.path.splitext(i)[1].lower() == '.png' and i[:9] == 'pympress-']
 
@@ -120,7 +162,7 @@ def load_icons():
     :file:`/usr/share/pixmaps` or something similar).
 
     Returns:
-        list of :class:`GdkPixbuf.Pixbuf`: loaded icons
+        `list` of :class:`~GdkPixbuf.Pixbuf`: loaded icons
     """
     icons = []
     for icon_name in list_icons():
@@ -133,124 +175,78 @@ def load_icons():
     return icons
 
 
-def path_to_config():
-    """ Return the OS-specific path to the configuration file.
+def set_screensaver(must_disable, window):
+    """ Enable or disable the screensaver.
+
+    Args:
+        must_disable (`bool`):  if `True`, indicates that the screensaver must be disabled; otherwise it will be enabled
+        window (:class:`~Gdk.Window`): The window on the screen where the screensaver is to be suspended.
     """
-    if IS_POSIX:
-        conf_dir=os.path.expanduser('~/.config')
-        conf_file_nodir=os.path.expanduser('~/.pympress')
-        conf_file_indir=os.path.expanduser('~/.config/pympress')
-
-        if os.path.isfile(conf_file_indir):
-            return conf_file_indir
-        elif os.path.isfile(conf_file_nodir):
-            return conf_file_nodir
-
-        elif os.path.isdir(conf_dir):
-            return conf_file_indir
+    if IS_MAC_OS:
+        # On Mac OS X we can use caffeinate to prevent the display from sleeping
+        if must_disable:
+            if set_screensaver.dpms_was_enabled == None or set_screensaver.dpms_was_enabled.poll():
+                set_screensaver.dpms_was_enabled = subprocess.Popen(['caffeinate', '-d', '-w', str(os.getpid())])
         else:
-            return conf_file_nodir
+            if set_screensaver.dpms_was_enabled and not set_screensaver.dpms_was_enabled.poll():
+                set_screensaver.dpms_was_enabled.kill()
+                set_screensaver.dpms_was_enabled.poll()
+                set_screensaver.dpms_was_enabled = None
+
+    elif IS_POSIX:
+        # On Linux, set screensaver with xdg-screensaver
+        # (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
+        cmd = "suspend" if must_disable else "resume"
+        status = os.system("xdg-screensaver {} {}".format(cmd, window.get_xid()))
+        if status != 0:
+            logger.warning(_("Could not set screensaver status: got status ")+str(status))
+
+        # Also manage screen blanking via DPMS
+        if must_disable:
+            # Get current DPMS status
+            pipe = os.popen("xset q") # TODO: check if this works on all locales
+            dpms_status = "Disabled"
+            for line in pipe.readlines():
+                if line.count("DPMS is") > 0:
+                    dpms_status = line.split()[-1]
+                    break
+            pipe.close()
+
+            # Set the new value correctly
+            if dpms_status == "Enabled":
+                set_screensaver.dpms_was_enabled = True
+                status = os.system("xset -dpms")
+                if status != 0:
+                    logger.warning(_("Could not disable DPMS screen blanking: got status ")+str(status))
+            else:
+                set_screensaver.dpms_was_enabled = False
+
+        elif set_screensaver.dpms_was_enabled:
+            # Re-enable DPMS
+            status = os.system("xset +dpms")
+            if status != 0:
+                logger.warning(_("Could not enable DPMS screen blanking: got status ")+str(status))
+
+    elif IS_WINDOWS:
+        try:
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Control Panel\Desktop', 0, winreg.KEY_QUERY_VALUE|winreg.KEY_SET_VALUE) as key:
+                if must_disable:
+                    (value,type) = winreg.QueryValueEx(key, "ScreenSaveActive")
+                    assert(type == winreg.REG_SZ)
+                    set_screensaver.dpms_was_enabled = (value == "1")
+                    if set_screensaver.dpms_was_enabled:
+                        winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "0")
+                elif set_screensaver.dpms_was_enabled:
+                    winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "1")
+        except (OSError, PermissionError):
+            logger.exception(_("access denied when trying to access screen saver settings in registry!"))
     else:
-        return os.path.join(os.environ['APPDATA'], 'pympress.ini')
+        logger.warning(_("Unsupported OS: can't enable/disable screensaver"))
 
 
-def load_config():
-    """ Get the configuration from its file.
-    """
-    config = configparser.ConfigParser()
-    config.add_section('content')
-    config.add_section('presenter')
-    config.add_section('layout')
-    config.add_section('cache')
-    config.add_section('scribble')
+#: remember DPMS setting before we change it
+set_screensaver.dpms_was_enabled = None
 
-    config.read(path_to_config())
-
-    if not config.has_option('cache', 'maxpages'):
-        config.set('cache', 'maxpages', '200')
-
-    if not config.has_option('content', 'xalign'):
-        config.set('content', 'xalign', '0.50')
-
-    if not config.has_option('content', 'yalign'):
-        config.set('content', 'yalign', '0.50')
-
-    if not config.has_option('content', 'monitor'):
-        config.set('content', 'monitor', '0')
-
-    if not config.has_option('content', 'start_blanked'):
-        config.set('content', 'start_blanked', 'off')
-
-    if not config.has_option('content', 'start_fullscreen'):
-        config.set('content', 'start_fullscreen', 'on')
-
-    if not config.has_option('presenter', 'monitor'):
-        config.set('presenter', 'monitor', '1')
-
-    if not config.has_option('presenter', 'start_fullscreen'):
-        config.set('presenter', 'start_fullscreen', 'off')
-
-    if not config.has_option('presenter', 'pointer'):
-        config.set('presenter', 'pointer', 'red')
-
-    if not config.has_option('presenter', 'show_bigbuttons'):
-        config.set('presenter', 'show_bigbuttons', 'off')
-
-    if not config.has_option('presenter', 'show_annotations'):
-        config.set('presenter', 'show_annotations', 'off')
-
-    if not config.has_option('layout', 'notes'):
-        config.set('layout', 'notes', '')
-
-    if not config.has_option('layout', 'plain'):
-        config.set('layout', 'plain', '')
-
-    if not config.has_option('scribble', 'color'):
-        config.set('scribble', 'color', Gdk.RGBA(1., 0., 0., 1.).to_string())
-
-    if not config.has_option('scribble', 'width'):
-        config.set('scribble', 'width', '8')
-
-    return config
-
-
-def recursive_unicode_to_str(obj):
-    """ Recursively convert unicode to str (for python2)
-        Raises NameError in python3 as 'unicode' is undefined
-    """
-    if isinstance(obj, unicode):
-        return str(obj)
-    elif isinstance(obj, dict):
-        return {recursive_unicode_to_str(k):recursive_unicode_to_str(obj[k]) for k in obj}
-    elif isinstance(obj, list):
-        return [recursive_unicode_to_str(i) for i in obj]
-    else:
-        return obj
-
-
-def layout_from_json(layout_string):
-    """ Load the layout from config, with all strings cast to type 'str' (even on python2 where they default to 'unicode')
-        Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on invalid input.
-    """
-
-    if not layout_string:
-        raise ValueError('No layout string passed. Ignore this error if you just upgraded pympress or reset your configuration file.')
-
-    layout = json.loads(layout_string)
-
-    try:
-        layout = recursive_unicode_to_str(layout)
-    except NameError:
-        pass
-
-    return layout
-
-
-def save_config(config):
-    """ Save the configuration to its file.
-    """
-    with open(path_to_config(), 'w') as configfile:
-        config.write(configfile)
 
 ##
 # Local Variables:

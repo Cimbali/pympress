@@ -1,0 +1,484 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pympress.talk_time &mdash; Pympress developer documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Pympress developer documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
+	<br />
+	<a href="../../index.html" class="icon icon-home"> Docs home</a>
+	<div class="version">
+		v1.0.4
+	</div>
+
+	
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+	
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
+</ul>
+
+            
+          
+	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
+	<a href="../../genindex.html">Index</a>
+	<a href="../../py-modindex.html">Module index</a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pympress</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>pympress.talk_time</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/Cimbali/pympress/blob/master/docs/source/_modules/pympress/talk_time" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pympress.talk_time</h1><div class="highlight"><pre>
+<span></span><span class="c1">#       talk_time.py</span>
+<span class="c1">#</span>
+<span class="c1">#       Copyright 2017 Cimbali &lt;me@cimba.li&gt;</span>
+<span class="c1">#</span>
+<span class="c1">#       This program is free software; you can redistribute it and/or modify</span>
+<span class="c1">#       it under the terms of the GNU General Public License as published by</span>
+<span class="c1">#       the Free Software Foundation; either version 2 of the License, or</span>
+<span class="c1">#       (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1">#       This program is distributed in the hope that it will be useful,</span>
+<span class="c1">#       but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1">#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1">#       GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1">#       You should have received a copy of the GNU General Public License</span>
+<span class="c1">#       along with this program; if not, write to the Free Software</span>
+<span class="c1">#       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,</span>
+<span class="c1">#       MA 02110-1301, USA.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:mod:`pympress.talk_time` -- Manages the clock of elapsed talk time</span>
+<span class="sd">-------------------------------------------------------------------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">gi</span>
+<span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GObject</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">editable_label</span>
+
+
+<div class="viewcode-block" id="TimeLabelColorer"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeLabelColorer">[docs]</a><span class="k">class</span> <span class="nc">TimeLabelColorer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Manage the colors of a label with a set of colors between which to fade, based on how much time remains (&lt;0 has run out of time).</span>
+<span class="sd">    Times are given in seconds. In between timestamps the color will interpolated linearly, outside of the intervals the closest color will be used.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        label_time (:class:`Gtk.Label`): the label where the talk time is displayed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The :class:`Gtk.Label` whose colors need updating</span>
+    <span class="n">label_time</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: :class:`~Gdk.RGBA` The default color of the info labels</span>
+    <span class="n">label_color_default</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: `list` of tuples (`int`, :class:`~Gdk.RGBA`), which are the desired colors at the corresponding timestamps. Sorted on the timestamps.</span>
+    <span class="n">color_map</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_time</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span> <span class="o">=</span> <span class="n">label_time</span>
+
+        <span class="n">style_context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">get_style_context</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_color_default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_color_from_css</span><span class="p">(</span><span class="n">style_context</span><span class="p">)</span>
+        <span class="n">label_color_ett_reached</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_color_from_css</span><span class="p">(</span><span class="n">style_context</span><span class="p">,</span> <span class="s2">&quot;ett-reached&quot;</span><span class="p">)</span>
+        <span class="n">label_color_ett_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_color_from_css</span><span class="p">(</span><span class="n">style_context</span><span class="p">,</span> <span class="s2">&quot;ett-info&quot;</span><span class="p">)</span>
+        <span class="n">label_color_ett_warn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_color_from_css</span><span class="p">(</span><span class="n">style_context</span><span class="p">,</span> <span class="s2">&quot;ett-warn&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">color_map</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span> <span class="mi">300</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_color_default</span><span class="p">),</span>
+            <span class="p">(</span>   <span class="mi">0</span><span class="p">,</span> <span class="n">label_color_ett_reached</span><span class="p">),</span>
+            <span class="p">(</span><span class="o">-</span><span class="mi">150</span><span class="p">,</span> <span class="n">label_color_ett_info</span><span class="p">),</span>
+            <span class="p">(</span><span class="o">-</span><span class="mi">300</span><span class="p">,</span> <span class="n">label_color_ett_warn</span><span class="p">)</span>
+        <span class="p">]</span>
+
+
+<div class="viewcode-block" id="TimeLabelColorer.load_color_from_css"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeLabelColorer.load_color_from_css">[docs]</a>    <span class="k">def</span> <span class="nf">load_color_from_css</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style_context</span><span class="p">,</span> <span class="n">class_name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add class class_name to the time label and return its color.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            label_time (:class:`Gtk.Label`): the label where the talk time is displayed</span>
+<span class="sd">            style_context (:class:`~Gtk.StyleContext`): the CSS context managing the color of the label</span>
+<span class="sd">            class_name (`str` or `None`): The name of the class, if any</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`~Gdk.RGBA`: The color of the label with class &quot;class_name&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">class_name</span><span class="p">:</span>
+            <span class="n">style_context</span><span class="o">.</span><span class="n">add_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">style_context</span><span class="o">.</span><span class="n">get_color</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">StateType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">class_name</span><span class="p">:</span>
+            <span class="n">style_context</span><span class="o">.</span><span class="n">remove_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">color</span></div>
+
+
+<div class="viewcode-block" id="TimeLabelColorer.default_color"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeLabelColorer.default_color">[docs]</a>    <span class="k">def</span> <span class="nf">default_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Forces to reset the default colors on the label.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">override_color</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">StateType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_color_default</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeLabelColorer.calc_color"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeLabelColorer.calc_color">[docs]</a>    <span class="k">def</span> <span class="nf">calc_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_color</span><span class="p">,</span> <span class="n">to_color</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compute the interpolation between two colors.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_color (:class:`~Gdk.RGBA`):  the color when position = 0</span>
+<span class="sd">            to_color (:class:`~Gdk.RGBA`):  the color when position = 1</span>
+<span class="sd">            position (`float`):  A value between 0 and 1 expressing how far from</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`~Gdk.RGBA`: The color that is between from_color and to_color</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">color_tuple</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">color</span><span class="p">:</span> <span class="p">(</span> <span class="n">color</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="n">color</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="n">color</span><span class="o">.</span><span class="n">blue</span><span class="p">,</span> <span class="n">color</span><span class="o">.</span><span class="n">alpha</span> <span class="p">)</span>
+        <span class="n">interpolate</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="n">position</span>
+
+        <span class="k">return</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">RGBA</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">interpolate</span><span class="p">,</span> <span class="n">color_tuple</span><span class="p">(</span><span class="n">from_color</span><span class="p">),</span> <span class="n">color_tuple</span><span class="p">(</span><span class="n">to_color</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="TimeLabelColorer.update_time_color"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeLabelColorer.update_time_color">[docs]</a>    <span class="k">def</span> <span class="nf">update_time_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remaining</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update the color of the time label based on how much time is remaining.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            remaining (`int`): Remaining time until estimated talk time is reached, in seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">remaining</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">5</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">remaining</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mi">300</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">310</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">get_style_context</span><span class="p">()</span><span class="o">.</span><span class="n">add_class</span><span class="p">(</span><span class="s2">&quot;time-warn&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">get_style_context</span><span class="p">()</span><span class="o">.</span><span class="n">remove_class</span><span class="p">(</span><span class="s2">&quot;time-warn&quot;</span><span class="p">)</span>
+
+        <span class="n">prev_time</span><span class="p">,</span> <span class="n">prev_color</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_map</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">remaining</span> <span class="o">&gt;=</span> <span class="n">timestamp</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">prev_time</span><span class="p">,</span> <span class="n">prev_color</span> <span class="o">=</span> <span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if remaining &lt; all timestamps, use only last color</span>
+            <span class="n">prev_color</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">prev_color</span><span class="p">:</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="n">remaining</span> <span class="o">-</span> <span class="n">prev_time</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">timestamp</span> <span class="o">-</span> <span class="n">prev_time</span><span class="p">)</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_color</span><span class="p">(</span><span class="n">prev_color</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">override_color</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">StateType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TimeCounter"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeCounter">[docs]</a><span class="k">class</span> <span class="nc">TimeCounter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="c1">#: Elapsed time :class:`~Gtk.Label`.</span>
+    <span class="n">label_time</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: Clock :class:`~Gtk.Label`.</span>
+    <span class="n">label_clock</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: Time at which the counter was started, `int` in seconds as returned by :func:`~time.time()`.</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1">#: Time elapsed since the beginning of the presentation, `int` in seconds.</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1">#: Timer paused status, `bool`.</span>
+    <span class="n">paused</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1">#: :class:`~TimeLabelColorer` that handles setting the colors of :attr:`label_time`</span>
+    <span class="n">label_colorer</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: :class:`~editable_label.EstimatedTalkTime` that handles changing the ett</span>
+    <span class="n">ett</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">,</span> <span class="n">ett</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Setup the talk time.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            builder (builder.Builder): The builder from which to load widgets.</span>
+<span class="sd">            ett (`int`): the estimated time for the talk, in seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TimeCounter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_colorer</span> <span class="o">=</span> <span class="n">TimeLabelColorer</span><span class="p">(</span><span class="n">builder</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s1">&#39;label_time&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ett</span> <span class="o">=</span> <span class="n">ett</span>
+
+        <span class="n">builder</span><span class="o">.</span><span class="n">load_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Setup timer for clocks</span>
+        <span class="n">GObject</span><span class="o">.</span><span class="n">timeout_add</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_time</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TimeCounter.switch_pause"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeCounter.switch_pause">[docs]</a>    <span class="k">def</span> <span class="nf">switch_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Switch the timer between paused mode and running (normal) mode.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether the clock&#39;s pause was toggled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">paused</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">paused</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_time</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="TimeCounter.pause"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeCounter.pause">[docs]</a>    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pause the timer if it is not paused, otherwise do nothing.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether the clock&#39;s pause was toggled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switch_pause</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="TimeCounter.unpause"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeCounter.unpause">[docs]</a>    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Unpause the timer if it is paused, otherwise do nothing.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether the clock&#39;s pause was toggled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switch_pause</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="TimeCounter.reset_timer"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeCounter.reset_timer">[docs]</a>    <span class="k">def</span> <span class="nf">reset_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Reset the timer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_time</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TimeCounter.update_time"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeCounter.update_time">[docs]</a>    <span class="k">def</span> <span class="nf">update_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update the timer and clock labels.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: `True` (to prevent the timer from stopping)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Current time</span>
+        <span class="n">clock</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%X</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1">#&quot;%H:%M:%S&quot;</span>
+
+        <span class="c1"># Time elapsed since the beginning of the presentation</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
+        <span class="n">elapsed</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:02}</span><span class="s2">:</span><span class="si">{:02}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">),</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+            <span class="n">elapsed</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;(paused)&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_time</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">elapsed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_clock</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">clock</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ett</span><span class="o">.</span><span class="n">est_time</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_colorer</span><span class="o">.</span><span class="n">update_time_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ett</span><span class="o">.</span><span class="n">est_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_colorer</span><span class="o">.</span><span class="n">default_color</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

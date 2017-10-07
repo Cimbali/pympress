@@ -24,7 +24,7 @@
 
 This modules contains stuff needed for caching pages and prerendering them. This
 is done by the :class:`~pympress.surfacecache.SurfaceCache` class, using several
-dictionaries of :class:`cairo.ImageSurface` for storing rendered pages.
+`dict` of :class:`~cairo.ImageSurface` for storing rendered pages.
 
 The problem is, neither Gtk+ nor Poppler are particularly threadsafe.
 Hence the prerendering isn't really done in parallel in another thread, but
@@ -58,26 +58,30 @@ class OrderedDict(collections.OrderedDict):
 
 class SurfaceCache(object):
     """ Pages caching and prerendering made (almost) easy.
+
+    Args:
+        doc (:class:`~pympress.document.Document`):  the current document
+        max_pages (`int`): The maximum page number.
     """
 
-    #: The actual cache. It is a dictionary of :class:`pympress.surfacecache.Cache`:
-    #: its keys are widget names and its values are dictionaries whose keys are
-    #: page numbers and values are instances of :class:`cairo.ImageSurface`.
-    #: In each :class:`pympress.surfacecache.Cache` keys are ordered by Least Recently
+    #: The actual cache. It is a `dict` of :class:`~pympress.surfacecache.Cache`:
+    #: its keys are widget names and its values are `dict` whose keys are page
+    #: numbers and values are instances of :class:`~cairo.ImageSurface`.
+    #: In each :class:`~pympress.surfacecache.Cache` keys are ordered by Least Recently
     #: Used (get or set), when the size is beyond :attr:`max_pages`, pages are
     #: popped from the start of the cache.
     surface_cache = {}
 
-    #: Size of the different managed widgets, as a dictionary of tuples
+    #: Size of the different managed widgets, as a `dict` of tuples
     surface_size = {}
 
-    #: Type of document handled by each widget. It is a dictionary: its keys are
+    #: Type of document handled by each widget. It is a `dict`: its keys are
     #: widget names and its values are document types
     #: (:const:`~pympress.ui.PDF_REGULAR`, :const:`~pympress.ui.PDF_CONTENT_PAGE`
     #: or :const:`~pympress.ui.PDF_NOTES_PAGE`).
     surface_type = {}
 
-    #: Dictionary of :class:`~threading.Lock`\ s used for managing conccurent
+    #: Dictionary of :class:`~threading.Lock` used for managing conccurent
     #: accesses to :attr:`surface_cache`, :attr:`surface_size`, and :attr:`jobs`.
     locks = {}
 
@@ -95,26 +99,21 @@ class SurfaceCache(object):
     max_pages = 200
 
     def __init__(self, doc, max_pages):
-        """
-        Args:
-            doc (:class:`pympress.document.Document`):  the current document
-        """
         self.max_pages = max_pages
         self.doc = doc
         self.doc_lock = threading.Lock()
 
+
     def add_widget(self, widget_name, wtype, start_enabled = True):
-        """ Add a widget to the list of widgets that have to be managed (for caching
-        and prerendering).
+        """ Add a widget to the list of widgets that have to be managed (for caching and prerendering).
 
         This creates new entries for ``widget_name`` in the needed internal data
-        structures, and creates a new thread for prerendering pages for this
-        widget.
+        structures, and creates a new thread for prerendering pages for this widget.
 
         Args:
-            widget_name (string):  string used to identify a widget
-            wtype (integer):  type of document handled by the widget (see :attr:`surface_type`)
-            start_enabled (boolean):  whether this widget is initially in the list of widgets to prerender
+            widget_name (`str`):  string used to identify a widget
+            wtype (`int`):  type of document handled by the widget (see :attr:`surface_type`)
+            start_enabled (`bool`):  whether this widget is initially in the list of widgets to prerender
         """
         self.surface_cache[widget_name] = OrderedDict()
         self.surface_size[widget_name] = (-1, -1)
@@ -130,7 +129,7 @@ class SurfaceCache(object):
         This function also clears the cached pages, since they now belong to an outdated document.
 
         Args:
-            new_doc (:class:`pympress.document.Document`):  the new document
+            new_doc (:class:`~pympress.document.Document`):  the new document
         """
 
         with self.doc_lock:
@@ -145,63 +144,68 @@ class SurfaceCache(object):
         """ Remove a widget from the ones to be prerendered.
 
         Args:
-            widget_name (string):  string used to identify a widget
+            widget_name (`str`):  string used to identify a widget
         """
         self.active_widgets.discard(widget_name)
+
 
     def enable_prerender(self, widget_name):
         """ Add a widget to the ones to be prerendered.
 
         Args:
-            widget_name (string):  string used to identify a widget
+            widget_name (`str`):  string used to identify a widget
         """
         self.active_widgets.add(widget_name)
+
 
     def set_widget_type(self, widget_name, wtype):
         """ Set the document type of a widget.
 
         Args:
-            widget_name (string):  string used to identify a widget
-            wtype (integer):  type of document handled by the widget (see :attr:`surface_type`)
+            widget_name (`str`):  string used to identify a widget
+            wtype (`int`):  type of document handled by the widget (see :attr:`surface_type`)
         """
         with self.locks[widget_name]:
             if self.surface_type[widget_name] != wtype :
                 self.surface_type[widget_name] = wtype
                 self.surface_cache[widget_name].clear()
 
+
     def get_widget_type(self, widget_name):
         """ Get the document type of a widget.
 
         Args:
-            widget_name (string):  string used to identify a widget
+            widget_name (`str`):  string used to identify a widget
 
         Returns:
-            integer: type of document handled by the widget (see :attr:`surface_type`)
+            `int`: type of document handled by the widget (see :attr:`surface_type`)
         """
         return self.surface_type[widget_name]
+
 
     def resize_widget(self, widget_name, width, height):
         """ Change the size of a registered widget, thus invalidating all the cached pages.
 
         Args:
-            widget_name (string):  name of the widget that is resized
-            width (integer):  new width of the widget
-            height (integer):  new height of the widget
+            widget_name (`str`):  name of the widget that is resized
+            width (`int`):  new width of the widget
+            height (`int`):  new height of the widget
         """
         with self.locks[widget_name]:
             if (width, height) != self.surface_size[widget_name]:
                 self.surface_cache[widget_name].clear()
                 self.surface_size[widget_name] = (width, height)
 
+
     def get(self, widget_name, page_nb):
         """ Fetch a cached, prerendered page for the specified widget.
 
         Args:
-            widget_name (string):  name of the concerned widget
-            page_nb (integer):  number of the page to fetch in the cache
+            widget_name (`str`):  name of the concerned widget
+            page_nb (`int`):  number of the page to fetch in the cache
 
         Returns:
-            :class:`cairo.ImageSurface`: the cached page if available, or ``None`` otherwise
+            :class:`~cairo.ImageSurface`: the cached page if available, or `None` otherwise
         """
         with self.locks[widget_name]:
             pc = self.surface_cache[widget_name]
@@ -211,13 +215,14 @@ class SurfaceCache(object):
             else:
                 return None
 
+
     def set(self, widget_name, page_nb, val):
         """ Store a rendered page in the cache.
 
         Args:
-            widget_name (string):  name of the concerned widget
-            page_nb (integer):  number of the page to store in the cache
-            val (:class:`cairo.ImageSurface`):  content to store in the cache
+            widget_name (`str`):  name of the concerned widget
+            page_nb (`int`):  number of the page to store in the cache
+            val (:class:`~cairo.ImageSurface`):  content to store in the cache
         """
         with self.locks[widget_name]:
             pc = self.surface_cache[widget_name]
@@ -227,16 +232,18 @@ class SurfaceCache(object):
             while len(pc) > self.max_pages:
                 pc.popitem(False)
 
+
     def prerender(self, page_nb):
         """ Queue a page for prerendering.
 
         The specified page will be prerendered for all the registered widgets.
 
         Args:
-            page_nb (integer):  number of the page to be prerendered
+            page_nb (`int`):  number of the page to be prerendered
         """
         for name in self.active_widgets:
             GLib.idle_add(self.renderer, name, page_nb)
+
 
     def renderer(self, widget_name, page_nb):
         """ Rendering thread.
@@ -250,8 +257,8 @@ class SurfaceCache(object):
           the process
 
         Args:
-            widget_name (string):  name of the concerned widget
-            page_nb (integer):  number of the page to store in the cache
+            widget_name (`str`):  name of the concerned widget
+            page_nb (`int`):  number of the page to store in the cache
         """
 
         with self.locks[widget_name]:

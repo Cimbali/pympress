@@ -46,7 +46,7 @@ if util.IS_WINDOWS:
         os.environ['LANG'] = lang
 
 locale.setlocale(locale.LC_ALL, '')
-gettext.install('pympress', util.get_resource_path('share', 'locale'))
+gettext.install('pympress', util.get_locale_dir())
 
 # Catch all uncaught exceptions in the log file:
 def uncaught_handler(*exc_info):
@@ -59,8 +59,11 @@ def usage():
     print(_("Usage: {} [options] <presentation_file>").format(sys.argv[0]))
     print("")
     print(_("Options:"))
-    print("    -h, --help: " + _("This help"))
-    print("    -t xx, --talk-time=xx: " + _("The estimated (intended) talk time in minutes"))
+    print("    -h, --help                       " + _("This help"))
+    print("    -t mm[:ss], --talk-time=mm[:ss]  " + _("The estimated (intended) talk time in minutes"))
+    print("                                       " + _("(and optionally seconds)"))
+    print("    --log=level:                     " + _("Set level of verbosity in log file:"))
+    print("                                       " + _("{}, {}, {}, {}, or {}").format("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"))
     print("")
 
 def main(argv = sys.argv[1:]):
@@ -102,17 +105,7 @@ def main(argv = sys.argv[1:]):
     logging.basicConfig(filename=os.path.join(tempfile.gettempdir(), 'pympress.log'), level=log_level)
 
     # PDF file to open passed on command line?
-    name = None
-    if len(args) > 0:
-        name = os.path.abspath(args[0])
-
-        # Check if the path is valid
-        if not os.path.exists(name):
-            msg=_("Could not find the file \"{}\"").format(name)
-            dialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR, buttons=Gtk.ButtonsType.OK, message_format=msg)
-            dialog.set_position(Gtk.WindowPosition.CENTER)
-            dialog.run()
-            name = None
+    name = os.path.abspath(args[0]) if len(args) > 0 else None
 
     # Create windows
     from pympress import ui

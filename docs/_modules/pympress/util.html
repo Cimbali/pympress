@@ -83,7 +83,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html#hacking">Hacking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#contributing">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
 </ul>
 
@@ -188,72 +188,93 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">gi</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">locale</span>
-<span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">GdkPixbuf</span>
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">sys</span>
 
+
 <span class="n">IS_POSIX</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;posix&#39;</span>
 <span class="n">IS_MAC_OS</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;darwin&#39;</span>
 <span class="n">IS_WINDOWS</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span>
 
+
+<span class="k">if</span> <span class="n">IS_WINDOWS</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">winreg</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">_winreg</span> <span class="k">as</span> <span class="nn">winreg</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;GdkX11&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">GdkX11</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">configparser</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">ConfigParser</span> <span class="k">as</span> <span class="nn">configparser</span>
+    <span class="ne">PermissionError</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="k">class</span> <span class="nc">PermissionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="recursive_translate_widgets"><a class="viewcode-back" href="../../pympress.html#pympress.util.recursive_translate_widgets">[docs]</a><span class="k">def</span> <span class="nf">recursive_translate_widgets</span><span class="p">(</span><span class="n">a_widget</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; Calls gettext on all strings we can find in widgets, recursively.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">for</span> <span class="n">str_prop</span> <span class="ow">in</span> <span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">a_widget</span><span class="o">.</span><span class="n">props</span> <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">value_type</span> <span class="o">==</span> <span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_STRING</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">a_widget</span><span class="o">.</span><span class="n">props</span><span class="p">,</span> <span class="n">str_prop</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">a_widget</span><span class="o">.</span><span class="n">props</span><span class="p">,</span> <span class="n">str_prop</span><span class="p">)))</span>
-        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-            <span class="c1"># Thrown when a string property is not readable</span>
-            <span class="k">pass</span>
 
-    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a_widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Container</span><span class="p">):</span>
-        <span class="c1">#NB: Parent-loop in widgets would cause infinite loop here, but that&#39;s absurd (right?)</span>
-        <span class="c1">#NB2: maybe forall instead of foreach if we miss some strings?</span>
-        <span class="n">a_widget</span><span class="o">.</span><span class="n">foreach</span><span class="p">(</span><span class="n">recursive_translate_widgets</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">a_widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MenuItem</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a_widget</span><span class="o">.</span><span class="n">get_submenu</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">recursive_translate_widgets</span><span class="p">(</span><span class="n">a_widget</span><span class="o">.</span><span class="n">get_submenu</span><span class="p">())</span></div>
-
-
-<div class="viewcode-block" id="get_resource_path"><a class="viewcode-back" href="../../pympress.html#pympress.util.get_resource_path">[docs]</a><span class="k">def</span> <span class="nf">get_resource_path</span><span class="p">(</span><span class="o">*</span><span class="n">path_parts</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; Return the resource path based on whether its frozen or not.</span>
+<span class="k">def</span> <span class="nf">__get_resource_path</span><span class="p">(</span><span class="o">*</span><span class="n">path_parts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return the resource path based on whether its frozen or not.</span>
 <span class="sd">    Paths parts given should be relative to the pympress package dir.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (`tuple` of `str`): The directories and filename that constitute the path</span>
+<span class="sd">        to the resource, relative to the pympress distribution</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `str`: The path to the resource</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;frozen&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">),</span> <span class="o">*</span><span class="n">path_parts</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">Requirement</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">path_parts</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">path_parts</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="get_resource_list"><a class="viewcode-back" href="../../pympress.html#pympress.util.get_resource_list">[docs]</a><span class="k">def</span> <span class="nf">get_resource_list</span><span class="p">(</span><span class="o">*</span><span class="n">path_parts</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; Return the list of elements in a directory based on whether its frozen or not.</span>
+<span class="k">def</span> <span class="nf">__get_resource_list</span><span class="p">(</span><span class="o">*</span><span class="n">path_parts</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return the list of elements in a directory based on whether its frozen or not.</span>
 <span class="sd">    Paths parts given should be relative to the pympress package dir.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (`tuple` of `str`): The directories that constitute the path to the resource,</span>
+<span class="sd">        relative to the pympress distribution</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `list` of `str`: The paths to the resources in the directory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;frozen&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">),</span> <span class="o">*</span><span class="n">path_parts</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">Requirement</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_listdir</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">path_parts</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_listdir</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">path_parts</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="get_locale_dir"><a class="viewcode-back" href="../../pympress.html#pympress.util.get_locale_dir">[docs]</a><span class="k">def</span> <span class="nf">get_locale_dir</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Returns the path to the locale directory</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The path to the locale directory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">__get_resource_path</span><span class="p">(</span><span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;locale&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_style_provider"><a class="viewcode-back" href="../../pympress.html#pympress.util.get_style_provider">[docs]</a><span class="k">def</span> <span class="nf">get_style_provider</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39; Load the css and return corresponding style provider.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot; Load the css and return corresponding style provider.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`~Gtk.CssProvider`: The style provider with CSS loaded</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">IS_MAC_OS</span><span class="p">:</span>
-        <span class="n">css_fn</span> <span class="o">=</span> <span class="n">get_resource_path</span><span class="p">(</span><span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">,</span> <span class="s1">&#39;macos.css&#39;</span><span class="p">)</span>
+        <span class="n">css_fn</span> <span class="o">=</span> <span class="n">__get_resource_path</span><span class="p">(</span><span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">,</span> <span class="s1">&#39;macos.css&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">css_fn</span> <span class="o">=</span> <span class="n">get_resource_path</span><span class="p">(</span><span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">,</span> <span class="s1">&#39;default.css&#39;</span><span class="p">)</span>
+        <span class="n">css_fn</span> <span class="o">=</span> <span class="n">__get_resource_path</span><span class="p">(</span><span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">,</span> <span class="s1">&#39;default.css&#39;</span><span class="p">)</span>
 
     <span class="n">style_provider</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CssProvider</span><span class="p">()</span>
     <span class="n">style_provider</span><span class="o">.</span><span class="n">load_from_path</span><span class="p">(</span><span class="n">css_fn</span><span class="p">)</span>
@@ -261,26 +282,47 @@
 
 
 <div class="viewcode-block" id="get_icon_pixbuf"><a class="viewcode-back" href="../../pympress.html#pympress.util.get_icon_pixbuf">[docs]</a><span class="k">def</span> <span class="nf">get_icon_pixbuf</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; Load an image from pympress&#39; resources in a Gdk Pixbuf.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">Pixbuf</span><span class="o">.</span><span class="n">new_from_file</span><span class="p">(</span><span class="n">get_resource_path</span><span class="p">(</span><span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;pixmaps&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span></div>
+    <span class="sd">&quot;&quot;&quot; Load an image from pympress&#39; resources in a Gdk Pixbuf.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (`str`): The name of the icon to load</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`~GdkPixbuf.Pixbuf`: The loaded icon</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">Pixbuf</span><span class="o">.</span><span class="n">new_from_file</span><span class="p">(</span><span class="n">__get_resource_path</span><span class="p">(</span><span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;pixmaps&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_ui_resource_file"><a class="viewcode-back" href="../../pympress.html#pympress.util.get_ui_resource_file">[docs]</a><span class="k">def</span> <span class="nf">get_ui_resource_file</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Load an UI definition file from pympress&#39; resources.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (`str`): The name of the UI to load</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `str`: The full path to the glade file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">__get_resource_path</span><span class="p">(</span><span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;xml&#39;</span><span class="p">,</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.glade&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="list_icons"><a class="viewcode-back" href="../../pympress.html#pympress.util.list_icons">[docs]</a><span class="k">def</span> <span class="nf">list_icons</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39; List the icons from pympress&#39; resources.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">icons</span> <span class="o">=</span> <span class="n">get_resource_list</span><span class="p">(</span><span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;pixmaps&#39;</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot; List the icons from pympress&#39; resources.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        `list` of `str`: The paths to the icons in the pixmaps directory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">icons</span> <span class="o">=</span> <span class="n">__get_resource_list</span><span class="p">(</span><span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;pixmaps&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">icons</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">i</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;.png&#39;</span> <span class="ow">and</span> <span class="n">i</span><span class="p">[:</span><span class="mi">9</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;pympress-&#39;</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="load_icons"><a class="viewcode-back" href="../../pympress.html#pympress.util.load_icons">[docs]</a><span class="k">def</span> <span class="nf">load_icons</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39; Load pympress icons from the pixmaps directory (usually</span>
+    <span class="sd">&quot;&quot;&quot; Load pympress icons from the pixmaps directory (usually</span>
 <span class="sd">    :file:`/usr/share/pixmaps` or something similar).</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        list of :class:`GdkPixbuf.Pixbuf`: loaded icons</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">        `list` of :class:`~GdkPixbuf.Pixbuf`: loaded icons</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">icons</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">icon_name</span> <span class="ow">in</span> <span class="n">list_icons</span><span class="p">():</span>
         <span class="k">try</span><span class="p">:</span>
@@ -292,124 +334,78 @@
     <span class="k">return</span> <span class="n">icons</span></div>
 
 
-<div class="viewcode-block" id="path_to_config"><a class="viewcode-back" href="../../pympress.html#pympress.util.path_to_config">[docs]</a><span class="k">def</span> <span class="nf">path_to_config</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39; Return the OS-specific path to the configuration file.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">IS_POSIX</span><span class="p">:</span>
-        <span class="n">conf_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.config&#39;</span><span class="p">)</span>
-        <span class="n">conf_file_nodir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.pympress&#39;</span><span class="p">)</span>
-        <span class="n">conf_file_indir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.config/pympress&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="set_screensaver"><a class="viewcode-back" href="../../pympress.html#pympress.util.set_screensaver">[docs]</a><span class="k">def</span> <span class="nf">set_screensaver</span><span class="p">(</span><span class="n">must_disable</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Enable or disable the screensaver.</span>
 
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">conf_file_indir</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">conf_file_indir</span>
-        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">conf_file_nodir</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">conf_file_nodir</span>
-
-        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">conf_dir</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">conf_file_indir</span>
+<span class="sd">    Args:</span>
+<span class="sd">        must_disable (`bool`):  if `True`, indicates that the screensaver must be disabled; otherwise it will be enabled</span>
+<span class="sd">        window (:class:`~Gdk.Window`): The window on the screen where the screensaver is to be suspended.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">IS_MAC_OS</span><span class="p">:</span>
+        <span class="c1"># On Mac OS X we can use caffeinate to prevent the display from sleeping</span>
+        <span class="k">if</span> <span class="n">must_disable</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span><span class="o">.</span><span class="n">poll</span><span class="p">():</span>
+                <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;caffeinate&#39;</span><span class="p">,</span> <span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;-w&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">conf_file_nodir</span>
+            <span class="k">if</span> <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span><span class="o">.</span><span class="n">poll</span><span class="p">():</span>
+                <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+                <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">elif</span> <span class="n">IS_POSIX</span><span class="p">:</span>
+        <span class="c1"># On Linux, set screensaver with xdg-screensaver</span>
+        <span class="c1"># (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;suspend&quot;</span> <span class="k">if</span> <span class="n">must_disable</span> <span class="k">else</span> <span class="s2">&quot;resume&quot;</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;xdg-screensaver </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">window</span><span class="o">.</span><span class="n">get_xid</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could not set screensaver status: got status &quot;</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
+
+        <span class="c1"># Also manage screen blanking via DPMS</span>
+        <span class="k">if</span> <span class="n">must_disable</span><span class="p">:</span>
+            <span class="c1"># Get current DPMS status</span>
+            <span class="n">pipe</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;xset q&quot;</span><span class="p">)</span> <span class="c1"># TODO: check if this works on all locales</span>
+            <span class="n">dpms_status</span> <span class="o">=</span> <span class="s2">&quot;Disabled&quot;</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">pipe</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;DPMS is&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">dpms_status</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">break</span>
+            <span class="n">pipe</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="c1"># Set the new value correctly</span>
+            <span class="k">if</span> <span class="n">dpms_status</span> <span class="o">==</span> <span class="s2">&quot;Enabled&quot;</span><span class="p">:</span>
+                <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;xset -dpms&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could not disable DPMS screen blanking: got status &quot;</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">elif</span> <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span><span class="p">:</span>
+            <span class="c1"># Re-enable DPMS</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;xset +dpms&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Could not enable DPMS screen blanking: got status &quot;</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">IS_WINDOWS</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">winreg</span><span class="o">.</span><span class="n">OpenKey</span><span class="p">(</span><span class="n">winreg</span><span class="o">.</span><span class="n">HKEY_CURRENT_USER</span><span class="p">,</span> <span class="s1">&#39;Control Panel\Desktop&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">winreg</span><span class="o">.</span><span class="n">KEY_QUERY_VALUE</span><span class="o">|</span><span class="n">winreg</span><span class="o">.</span><span class="n">KEY_SET_VALUE</span><span class="p">)</span> <span class="k">as</span> <span class="n">key</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">must_disable</span><span class="p">:</span>
+                    <span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="nb">type</span><span class="p">)</span> <span class="o">=</span> <span class="n">winreg</span><span class="o">.</span><span class="n">QueryValueEx</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;ScreenSaveActive&quot;</span><span class="p">)</span>
+                    <span class="k">assert</span><span class="p">(</span><span class="nb">type</span> <span class="o">==</span> <span class="n">winreg</span><span class="o">.</span><span class="n">REG_SZ</span><span class="p">)</span>
+                    <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span><span class="p">:</span>
+                        <span class="n">winreg</span><span class="o">.</span><span class="n">SetValueEx</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;ScreenSaveActive&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">winreg</span><span class="o">.</span><span class="n">REG_SZ</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span><span class="p">:</span>
+                    <span class="n">winreg</span><span class="o">.</span><span class="n">SetValueEx</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;ScreenSaveActive&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">winreg</span><span class="o">.</span><span class="n">REG_SZ</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">PermissionError</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;access denied when trying to access screen saver settings in registry!&quot;</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">],</span> <span class="s1">&#39;pympress.ini&#39;</span><span class="p">)</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Unsupported OS: can&#39;t enable/disable screensaver&quot;</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="load_config"><a class="viewcode-back" href="../../pympress.html#pympress.util.load_config">[docs]</a><span class="k">def</span> <span class="nf">load_config</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39; Get the configuration from its file.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
-    <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">)</span>
-    <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">)</span>
-    <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">)</span>
-    <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">)</span>
-    <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">)</span>
+<span class="c1">#: remember DPMS setting before we change it</span>
+<span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path_to_config</span><span class="p">())</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;maxpages&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;maxpages&#39;</span><span class="p">,</span> <span class="s1">&#39;200&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;xalign&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;xalign&#39;</span><span class="p">,</span> <span class="s1">&#39;0.50&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;yalign&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;yalign&#39;</span><span class="p">,</span> <span class="s1">&#39;0.50&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;monitor&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;monitor&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_blanked&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_blanked&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">,</span> <span class="s1">&#39;on&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;monitor&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;monitor&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_bigbuttons&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_bigbuttons&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_annotations&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_annotations&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;notes&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">RGBA</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">):</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">config</span></div>
-
-
-<div class="viewcode-block" id="recursive_unicode_to_str"><a class="viewcode-back" href="../../pympress.html#pympress.util.recursive_unicode_to_str">[docs]</a><span class="k">def</span> <span class="nf">recursive_unicode_to_str</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; Recursively convert unicode to str (for python2)</span>
-<span class="sd">        Raises NameError in python3 as &#39;unicode&#39; is undefined</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">unicode</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">recursive_unicode_to_str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span><span class="n">recursive_unicode_to_str</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">}</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">recursive_unicode_to_str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">obj</span></div>
-
-
-<div class="viewcode-block" id="layout_from_json"><a class="viewcode-back" href="../../pympress.html#pympress.util.layout_from_json">[docs]</a><span class="k">def</span> <span class="nf">layout_from_json</span><span class="p">(</span><span class="n">layout_string</span><span class="p">,</span> <span class="n">default_string</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; Load the layout from config, with all strings cast to type &#39;str&#39; (even on python2 where they default to &#39;unicode&#39;)</span>
-<span class="sd">        Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on invalid input.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">layout_string</span><span class="p">:</span>
-        <span class="n">layout_string</span> <span class="o">=</span> <span class="n">default_string</span>
-
-    <span class="n">layout</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">layout_string</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">layout</span> <span class="o">=</span> <span class="n">recursive_unicode_to_str</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
-        <span class="k">pass</span>
-
-    <span class="k">return</span> <span class="n">layout</span></div>
-
-
-<div class="viewcode-block" id="save_config"><a class="viewcode-back" href="../../pympress.html#pympress.util.save_config">[docs]</a><span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; Save the configuration to its file.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_config</span><span class="p">(),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">configfile</span><span class="p">:</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span></div>
 
 <span class="c1">##</span>
 <span class="c1"># Local Variables:</span>
@@ -454,7 +450,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-168-g8fc219a&#39;',
+            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
