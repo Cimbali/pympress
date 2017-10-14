@@ -304,6 +304,9 @@ class UI(builder.Builder):
             c_full = False
             p_full = False
 
+            if self.config.getboolean('presenter', 'start_fullscreen') or self.config.getboolean('content', 'start_fullscreen'):
+                logger.warning(_("Not starting content or presenter window full screen because there is only one monitor"))
+
         p_bounds = screen.get_monitor_geometry(p_monitor)
         self.p_win.move(p_bounds.x, p_bounds.y)
         self.p_win.resize(p_bounds.width, p_bounds.height)
