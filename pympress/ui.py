@@ -251,7 +251,7 @@ class UI(builder.Builder):
 
         init_checkstates = {
             'pres_pause':      True,
-            'pres_fullscreen': self.config.getboolean('content', 'start_fullscreen'),
+            'pres_fullscreen': bool(self.c_win.get_window().get_state() & Gdk.WindowState.FULLSCREEN),
             'pres_notes':      self.notes_mode,
             'pres_blank':      self.blanked,
             'pres_annot':      self.show_annotations,
