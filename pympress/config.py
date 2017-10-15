@@ -80,7 +80,7 @@ def layout_from_json(layout_string):
     return layout
 
 
-class Config(configparser.ConfigParser):
+class Config(configparser.ConfigParser, object): # python 2 fix
     """ Manage configuration :Get the configuration from its file and store its back.
     """
     #: `dict`-tree of presenter layout for the notes mode
