@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.0.4
+		v1.1.0.b1
 	</div>
 
 	
@@ -230,8 +230,10 @@
     <span class="c1">#: :class:`~pympress.surfacecache.SurfaceCache` instance.</span>
     <span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="c1">#: callback, to be connected to :func:`~pympress.ui.UI.get_current_page`</span>
+    <span class="c1">#: callback, to be connected to :func:`~pympress.document.Document.current_page`</span>
     <span class="n">get_current_page</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="c1">#: callback, to be connected to :func:`~pympress.ui.UI.notes_mode`</span>
+    <span class="n">get_notes_mode</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
     <span class="c1">#: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`</span>
     <span class="n">redraw_current_slide</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
 
@@ -249,7 +251,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">connect_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">builder</span><span class="o">.</span><span class="n">load_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">get_current_page</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;get_current_page&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_notes_mode</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;get_notes_mode&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_current_page</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;doc.current_page&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">redraw_current_slide</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;redraw_current_slide&#39;</span><span class="p">)</span>
 
         <span class="c1"># Surface cache</span>
@@ -345,7 +348,8 @@
         <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">(),</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_allocated_height</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribble_c_da</span><span class="p">:</span>
-            <span class="n">page</span><span class="p">,</span> <span class="n">wtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_page</span><span class="p">()</span>
+            <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_page</span><span class="p">()</span>
+            <span class="n">wtype</span> <span class="o">=</span> <span class="n">PDF_CONTENT_PAGE</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_notes_mode</span><span class="p">()</span> <span class="k">else</span> <span class="n">PDF_REGULAR</span>
             <span class="n">nb</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">number</span><span class="p">()</span>
             <span class="n">pb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;scribble_p_da&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span>
 
@@ -475,7 +479,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="n">page</span><span class="p">,</span> <span class="n">wtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_page</span><span class="p">()</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_page</span><span class="p">()</span>
+        <span class="n">wtype</span> <span class="o">=</span> <span class="n">PDF_CONTENT_PAGE</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_notes_mode</span><span class="p">()</span> <span class="k">else</span> <span class="n">PDF_REGULAR</span>
         <span class="n">pr</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">get_aspect_ratio</span><span class="p">(</span><span class="n">wtype</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scribble_p_frame</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;ratio&#39;</span><span class="p">,</span> <span class="n">pr</span><span class="p">)</span>
 
@@ -555,7 +560,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
+            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -57,7 +57,7 @@
 	<br />
 	<a href="index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.0.4
+		v1.1.0.b1
 	</div>
 
 	
@@ -301,8 +301,14 @@ Handles a click on a slide.</p>
 
 <dl class="attribute">
 <dt id="pympress.ui.UI.doc">
-<code class="descname">doc</code><em class="property"> = None</em><a class="headerlink" href="#pympress.ui.UI.doc" title="Permalink to this definition">¶</a></dt>
+<code class="descname">doc</code><em class="property"> = &lt;pympress.document.EmptyDocument object&gt;</em><a class="headerlink" href="#pympress.ui.UI.doc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Current <a class="reference internal" href="#pympress.document.Document" title="pympress.document.Document"><code class="xref py py-class docutils literal"><span class="pre">Document</span></code></a> instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.ui.UI.error_opening_file">
+<code class="descname">error_opening_file</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.error_opening_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.error_opening_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the current document.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -312,23 +318,13 @@ Handles a click on a slide.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pympress.ui.UI.get_current_page">
-<code class="descname">get_current_page</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.get_current_page"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.get_current_page" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callback to get page and page type</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pympress.ui.UI.goto_page">
-<code class="descname">goto_page</code><span class="sig-paren">(</span><em>page_number</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.goto_page"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.goto_page" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callback to go to the given page number.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>page_number</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>) -- the desired page number.</td>
-</tr>
-</tbody>
-</table>
+<dt id="pympress.ui.UI.get_notes_mode">
+<code class="descname">get_notes_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.get_notes_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.get_notes_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple getter.</p>
+<dl class="docutils">
+<dt>Returns (bool):</dt>
+<dd>Whether we split slides in content + notes</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
@@ -700,7 +696,7 @@ moving the middle pane is done (which happens at the end of a mouse resize)</p>
 
 <dl class="attribute">
 <dt id="pympress.ui.UI.page_preview_nb">
-<code class="descname">page_preview_nb</code><em class="property"> = 0</em><a class="headerlink" href="#pympress.ui.UI.page_preview_nb" title="Permalink to this definition">¶</a></dt>
+<code class="descname">page_preview_nb</code><em class="property"> = -1</em><a class="headerlink" href="#pympress.ui.UI.page_preview_nb" title="Permalink to this definition">¶</a></dt>
 <dd><p>number of page currently displayed in Controller window's miniatures</p>
 </dd></dl>
 
@@ -1654,11 +1650,6 @@ if one exists, <a class="reference external" href="https://docs.python.org/3.4/l
 </dd></dl>
 
 <dl class="function">
-<dt id="pympress.document.fileopen">
-<code class="descclassname">pympress.document.</code><code class="descname">fileopen</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pympress.document.fileopen" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="pympress.document.get_extension">
 <code class="descclassname">pympress.document.</code><code class="descname">get_extension</code><span class="sig-paren">(</span><em>mime_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#get_extension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.get_extension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a valid filename extension (recognized by python) for a given mime type.</p>
@@ -1846,7 +1837,7 @@ Hence the prerendering isn't really done in parallel in another thread, but
 scheduled on the main thread at idle times using GLib.idle_add().</p>
 <dl class="class">
 <dt id="pympress.surfacecache.OrderedDict">
-<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.4/library/collections.html#collections.OrderedDict" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">collections.OrderedDict</span></code></a></p>
 <p>OrderedDict for python2 compatibility, adding move_to_end().</p>
 <dl class="method">
@@ -2213,7 +2204,13 @@ or <a class="reference internal" href="#pympress.ui.PDF_NOTES_PAGE" title="pympr
 <dl class="method">
 <dt id="pympress.scribble.Scribbler.get_current_page">
 <code class="descname">get_current_page</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pympress.scribble.Scribbler.get_current_page" title="Permalink to this definition">¶</a></dt>
-<dd><p>callback, to be connected to <a class="reference internal" href="#pympress.ui.UI.get_current_page" title="pympress.ui.UI.get_current_page"><code class="xref py py-func docutils literal"><span class="pre">get_current_page()</span></code></a></p>
+<dd><p>callback, to be connected to <a class="reference internal" href="#pympress.document.Document.current_page" title="pympress.document.Document.current_page"><code class="xref py py-func docutils literal"><span class="pre">current_page()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.scribble.Scribbler.get_notes_mode">
+<code class="descname">get_notes_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pympress.scribble.Scribbler.get_notes_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>callback, to be connected to <a class="reference internal" href="#pympress.ui.UI.notes_mode" title="pympress.ui.UI.notes_mode"><code class="xref py py-func docutils literal"><span class="pre">notes_mode()</span></code></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -2517,7 +2514,7 @@ or <a class="reference internal" href="#pympress.ui.PDF_NOTES_PAGE" title="pympr
 
 <dl class="attribute">
 <dt id="pympress.pointer.Pointer.pointer">
-<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7f20c53fc6c0 (GdkPixbuf at 0x560484c880c0)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pointer</code><em class="property"> = &lt;Pixbuf object at 0x69004c8 (GdkPixbuf at 0x5a5d6c0)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/GdkPixbuf-2.0/classes/Pixbuf.html#GdkPixbuf.Pixbuf" title="(in GdkPixbuf 2.0 v2.0)"><code class="xref py py-class docutils literal"><span class="pre">Pixbuf</span></code></a> to read XML descriptions of GUIs and load them.</p>
 </dd></dl>
 
@@ -2731,6 +2728,21 @@ If it is an entry, then replace it with the label.</p>
 <dt id="pympress.editable_label.EstimatedTalkTime">
 <em class="property">class </em><code class="descclassname">pympress.editable_label.</code><code class="descname">EstimatedTalkTime</code><span class="sig-paren">(</span><em>builder</em>, <em>ett</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#EstimatedTalkTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pympress.editable_label.EditableLabel" title="pympress.editable_label.EditableLabel"><code class="xref py py-class docutils literal"><span class="pre">pympress.editable_label.EditableLabel</span></code></a></p>
+<dl class="method">
+<dt id="pympress.editable_label.EstimatedTalkTime.delayed_callback_connection">
+<code class="descname">delayed_callback_connection</code><span class="sig-paren">(</span><em>builder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#EstimatedTalkTime.delayed_callback_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.delayed_callback_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect callbacks later than at init, due to circular dependencies.
+Call this when the page_number module is initialized, but before needing the callback.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>builder</strong> (<a class="reference internal" href="#pympress.builder.Builder" title="pympress.builder.Builder"><em>builder.Builder</em></a>) -- The builder from which to load widgets.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="pympress.editable_label.EstimatedTalkTime.eb_ett">
 <code class="descname">eb_ett</code><em class="property"> = None</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.eb_ett" title="Permalink to this definition">¶</a></dt>
@@ -2739,7 +2751,7 @@ If it is an entry, then replace it with the label.</p>
 
 <dl class="attribute">
 <dt id="pympress.editable_label.EstimatedTalkTime.entry_ett">
-<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f20c4c0a3f0 (GtkEntry at 0x560484dac490)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
+<code class="descname">entry_ett</code><em class="property"> = &lt;Entry object at 0x68f6a20 (GtkEntry at 0x5862e80)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Entry.html#Gtk.Entry" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Entry</span></code></a> used to set the estimated talk time.</p>
 </dd></dl>
 
@@ -3202,7 +3214,7 @@ Times are given in seconds. In between timestamps the color will interpolated li
 
 <dl class="attribute">
 <dt id="pympress.config.Config.placeable_widgets">
-<code class="descname">placeable_widgets</code><em class="property"> = {'current', 'next', 'notes', 'annotations'}</em><a class="headerlink" href="#pympress.config.Config.placeable_widgets" title="Permalink to this definition">¶</a></dt>
+<code class="descname">placeable_widgets</code><em class="property"> = {'annotations', 'next', 'notes', 'current'}</em><a class="headerlink" href="#pympress.config.Config.placeable_widgets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set of strings that are the valid names of widgets from the presenter window that can be dynamically rearranged</p>
 </dd></dl>
 
@@ -3374,7 +3386,7 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 
 <dl class="attribute">
 <dt id="pympress.extras.Annotations.annotation_renderer">
-<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7f20c7736168 (GtkCellRendererText at 0x560484d9e110)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">annotation_renderer</code><em class="property"> = &lt;CellRendererText object at 0x652bcf0 (GtkCellRendererText at 0x5a870f0)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CellRendererText.html#Gtk.CellRendererText" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CellRendererText</span></code></a> Text renderer for the annotations</p>
 </dd></dl>
 
@@ -3802,7 +3814,7 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
+            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

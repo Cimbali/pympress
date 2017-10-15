@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.0.4
+		v1.1.0.b1
 	</div>
 
 	
@@ -202,7 +202,7 @@
 <span class="kn">from</span> <span class="nn">pympress.util</span> <span class="k">import</span> <span class="n">IS_POSIX</span><span class="p">,</span> <span class="n">IS_MAC_OS</span><span class="p">,</span> <span class="n">IS_WINDOWS</span>
 
 
-<div class="viewcode-block" id="recursive_unicode_to_str"><a class="viewcode-back" href="../../pympress.html#pympress.ui.recursive_unicode_to_str">[docs]</a><span class="k">def</span> <span class="nf">recursive_unicode_to_str</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="recursive_unicode_to_str"><a class="viewcode-back" href="../../pympress.html#pympress.config.recursive_unicode_to_str">[docs]</a><span class="k">def</span> <span class="nf">recursive_unicode_to_str</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Recursively convert unicode to str (for python2)</span>
 <span class="sd">    Raises NameError in python3 as &#39;unicode&#39; is undefined</span>
 
@@ -219,7 +219,7 @@
         <span class="k">return</span> <span class="n">obj</span></div>
 
 
-<div class="viewcode-block" id="layout_from_json"><a class="viewcode-back" href="../../pympress.html#pympress.ui.layout_from_json">[docs]</a><span class="k">def</span> <span class="nf">layout_from_json</span><span class="p">(</span><span class="n">layout_string</span><span class="p">):</span>
+<div class="viewcode-block" id="layout_from_json"><a class="viewcode-back" href="../../pympress.html#pympress.config.layout_from_json">[docs]</a><span class="k">def</span> <span class="nf">layout_from_json</span><span class="p">(</span><span class="n">layout_string</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Load the layout from config, with all strings cast to type `str` (even on python2 where they default to `unicode`)</span>
 <span class="sd">    Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on invalid input.</span>
 
@@ -239,7 +239,7 @@
     <span class="k">return</span> <span class="n">layout</span></div>
 
 
-<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">):</span>
+<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../pympress.html#pympress.config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Manage configuration :Get the configuration from its file and store its back.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: `dict`-tree of presenter layout for the notes mode</span>
@@ -250,7 +250,7 @@
     <span class="c1">#: Set of strings that are the valid names of widgets from the presenter window that can be dynamically rearranged</span>
     <span class="n">placeable_widgets</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;current&quot;</span><span class="p">,</span> <span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">}</span>
 
-<div class="viewcode-block" id="Config.path_to_config"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.path_to_config">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Config.path_to_config"><a class="viewcode-back" href="../../pympress.html#pympress.config.Config.path_to_config">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">path_to_config</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Return the OS-specific path to the configuration file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -331,7 +331,7 @@
         <span class="n">config</span><span class="o">.</span><span class="n">load_window_layouts</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="Config.save_config"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.save_config">[docs]</a>    <span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.save_config"><a class="viewcode-back" href="../../pympress.html#pympress.config.Config.save_config">[docs]</a>    <span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Save the configuration to its file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># serialize the layouts</span>
@@ -342,7 +342,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Config.toggle_start"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.toggle_start">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check_item</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.toggle_start"><a class="viewcode-back" href="../../pympress.html#pympress.config.Config.toggle_start">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check_item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Generic function to toggle some boolean startup configuration.</span>
 
 <span class="sd">        Args:</span>
@@ -352,7 +352,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">start_conf</span><span class="p">,</span> <span class="s1">&#39;on&#39;</span> <span class="k">if</span> <span class="n">check_item</span><span class="o">.</span><span class="n">get_active</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Config.validate_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.validate_layout">[docs]</a>    <span class="k">def</span> <span class="nf">validate_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">expected_widgets</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.validate_layout"><a class="viewcode-back" href="../../pympress.html#pympress.config.Config.validate_layout">[docs]</a>    <span class="k">def</span> <span class="nf">validate_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">expected_widgets</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Validate layout: check whether the layout of widgets built from the config string is valid.</span>
 
 <span class="sd">        Args:</span>
@@ -404,7 +404,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Following placeable_widgets were not specified: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">widget_missing</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="Config.load_window_layouts"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.load_window_layouts">[docs]</a>    <span class="k">def</span> <span class="nf">load_window_layouts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.load_window_layouts"><a class="viewcode-back" href="../../pympress.html#pympress.config.Config.load_window_layouts">[docs]</a>    <span class="k">def</span> <span class="nf">load_window_layouts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parse and validate layouts loaded from config, with fallbacks if needed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">default_notes_layout</span> <span class="o">=</span> <span class="s1">&#39;{&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;horizontal&quot;, &quot;children&quot;:[&quot;notes&quot;, {&quot;resizeable&quot;:false, &quot;children&quot;:[&quot;current&quot;, &quot;next&quot;], &quot;orientation&quot;:&quot;vertical&quot;}], &quot;proportions&quot;: [0.60, 0.40]}&#39;</span>
@@ -426,7 +426,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">plain_layout</span> <span class="o">=</span> <span class="n">layout_from_json</span><span class="p">(</span><span class="n">default_plain_layout</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Config.widget_layout_to_tree"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.widget_layout_to_tree">[docs]</a>    <span class="k">def</span> <span class="nf">widget_layout_to_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.widget_layout_to_tree"><a class="viewcode-back" href="../../pympress.html#pympress.config.Config.widget_layout_to_tree">[docs]</a>    <span class="k">def</span> <span class="nf">widget_layout_to_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Build a tree representing a widget hierarchy, leaves are strings and nodes are `dict`.</span>
 <span class="sd">        Recursive function. See validate_layout() for more info on the tree structure.</span>
 
@@ -481,19 +481,19 @@
         <span class="k">return</span> <span class="n">node</span></div>
 
 
-<div class="viewcode-block" id="Config.get_notes_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.get_notes_layout">[docs]</a>    <span class="k">def</span> <span class="nf">get_notes_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.get_notes_layout"><a class="viewcode-back" href="../../pympress.html#pympress.config.Config.get_notes_layout">[docs]</a>    <span class="k">def</span> <span class="nf">get_notes_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Getter for the notes layout.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_layout</span></div>
 
 
-<div class="viewcode-block" id="Config.get_plain_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.get_plain_layout">[docs]</a>    <span class="k">def</span> <span class="nf">get_plain_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.get_plain_layout"><a class="viewcode-back" href="../../pympress.html#pympress.config.Config.get_plain_layout">[docs]</a>    <span class="k">def</span> <span class="nf">get_plain_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Getter for the plain layout.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plain_layout</span></div>
 
 
-<div class="viewcode-block" id="Config.update_notes_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.update_notes_layout">[docs]</a>    <span class="k">def</span> <span class="nf">update_notes_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.update_notes_layout"><a class="viewcode-back" href="../../pympress.html#pympress.config.Config.update_notes_layout">[docs]</a>    <span class="k">def</span> <span class="nf">update_notes_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Setter for the notes layout.</span>
 
 <span class="sd">        Args:</span>
@@ -503,7 +503,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">notes_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget_layout_to_tree</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Config.update_plain_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.update_plain_layout">[docs]</a>    <span class="k">def</span> <span class="nf">update_plain_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.update_plain_layout"><a class="viewcode-back" href="../../pympress.html#pympress.config.Config.update_plain_layout">[docs]</a>    <span class="k">def</span> <span class="nf">update_plain_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Setter for the plain layout.</span>
 
 <span class="sd">        Args:</span>
@@ -549,7 +549,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
+            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

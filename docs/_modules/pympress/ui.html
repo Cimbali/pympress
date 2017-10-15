@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.0.4
+		v1.1.0.b1
 	</div>
 
 	
@@ -269,7 +269,7 @@
     <span class="n">highlight_button</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1">#: number of page currently displayed in Controller window&#39;s miniatures</span>
-    <span class="n">page_preview_nb</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">page_preview_nb</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="c1">#: track whether we blank the screen</span>
     <span class="n">blanked</span> <span class="o">=</span> <span class="kc">False</span>
@@ -286,7 +286,7 @@
     <span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1">#: Current :class:`~pympress.document.Document` instance.</span>
-    <span class="n">doc</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">EmptyDocument</span><span class="p">()</span>
 
     <span class="c1">#: Class :class:`~pympress.scribble.Scribble` managing drawing by the user on top of the current slide.</span>
     <span class="n">scribbler</span> <span class="o">=</span> <span class="kc">None</span>
@@ -321,15 +321,10 @@
             <span class="n">Gtk</span><span class="o">.</span><span class="n">STYLE_PROVIDER_PRIORITY_APPLICATION</span>
         <span class="p">)</span>
 
-        <span class="c1"># Use notes mode by default if the document has notes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpath</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">has_notes</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">show_annotations</span> <span class="o">=</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_annotations&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">page_preview_nb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">current_page</span><span class="p">()</span><span class="o">.</span><span class="n">number</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_annotations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_annotations&#39;</span><span class="p">)</span>
 
         <span class="c1"># Surface cache</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">surfacecache</span><span class="o">.</span><span class="n">SurfaceCache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;maxpages&#39;</span><span class="p">))</span>
-
 
         <span class="c1"># Make and populate windows</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_ui</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">)</span>
@@ -339,11 +334,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">extras</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">medias</span> <span class="o">=</span> <span class="n">extras</span><span class="o">.</span><span class="n">Media</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">laser</span> <span class="o">=</span> <span class="n">pointer</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span> <span class="o">=</span> <span class="n">editable_label</span><span class="o">.</span><span class="n">PageNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span> <span class="o">=</span> <span class="n">editable_label</span><span class="o">.</span><span class="n">EstimatedTalkTime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ett</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span> <span class="o">=</span> <span class="n">editable_label</span><span class="o">.</span><span class="n">PageNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span> <span class="o">=</span> <span class="n">talk_time</span><span class="o">.</span><span class="n">TimeCounter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+        <span class="c1"># solve circular creation-time dependency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span><span class="o">.</span><span class="n">delayed_callback_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="c1"># Get placeable widgets. NB, ids are slightly shorter than names.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span> <span class="o">=</span> <span class="p">{</span>
@@ -369,8 +365,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
 
-        <span class="c1"># Add media</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">replace_media_overlays</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">current_page</span><span class="p">())</span>
+        <span class="c1"># Initialize doc last. Use notes mode by default if the document has notes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="n">docpath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="n">docpath</span><span class="p">)</span>
 
         <span class="c1"># Queue some redraws</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_da</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
@@ -413,7 +410,7 @@
 
         <span class="n">init_checkstates</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;pres_pause&#39;</span><span class="p">:</span>      <span class="kc">True</span><span class="p">,</span>
-            <span class="s1">&#39;pres_fullscreen&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;pres_fullscreen&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">get_window</span><span class="p">()</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">WindowState</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">),</span>
             <span class="s1">&#39;pres_notes&#39;</span><span class="p">:</span>      <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">,</span>
             <span class="s1">&#39;pres_blank&#39;</span><span class="p">:</span>      <span class="bp">self</span><span class="o">.</span><span class="n">blanked</span><span class="p">,</span>
             <span class="s1">&#39;pres_annot&#39;</span><span class="p">:</span>      <span class="bp">self</span><span class="o">.</span><span class="n">show_annotations</span><span class="p">,</span>
@@ -465,6 +462,9 @@
             <span class="n">p_monitor</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">c_full</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">p_full</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Not starting content or presenter window full screen because there is only one monitor&quot;</span><span class="p">))</span>
 
         <span class="n">p_bounds</span> <span class="o">=</span> <span class="n">screen</span><span class="o">.</span><span class="n">get_monitor_geometry</span><span class="p">(</span><span class="n">p_monitor</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">p_bounds</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">p_bounds</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
@@ -623,7 +623,11 @@
 <span class="sd">        Args:</span>
 <span class="sd">            docpath (`str`): the absolute path to the new document</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpath</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpath</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">GLib</span><span class="o">.</span><span class="n">Error</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">error_opening_file</span><span class="p">(</span><span class="n">docpath</span><span class="p">)</span>
 
         <span class="c1"># Use notes mode by default if the document has notes</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">has_notes</span><span class="p">():</span>
@@ -701,26 +705,34 @@
         <span class="n">dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="UI.error_opening_file"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.error_opening_file">[docs]</a>    <span class="k">def</span> <span class="nf">error_opening_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Remove the current document.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if the path is valid</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+            <span class="n">msg</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Could not find the file &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Error opening the file &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">dialog</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">DialogFlags</span><span class="o">.</span><span class="n">MODAL</span><span class="p">,</span>
+                                    <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageType</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ButtonsType</span><span class="o">.</span><span class="n">CLOSE</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">WindowPosition</span><span class="o">.</span><span class="n">CENTER</span><span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+
+
 <div class="viewcode-block" id="UI.close_file"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.close_file">[docs]</a>    <span class="k">def</span> <span class="nf">close_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Remove the current document.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="UI.get_current_page"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.get_current_page">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Callback to get page and page type</span>
+<div class="viewcode-block" id="UI.get_notes_mode"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.get_notes_mode">[docs]</a>    <span class="k">def</span> <span class="nf">get_notes_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Simple getter.</span>
+
+<span class="sd">        Returns (bool):</span>
+<span class="sd">            Whether we split slides in content + notes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">current_page</span><span class="p">(),</span> <span class="n">PDF_CONTENT_PAGE</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="k">else</span> <span class="n">PDF_REGULAR</span></div>
-
-
-<div class="viewcode-block" id="UI.goto_page"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.goto_page">[docs]</a>    <span class="k">def</span> <span class="nf">goto_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_number</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Callback to go to the given page number.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">                page_number (`int`): the desired page number.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">page_number</span><span class="p">)</span></div>
-
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span></div>
 
 
     <span class="c1">##############################################################################</span>
@@ -985,6 +997,8 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">switch_fullscreen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">switch_blanked</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">ctrl_pressed</span> <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;W&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">close_file</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
@@ -1405,7 +1419,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
+            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

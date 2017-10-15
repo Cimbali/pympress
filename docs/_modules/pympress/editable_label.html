@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.0.4
+		v1.1.0.b1
 	</div>
 
 	
@@ -485,13 +485,19 @@
 
         <span class="n">builder</span><span class="o">.</span><span class="n">load_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">stop_editing_page_number</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;page_number.stop_editing&#39;</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">label_ett</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:02}</span><span class="s2">:</span><span class="si">{:02}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="n">ett</span><span class="p">,</span> <span class="mi">60</span><span class="p">)))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_key</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">event_box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eb_ett</span>
 
+<div class="viewcode-block" id="EstimatedTalkTime.delayed_callback_connection"><a class="viewcode-back" href="../../pympress.html#pympress.editable_label.EstimatedTalkTime.delayed_callback_connection">[docs]</a>    <span class="k">def</span> <span class="nf">delayed_callback_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Connect callbacks later than at init, due to circular dependencies.</span>
+<span class="sd">        Call this when the page_number module is initialized, but before needing the callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            builder (builder.Builder): The builder from which to load widgets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_editing_page_number</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;page_number.stop_editing&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EstimatedTalkTime.validate"><a class="viewcode-back" href="../../pympress.html#pympress.editable_label.EstimatedTalkTime.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Update estimated talk time from the input/</span>
@@ -585,7 +591,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-208-g2ade12c&#39;',
+            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -12,10 +12,14 @@ msgstr ""
 "PO-Revision-Date: 2017-04-23 15:22+0200\n"
 "Last-Translator: Stanisław Polak <polak@icsr.agh.edu.pl>\n"
 "Language-Team: \n"
-"Language: Polish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: Polish\n"
+
+msgid "(and optionally seconds)"
+msgstr ""
+
 msgid "(paused)"
 msgstr "(wstrzymany)"
 
@@ -34,6 +38,10 @@ msgstr "Duże przyciski"
 msgid "Clock"
 msgstr "Zegar"
 
+#, fuzzy
+msgid "Content and presenter window must not be on the same monitor if you start full screen!"
+msgstr "Ostrzeżenie: okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnoekranowy!"
+
 msgid "Content blanked"
 msgstr "Puste okno treści"
 
@@ -43,8 +51,20 @@ msgstr "Okno treści w trybie pełnoekranowym"
 msgid "Contributors:"
 msgstr "Współpracownicy:"
 
+#, fuzzy
+msgid "Could not disable DPMS screen blanking: got status "
+msgstr "Ostrzeżenie: nie można wyłączyć wygaszania ekranu DPMS: otrzymany status "
+
+#, fuzzy
+msgid "Could not enable DPMS screen blanking: got status "
+msgstr "Ostrzeżenie: nie można włączyć wygaszania ekranu DPMS: otrzymany status "
+
 msgid "Could not find the file \"{}\""
 msgstr "Nie mogę znaleźć pliku \"{}\""
+
+#, fuzzy
+msgid "Could not set screensaver status: got status "
+msgstr "Ostrzeżenie: nie można ustawić stanu wygaszacza ekranu: otrzymany status "
 
 msgid "Current slide"
 msgstr "Bieżący slajd"
@@ -58,11 +78,18 @@ msgstr "BŁĄÐ nie określono działania dla tego odnośnika!"
 msgid "Error loading icon for about window"
 msgstr "Błąd ładowania ikony dla okna \"O\""
 
+#, fuzzy
+msgid "Error opening the file \"{}\""
+msgstr "Nie mogę znaleźć pliku \"{}\""
+
 msgid "Error: access denied when trying to access screen saver settings in registry!"
 msgstr "Błąd: odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"
 
 msgid "Highlight"
 msgstr "Zakreślacz"
+
+msgid "Invalid log level \"{}\", try one of {}"
+msgstr ""
 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Nieprawidłowy czas (oczekiwano min lub min:sek), podano (wprowadzono) \"{}\""
@@ -82,6 +109,9 @@ msgstr ""
 "\n"
 "Jeśli nie chcesz używać okna dialogowego \"Otwórz plik\", to w wierszu poleceń możesz określić, który plik PDF ma zostać otwarty."
 
+msgid "Not starting content or presenter window full screen because there is only one monitor"
+msgstr ""
+
 msgid "Notes"
 msgstr "Notatki"
 
@@ -97,11 +127,18 @@ msgstr "Opcje:"
 msgid "PDF files"
 msgstr "Pliki PDF"
 
+msgid "Pointer"
+msgstr ""
+
 msgid "Presenter fullscreen"
 msgstr "Okno prelegenta w trybie pełnoekranowym"
 
 msgid "Pympress Content"
 msgstr "Okno treści Pympress"
+
+#, fuzzy
+msgid "Pympress can not extract attached file"
+msgstr "Pympress nie może wyodrębnić osadzonych mediów"
 
 msgid "Pympress can not extract embedded media"
 msgstr "Pympress nie może wyodrębnić osadzonych mediów"
@@ -123,6 +160,9 @@ msgstr "Pympress jeszcze nie obsługuje odsyłacza typu \"{}\""
 
 msgid "Pympress does not yet support link type \"{}\" to \"{}\""
 msgstr "Pympress jeszcze nie obsługuje odsyłacza typu \"{}\" do \"{}\""
+
+msgid "Set level of verbosity in log file:"
+msgstr ""
 
 msgid "Set talk _Time"
 msgstr "Ustaw _czas trwania wystąpienia (prelekcji)"
@@ -150,6 +190,10 @@ msgstr "Nie mogę uruchomić w trybie pełnoekranowym, nieznanego widżetu {}, p
 
 msgid "Unknown event {}"
 msgstr "Nieznane zdarzenie {}"
+
+#, fuzzy
+msgid "Unsupported OS: can't enable/disable screensaver"
+msgstr "Ostrzeżenie: nieobsługiwany system operacyjny: nie można włączyć/wyłączyć wygaszacza ekranu"
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Sposób użycia: {} [opcje] <plik_z_prezentacją>"
@@ -190,8 +234,15 @@ msgstr "_Adnotacje"
 msgid "_Blank screen"
 msgstr "_Pusty ekran"
 
+#, fuzzy
+msgid "_Blue"
+msgstr "_Plik"
+
 msgid "_Close File"
 msgstr "_Zamknij plik"
+
+msgid "_Disabled"
+msgstr ""
 
 msgid "_File"
 msgstr "_Plik"
@@ -204,6 +255,9 @@ msgstr "_Tryb pełnoekranowy"
 
 msgid "_Go to..."
 msgstr "_Idź do..."
+
+msgid "_Green"
+msgstr ""
 
 msgid "_Help"
 msgstr "_Pomoc"
@@ -238,6 +292,9 @@ msgstr "_Poprzedni"
 msgid "_Quit"
 msgstr "_Wyjdź"
 
+msgid "_Red"
+msgstr ""
+
 msgid "_Reset timer"
 msgstr "Zresetuj timer"
 
@@ -247,8 +304,23 @@ msgstr "_Konfiguracja startowa"
 msgid "_Swap screens"
 msgstr "_Zamień ekrany"
 
+#, fuzzy
+msgid "access denied when trying to access screen saver settings in registry!"
+msgstr "Błąd: odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"
+
+#, fuzzy
+msgid "no action defined for this link!"
+msgstr "BŁĄÐ nie określono działania dla tego odnośnika!"
+
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress jest małym czytnikiem PDF napisanym w Pythonie, używającym Popplera do renderowania plików PDF oraz GTK do tworzenia GUI.\n"
 
 msgid "pympress presenter"
 msgstr "Okno presentera Pympress"
+
+#, fuzzy
+msgid "video support is disabled"
+msgstr "Ostrzeżenie: wyłączona obsługa wideo"
+
+msgid "{}, {}, {}, {}, or {}"
+msgstr ""

@@ -14,6 +14,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
+msgid "(and optionally seconds)"
+msgstr "(et secondes, optionellement)"
+
 msgid "(paused)"
 msgstr "(en pause)"
 
@@ -32,6 +35,9 @@ msgstr "Gros boutons"
 msgid "Clock"
 msgstr "Horloge"
 
+msgid "Content and presenter window must not be on the same monitor if you start full screen!"
+msgstr "Attention: La fenêtre de contenu et de présenteur ne peuvent être sur le même écran pour démarrer en plein écran !"
+
 msgid "Content blanked"
 msgstr "Contenu masqué"
 
@@ -41,8 +47,14 @@ msgstr "Contenu en plein écran"
 msgid "Contributors:"
 msgstr "Contributeurs"
 
+msgid "Could not disable DPMS screen blanking: got status "
+msgstr "Attention: Impossible de désactiver l'extinction d'écran DPMS: "
+
 msgid "Could not find the file \"{}\""
 msgstr "Impossible d'ouvrir le fichier \"{}\""
+
+msgid "Could not set screensaver status: got status "
+msgstr "Attention: Impossible de récupérer l'état de l'économiseur d'écran: "
 
 msgid "Current slide"
 msgstr "Diapo actuelle"
@@ -56,11 +68,17 @@ msgstr "ERREUR pas d'action définie pour ce lien !"
 msgid "Error loading icon for about window"
 msgstr "Erreur de chargement des icônes"
 
+msgid "Error opening the file \"{}\""
+msgstr "Impossible d'ouvrir le fichier \"{}\""
+
 msgid "Error: access denied when trying to access screen saver settings in registry!"
 msgstr "Erreur: accès refusé lors de la modification des paramètres d'économiseur d'écran dans le registre !"
 
 msgid "Highlight"
 msgstr "Feutre"
+
+msgid "Invalid log level \"{}\", try one of {}"
+msgstr "Mauvais niveau de log \"{}\", choisissez l'un de {}"
 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Templs invalude (mm ou mm:ss attendu), \"{}\" reçu"
@@ -79,6 +97,9 @@ msgstr ""
 "Pas de fichier sélectionné !\n"
 "Vous pouvez indiquer le fichier PDF à ouvrir en ligne de commande si vous ne voulez pas utiliser la boîte de dialogue \"Ouvrir un fichier\""
 
+msgid "Not starting content or presenter window full screen because there is only one monitor"
+msgstr "Impossible de mettre la fenêtre contenu ou présenteur en plein écran car il n'y a qu'un moniteur"
+
 msgid "Notes"
 msgstr "Notes"
 
@@ -94,11 +115,18 @@ msgstr "Otions:"
 msgid "PDF files"
 msgstr "Fichiers PDF"
 
+msgid "Pointer"
+msgstr "Pointeur"
+
 msgid "Presenter fullscreen"
 msgstr "Présenteur en plein écran"
 
 msgid "Pympress Content"
 msgstr "Pympress Contenu"
+
+#, fuzzy
+msgid "Pympress can not extract attached file"
+msgstr "Pympress ne peut extraire le média intégré"
 
 msgid "Pympress can not extract embedded media"
 msgstr "Pympress ne peut extraire le média intégré"
@@ -120,6 +148,9 @@ msgstr "Pympress ne prend pas encore en charge les liens de type \"{}\""
 
 msgid "Pympress does not yet support link type \"{}\" to \"{}\""
 msgstr "Pympress ne prend pas encore en charge les liens de type \"{}\" vers \"{}\""
+
+msgid "Set level of verbosity in log file:"
+msgstr "Niveau de détails dans les logs:"
 
 msgid "Set talk _Time"
 msgstr "Paramé_trer la durée de la présentation"
@@ -147,6 +178,10 @@ msgstr "Élement visuel {} inconnu à mettre en plein écran, abandonnée."
 
 msgid "Unknown event {}"
 msgstr "Évément inconnu {}"
+
+#, fuzzy
+msgid "Unsupported OS: can't enable/disable screensaver"
+msgstr "Attention: Système d'exploitation non pris en charge: impossible d'activer/désactiver l'économiseur d'écran"
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Usage: {} [options] <fichier de présentation>"
@@ -187,8 +222,14 @@ msgstr "_Annotations"
 msgid "_Blank screen"
 msgstr "Masquer l'écran"
 
+msgid "_Blue"
+msgstr "_Bleu"
+
 msgid "_Close File"
 msgstr "Fi_chier"
+
+msgid "_Disabled"
+msgstr "_Désactivé"
 
 msgid "_File"
 msgstr "_Fichier"
@@ -201,6 +242,9 @@ msgstr "Plein écran"
 
 msgid "_Go to..."
 msgstr "_Aller à..."
+
+msgid "_Green"
+msgstr "Vert"
 
 msgid "_Help"
 msgstr "Aide"
@@ -235,6 +279,9 @@ msgstr "_Précédent"
 msgid "_Quit"
 msgstr "_Quitter"
 
+msgid "_Red"
+msgstr "_Rouge"
+
 msgid "_Reset timer"
 msgstr "_Réinitialier le minuteur"
 
@@ -244,8 +291,23 @@ msgstr "Configuration de démarrage"
 msgid "_Swap screens"
 msgstr "Échanger les écran_s"
 
+#, fuzzy
+msgid "access denied when trying to access screen saver settings in registry!"
+msgstr "Erreur: accès refusé lors de la modification des paramètres d'économiseur d'écran dans le registre !"
+
+#, fuzzy
+msgid "no action defined for this link!"
+msgstr "ERREUR pas d'action définie pour ce lien !"
+
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress est un lecteur de PDF léger écrit en Python, utilisant Poppler pour afficher les PDF et GTK pour l'interface graphique.\n"
 
 msgid "pympress presenter"
 msgstr "pympress présenteur"
+
+#, fuzzy
+msgid "video support is disabled"
+msgstr "Attention: la prise en charge vidéo est désactivée"
+
+msgid "{}, {}, {}, {}, or {}"
+msgstr "{}, {}, {}, {}, ou {}"
