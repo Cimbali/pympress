@@ -18,7 +18,7 @@ msgstr ""
 "Language: Polish\n"
 
 msgid "(and optionally seconds)"
-msgstr ""
+msgstr "(oraz opcjonalnie w sekundach)"
 
 msgid "(paused)"
 msgstr "(wstrzymany)"
@@ -40,13 +40,13 @@ msgstr "Zegar"
 
 #, fuzzy
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Ostrzeżenie: okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnoekranowy!"
+msgstr "Ostrzeżenie: okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnego ekranu!"
 
 msgid "Content blanked"
 msgstr "Puste okno treści"
 
 msgid "Content fullscreen"
-msgstr "Okno treści w trybie pełnoekranowym"
+msgstr "Okno treści w trybie pełnego ekranu"
 
 msgid "Contributors:"
 msgstr "Współpracownicy:"
@@ -70,7 +70,7 @@ msgid "Current slide"
 msgstr "Bieżący slajd"
 
 msgid "ERROR Unknown widget to start fullscreen: {}"
-msgstr "BŁĄD Nieznany widżet do uruchomienia w trybie pełnoekranowym: {}"
+msgstr "BŁĄD Nieznany widżet do uruchomienia w trybie pełnego ekranu: {}"
 
 msgid "ERROR no action defined for this link!"
 msgstr "BŁĄÐ nie określono działania dla tego odnośnika!"
@@ -89,7 +89,7 @@ msgid "Highlight"
 msgstr "Zakreślacz"
 
 msgid "Invalid log level \"{}\", try one of {}"
-msgstr ""
+msgstr "Nieprawidłowy poziom dziennikowania \"{}\", wypróbuj jeden z {}"
 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Nieprawidłowy czas (oczekiwano min lub min:sek), podano (wprowadzono) \"{}\""
@@ -110,7 +110,7 @@ msgstr ""
 "Jeśli nie chcesz używać okna dialogowego \"Otwórz plik\", to w wierszu poleceń możesz określić, który plik PDF ma zostać otwarty."
 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
-msgstr ""
+msgstr "Nie uruchomiono okna treści lub okna prezentera w trybie pełnego ekranu, ponieważ jest tylko jeden monitor"
 
 msgid "Notes"
 msgstr "Notatki"
@@ -128,10 +128,10 @@ msgid "PDF files"
 msgstr "Pliki PDF"
 
 msgid "Pointer"
-msgstr ""
+msgstr "Wskaźnik"
 
 msgid "Presenter fullscreen"
-msgstr "Okno prelegenta w trybie pełnoekranowym"
+msgstr "Okno prelegenta w trybie pełnego ekranu"
 
 msgid "Pympress Content"
 msgstr "Okno treści Pympress"
@@ -162,7 +162,7 @@ msgid "Pympress does not yet support link type \"{}\" to \"{}\""
 msgstr "Pympress jeszcze nie obsługuje odsyłacza typu \"{}\" do \"{}\""
 
 msgid "Set level of verbosity in log file:"
-msgstr ""
+msgstr "Ustaw poziom szczegółowości pliku dziennika:"
 
 msgid "Set talk _Time"
 msgstr "Ustaw _czas trwania wystąpienia (prelekcji)"
@@ -186,7 +186,7 @@ msgid "Time estimation"
 msgstr "Przewidziany czas"
 
 msgid "Unknow widget {} to be fullscreened, aborting."
-msgstr "Nie mogę uruchomić w trybie pełnoekranowym, nieznanego widżetu {}, przerywam działanie."
+msgstr "Nie mogę uruchomić w trybie pełnego ekranu, nieznanego widżetu {}, przerywam działanie."
 
 msgid "Unknown event {}"
 msgstr "Nieznane zdarzenie {}"
@@ -205,7 +205,7 @@ msgid "Video support using VLC is enabled."
 msgstr "Obsługa wideo przy użyciu VLC jest włączona."
 
 msgid "Warning: Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Ostrzeżenie: okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnoekranowy!"
+msgstr "Ostrzeżenie: okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnego ekranu!"
 
 msgid "Warning: Could not disable DPMS screen blanking: got status "
 msgstr "Ostrzeżenie: nie można wyłączyć wygaszania ekranu DPMS: otrzymany status "
@@ -236,13 +236,13 @@ msgstr "_Pusty ekran"
 
 #, fuzzy
 msgid "_Blue"
-msgstr "_Plik"
+msgstr "_Niebieski"
 
 msgid "_Close File"
 msgstr "_Zamknij plik"
 
 msgid "_Disabled"
-msgstr ""
+msgstr "_Nieaktywny"
 
 msgid "_File"
 msgstr "_Plik"
@@ -251,13 +251,13 @@ msgid "_First"
 msgstr "_Pierwszy"
 
 msgid "_Fullscreen"
-msgstr "_Tryb pełnoekranowy"
+msgstr "_Tryb pełnego ekranu"
 
 msgid "_Go to..."
 msgstr "_Idź do..."
 
 msgid "_Green"
-msgstr ""
+msgstr "_Zielony"
 
 msgid "_Help"
 msgstr "_Pomoc"
@@ -293,7 +293,7 @@ msgid "_Quit"
 msgstr "_Wyjdź"
 
 msgid "_Red"
-msgstr ""
+msgstr "_Czerwony"
 
 msgid "_Reset timer"
 msgstr "Zresetuj timer"
@@ -323,4 +323,4 @@ msgid "video support is disabled"
 msgstr "Ostrzeżenie: wyłączona obsługa wideo"
 
 msgid "{}, {}, {}, {}, or {}"
-msgstr ""
+msgstr "{}, {}, {}, {} lub {}"
