@@ -34,10 +34,6 @@ import gettext
 import ctypes
 import tempfile
 
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, GLib
-
 from pympress import util
 
 if util.IS_WINDOWS:
@@ -110,8 +106,6 @@ def main(argv = sys.argv[1:]):
     # Create windows
     from pympress import ui
     gui = ui.UI(ett, name)
-    if not name:
-        GLib.idle_add(gui.pick_file)
     gui.run()
 
 

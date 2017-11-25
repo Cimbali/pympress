@@ -207,8 +207,11 @@ class UI(builder.Builder):
         self.p_win.show_all()
 
         # Initialize doc last. Use notes mode by default if the document has notes
-        self.swap_document(docpath)
-        self.scribbler.cache.swap_document(docpath)
+        if docpath:
+            self.swap_document(docpath)
+            self.scribbler.cache.swap_document(docpath)
+        else:
+            GLib.idle_add(self.pick_file)
 
         # Queue some redraws
         self.c_da.queue_draw()
