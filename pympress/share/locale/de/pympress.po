@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "(and optionally seconds)"
-msgstr ""
+msgstr "(und optional Sekunden)"
 
 msgid "(paused)"
 msgstr "(pausiert)"
