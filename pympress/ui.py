@@ -68,6 +68,8 @@ class UI(builder.Builder):
     c_frame = None
     #: :class:`~Gtk.DrawingArea` for the Content window.
     c_da = None
+    #: :class:`~Gtk.CheckMenuItem` that shows whether the c_win is fullscreen
+    pres_fullscreen = None
 
     #: Presenter window, as a :class:`~Gtk.Window` instance.
     p_win = None
@@ -89,6 +91,8 @@ class UI(builder.Builder):
 
     #: :class:`~Gtk.Frame` for the annotations in the Presenter window.
     p_frame_annot = None
+    #: :class:`~Gtk.CheckMenuItem` that shows whether the annotations are toggled
+    pres_annot = None
 
     #: Indicates whether we should delay redraws on some drawing areas to fluidify resizing gtk.paned
     resize_panes = False
@@ -97,6 +101,8 @@ class UI(builder.Builder):
 
     #: Whether to use notes mode or not
     notes_mode = False
+    #: :class:`~Gtk.CheckMenuItem` that shows whether the annotations are toggled
+    pres_notes = None
 
     #: Whether to display annotations or not
     show_annotations = True
@@ -114,6 +120,8 @@ class UI(builder.Builder):
 
     #: track whether we blank the screen
     blanked = False
+    #: :class:`~Gtk.CheckMenuItem` that shows whether the blank mode is toggled
+    pres_blank = None
 
     #: Dictionary of :class:`~Gtk.Widget` from the presenter window that can be dynamically rearranged
     placeable_widgets = {}
@@ -1040,6 +1048,9 @@ class UI(builder.Builder):
         else:
             widget.fullscreen()
 
+        if widget == self.c_win:
+            self.pres_fullscreen.set_active(not cur_state)
+
         return True
 
 
@@ -1162,6 +1173,7 @@ class UI(builder.Builder):
 
         self.blanked = not self.blanked
         self.c_da.queue_draw()
+        self.pres_blank.set_active(self.blanked)
 
         return True
 
@@ -1208,6 +1220,7 @@ class UI(builder.Builder):
         self.pane_handle_pos.update(pane_handles)
         self.p_central.show_all()
         self.on_page_change(False)
+        self.pres_notes.set_active(self.notes_mode)
 
         return True
 
@@ -1236,6 +1249,7 @@ class UI(builder.Builder):
                 parent.set_position(self.pane_handle_pos[parent] * size)
 
         self.on_page_change(False)
+        self.pres_annot.set_active(self.show_annotations)
 
         return True
 

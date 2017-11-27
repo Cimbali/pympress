@@ -160,6 +160,8 @@ class TimeCounter(object):
 
     #: :class:`~TimeLabelColorer` that handles setting the colors of :attr:`label_time`
     label_colorer = None
+    #: :class:`~Gtk.CheckMenuItem` that shows whether the time is toggled
+    pres_pause = None
 
     #: :class:`~editable_label.EstimatedTalkTime` that handles changing the ett
     ett = None
@@ -210,6 +212,7 @@ class TimeCounter(object):
         self.paused = True
 
         self.update_time()
+        self.pres_pause.set_active(self.paused)
         return True
 
 
@@ -226,6 +229,7 @@ class TimeCounter(object):
         self.paused = False
 
         self.update_time()
+        self.pres_pause.set_active(self.paused)
         return True
 
 

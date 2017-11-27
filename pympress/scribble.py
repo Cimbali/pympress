@@ -68,6 +68,9 @@ class Scribbler(builder.Builder):
     #: :class:`~Gtk.Box` in the Presenter window, where we insert scribbling.
     p_central = None
 
+    #: :class:`~Gtk.CheckMenuItem` that shows whether the scribbling is toggled
+    pres_highlight = None
+
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
     cache = None
 
@@ -344,6 +347,7 @@ class Scribbler(builder.Builder):
         self.c_overlay.show_all()
 
         self.scribbling_mode = True
+        self.pres_highlight.set_active(self.scribbling_mode)
 
         return True
 
@@ -365,6 +369,7 @@ class Scribbler(builder.Builder):
         self.off_render.add(self.scribble_overlay)
         self.p_central.pack_start(p_layout, True, True, 0)
         self.scribbling_mode = False
+        self.pres_highlight.set_active(self.scribbling_mode)
 
         return True
 
