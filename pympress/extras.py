@@ -178,6 +178,16 @@ class Media(object):
             self._media_overlays[media_id].play()
 
 
+    @staticmethod
+    def vlc_support_enabled():
+        """ Check whether the VLC support is enabled or not.
+
+        Returns:
+            `bool`: whether vlc support is enabled
+        """
+        return vlc_enabled
+
+
 class Cursor(object):
     #: a static `dict` of :class:`~Gdk.Cursor`s, ready to use
     _cursors = {
