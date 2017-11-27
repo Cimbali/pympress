@@ -290,7 +290,11 @@ class Scribbler(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
-        if issubclass(type(widget), Gtk.Actionable):
+        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.scribbling_mode:
+            # Checking the checkbox conforming to current situation: do nothing
+            return False
+
+        elif issubclass(type(widget), Gtk.Actionable):
             # A button or menu item, etc. directly connected to this action
             pass
 

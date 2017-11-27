@@ -182,19 +182,20 @@ class TimeCounter(object):
         GObject.timeout_add(250, self.update_time)
 
 
-    def switch_pause(self, *args):
+    def switch_pause(self, widget, event = None):
         """ Switch the timer between paused mode and running (normal) mode.
 
         Returns:
             `bool`: whether the clock's pause was toggled.
         """
+        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.paused:
+            return False
+
         if self.paused:
-            self.start_time = time.time() - self.delta
-            self.paused = False
+            self.unpause()
         else:
-            self.paused = True
-        self.update_time()
-        return True
+            self.pause()
+        return None
 
 
     def pause(self):
@@ -203,11 +204,13 @@ class TimeCounter(object):
         Returns:
             `bool`: whether the clock's pause was toggled.
         """
-        if not self.paused:
-            self.switch_pause()
-            return True
-        else:
+        if self.paused:
             return False
+
+        self.paused = True
+
+        self.update_time()
+        return True
 
 
     def unpause(self):
@@ -216,11 +219,14 @@ class TimeCounter(object):
         Returns:
             `bool`: whether the clock's pause was toggled.
         """
-        if self.paused:
-            self.switch_pause()
-            return True
-        else:
+        if not self.paused:
             return False
+
+        self.start_time = time.time() - self.delta
+        self.paused = False
+
+        self.update_time()
+        return True
 
 
     def reset_timer(self, *args):

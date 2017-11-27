@@ -476,7 +476,7 @@ class UI(builder.Builder):
 
         # Use notes mode by default if the document has notes
         if self.notes_mode != self.doc.has_notes():
-            self.switch_mode()
+            self.switch_mode('swap_document', docpath)
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
@@ -813,7 +813,7 @@ class UI(builder.Builder):
         elif name.upper() == 'Q':
             self.save_and_quit()
         elif name == 'Pause':
-            self.talk_time.switch_pause()
+            self.talk_time.switch_pause(widget, event)
         elif name.upper() == 'R':
             self.talk_time.reset_timer()
 
@@ -828,11 +828,11 @@ class UI(builder.Builder):
             elif self.page_number.on_label_event(widget, event, name):
                 return True
             elif name.upper() == 'P':
-                self.talk_time.switch_pause()
+                self.talk_time.switch_pause(widget, event)
             elif name.upper() == 'N':
-                self.switch_mode()
+                self.switch_mode(widget, event)
             elif name.upper() == 'A':
-                self.switch_annotations()
+                self.switch_annotations(widget, event)
             elif name.upper() == 'S':
                 self.swap_screens()
             elif name.upper() == 'F':
@@ -841,7 +841,7 @@ class UI(builder.Builder):
                 else:
                     self.switch_fullscreen(self.c_win)
             elif name.upper() == 'B':
-                self.switch_blanked()
+                self.switch_blanked(widget, event)
             elif ctrl_pressed and name.upper() == 'W':
                 self.close_file()
             else:
@@ -1022,13 +1022,20 @@ class UI(builder.Builder):
         """
         if isinstance(widget, Gtk.CheckMenuItem):
             # Called from menu -> use c_win
+            toggle_to = widget.get_active()
             widget = self.c_win
+        else:
+            toggle_to = None
 
         if widget != self.c_win and widget != self.p_win:
             logger.error(_("Unknow widget {} to be fullscreened, aborting.").format(widget))
             return False
 
-        if (widget.get_window().get_state() & Gdk.WindowState.FULLSCREEN) != 0:
+        cur_state = (widget.get_window().get_state() & Gdk.WindowState.FULLSCREEN)
+
+        if cur_state == toggle_to:
+            return
+        elif cur_state:
             widget.unfullscreen()
         else:
             widget.fullscreen()
@@ -1144,16 +1151,29 @@ class UI(builder.Builder):
             self.p_win.fullscreen()
 
 
-    def switch_blanked(self, *args):
+    def switch_blanked(self, widget, event = None):
         """ Switch the blanked mode of the content screen.
+
+        Returns:
+            `bool`: whether the mode has been toggled.
         """
+        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.blanked:
+            return False
+
         self.blanked = not self.blanked
         self.c_da.queue_draw()
 
+        return True
 
-    def switch_mode(self, *args):
+    def switch_mode(self, widget, event = None):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
+
+        Returns:
+            `bool`: whether the mode has been toggled.
         """
+        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.notes_mode:
+            return False
+
         self.scribbler.disable_scribbling()
 
         if self.notes_mode:
@@ -1189,10 +1209,18 @@ class UI(builder.Builder):
         self.p_central.show_all()
         self.on_page_change(False)
 
+        return True
 
-    def switch_annotations(self, *args):
+
+    def switch_annotations(self, widget, event = None):
         """ Switch the display to show annotations or to hide them.
+
+        Returns:
+            `bool`: whether the mode has been toggled.
         """
+        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.show_annotations:
+            return False
+
         self.show_annotations = not self.show_annotations
 
         self.p_frame_annot.set_visible(self.show_annotations)
@@ -1208,6 +1236,8 @@ class UI(builder.Builder):
                 parent.set_position(self.pane_handle_pos[parent] * size)
 
         self.on_page_change(False)
+
+        return True
 
 
     def switch_bigbuttons(self, *args):
