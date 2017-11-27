@@ -439,6 +439,7 @@ class UI(builder.Builder):
         Handles clicks on the "about" menu.
         """
         about = Gtk.AboutDialog()
+        pympress = util.get_pympress_meta()
         about.set_program_name('pympress')
         about.set_version(pympress.__version__)
         about.set_copyright(_('Contributors:') + '\n' + pympress.__copyright__)

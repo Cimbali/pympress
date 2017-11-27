@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 import gi
 import subprocess
+import importlib
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
 import pkg_resources
@@ -59,6 +60,12 @@ except NameError:
     class PermissionError(Exception):
         pass
 
+
+
+def get_pympress_meta():
+    """ Get metadata (version, etc) from pympress' __init__.py
+    """
+    return importlib.import_module('pympress.__init__')
 
 
 def __get_resource_path(*path_parts):

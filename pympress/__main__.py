@@ -100,6 +100,9 @@ def main(argv = sys.argv[1:]):
 
     logging.basicConfig(filename=os.path.join(tempfile.gettempdir(), 'pympress.log'), level=log_level)
 
+    pympress_meta = util.get_pympress_meta()
+    logger.info('\n  '.join(['Pympress version {} by:'.format(pympress_meta.__version__)] + pympress_meta.__copyright__.split('\n')))
+
     # PDF file to open passed on command line?
     name = os.path.abspath(args[0]) if len(args) > 0 else None
 
