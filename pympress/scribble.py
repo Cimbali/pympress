@@ -105,7 +105,7 @@ class Scribbler(builder.Builder):
         self.scribble_color = Gdk.RGBA()
         self.scribble_color.parse(config.get('scribble', 'color'))
         self.scribble_width = config.getint('scribble', 'width')
-        self.cache.add_widget("scribble_p_da", PDF_CONTENT_PAGE if notes_mode else PDF_REGULAR, False)
+        self.cache.add_widget(self.scribble_p_da, PDF_CONTENT_PAGE if notes_mode else PDF_REGULAR, False)
 
         self.config = config
 

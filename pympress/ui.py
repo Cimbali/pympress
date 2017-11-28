@@ -243,7 +243,7 @@ class UI(builder.Builder):
         else:
             page_type = document.PDF_REGULAR
 
-        self.cache.add_widget("c_da", page_type)
+        self.cache.add_widget(self.c_da, page_type)
         self.c_frame.set_property("ratio", self.doc.current_page().get_aspect_ratio(page_type))
 
 
@@ -278,13 +278,13 @@ class UI(builder.Builder):
             self.get_object(n).set_active(init_checkstates[n])
 
         if self.notes_mode:
-            self.cache.add_widget("p_da_cur", PDF_CONTENT_PAGE)
-            self.cache.add_widget("p_da_next", PDF_CONTENT_PAGE)
-            self.cache.add_widget("p_da_notes", PDF_NOTES_PAGE)
+            self.cache.add_widget(self.p_da_cur, PDF_CONTENT_PAGE)
+            self.cache.add_widget(self.p_da_next, PDF_CONTENT_PAGE)
+            self.cache.add_widget(self.p_da_notes, PDF_NOTES_PAGE)
         else:
-            self.cache.add_widget("p_da_cur", PDF_REGULAR)
-            self.cache.add_widget("p_da_next", PDF_REGULAR)
-            self.cache.add_widget("p_da_notes", PDF_REGULAR, False)
+            self.cache.add_widget(self.p_da_cur, PDF_REGULAR)
+            self.cache.add_widget(self.p_da_next, PDF_REGULAR)
+            self.cache.add_widget(self.p_da_notes, PDF_REGULAR, False)
 
 
         # set default value

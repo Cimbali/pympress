@@ -72,6 +72,10 @@ class SurfaceCache(object):
     #: popped from the start of the cache.
     surface_cache = {}
 
+    #: `dict` containing functions that return a :class:`~cairo.Surface` given a :class:`~cairo.Context`, width `int` and height `int`
+    #: see :func:`~cairo.Surface.create_similar`
+    surface_factory = {}
+
     #: Size of the different managed widgets, as a `dict` of tuples
     surface_size = {}
 
@@ -104,21 +108,23 @@ class SurfaceCache(object):
         self.doc_lock = threading.Lock()
 
 
-    def add_widget(self, widget_name, wtype, start_enabled = True):
+    def add_widget(self, widget, wtype, start_enabled = True):
         """ Add a widget to the list of widgets that have to be managed (for caching and prerendering).
 
         This creates new entries for ``widget_name`` in the needed internal data
         structures, and creates a new thread for prerendering pages for this widget.
 
         Args:
-            widget_name (`str`):  string used to identify a widget
+            widget (:class:`~Gtk.Widget`):  The widget for which we need to cache
             wtype (`int`):  type of document handled by the widget (see :attr:`surface_type`)
             start_enabled (`bool`):  whether this widget is initially in the list of widgets to prerender
         """
+        widget_name = widget.get_name()
         self.surface_cache[widget_name] = OrderedDict()
         self.surface_size[widget_name] = (-1, -1)
         self.surface_type[widget_name] = wtype
         self.locks[widget_name] = threading.Lock()
+        self.surface_factory[widget_name] = lambda c, w, h: widget.get_window().create_similar_surface(c, w, h)
         if start_enabled:
             self.enable_prerender(widget_name)
 
@@ -279,7 +285,7 @@ class SurfaceCache(object):
         # Render to a ImageSurface
         # 32 to support alpha (needed with premultiplied values?)
         # Anyway 24 uses 32-bit values with 8 unused
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, ww, wh)
+        surface = self.surface_factory[widget_name](cairo.CONTENT_COLOR, ww, wh)
         context = cairo.Context(surface)
         page.render_cairo(context, ww, wh, wtype)
         del context
