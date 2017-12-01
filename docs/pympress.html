@@ -57,7 +57,7 @@
 	<br />
 	<a href="index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.0.b1
+		v1.1.0
 	</div>
 
 	
@@ -719,6 +719,30 @@ moving the middle pane is done (which happens at the end of a mouse resize)</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="pympress.ui.UI.pres_annot">
+<code class="descname">pres_annot</code><em class="property"> = None</em><a class="headerlink" href="#pympress.ui.UI.pres_annot" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CheckMenuItem.html#Gtk.CheckMenuItem" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CheckMenuItem</span></code></a> that shows whether the annotations are toggled</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.ui.UI.pres_blank">
+<code class="descname">pres_blank</code><em class="property"> = None</em><a class="headerlink" href="#pympress.ui.UI.pres_blank" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CheckMenuItem.html#Gtk.CheckMenuItem" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CheckMenuItem</span></code></a> that shows whether the blank mode is toggled</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.ui.UI.pres_fullscreen">
+<code class="descname">pres_fullscreen</code><em class="property"> = None</em><a class="headerlink" href="#pympress.ui.UI.pres_fullscreen" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CheckMenuItem.html#Gtk.CheckMenuItem" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CheckMenuItem</span></code></a> that shows whether the c_win is fullscreen</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.ui.UI.pres_notes">
+<code class="descname">pres_notes</code><em class="property"> = None</em><a class="headerlink" href="#pympress.ui.UI.pres_notes" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CheckMenuItem.html#Gtk.CheckMenuItem" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CheckMenuItem</span></code></a> that shows whether the annotations are toggled</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pympress.ui.UI.prev_button">
 <code class="descname">prev_button</code><em class="property"> = None</em><a class="headerlink" href="#pympress.ui.UI.prev_button" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/ToolButton.html#Gtk.ToolButton" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">ToolButton</span></code></a> big button for touch screens, go to previous slide</p>
@@ -824,8 +848,18 @@ The state of the ui and cache are updated accordingly.</p>
 
 <dl class="method">
 <dt id="pympress.ui.UI.switch_annotations">
-<code class="descname">switch_annotations</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_annotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_annotations" title="Permalink to this definition">¶</a></dt>
+<code class="descname">switch_annotations</code><span class="sig-paren">(</span><em>widget</em>, <em>event=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_annotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_annotations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Switch the display to show annotations or to hide them.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">whether the mode has been toggled.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -836,8 +870,18 @@ The state of the ui and cache are updated accordingly.</p>
 
 <dl class="method">
 <dt id="pympress.ui.UI.switch_blanked">
-<code class="descname">switch_blanked</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_blanked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_blanked" title="Permalink to this definition">¶</a></dt>
+<code class="descname">switch_blanked</code><span class="sig-paren">(</span><em>widget</em>, <em>event=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_blanked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_blanked" title="Permalink to this definition">¶</a></dt>
 <dd><p>Switch the blanked mode of the content screen.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">whether the mode has been toggled.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -863,8 +907,18 @@ when leaving fullscreen mode.</p>
 
 <dl class="method">
 <dt id="pympress.ui.UI.switch_mode">
-<code class="descname">switch_mode</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_mode" title="Permalink to this definition">¶</a></dt>
+<code class="descname">switch_mode</code><span class="sig-paren">(</span><em>widget</em>, <em>event=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Switch the display mode to &quot;Notes mode&quot; or &quot;Normal mode&quot; (without notes).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">whether the mode has been toggled.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -1650,6 +1704,11 @@ if one exists, <a class="reference external" href="https://docs.python.org/3.4/l
 </dd></dl>
 
 <dl class="function">
+<dt id="pympress.document.fileopen">
+<code class="descclassname">pympress.document.</code><code class="descname">fileopen</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pympress.document.fileopen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="pympress.document.get_extension">
 <code class="descclassname">pympress.document.</code><code class="descname">get_extension</code><span class="sig-paren">(</span><em>mime_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#get_extension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.get_extension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a valid filename extension (recognized by python) for a given mime type.</p>
@@ -1837,7 +1896,7 @@ Hence the prerendering isn't really done in parallel in another thread, but
 scheduled on the main thread at idle times using GLib.idle_add().</p>
 <dl class="class">
 <dt id="pympress.surfacecache.OrderedDict">
-<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.4/library/collections.html#collections.OrderedDict" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">collections.OrderedDict</span></code></a></p>
 <p>OrderedDict for python2 compatibility, adding move_to_end().</p>
 <dl class="method">
@@ -1872,7 +1931,7 @@ scheduled on the main thread at idle times using GLib.idle_add().</p>
 
 <dl class="method">
 <dt id="pympress.surfacecache.SurfaceCache.add_widget">
-<code class="descname">add_widget</code><span class="sig-paren">(</span><em>widget_name</em>, <em>wtype</em>, <em>start_enabled=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/surfacecache.html#SurfaceCache.add_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.SurfaceCache.add_widget" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_widget</code><span class="sig-paren">(</span><em>widget</em>, <em>wtype</em>, <em>start_enabled=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/surfacecache.html#SurfaceCache.add_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.SurfaceCache.add_widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a widget to the list of widgets that have to be managed (for caching and prerendering).</p>
 <p>This creates new entries for <code class="docutils literal"><span class="pre">widget_name</span></code> in the needed internal data
 structures, and creates a new thread for prerendering pages for this widget.</p>
@@ -1881,7 +1940,7 @@ structures, and creates a new thread for prerendering pages for this widget.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>widget_name</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>) -- string used to identify a widget</li>
+<li><strong>widget</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Widget.html#Gtk.Widget" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Widget</span></code></a>) -- The widget for which we need to cache</li>
 <li><strong>wtype</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>) -- type of document handled by the widget (see <a class="reference internal" href="#pympress.surfacecache.SurfaceCache.surface_type" title="pympress.surfacecache.SurfaceCache.surface_type"><code class="xref py py-attr docutils literal"><span class="pre">surface_type</span></code></a>)</li>
 <li><strong>start_enabled</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a>) -- whether this widget is initially in the list of widgets to prerender</li>
 </ul>
@@ -2012,7 +2071,7 @@ infinitely (until the program ends) and does the following steps:</p>
 <li>check if the job's result is not already available in the cache</li>
 <li>render it in a new <a class="reference external" href="https://www.cairographics.org/documentation/pycairo/3/reference/surfaces.html#cairo.ImageSurface" title="(in Pycairo v1.10)"><code class="xref py py-class docutils literal"><span class="pre">ImageSurface</span></code></a> if necessary</li>
 <li>store it in the cache if it was not added there since the beginning of
-the process</li>
+the process and the widget configuration is still valid</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2092,6 +2151,13 @@ numbers and values are instances of <a class="reference external" href="https://
 In each <code class="xref py py-class docutils literal"><span class="pre">Cache</span></code> keys are ordered by Least Recently
 Used (get or set), when the size is beyond <a class="reference internal" href="#pympress.surfacecache.SurfaceCache.max_pages" title="pympress.surfacecache.SurfaceCache.max_pages"><code class="xref py py-attr docutils literal"><span class="pre">max_pages</span></code></a>, pages are
 popped from the start of the cache.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.surfacecache.SurfaceCache.surface_factory">
+<code class="descname">surface_factory</code><em class="property"> = {}</em><a class="headerlink" href="#pympress.surfacecache.SurfaceCache.surface_factory" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">dict</span></code></a> containing functions that return a <a class="reference external" href="https://www.cairographics.org/documentation/pycairo/3/reference/surfaces.html#cairo.Surface" title="(in Pycairo v1.10)"><code class="xref py py-class docutils literal"><span class="pre">Surface</span></code></a> given a <a class="reference external" href="https://www.cairographics.org/documentation/pycairo/3/reference/context.html#cairo.Context" title="(in Pycairo v1.10)"><code class="xref py py-class docutils literal"><span class="pre">Context</span></code></a>, width <a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a> and height <a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>
+see <code class="xref py py-func docutils literal"><span class="pre">create_similar()</span></code></p>
 </dd></dl>
 
 <dl class="attribute">
@@ -2271,6 +2337,12 @@ or <a class="reference internal" href="#pympress.ui.PDF_NOTES_PAGE" title="pympr
 <dt id="pympress.scribble.Scribbler.pop_scribble">
 <code class="descname">pop_scribble</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/scribble.html#Scribbler.pop_scribble"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.scribble.Scribbler.pop_scribble" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback for the scribble undo button, to undo the last scribble</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.scribble.Scribbler.pres_highlight">
+<code class="descname">pres_highlight</code><em class="property"> = None</em><a class="headerlink" href="#pympress.scribble.Scribbler.pres_highlight" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CheckMenuItem.html#Gtk.CheckMenuItem" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CheckMenuItem</span></code></a> that shows whether the scribbling is toggled</p>
 </dd></dl>
 
 <dl class="method">
@@ -2514,7 +2586,7 @@ or <a class="reference internal" href="#pympress.ui.PDF_NOTES_PAGE" title="pympr
 
 <dl class="attribute">
 <dt id="pympress.pointer.Pointer.pointer">
-<code class="descname">pointer</code><em class="property"> = &lt;Pixbuf object at 0x69004c8 (GdkPixbuf at 0x5a5d6c0)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7f9f095dde10 (GdkPixbuf at 0x561aeebf8c00)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/GdkPixbuf-2.0/classes/Pixbuf.html#GdkPixbuf.Pixbuf" title="(in GdkPixbuf 2.0 v2.0)"><code class="xref py py-class docutils literal"><span class="pre">Pixbuf</span></code></a> to read XML descriptions of GUIs and load them.</p>
 </dd></dl>
 
@@ -2751,7 +2823,7 @@ Call this when the page_number module is initialized, but before needing the cal
 
 <dl class="attribute">
 <dt id="pympress.editable_label.EstimatedTalkTime.entry_ett">
-<code class="descname">entry_ett</code><em class="property"> = &lt;Entry object at 0x68f6a20 (GtkEntry at 0x5862e80)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
+<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f9f096661f8 (GtkEntry at 0x561aeed32490)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Entry.html#Gtk.Entry" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Entry</span></code></a> used to set the estimated talk time.</p>
 </dd></dl>
 
@@ -3008,6 +3080,12 @@ If it is an entry, then replace it with the label.</p>
 <dd><p>Timer paused status, <a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a>.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="pympress.talk_time.TimeCounter.pres_pause">
+<code class="descname">pres_pause</code><em class="property"> = None</em><a class="headerlink" href="#pympress.talk_time.TimeCounter.pres_pause" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CheckMenuItem.html#Gtk.CheckMenuItem" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CheckMenuItem</span></code></a> that shows whether the time is toggled</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="pympress.talk_time.TimeCounter.reset_timer">
 <code class="descname">reset_timer</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/talk_time.html#TimeCounter.reset_timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.talk_time.TimeCounter.reset_timer" title="Permalink to this definition">¶</a></dt>
@@ -3022,7 +3100,7 @@ If it is an entry, then replace it with the label.</p>
 
 <dl class="method">
 <dt id="pympress.talk_time.TimeCounter.switch_pause">
-<code class="descname">switch_pause</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/talk_time.html#TimeCounter.switch_pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.talk_time.TimeCounter.switch_pause" title="Permalink to this definition">¶</a></dt>
+<code class="descname">switch_pause</code><span class="sig-paren">(</span><em>widget</em>, <em>event=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/talk_time.html#TimeCounter.switch_pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.talk_time.TimeCounter.switch_pause" title="Permalink to this definition">¶</a></dt>
 <dd><p>Switch the timer between paused mode and running (normal) mode.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -3180,7 +3258,7 @@ Times are given in seconds. In between timestamps the color will interpolated li
 <dl class="class">
 <dt id="pympress.config.Config">
 <em class="property">class </em><code class="descclassname">pympress.config.</code><code class="descname">Config</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/config.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.config.Config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.4/library/configparser.html#configparser.ConfigParser" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">configparser.ConfigParser</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.4/library/configparser.html#configparser.ConfigParser" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">configparser.ConfigParser</span></code></a>, <a class="reference external" href="https://docs.python.org/3.4/library/functions.html#object" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <p>Manage configuration :Get the configuration from its file and store its back.</p>
 <dl class="method">
 <dt id="pympress.config.Config.get_notes_layout">
@@ -3214,7 +3292,7 @@ Times are given in seconds. In between timestamps the color will interpolated li
 
 <dl class="attribute">
 <dt id="pympress.config.Config.placeable_widgets">
-<code class="descname">placeable_widgets</code><em class="property"> = {'annotations', 'next', 'notes', 'current'}</em><a class="headerlink" href="#pympress.config.Config.placeable_widgets" title="Permalink to this definition">¶</a></dt>
+<code class="descname">placeable_widgets</code><em class="property"> = {'current', 'next', 'annotations', 'notes'}</em><a class="headerlink" href="#pympress.config.Config.placeable_widgets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set of strings that are the valid names of widgets from the presenter window that can be dynamically rearranged</p>
 </dd></dl>
 
@@ -3386,7 +3464,7 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 
 <dl class="attribute">
 <dt id="pympress.extras.Annotations.annotation_renderer">
-<code class="descname">annotation_renderer</code><em class="property"> = &lt;CellRendererText object at 0x652bcf0 (GtkCellRendererText at 0x5a870f0)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7f9f095c1870 (GtkCellRendererText at 0x561aeed13110)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CellRendererText.html#Gtk.CellRendererText" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CellRendererText</span></code></a> Text renderer for the annotations</p>
 </dd></dl>
 
@@ -3514,6 +3592,22 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 <dd><p>Resize all media overlays that are a child of c_overlay</p>
 </dd></dl>
 
+<dl class="staticmethod">
+<dt id="pympress.extras.Media.vlc_support_enabled">
+<em class="property">static </em><code class="descname">vlc_support_enabled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.vlc_support_enabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.vlc_support_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether the VLC support is enabled or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">whether vlc support is enabled</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -3551,6 +3645,12 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pympress.util.get_pympress_meta">
+<code class="descclassname">pympress.util.</code><code class="descname">get_pympress_meta</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#get_pympress_meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.get_pympress_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get metadata (version, etc) from pympress' __init__.py</p>
 </dd></dl>
 
 <dl class="function">
@@ -3814,7 +3914,7 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
+            VERSION:'b&#39;0.6-234-g9193ef3&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

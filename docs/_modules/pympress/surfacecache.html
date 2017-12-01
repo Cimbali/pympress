@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.0.b1
+		v1.1.0
 	</div>
 
 	
@@ -231,6 +231,10 @@
     <span class="c1">#: popped from the start of the cache.</span>
     <span class="n">surface_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
+    <span class="c1">#: `dict` containing functions that return a :class:`~cairo.Surface` given a :class:`~cairo.Context`, width `int` and height `int`</span>
+    <span class="c1">#: see :func:`~cairo.Surface.create_similar`</span>
+    <span class="n">surface_factory</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="c1">#: Size of the different managed widgets, as a `dict` of tuples</span>
     <span class="n">surface_size</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -263,21 +267,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">doc_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="SurfaceCache.add_widget"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.add_widget">[docs]</a>    <span class="k">def</span> <span class="nf">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">,</span> <span class="n">wtype</span><span class="p">,</span> <span class="n">start_enabled</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="SurfaceCache.add_widget"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.add_widget">[docs]</a>    <span class="k">def</span> <span class="nf">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">wtype</span><span class="p">,</span> <span class="n">start_enabled</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Add a widget to the list of widgets that have to be managed (for caching and prerendering).</span>
 
 <span class="sd">        This creates new entries for ``widget_name`` in the needed internal data</span>
 <span class="sd">        structures, and creates a new thread for prerendering pages for this widget.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            widget_name (`str`):  string used to identify a widget</span>
+<span class="sd">            widget (:class:`~Gtk.Widget`):  The widget for which we need to cache</span>
 <span class="sd">            wtype (`int`):  type of document handled by the widget (see :attr:`surface_type`)</span>
 <span class="sd">            start_enabled (`bool`):  whether this widget is initially in the list of widgets to prerender</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">widget_name</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">surface_cache</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">surface_size</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">surface_type</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">wtype</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surface_factory</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_window</span><span class="p">()</span><span class="o">.</span><span class="n">create_similar_surface</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">start_enabled</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enable_prerender</span><span class="p">(</span><span class="n">widget_name</span><span class="p">)</span></div>
 
@@ -413,7 +419,7 @@
 <span class="sd">        - check if the job&#39;s result is not already available in the cache</span>
 <span class="sd">        - render it in a new :class:`~cairo.ImageSurface` if necessary</span>
 <span class="sd">        - store it in the cache if it was not added there since the beginning of</span>
-<span class="sd">          the process</span>
+<span class="sd">          the process and the widget configuration is still valid</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            widget_name (`str`):  name of the concerned widget</span>
@@ -436,9 +442,12 @@
             <span class="n">pw</span><span class="p">,</span> <span class="n">ph</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">get_size</span><span class="p">(</span><span class="n">wtype</span><span class="p">)</span>
 
         <span class="c1"># Render to a ImageSurface</span>
-        <span class="c1"># 32 to support alpha (needed with premultiplied values?)</span>
-        <span class="c1"># Anyway 24 uses 32-bit values with 8 unused</span>
-        <span class="n">surface</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">ImageSurface</span><span class="p">(</span><span class="n">cairo</span><span class="o">.</span><span class="n">FORMAT_ARGB32</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">surface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_factory</span><span class="p">[</span><span class="n">widget_name</span><span class="p">](</span><span class="n">cairo</span><span class="o">.</span><span class="n">CONTENT_COLOR</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Widget </span><span class="si">{}</span><span class="s1"> was not mapped when rendering&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">widget_name</span><span class="p">),</span> <span class="n">exc_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
         <span class="n">context</span> <span class="o">=</span> <span class="n">cairo</span><span class="o">.</span><span class="n">Context</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
         <span class="n">page</span><span class="o">.</span><span class="n">render_cairo</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">,</span> <span class="n">wtype</span><span class="p">)</span>
         <span class="k">del</span> <span class="n">context</span>
@@ -499,7 +508,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
+            VERSION:'b&#39;0.6-234-g9193ef3&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

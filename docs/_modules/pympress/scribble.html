@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.0.b1
+		v1.1.0
 	</div>
 
 	
@@ -227,6 +227,9 @@
     <span class="c1">#: :class:`~Gtk.Box` in the Presenter window, where we insert scribbling.</span>
     <span class="n">p_central</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="c1">#: :class:`~Gtk.CheckMenuItem` that shows whether the scribbling is toggled</span>
+    <span class="n">pres_highlight</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="c1">#: :class:`~pympress.surfacecache.SurfaceCache` instance.</span>
     <span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -261,7 +264,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">scribble_color</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">RGBA</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scribble_color</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scribble_width</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="s2">&quot;scribble_p_da&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span> <span class="k">if</span> <span class="n">notes_mode</span> <span class="k">else</span> <span class="n">PDF_REGULAR</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_p_da</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span> <span class="k">if</span> <span class="n">notes_mode</span> <span class="k">else</span> <span class="n">PDF_REGULAR</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
 
@@ -449,7 +452,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            `bool`: whether the event was consumed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Actionable</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CheckMenuItem</span><span class="p">)</span> <span class="ow">and</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_active</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span><span class="p">:</span>
+            <span class="c1"># Checking the checkbox conforming to current situation: do nothing</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Actionable</span><span class="p">):</span>
             <span class="c1"># A button or menu item, etc. directly connected to this action</span>
             <span class="k">pass</span>
 
@@ -499,6 +506,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pres_highlight</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -520,6 +528,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">off_render</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribble_overlay</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p_central</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">p_layout</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pres_highlight</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribbling_mode</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">True</span></div></div>
 
@@ -560,7 +569,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
+            VERSION:'b&#39;0.6-234-g9193ef3&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

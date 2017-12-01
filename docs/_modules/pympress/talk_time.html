@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.0.b1
+		v1.1.0
 	</div>
 
 	
@@ -319,6 +319,8 @@
 
     <span class="c1">#: :class:`~TimeLabelColorer` that handles setting the colors of :attr:`label_time`</span>
     <span class="n">label_colorer</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: :class:`~Gtk.CheckMenuItem` that shows whether the time is toggled</span>
+    <span class="n">pres_pause</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1">#: :class:`~editable_label.EstimatedTalkTime` that handles changing the ett</span>
     <span class="n">ett</span> <span class="o">=</span> <span class="kc">None</span>
@@ -341,19 +343,20 @@
         <span class="n">GObject</span><span class="o">.</span><span class="n">timeout_add</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_time</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TimeCounter.switch_pause"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeCounter.switch_pause">[docs]</a>    <span class="k">def</span> <span class="nf">switch_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeCounter.switch_pause"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeCounter.switch_pause">[docs]</a>    <span class="k">def</span> <span class="nf">switch_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch the timer between paused mode and running (normal) mode.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            `bool`: whether the clock&#39;s pause was toggled.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CheckMenuItem</span><span class="p">)</span> <span class="ow">and</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_active</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">paused</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unpause</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">paused</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_time</span><span class="p">()</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="TimeCounter.pause"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeCounter.pause">[docs]</a>    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -362,11 +365,14 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            `bool`: whether the clock&#39;s pause was toggled.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">switch_pause</span><span class="p">()</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">paused</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pres_pause</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="TimeCounter.unpause"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeCounter.unpause">[docs]</a>    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -375,11 +381,15 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            `bool`: whether the clock&#39;s pause was toggled.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">switch_pause</span><span class="p">()</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paused</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pres_pause</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="TimeCounter.reset_timer"><a class="viewcode-back" href="../../pympress.html#pympress.talk_time.TimeCounter.reset_timer">[docs]</a>    <span class="k">def</span> <span class="nf">reset_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -453,7 +463,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
+            VERSION:'b&#39;0.6-234-g9193ef3&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.0.b1
+		v1.1.0
 	</div>
 
 	
@@ -334,7 +334,17 @@
 <span class="sd">            media_id (`int`): A unique idientifier of the media to start playing</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Media.vlc_support_enabled"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.vlc_support_enabled">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">vlc_support_enabled</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot; Check whether the VLC support is enabled or not.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether vlc support is enabled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">vlc_enabled</span></div></div>
 
 
 <div class="viewcode-block" id="Cursor"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Cursor">[docs]</a><span class="k">class</span> <span class="nc">Cursor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -393,7 +403,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
+            VERSION:'b&#39;0.6-234-g9193ef3&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

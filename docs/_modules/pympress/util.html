@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.0.b1
+		v1.1.0
 	</div>
 
 	
@@ -189,6 +189,7 @@
 
 <span class="kn">import</span> <span class="nn">gi</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
 <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">GdkPixbuf</span>
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
@@ -218,6 +219,12 @@
     <span class="k">class</span> <span class="nc">PermissionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
         <span class="k">pass</span>
 
+
+
+<div class="viewcode-block" id="get_pympress_meta"><a class="viewcode-back" href="../../pympress.html#pympress.util.get_pympress_meta">[docs]</a><span class="k">def</span> <span class="nf">get_pympress_meta</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Get metadata (version, etc) from pympress&#39; __init__.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;pympress.__init__&#39;</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">__get_resource_path</span><span class="p">(</span><span class="o">*</span><span class="n">path_parts</span><span class="p">):</span>
@@ -450,7 +457,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
+            VERSION:'b&#39;0.6-234-g9193ef3&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

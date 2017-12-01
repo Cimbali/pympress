@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.0.b1
+		v1.1.0
 	</div>
 
 	
@@ -189,55 +189,63 @@
 
 <div class="viewcode-block" id="UICallbacks"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.UICallbacks">[docs]</a><span class="k">class</span> <span class="nc">UICallbacks</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-<div class="viewcode-block" id="UICallbacks.get_current_page"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.UICallbacks.get_current_page">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_current_page</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<div class="viewcode-block" id="UICallbacks.get_current_page"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.UICallbacks.get_current_page">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Statically get page and page type</span>
 
-<span class="sd">		Returns:</span>
-<span class="sd">			(:class:`~pympress.document.Page`, `int`): The current page, and one</span>
-<span class="sd">			of `~pympress.ui.PDF_REGULAR`, `~pympress.ui.PDF_CONTENT_PAGE`, or `~pympress.ui.PDF_NOTES_PAGE`</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (:class:`~pympress.document.Page`, `int`): The current page, and one</span>
+<span class="sd">            of `~pympress.ui.PDF_REGULAR`, `~pympress.ui.PDF_CONTENT_PAGE`, or `~pympress.ui.PDF_NOTES_PAGE`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="UICallbacks.notify_page_change"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.UICallbacks.notify_page_change">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">notify_page_change</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">unpause</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="UICallbacks.goto_page"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.UICallbacks.goto_page">[docs]</a>    <span class="k">def</span> <span class="nf">goto_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_number</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Go to the given page number.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            page_number (`int`): the desired page number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="UICallbacks.on_page_change"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.UICallbacks.on_page_change">[docs]</a>    <span class="k">def</span> <span class="nf">on_page_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unpause</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Statically notify the UI of a page change (typically from document)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            unpause (`bool`): whether to unpause the click while updating the page</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="UICallbacks.redraw_current_slide"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.UICallbacks.redraw_current_slide">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">redraw_current_slide</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<div class="viewcode-block" id="UICallbacks.redraw_current_slide"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.UICallbacks.redraw_current_slide">[docs]</a>    <span class="k">def</span> <span class="nf">redraw_current_slide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Static way to queue a redraw of the current slides (in both winows)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<div class="viewcode-block" id="UICallbacks.notify_label_event"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.UICallbacks.notify_label_event">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">notify_label_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Static way to start the &quot;go to&quot; label editing.</span>
+<div class="viewcode-block" id="EditableButton"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.EditableButton">[docs]</a><span class="k">class</span> <span class="nc">EditableButton</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-<span class="sd">        Typically used as callbacks from document links.</span>
+<div class="viewcode-block" id="EditableButton.start_editing"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.EditableButton.start_editing">[docs]</a>    <span class="k">def</span> <span class="nf">start_editing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Static way to start the label editing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="UICallbacks.stop_editing_slide"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.UICallbacks.stop_editing_slide">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">stop_editing_slide</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<div class="viewcode-block" id="EditableButton.stop_editing"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.EditableButton.stop_editing">[docs]</a>    <span class="k">def</span> <span class="nf">stop_editing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Make sure that the current page number is not being edited.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+<span class="c1"># Instance of a class inheriting from :class:`~callbacks.UICallbacks`, that will handle the above-defined callbacks</span>
+<span class="n">ui</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># Instance of a class inheriting from :class:`~callbacks.EditableButtonCallbacks`</span>
+<span class="n">page_number</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># Instance of a class inheriting from :class:`~callbacks.EditableButtonCallbacks`</span>
+<span class="n">talk_time</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="UICallbacks.stop_editing_time"><a class="viewcode-back" href="../../pympress.html#pympress.callbacks.UICallbacks.stop_editing_time">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">stop_editing_time</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Make sure that the estiamte talk time is not being edited.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
 </pre></div>
 
            </div>
@@ -274,7 +282,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-220-g2eb8ebb&#39;',
+            VERSION:'b&#39;0.6-234-g9193ef3&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
