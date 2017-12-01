@@ -260,7 +260,7 @@ class SurfaceCache(object):
         - check if the job's result is not already available in the cache
         - render it in a new :class:`~cairo.ImageSurface` if necessary
         - store it in the cache if it was not added there since the beginning of
-          the process
+          the process and the widget configuration is still valid
 
         Args:
             widget_name (`str`):  name of the concerned widget
@@ -283,9 +283,12 @@ class SurfaceCache(object):
             pw, ph = page.get_size(wtype)
 
         # Render to a ImageSurface
-        # 32 to support alpha (needed with premultiplied values?)
-        # Anyway 24 uses 32-bit values with 8 unused
-        surface = self.surface_factory[widget_name](cairo.CONTENT_COLOR, ww, wh)
+        try:
+            surface = self.surface_factory[widget_name](cairo.CONTENT_COLOR, ww, wh)
+        except AttributeError:
+            logger.warning('Widget {} was not mapped when rendering'.format(widget_name), exc_info = True)
+            return False
+
         context = cairo.Context(surface)
         page.render_cairo(context, ww, wh, wtype)
         del context
