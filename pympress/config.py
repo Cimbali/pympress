@@ -38,7 +38,7 @@ except ImportError:
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 
 from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 
