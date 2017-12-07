@@ -136,7 +136,7 @@ class VLCVideo(Gtk.VBox):
         tb.modify_bg(Gtk.StateType.NORMAL, Gdk.Color(0, 0, 0))
         for text, tooltip, stock, callback in (
             ('Play', 'Play', Gtk.STOCK_MEDIA_PLAY, lambda b: self.play()),
-            ('Pause', 'Pause', Gtk.STOCK_MEDIA_PAUSE, lambda b: self.pause()),
+            ('Pause', 'Pause', Gtk.STOCK_MEDIA_PAUSE, lambda b: self.play_pause()),
             ('Stop', 'Stop', Gtk.STOCK_MEDIA_STOP, lambda b: GLib.idle_add(self.hide)),
         ):
             b=Gtk.ToolButton(stock)
@@ -166,6 +166,12 @@ class VLCVideo(Gtk.VBox):
         GLib.idle_add(self.player.set_media, instance.media_new(filepath))
 
 
+    def play_pause(self):
+        """ Toggle pause mode of the media.
+        """
+        GLib.idle_add(lambda p: p.pause() if p.is_playing() else p.play(), self.player)
+
+
     def play(self):
         """ Start playing the media file.
         Bring the widget to the top of the overlays if necessary.
@@ -193,7 +199,7 @@ class VLCVideo(Gtk.VBox):
             return
 
         if event.type == Gdk.EventType.BUTTON_PRESS:
-            GLib.idle_add(lambda p: p.pause() if p.is_playing() else p.play(), self.player)
+            self.play_pause()
         elif event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
             GLib.idle_add(self.player.set_time, 0) # in ms
 
