@@ -189,7 +189,7 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">gi</span>
 <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">Pango</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GLib</span><span class="p">,</span> <span class="n">Pango</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">vlcvideo</span>
@@ -214,6 +214,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Annotations</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="n">builder</span><span class="o">.</span><span class="n">load_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="c1"># wrap text</span>
@@ -283,6 +284,8 @@
 
     <span class="c1">#: :class:`~Gtk.Overlay` for the Content window.</span>
     <span class="n">c_overlay</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: :class:`~Gtk.Overlay` for the Presenter window.</span>
+    <span class="n">p_overlay</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Set up the required widgets and queue an initial draw.</span>
@@ -290,9 +293,25 @@
 <span class="sd">        Args:</span>
 <span class="sd">            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Media</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="n">builder</span><span class="o">.</span><span class="n">load_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_overlay</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Media.remove_media_overlays"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.remove_media_overlays">[docs]</a>    <span class="k">def</span> <span class="nf">remove_media_overlays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Remove current media overlays.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hide</span><span class="p">(</span><span class="n">media_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Media.purge_media_overlays"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.purge_media_overlays">[docs]</a>    <span class="k">def</span> <span class="nf">purge_media_overlays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Remove current media overlays.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_media_overlays</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Media.replace_media_overlays"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.replace_media_overlays">[docs]</a>    <span class="k">def</span> <span class="nf">replace_media_overlays</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_page</span><span class="p">):</span>
@@ -304,7 +323,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">vlc_enabled</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="o">.</span><span class="n">foreach</span><span class="p">(</span><span class="k">lambda</span> <span class="n">child</span><span class="p">,</span> <span class="o">*</span><span class="n">ignored</span><span class="p">:</span> <span class="n">child</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ow">is</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_media_overlays</span><span class="p">()</span>
 
         <span class="n">pw</span><span class="p">,</span> <span class="n">ph</span> <span class="o">=</span> <span class="n">current_page</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
 
@@ -312,29 +331,72 @@
             <span class="n">media_id</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">((</span><span class="n">relative_margins</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="n">media_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
-                <span class="n">v_da</span> <span class="o">=</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">)</span>
-                <span class="n">v_da</span><span class="o">.</span><span class="n">set_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                <span class="k">def</span> <span class="nf">get_curryfied_callback</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="n">media_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_da</span></div>
+                <span class="n">v_da_c</span> <span class="o">=</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">get_curryfied_callback</span><span class="p">)</span>
+                <span class="n">v_da_p</span> <span class="o">=</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_overlay</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">get_curryfied_callback</span><span class="p">)</span>
+
+                <span class="n">v_da_c</span><span class="o">.</span><span class="n">set_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                <span class="n">v_da_p</span><span class="o">.</span><span class="n">set_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v_da_c</span><span class="p">,</span> <span class="n">v_da_p</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Media.resize"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.resize">[docs]</a>    <span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Resize all media overlays that are a child of c_overlay</span>
+<div class="viewcode-block" id="Media.resize"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.resize">[docs]</a>    <span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Resize all media overlays that are a child of an overlay</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">vlc_enabled</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="o">.</span><span class="n">foreach</span><span class="p">(</span><span class="k">lambda</span> <span class="n">child</span><span class="p">,</span> <span class="o">*</span><span class="n">ignored</span><span class="p">:</span> <span class="n">child</span><span class="o">.</span><span class="n">resize</span><span class="p">()</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ow">is</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="n">needs_resizing</span> <span class="o">=</span> <span class="p">(</span><span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="n">which</span> <span class="o">==</span> <span class="s1">&#39;presenter&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">which</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="p">(</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">],</span> <span class="n">needs_resizing</span><span class="p">)</span> <span class="k">if</span> <span class="n">r</span> <span class="ow">and</span> <span class="n">w</span><span class="o">.</span><span class="n">is_shown</span><span class="p">()):</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">resize</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Media.play"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.play">[docs]</a>    <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">):</span>
+<div class="viewcode-block" id="Media.play"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.play">[docs]</a>    <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">,</span> <span class="n">button</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Starts playing a media. Used as a callback.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            media_id (`int`): A unique idientifier of the media to start playing</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span></div>
+            <span class="n">c</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">do_play</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="Media.hide"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">,</span> <span class="n">button</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stops playing a media and hides the player. Used as a callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            media_id (`int`): A unique idientifier of the media to start playing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]:</span>
+            <span class="n">c</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">is_shown</span><span class="p">():</span> <span class="n">c</span><span class="o">.</span><span class="n">do_hide</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_shown</span><span class="p">():</span> <span class="n">p</span><span class="o">.</span><span class="n">do_hide</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Media.play_pause"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.play_pause">[docs]</a>    <span class="k">def</span> <span class="nf">play_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">,</span> <span class="n">button</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Toggles playing and pausing a media. Used as a callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            media_id (`int`): A unique idientifier of the media to start playing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">do_play_pause</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="Media.set_time"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.set_time">[docs]</a>    <span class="k">def</span> <span class="nf">set_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set the player of a given media at time t. Used as a callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            media_id (`int`): A unique idientifier of the media to start playing</span>
+<span class="sd">            t (`int`): the timestamp, in ms</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">do_set_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]))</span></div>
 
 
 <div class="viewcode-block" id="Media.vlc_support_enabled"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.vlc_support_enabled">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -403,7 +465,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-234-g9193ef3&#39;',
+            VERSION:'b&#39;0.6-242-gb240e7c&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

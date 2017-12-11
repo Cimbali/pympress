@@ -517,7 +517,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">resize_widget</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_da</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">resize</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">widget</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_da_cur</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UI.on_configure_win"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.on_configure_win">[docs]</a>    <span class="k">def</span> <span class="nf">on_configure_win</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
@@ -649,6 +651,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">set_last</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">purge_media_overlays</span><span class="p">()</span>
 
         <span class="c1"># Draw the new page(s)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
@@ -1381,10 +1384,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pres_notes</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;on switch mode:&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;- </span><span class="si">{}</span><span class="s1">: vis=</span><span class="si">{}</span><span class="s1"> par=</span><span class="si">{}</span><span class="s1"> win=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">w</span><span class="o">.</span><span class="n">get_visible</span><span class="p">(),</span> <span class="n">w</span><span class="o">.</span><span class="n">get_parent</span><span class="p">(),</span> <span class="n">w</span><span class="o">.</span><span class="n">get_window</span><span class="p">()))</span>
-
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
@@ -1471,7 +1470,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-234-g9193ef3&#39;',
+            VERSION:'b&#39;0.6-242-gb240e7c&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

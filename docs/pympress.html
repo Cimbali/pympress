@@ -2586,7 +2586,7 @@ or <a class="reference internal" href="#pympress.ui.PDF_NOTES_PAGE" title="pympr
 
 <dl class="attribute">
 <dt id="pympress.pointer.Pointer.pointer">
-<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7f9f095dde10 (GdkPixbuf at 0x561aeebf8c00)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7f7ac59174c8 (GdkPixbuf at 0x556b4673db60)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/GdkPixbuf-2.0/classes/Pixbuf.html#GdkPixbuf.Pixbuf" title="(in GdkPixbuf 2.0 v2.0)"><code class="xref py py-class docutils literal"><span class="pre">Pixbuf</span></code></a> to read XML descriptions of GUIs and load them.</p>
 </dd></dl>
 
@@ -2823,7 +2823,7 @@ Call this when the page_number module is initialized, but before needing the cal
 
 <dl class="attribute">
 <dt id="pympress.editable_label.EstimatedTalkTime.entry_ett">
-<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f9f096661f8 (GtkEntry at 0x561aeed32490)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
+<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f7ac5927f30 (GtkEntry at 0x556b46874490)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Entry.html#Gtk.Entry" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Entry</span></code></a> used to set the estimated talk time.</p>
 </dd></dl>
 
@@ -3292,7 +3292,7 @@ Times are given in seconds. In between timestamps the color will interpolated li
 
 <dl class="attribute">
 <dt id="pympress.config.Config.placeable_widgets">
-<code class="descname">placeable_widgets</code><em class="property"> = {'current', 'next', 'annotations', 'notes'}</em><a class="headerlink" href="#pympress.config.Config.placeable_widgets" title="Permalink to this definition">¶</a></dt>
+<code class="descname">placeable_widgets</code><em class="property"> = {'annotations', 'current', 'next', 'notes'}</em><a class="headerlink" href="#pympress.config.Config.placeable_widgets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set of strings that are the valid names of widgets from the presenter window that can be dynamically rearranged</p>
 </dd></dl>
 
@@ -3464,7 +3464,7 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 
 <dl class="attribute">
 <dt id="pympress.extras.Annotations.annotation_renderer">
-<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7f9f095c1870 (GtkCellRendererText at 0x561aeed13110)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7f7ac58f9f30 (GtkCellRendererText at 0x556b46856110)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CellRendererText.html#Gtk.CellRendererText" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CellRendererText</span></code></a> Text renderer for the annotations</p>
 </dd></dl>
 
@@ -3559,8 +3559,28 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pympress.extras.Media.hide">
+<code class="descname">hide</code><span class="sig-paren">(</span><em>media_id</em>, <em>button=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.hide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.hide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops playing a media and hides the player. Used as a callback.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>media_id</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>) -- A unique idientifier of the media to start playing</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.extras.Media.p_overlay">
+<code class="descname">p_overlay</code><em class="property"> = None</em><a class="headerlink" href="#pympress.extras.Media.p_overlay" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Overlay.html#Gtk.Overlay" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Overlay</span></code></a> for the Presenter window.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pympress.extras.Media.play">
-<code class="descname">play</code><span class="sig-paren">(</span><em>media_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.play"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.play" title="Permalink to this definition">¶</a></dt>
+<code class="descname">play</code><span class="sig-paren">(</span><em>media_id</em>, <em>button=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.play"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.play" title="Permalink to this definition">¶</a></dt>
 <dd><p>Starts playing a media. Used as a callback.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -3570,6 +3590,32 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.extras.Media.play_pause">
+<code class="descname">play_pause</code><span class="sig-paren">(</span><em>media_id</em>, <em>button=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.play_pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.play_pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Toggles playing and pausing a media. Used as a callback.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>media_id</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>) -- A unique idientifier of the media to start playing</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.extras.Media.purge_media_overlays">
+<code class="descname">purge_media_overlays</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.purge_media_overlays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.purge_media_overlays" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove current media overlays.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.extras.Media.remove_media_overlays">
+<code class="descname">remove_media_overlays</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.remove_media_overlays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.remove_media_overlays" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove current media overlays.</p>
 </dd></dl>
 
 <dl class="method">
@@ -3588,8 +3634,26 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 
 <dl class="method">
 <dt id="pympress.extras.Media.resize">
-<code class="descname">resize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.resize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.resize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resize all media overlays that are a child of c_overlay</p>
+<code class="descname">resize</code><span class="sig-paren">(</span><em>which=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.resize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.resize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resize all media overlays that are a child of an overlay</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.extras.Media.set_time">
+<code class="descname">set_time</code><span class="sig-paren">(</span><em>media_id</em>, <em>t</em>, <em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.set_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.set_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the player of a given media at time t. Used as a callback.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>media_id</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>) -- A unique idientifier of the media to start playing</li>
+<li><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>) -- the timestamp, in ms</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="staticmethod">
@@ -3743,17 +3807,17 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 <h3><a class="reference internal" href="#module-pympress.vlcvideo" title="pympress.vlcvideo"><code class="xref py py-mod docutils literal"><span class="pre">pympress.vlcvideo</span></code></a> -- widget to play videos with VLC backend<a class="headerlink" href="#pympress-vlcvideo-widget-to-play-videos-with-vlc-backend" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pympress.vlcvideo.VLCVideo">
-<em class="property">class </em><code class="descclassname">pympress.vlcvideo.</code><code class="descname">VLCVideo</code><span class="sig-paren">(</span><em>overlay</em>, <em>show_controls</em>, <em>relative_margins</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">gi.repository.Gtk.VBox</span></code></p>
+<em class="property">class </em><code class="descclassname">pympress.vlcvideo.</code><code class="descname">VLCVideo</code><span class="sig-paren">(</span><em>container</em>, <em>show_controls</em>, <em>relative_margins</em>, <em>callback_getter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pympress.builder.Builder" title="pympress.builder.Builder"><code class="xref py py-class docutils literal"><span class="pre">pympress.builder.Builder</span></code></a></p>
 <p>Simple VLC widget.</p>
 <p>Its player can be controlled through the 'player' attribute, which
-is a vlc.MediaPlayer() instance.</p>
+is a <a class="reference external" href="https://www.olivieraubert.net/vlc/python-ctypes/doc/vlc.MediaPlayer-class.html" title="(in python-vlc 2.2 v2.2.0-git-14816-gda488a7751100)"><code class="xref py py-class docutils literal"><span class="pre">MediaPlayer</span></code></a> instance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>overlay</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Overlay.html#Gtk.Overlay" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Overlay</span></code></a>) -- The overlay with the slide, at the top of which we add the movie area</li>
+<li><strong>container</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Overlay.html#Gtk.Overlay" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Overlay</span></code></a>) -- The container with the slide, at the top of which we add the movie area</li>
 <li><strong>show_controls</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a>) -- whether to display controls on the video player</li>
 <li><strong>relative_margins</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Poppler-0.18/classes/Rectangle.html#Poppler.Rectangle" title="(in Poppler 0.18 v0.18)"><code class="xref py py-class docutils literal"><span class="pre">Rectangle</span></code></a>) -- the margins defining the position of the video in the frame.</li>
 </ul>
@@ -3761,39 +3825,168 @@ is a vlc.MediaPlayer() instance.</p>
 </tr>
 </tbody>
 </table>
-<dl class="attribute">
-<dt id="pympress.vlcvideo.VLCVideo.controls">
-<code class="descname">controls</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.controls" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="method">
-<dt id="pympress.vlcvideo.VLCVideo.get_player_control_toolbar">
-<code class="descname">get_player_control_toolbar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.get_player_control_toolbar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.get_player_control_toolbar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a player control toolbar.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pympress.vlcvideo.VLCVideo.hide">
-<code class="descname">hide</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.hide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.hide" title="Permalink to this definition">¶</a></dt>
+<dt id="pympress.vlcvideo.VLCVideo.do_hide">
+<code class="descname">do_hide</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.do_hide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.do_hide" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove widget from overlays. Needs to be callded via GLib.idle_add</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<code class="xref py py-meth docutils literal"><span class="pre">idle_add()</span></code> convention)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.vlcvideo.VLCVideo.do_play">
+<code class="descname">do_play</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.do_play"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.do_play" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start playing the media file.
+Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<code class="xref py py-meth docutils literal"><span class="pre">idle_add()</span></code> convention)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.vlcvideo.VLCVideo.do_play_pause">
+<code class="descname">do_play_pause</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.do_play_pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.do_play_pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Toggle pause mode of the media.
+Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<code class="xref py py-meth docutils literal"><span class="pre">idle_add()</span></code> convention)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.vlcvideo.VLCVideo.do_set_time">
+<code class="descname">do_set_time</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.do_set_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.do_set_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the player at time t.
+Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>) -- the timestamp, in ms</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<code class="xref py py-meth docutils literal"><span class="pre">idle_add()</span></code> convention)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pympress.vlcvideo.VLCVideo.movie_zone">
-<code class="descname">movie_zone</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.movie_zone" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pympress.vlcvideo.VLCVideo.dragging_paused">
+<code class="descname">dragging_paused</code><em class="property"> = False</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.dragging_paused" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a> that tracks whether the playback was paused when the user started dragging the position</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.vlcvideo.VLCVideo.dragging_position">
+<code class="descname">dragging_position</code><em class="property"> = False</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.dragging_position" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a> that tracks whether the user is dragging the position</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="pympress.vlcvideo.VLCVideo.on_click">
-<code class="descname">on_click</code><span class="sig-paren">(</span><em>widget</em>, <em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.on_click"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.on_click" title="Permalink to this definition">¶</a></dt>
-<dd><p>React to click events by playing or pausing the media.</p>
+<dt id="pympress.vlcvideo.VLCVideo.format_millis">
+<code class="descname">format_millis</code><span class="sig-paren">(</span><em>sc</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.format_millis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.format_millis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback to format the current timestamp (in milliseconds) as minutes:seconds</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>widget</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Widget.html#Gtk.Widget" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Widget</span></code></a>) -- the widget which has received the click.</li>
-<li><strong>event</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gdk-3.0/classes/Event.html#Gdk.Event" title="(in Gdk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Event</span></code></a>) -- the GTK event containing the position.</li>
+<li><strong>sc</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Scale</span></code></a>) -- The scale whose position we are formatting</li>
+<li><strong>val</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">float</span></code></a>) -- The position of the <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Scale</span></code></a>, which is the number of milliseconds elapsed in the video</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.vlcvideo.VLCVideo.handle_embed">
+<code class="descname">handle_embed</code><span class="sig-paren">(</span><em>mapped_widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.handle_embed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.handle_embed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handler to embed the VLC player in the correct window, connected to the <code class="xref py py-attr docutils literal"><span class="pre">map</span></code> signal</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.vlcvideo.VLCVideo.hide">
+<code class="descname">hide</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.hide" title="Permalink to this definition">¶</a></dt>
+<dd><p>callback, to be connected to <a class="reference internal" href="#pympress.extras.Media.hide" title="pympress.extras.Media.hide"><code class="xref py py-meth docutils literal"><span class="pre">hide()</span></code></a>, curryfied with the correct media_id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.vlcvideo.VLCVideo.is_shown">
+<code class="descname">is_shown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.is_shown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.is_shown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether the media overlay is currently added to the overlays, or hidden.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff the overlay is currently displayed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.vlcvideo.VLCVideo.media_overlay">
+<code class="descname">media_overlay</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.media_overlay" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/VBox.html#Gtk.VBox" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">VBox</span></code></a> that contains all the elements to be overlayed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.vlcvideo.VLCVideo.mouse_click">
+<code class="descname">mouse_click</code><span class="sig-paren">(</span><em>widget</em>, <em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.mouse_click"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.mouse_click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback to update the position of the video when the user moved the progress bar.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>widget</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Scale</span></code></a>) -- The range that was clicked</li>
+<li><strong>event</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gdk-3.0/classes/EventButton.html#Gdk.EventButton" title="(in Gdk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">EventButton</span></code></a>) -- The event corresponding to the mouse click release release</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.vlcvideo.VLCVideo.mouse_motion">
+<code class="descname">mouse_motion</code><span class="sig-paren">(</span><em>widget</em>, <em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.mouse_motion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.mouse_motion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback to update the position of the video when the user moved the progress bar.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>widget</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Scale</span></code></a>) -- The range that was clicked</li>
+<li><strong>event</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gdk-3.0/classes/EventButton.html#Gdk.EventButton" title="(in Gdk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">EventButton</span></code></a>) -- The event corresponding to the mouse click release release</li>
 </ul>
 </td>
 </tr>
@@ -3802,41 +3995,126 @@ is a vlc.MediaPlayer() instance.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pympress.vlcvideo.VLCVideo.overlay">
-<code class="descname">overlay</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.overlay" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pympress.vlcvideo.VLCVideo.movie_zone">
+<code class="descname">movie_zone</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.movie_zone" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/DrawingArea.html#Gtk.DrawingArea" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">DrawingArea</span></code></a> where the media is rendered.</p>
+</dd></dl>
 
-<dl class="method">
+<dl class="attribute">
+<dt id="pympress.vlcvideo.VLCVideo.parent">
+<code class="descname">parent</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Overlay.html#Gtk.Overlay" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Overlay</span></code></a> that is the parent of the VLCVideo widget.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pympress.vlcvideo.VLCVideo.play">
-<code class="descname">play</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.play"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.play" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start playing the media file.
-Bring the widget to the top of the overlays if necessary.</p>
+<code class="descname">play</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.play" title="Permalink to this definition">¶</a></dt>
+<dd><p>callback, to be connected to <a class="reference internal" href="#pympress.extras.Media.play" title="pympress.extras.Media.play"><code class="xref py py-meth docutils literal"><span class="pre">play()</span></code></a>, curryfied with the correct media_id</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.vlcvideo.VLCVideo.play_pause">
+<code class="descname">play_pause</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.play_pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>callback, to be connected to <a class="reference internal" href="#pympress.extras.Media.play_pause" title="pympress.extras.Media.play_pause"><code class="xref py py-meth docutils literal"><span class="pre">play_pause()</span></code></a>, curryfied with the correct media_id</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pympress.vlcvideo.VLCVideo.player">
 <code class="descname">player</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.player" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A <a class="reference external" href="https://www.olivieraubert.net/vlc/python-ctypes/doc/vlc.MediaPlayer-class.html" title="(in python-vlc 2.2 v2.2.0-git-14816-gda488a7751100)"><code class="xref py py-class docutils literal"><span class="pre">MediaPlayer</span></code></a> we got from the VLC module</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.vlcvideo.VLCVideo.progress">
+<code class="descname">progress</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.progress" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Scale</span></code></a> that is the progress bar in the controls toolbar - if we have one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.vlcvideo.VLCVideo.progress_moved">
+<code class="descname">progress_moved</code><span class="sig-paren">(</span><em>rng</em>, <em>sc</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.progress_moved"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.progress_moved" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback to update the position of the video when the user moved the progress bar.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rng</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Range.html#Gtk.Range" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Range</span></code></a>) -- The range corresponding to the scale whose position we are formatting</li>
+<li><strong>sc</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Scale</span></code></a>) -- The scale whose position we are updating</li>
+<li><strong>val</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">float</span></code></a>) -- The position of the <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Scale</span></code></a>, which is the number of milliseconds elapsed in the video</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="pympress.vlcvideo.VLCVideo.relative_margins">
 <code class="descname">relative_margins</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.relative_margins" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Poppler-0.18/classes/Rectangle.html#Poppler.Rectangle" title="(in Poppler 0.18 v0.18)"><code class="xref py py-class docutils literal"><span class="pre">Rectangle</span></code></a> containing the left/right/bottom/top space around the drawing area</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pympress.vlcvideo.VLCVideo.resize">
 <code class="descname">resize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.resize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.resize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Adjust the position and size of the media overlay.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pympress.vlcvideo.VLCVideo.set_file">
 <code class="descname">set_file</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.set_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.set_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the media file to be played bu the widget.</p>
+<dd><p>Sets the media file to be played by the widget.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filepath</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>) -- The path to the media file path</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.vlcvideo.VLCVideo.set_time">
+<code class="descname">set_time</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.set_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>callback, to be connected to <a class="reference internal" href="#pympress.extras.Media.set_time" title="pympress.extras.Media.set_time"><code class="xref py py-meth docutils literal"><span class="pre">set_time()</span></code></a>, curryfied with the correct media_id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.vlcvideo.VLCVideo.show">
+<code class="descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bring the widget to the top of the overlays if necessary.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.vlcvideo.VLCVideo.toolbar">
+<code class="descname">toolbar</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.toolbar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pympress.vlcvideo.VLCVideo.update_progress">
+<code class="descname">update_progress</code><span class="sig-paren">(</span><em>vlc_evt=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.update_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.update_progress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the toolbar slider to the current time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vlc_evt</strong> (<a class="reference external" href="https://www.olivieraubert.net/vlc/python-ctypes/doc/vlc.Event-class.html" title="(in python-vlc 2.2 v2.2.0-git-14816-gda488a7751100)"><code class="xref py py-class docutils literal"><span class="pre">Event</span></code></a>) -- The event that triggered the function call (if any)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.vlcvideo.VLCVideo.update_range">
+<code class="descname">update_range</code><span class="sig-paren">(</span><em>vlc_evt=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.update_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.update_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the toolbar slider size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vlc_evt</strong> (<a class="reference external" href="https://www.olivieraubert.net/vlc/python-ctypes/doc/vlc.Event-class.html" title="(in python-vlc 2.2 v2.2.0-git-14816-gda488a7751100)"><code class="xref py py-class docutils literal"><span class="pre">Event</span></code></a>) -- The event that triggered the function call (if any)</td>
 </tr>
 </tbody>
 </table>
@@ -3914,7 +4192,7 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-234-g9193ef3&#39;',
+            VERSION:'b&#39;0.6-242-gb240e7c&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
