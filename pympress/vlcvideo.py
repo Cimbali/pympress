@@ -46,6 +46,7 @@ import sys, os
 import vlc
 
 from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
+from pympress import builder
 
 vlc_opts=['--no-video-title-show']
 if IS_POSIX:
@@ -78,141 +79,244 @@ def get_window_handle(window):
     return gdkdll.gdk_win32_window_get_handle(drawingarea_gpointer)
 
 
-class VLCVideo(Gtk.VBox):
+class VLCVideo(builder.Builder):
     """ Simple VLC widget.
 
     Its player can be controlled through the 'player' attribute, which
     is a :class:`~vlc.MediaPlayer` instance.
 
     Args:
-        overlay (:class:`~Gtk.Overlay`): The overlay with the slide, at the top of which we add the movie area
+        container (:class:`~Gtk.Overlay`): The container with the slide, at the top of which we add the movie area
         show_controls (`bool`): whether to display controls on the video player
         relative_margins (:class:`~Poppler.Rectangle`): the margins defining the position of the video in the frame.
     """
     #: :class:`~Gtk.Overlay` that is the parent of the VLCVideo widget.
-    overlay = None
+    parent = None
+    #: :class:`~Gtk.VBox` that contains all the elements to be overlayed.
+    media_overlay = None
     #: A :class:`~vlc.MediaPlayer` we got from the VLC module
     player = None
+    # A :class:`~Gtk.HBox` containing a toolbar with buttons and `~progress` the progress bar
+    toolbar = None
+    #: :class:`~Gtk.Scale` that is the progress bar in the controls toolbar - if we have one.
+    progress = None
     #: :class:`~Gtk.DrawingArea` where the media is rendered.
     movie_zone = None
     #: :class:`~Poppler.Rectangle` containing the left/right/bottom/top space around the drawing area
     relative_margins = None
 
-    def __init__(self, overlay, show_controls, relative_margins):
+    def play(self, *args): GLib.idle_add(do_play, *args)
+    def hide(self, *args): GLib.idle_add(do_hide, *args)
+    def play_pause(self, *args): GLib.idle_add(do_play_pause, *args)
+    def set_time(self, *args): GLib.idle_add(do_set_time, *args)
+
+    #: `bool` that tracks whether the user is dragging the position
+    dragging_position = False
+    #: `bool` that tracks whether the playback was paused when the user started dragging the position
+    dragging_paused = False
+
+    def __init__(self, container, show_controls, relative_margins):
         super(VLCVideo, self).__init__()
 
-        self.overlay = overlay
+        self.parent = container
         self.relative_margins = relative_margins
-        self.movie_zone = Gtk.DrawingArea()
-        self.pack_start(self.movie_zone, True, True, 0)
+        self.player = instance.media_player_new() # before loading UI, needed to connect "map" signal
 
-        self.set_halign(Gtk.Align.FILL)
-        self.set_valign(Gtk.Align.FILL)
+        self.load_ui('vlcvideo')
+        self.toolbar.set_visible(show_controls)
+        self.connect_signals(self)
 
-        if show_controls:
-            self.pack_end(self.get_player_control_toolbar(), False, False, 0)
-
-        self.player = instance.media_player_new()
         event_manager = self.player.event_manager()
         event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.hide))
-
-        def handle_embed(*args):
-            # Do we need to be on the main thread? (especially for the mess from the win32 window handle)
-            #assert(isinstance(threading.current_thread(), threading._MainThread))
-            if sys.platform == 'win32':
-                self.player.set_hwnd(get_window_handle(self.movie_zone.get_window())) # get_property('window')
-            else:
-                self.player.set_xwindow(self.movie_zone.get_window().get_xid())
-            return True
-
-        self.connect('map', handle_embed)
-
-        self.movie_zone.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        self.movie_zone.connect('button-press-event', self.on_click)
+        event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged, self.update_range)
+        event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged, self.update_progress)
 
 
-    def get_player_control_toolbar(self):
-        """ Return a player control toolbar.
+    def handle_embed(self, mapped_widget):
+        """ Handler to embed the VLC player in the correct window, connected to the :attr:`~.Gtk.Widget.signals.map` signal
         """
-        tb = Gtk.Toolbar()
-        tb.set_style(Gtk.ToolbarStyle.ICONS)
-        tb.modify_bg(Gtk.StateType.NORMAL, Gdk.Color(0, 0, 0))
-        for text, tooltip, stock, callback in (
-            ('Play', 'Play', Gtk.STOCK_MEDIA_PLAY, lambda b: self.play()),
-            ('Pause', 'Pause', Gtk.STOCK_MEDIA_PAUSE, lambda b: self.play_pause()),
-            ('Stop', 'Stop', Gtk.STOCK_MEDIA_STOP, lambda b: GLib.idle_add(self.hide)),
-        ):
-            b=Gtk.ToolButton(stock)
-            b.set_tooltip_text(tooltip)
-            b.connect('clicked', callback)
-            tb.insert(b, -1)
-        return tb
+        # Do we need to be on the main thread? (especially for the mess from the win32 window handle)
+        #assert(isinstance(threading.current_thread(), threading._MainThread))
+        if sys.platform == 'win32':
+            self.player.set_hwnd(get_window_handle(self.movie_zone.get_window())) # get_property('window')
+        else:
+            self.player.set_xwindow(self.movie_zone.get_window().get_xid())
+        return False
+
+
+    def format_millis(self, sc, val):
+        """ Callback to format the current timestamp (in milliseconds) as minutes:seconds
+
+        Args:
+            sc (:class:`~Gtk.Scale`): The scale whose position we are formatting
+            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video
+        """
+        return '{:01}:{:02}'.format(*divmod(int(val // 1000), 60))
+
+
+    def progress_moved(self, rng, sc, val):
+        """ Callback to update the position of the video when the user moved the progress bar.
+
+        Args:
+            rng (:class:`~Gtk.Range`): The range corresponding to the scale whose position we are formatting
+            sc (:class:`~Gtk.Scale`): The scale whose position we are updating
+            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video
+        """
+        return self.set_time(int(val))
+
+
+    def mouse_click(self, widget, event):
+        """ Callback to update the position of the video when the user moved the progress bar.
+
+        Args:
+            widget (:class:`~Gtk.Scale`): The range that was clicked
+            event (:class:`~Gdk.EventButton`): The event corresponding to the mouse click release release
+        """
+        if not isinstance(event, Gdk.EventButton) or event.type not in (Gdk.EventType.BUTTON_PRESS, Gdk.EventType.BUTTON_RELEASE):
+            logger.warning('Unexpected widget or event type, expecting mouse release from Gtk.Scale: {}'.format((widget, event, event.type)))
+            return False
+
+        self.dragging_position = event.type == Gdk.EventType.BUTTON_PRESS
+
+        if self.dragging_position:
+            self.dragging_paused = self.player.is_playing()
+
+        if self.dragging_paused:
+            self.play_pause()
+
+        return True
+
+
+    def mouse_motion(self, widget, event):
+        """ Callback to update the position of the video when the user moved the progress bar.
+
+        Args:
+            widget (:class:`~Gtk.Scale`): The range that was clicked
+            event (:class:`~Gdk.EventButton`): The event corresponding to the mouse click release release
+        """
+        if not isinstance(event, Gdk.EventMotion):
+            logger.warning('Unexpected widget or event type, expecting mouse release from Gtk.Scale: {}'.format((widget, event, event.type)))
+            return False
+        elif not self.dragging_position:
+            return False
+
+        # get both ranges as (min, size) tuples of floats
+        pixel_range = (float(self.progress.get_range_rect().x), float(self.progress.get_range_rect().width))
+        time_range = (self.progress.get_adjustment().get_lower(), self.progress.get_adjustment().get_upper() - self.progress.get_adjustment().get_lower())
+
+        self.set_time(int((event.x - pixel_range[0]) * time_range[1] / pixel_range[1] + time_range[0]))
+        return True
 
 
     def resize(self):
-        parent = self.get_parent()
-        if not parent:
+        """ Adjust the position and size of the media overlay.
+        """
+        if not self.is_shown():
             return
-        pw, ph = parent.get_allocated_width(), parent.get_allocated_height()
-        self.props.margin_left   = pw * self.relative_margins.x1
-        self.props.margin_right  = pw * self.relative_margins.x2
-        self.props.margin_bottom = ph * self.relative_margins.y1
-        self.props.margin_top    = ph * self.relative_margins.y2
+
+        pw, ph = self.parent.get_allocated_width(), self.parent.get_allocated_height()
+        self.media_overlay.props.margin_left   = pw * self.relative_margins.x1
+        self.media_overlay.props.margin_right  = pw * self.relative_margins.x2
+        self.media_overlay.props.margin_bottom = ph * self.relative_margins.y1
+        self.media_overlay.props.margin_top    = ph * self.relative_margins.y2
+
+
+    def is_shown(self):
+        """ Returns whether the media overlay is currently added to the overlays, or hidden.
+
+        Returns:
+            `bool`: `True` iff the overlay is currently displayed.
+        """
+        return self.media_overlay.get_parent() is not None
 
 
     def set_file(self, filepath):
-        """ Sets the media file to be played bu the widget.
+        """ Sets the media file to be played by the widget.
 
         Args:
             filepath (`str`): The path to the media file path
         """
-        GLib.idle_add(self.player.set_media, instance.media_new(filepath))
+        self.player.set_media(instance.media_new(filepath))
 
 
-    def play_pause(self):
-        """ Toggle pause mode of the media.
+    def show(self):
+        """ Bring the widget to the top of the overlays if necessary.
         """
-        GLib.idle_add(lambda p: p.pause() if p.is_playing() else p.play(), self.player)
-
-
-    def play(self):
-        """ Start playing the media file.
-        Bring the widget to the top of the overlays if necessary.
-        """
-        self.movie_zone.show()
-        if not self.get_parent():
-            self.overlay.add_overlay(self)
-            self.overlay.reorder_overlay(self, 2)
-            self.set_halign(Gtk.Align.FILL)
-            self.set_valign(Gtk.Align.FILL)
+        if not self.media_overlay.get_parent():
+            self.parent.add_overlay(self.media_overlay)
+            self.parent.reorder_overlay(self.media_overlay, 2)
             self.resize()
-            self.overlay.show_all()
-        GLib.idle_add(self.player.play)
+            self.parent.queue_draw()
+        self.media_overlay.show()
 
 
-    def on_click(self, widget, event):
-        """ React to click events by playing or pausing the media.
-
-        Args:
-            widget (:class:`~Gtk.Widget`): the widget which has received the click.
-            event (:class:`~Gdk.Event`): the GTK event containing the position.
-        """
-        if not self.get_parent():
-            # How was this even clicked on?
-            return
-
-        if event.type == Gdk.EventType.BUTTON_PRESS:
-            self.play_pause()
-        elif event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
-            GLib.idle_add(self.player.set_time, 0) # in ms
-
-
-    def hide(self, *args):
+    def do_hide(self):
         """ Remove widget from overlays. Needs to be callded via GLib.idle_add
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
         """
         self.player.stop()
-        self.movie_zone.hide()
+        self.media_overlay.hide()
 
-        if self.get_parent():
-            self.overlay.remove(self)
+        if self.media_overlay.get_parent():
+            self.parent.remove(self.media_overlay)
+        return False
+
+
+    def update_range(self, vlc_evt = None):
+        """ Update the toolbar slider size.
+
+        Args:
+            vlc_evt (:class:`~vlc.Event`): The event that triggered the function call (if any)
+        """
+        maxval = self.player.get_length()
+        self.progress.set_range(0, maxval)
+        self.progress.set_increments(maxval / 1000., maxval / 10.)
+
+
+    def update_progress(self, vlc_evt = None):
+        """ Update the toolbar slider to the current time.
+
+        Args:
+            vlc_evt (:class:`~vlc.Event`): The event that triggered the function call (if any)
+        """
+        self.progress.set_value(self.player.get_time())
+        self.progress.queue_draw()
+
+
+    def do_play(self):
+        """ Start playing the media file.
+        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+        """
+        self.player.play()
+        return False
+
+
+    def do_play_pause(self):
+        """ Toggle pause mode of the media.
+        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+        """
+        self.player.pause() if self.player.is_playing() else self.player.play()
+
+
+    def do_set_time(self, t):
+        """ Set the player at time t.
+        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+
+        Args:
+            t (`int`): the timestamp, in ms
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+        """
+        self.player.set_time(t)
+        self.update_progress()
+        return False
 

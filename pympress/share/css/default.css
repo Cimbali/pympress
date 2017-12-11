@@ -19,6 +19,10 @@
     font-size: 16pt;
 }
 
+.toolbar {
+  background: @theme_base_color
+}
+
 #scribble_overlay {
   background: @theme_bg_color
 }
