@@ -118,6 +118,8 @@ class VLCVideo(builder.Builder):
     dragging_position = False
     #: `bool` that tracks whether the playback was paused when the user started dragging the position
     dragging_paused = False
+    #: Format of the video time, defaults to m:ss, changed to m:ss / m:ss when the max time is known
+    time_format = '{:01}:{:02}'
 
     def __init__(self, container, show_controls, relative_margins, callback_getter):
         super(VLCVideo, self).__init__()
@@ -160,7 +162,7 @@ class VLCVideo(builder.Builder):
             sc (:class:`~Gtk.Scale`): The scale whose position we are formatting
             val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video
         """
-        return '{:01}:{:02}'.format(*divmod(int(val // 1000), 60))
+        return self.time_format.format(*divmod(int(val // 1000), 60))
 
 
     def progress_moved(self, rng, sc, val):
@@ -282,6 +284,9 @@ class VLCVideo(builder.Builder):
         maxval = self.player.get_length()
         self.progress.set_range(0, maxval)
         self.progress.set_increments(maxval / 1000., maxval / 10.)
+
+        sec = round(maxval / 1000)
+        self.time_format = '{{:01}}:{{:02}} / {:01}:{:02}'.format(*divmod(sec, 60))
 
 
     def update_progress(self, vlc_evt = None):
