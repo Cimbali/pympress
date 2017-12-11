@@ -82,21 +82,24 @@ class VLCVideo(Gtk.VBox):
     """ Simple VLC widget.
 
     Its player can be controlled through the 'player' attribute, which
-    is a vlc.MediaPlayer() instance.
+    is a :class:`~vlc.MediaPlayer` instance.
 
     Args:
         overlay (:class:`~Gtk.Overlay`): The overlay with the slide, at the top of which we add the movie area
         show_controls (`bool`): whether to display controls on the video player
         relative_margins (:class:`~Poppler.Rectangle`): the margins defining the position of the video in the frame.
     """
-    player = None
+    #: :class:`~Gtk.Overlay` that is the parent of the VLCVideo widget.
     overlay = None
-    controls = None
+    #: A :class:`~vlc.MediaPlayer` we got from the VLC module
+    player = None
+    #: :class:`~Gtk.DrawingArea` where the media is rendered.
     movie_zone = None
+    #: :class:`~Poppler.Rectangle` containing the left/right/bottom/top space around the drawing area
     relative_margins = None
 
     def __init__(self, overlay, show_controls, relative_margins):
-        Gtk.VBox.__init__(self)
+        super(VLCVideo, self).__init__()
 
         self.overlay = overlay
         self.relative_margins = relative_margins

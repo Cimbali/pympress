@@ -149,7 +149,7 @@ class Builder(Gtk.Builder):
             object.connect(signal_name, handler, *user_data)
 
         except:
-            logger.critical('Impossible to connect signal {} from object {} to hander {}'.format(signal_name, object, handler_name), exc_info = True)
+            logger.critical('Impossible to connect signal {} from object {} to handler {}'.format(signal_name, object, handler_name), exc_info = True)
 
 
     def connect_signals(self, base_target):

@@ -55,6 +55,7 @@ class Annotations(object):
         Args:
             builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
         """
+        super(Annotations, self).__init__()
         builder.load_widgets(self)
 
         # wrap text
