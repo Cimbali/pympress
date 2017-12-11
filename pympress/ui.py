@@ -490,6 +490,7 @@ class UI(builder.Builder):
         self.cache.swap_document(self.doc)
         self.scribbler.cache.swap_document(self.doc)
         self.page_number.set_last(self.doc.pages_number())
+        self.medias.purge_media_overlays()
 
         # Draw the new page(s)
         self.talk_time.pause()

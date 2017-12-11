@@ -136,6 +136,20 @@ class Media(object):
         self.c_overlay.queue_draw()
 
 
+    def remove_media_overlays(self):
+        """ Remove current media overlays.
+        """
+        for media_id in self._media_overlays:
+            self._media_overlays[media_id].hide()
+
+
+    def purge_media_overlays(self):
+        """ Remove current media overlays.
+        """
+        self.remove_media_overlays()
+        self._media_overlays.clear()
+
+
     def replace_media_overlays(self, current_page):
         """ Remove current media overlays, add new ones if page contains media.
 
@@ -145,7 +159,7 @@ class Media(object):
         if not vlc_enabled:
             return
 
-        self.c_overlay.foreach(lambda child, *ignored: child.hide() if type(child) is vlcvideo.VLCVideo else None, None)
+        self.remove_media_overlays()
 
         pw, ph = current_page.get_size()
 
@@ -165,7 +179,8 @@ class Media(object):
         if not vlc_enabled:
             return
 
-        self.c_overlay.foreach(lambda child, *ignored: child.resize() if type(child) is vlcvideo.VLCVideo else None, None)
+        for media_id in self._media_overlays:
+            self._media_overlays[media_id].resize()
 
 
     def play(self, media_id):
