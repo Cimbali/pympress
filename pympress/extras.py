@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 import sys
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, Pango
+from gi.repository import Gtk, Gdk, GLib, Pango
 
 try:
     from pympress import vlcvideo
@@ -125,6 +125,8 @@ class Media(object):
 
     #: :class:`~Gtk.Overlay` for the Content window.
     c_overlay = None
+    #: :class:`~Gtk.Overlay` for the Presenter window.
+    p_overlay = None
 
     def __init__(self, builder):
         """ Set up the required widgets and queue an initial draw.
@@ -132,16 +134,18 @@ class Media(object):
         Args:
             builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
         """
+        super(Media, self).__init__()
         builder.load_widgets(self)
 
         self.c_overlay.queue_draw()
+        self.p_overlay.queue_draw()
 
 
     def remove_media_overlays(self):
         """ Remove current media overlays.
         """
         for media_id in self._media_overlays:
-            self._media_overlays[media_id].hide()
+            self.hide(media_id)
 
 
     def purge_media_overlays(self):
@@ -168,30 +172,72 @@ class Media(object):
             media_id = hash((relative_margins, filename, show_controls))
 
             if media_id not in self._media_overlays:
-                v_da = vlcvideo.VLCVideo(self.c_overlay, show_controls, relative_margins)
-                v_da.set_file(filename)
+                def get_curryfied_callback(name):
+                    return lambda *args: vlcvideo.VLCVideo.get_callback_handler(self, name)(media_id, *args)
 
-                self._media_overlays[media_id] = v_da
+                v_da_c = vlcvideo.VLCVideo(self.c_overlay, show_controls, relative_margins, get_curryfied_callback)
+                v_da_p = vlcvideo.VLCVideo(self.p_overlay, True, relative_margins, get_curryfied_callback)
+
+                v_da_c.set_file(filename)
+                v_da_p.set_file(filename)
+
+                self._media_overlays[media_id] = (v_da_c, v_da_p)
 
 
-    def resize(self):
-        """ Resize all media overlays that are a child of c_overlay
+    def resize(self, which = None):
+        """ Resize all media overlays that are a child of an overlay
         """
         if not vlc_enabled:
             return
 
+        needs_resizing = (which == 'content', which == 'presenter') if which is not None else (True, True)
         for media_id in self._media_overlays:
-            self._media_overlays[media_id].resize()
+            for widget in (w for w, r in zip(self._media_overlays[media_id], needs_resizing) if r and w.is_shown()):
+                widget.resize()
 
 
-    def play(self, media_id):
+    def play(self, media_id, button = None):
         """ Starts playing a media. Used as a callback.
 
         Args:
             media_id (`int`): A unique idientifier of the media to start playing
         """
         if media_id in self._media_overlays:
-            self._media_overlays[media_id].play()
+            c, p = self._media_overlays[media_id]
+            p.show()
+            c.show()
+            GLib.idle_add(lambda: any(p.do_play() for p in self._media_overlays[media_id]))
+
+
+    def hide(self, media_id, button = None):
+        """ Stops playing a media and hides the player. Used as a callback.
+
+        Args:
+            media_id (`int`): A unique idientifier of the media to start playing
+        """
+        for p in self._media_overlays[media_id]:
+            c, p = self._media_overlays[media_id]
+            if c.is_shown(): c.do_hide()
+            if p.is_shown(): p.do_hide()
+
+
+    def play_pause(self, media_id, button = None):
+        """ Toggles playing and pausing a media. Used as a callback.
+
+        Args:
+            media_id (`int`): A unique idientifier of the media to start playing
+        """
+        GLib.idle_add(lambda: any(p.do_play_pause() for p in self._media_overlays[media_id]))
+
+
+    def set_time(self, media_id, t, *args):
+        """ Set the player of a given media at time t. Used as a callback.
+
+        Args:
+            media_id (`int`): A unique idientifier of the media to start playing
+            t (`int`): the timestamp, in ms
+        """
+        GLib.idle_add(lambda: any(p.do_set_time(t) for p in self._media_overlays[media_id]))
 
 
     @staticmethod

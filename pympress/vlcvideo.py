@@ -105,17 +105,21 @@ class VLCVideo(builder.Builder):
     #: :class:`~Poppler.Rectangle` containing the left/right/bottom/top space around the drawing area
     relative_margins = None
 
-    def play(self, *args): GLib.idle_add(do_play, *args)
-    def hide(self, *args): GLib.idle_add(do_hide, *args)
-    def play_pause(self, *args): GLib.idle_add(do_play_pause, *args)
-    def set_time(self, *args): GLib.idle_add(do_set_time, *args)
+    #: callback, to be connected to :meth:`~pympress.extras.Media.play`, curryfied with the correct media_id
+    play = None
+    #: callback, to be connected to :meth:`~pympress.extras.Media.hide`, curryfied with the correct media_id
+    hide = None
+    #: callback, to be connected to :meth:`~pympress.extras.Media.play_pause`, curryfied with the correct media_id
+    play_pause = None
+    #: callback, to be connected to :meth:`~pympress.extras.Media.set_time`, curryfied with the correct media_id
+    set_time = None
 
     #: `bool` that tracks whether the user is dragging the position
     dragging_position = False
     #: `bool` that tracks whether the playback was paused when the user started dragging the position
     dragging_paused = False
 
-    def __init__(self, container, show_controls, relative_margins):
+    def __init__(self, container, show_controls, relative_margins, callback_getter):
         super(VLCVideo, self).__init__()
 
         self.parent = container
@@ -124,6 +128,11 @@ class VLCVideo(builder.Builder):
 
         self.load_ui('vlcvideo')
         self.toolbar.set_visible(show_controls)
+
+        self.play = callback_getter('play')
+        self.hide = callback_getter('hide')
+        self.play_pause = callback_getter('play_pause')
+        self.set_time = callback_getter('set_time')
         self.connect_signals(self)
 
         event_manager = self.player.event_manager()

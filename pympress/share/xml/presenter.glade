@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.20.1 -->
 <interface>
   <requires lib="gtk+" version="3.2"/>
   <object class="GtkSizeGroup" id="previews_sizegroup"/>
@@ -504,17 +504,29 @@
                             <property name="ratio">1.3300000429153442</property>
                             <property name="obey_child">False</property>
                             <child>
-                              <object class="GtkDrawingArea" id="p_da_cur">
-                                <property name="name">p_da_cur</property>
+                              <object class="GtkOverlay" id="p_overlay">
+                                <property name="name">p_overlay</property>
                                 <property name="visible">True</property>
-                                <property name="app_paintable">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
-                                <signal name="button-press-event" handler="track_clicks" swapped="no"/>
-                                <signal name="button-release-event" handler="track_clicks" swapped="no"/>
-                                <signal name="configure-event" handler="on_configure_da" swapped="no"/>
-                                <signal name="draw" handler="on_draw" swapped="no"/>
-                                <signal name="motion-notify-event" handler="track_motions" swapped="no"/>
+                                <property name="hexpand">True</property>
+                                <property name="vexpand">True</property>
+                                <child>
+                                  <object class="GtkDrawingArea" id="p_da_cur">
+                                    <property name="name">p_da_cur</property>
+                                    <property name="visible">True</property>
+                                    <property name="app_paintable">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
+                                    <signal name="button-press-event" handler="track_clicks" swapped="no"/>
+                                    <signal name="button-release-event" handler="track_clicks" swapped="no"/>
+                                    <signal name="configure-event" handler="on_configure_da" swapped="no"/>
+                                    <signal name="draw" handler="on_draw" swapped="no"/>
+                                    <signal name="motion-notify-event" handler="track_motions" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="index">-1</property>
+                                  </packing>
+                                </child>
                               </object>
                             </child>
                             <child type="label">

@@ -358,7 +358,9 @@ class UI(builder.Builder):
         self.cache.resize_widget(widget.get_name(), event.width, event.height)
 
         if widget is self.c_da:
-            self.medias.resize()
+            self.medias.resize('content')
+        elif widget is self.p_da_cur:
+            self.medias.resize('presenter')
 
 
     def on_configure_win(self, widget, event):
