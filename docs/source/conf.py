@@ -40,6 +40,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.coverage',
+    'sphinx.ext.doctest',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -140,9 +142,48 @@ pygments_style = 'sphinx'
 todo_include_todos = True
 
 
+def load_epydoc_as_intersphinx_v2(url):
+    import os.path, codecs, requests, tempfile
+
+    def guess_epydoc_role(name, uri):
+        if '#' in uri:
+            uri, fragment = uri.split('#')
+        else:
+            fragment = ''
+
+        # filenames in URI are name-module.html or name-class.html
+        base = os.path.splitext(uri)[0].split('-')[-1]
+
+        if not fragment:
+            return base
+        elif base == 'class':
+            # Is it a method or an attribute?
+            return 'any'
+        elif base == 'module':
+            # Is it a function or a global member?
+            return 'func'
+
+    objects_inv = []
+    with requests.get(url + 'api-objects.txt') as epy:
+        for name, uri in (l.strip().split() for l in epy.text.split('\n') if l.strip()):
+            role = guess_epydoc_role(name, uri)
+            objects_inv.append('{name} py:{role} 1 {uri} -'.format(name = name, role = role, uri = uri))
+
+    if objects_inv:
+        with tempfile.NamedTemporaryFile(mode = 'wb', delete = False) as translated:
+            translated.write('\n'.join(["# Sphinx inventory version 2",
+                "# Project: {} {}".format('python-vlc', '2.2'),
+                "# Version: {}".format('2.2.0-git-14816-gda488a7751100'),
+                "# The remainder of this file is compressed using zlib.", ""]).encode('ascii'))
+            translated.write(codecs.encode('\n'.join(objects_inv + [""]).encode('ascii'), 'zlib'))
+
+            filename = translated.name
+
+    return (url, filename)
+
+
 # Link to outside documentations
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.4', None),
     'Gtk': ('https://lazka.github.io/pgi-docs/Gtk-3.0', None),
     'Gdk': ('https://lazka.github.io/pgi-docs/Gdk-3.0', None),
     'GdkPixbuf': ('https://lazka.github.io/pgi-docs/GdkPixbuf-2.0', None),
@@ -153,6 +194,7 @@ intersphinx_mapping = {
     'GdkX11': ('https://lazka.github.io/pgi-docs/GdkX11-3.0', None),
     'python': ('https://docs.python.org/3.4', None),
     'cairo': ('https://www.cairographics.org/documentation/pycairo/3', None),
+    'vlc': load_epydoc_as_intersphinx_v2('https://www.olivieraubert.net/vlc/python-ctypes/doc/')
 }
 
 # -- Options for HTML output ----------------------------------------------
@@ -344,7 +386,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'pympress', u'pympress documentation', [u'Thomas Jost, Cimbali'], 1)
+    ('index', 'pympress', u'pympress documentation', [u'Thomas Jost, Cimbali'], 6)
 ]
 
 # If true, show URL addresses after external links.
