@@ -13,6 +13,8 @@
         <property name="name">movie_zone</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+        <signal name="button-press-event" handler="play_pause" swapped="no"/>
       </object>
       <packing>
         <property name="expand">True</property>

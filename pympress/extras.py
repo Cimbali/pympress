@@ -221,7 +221,7 @@ class Media(object):
             if p.is_shown(): p.do_hide()
 
 
-    def play_pause(self, media_id, button = None):
+    def play_pause(self, media_id, *args):
         """ Toggles playing and pausing a media. Used as a callback.
 
         Args:
