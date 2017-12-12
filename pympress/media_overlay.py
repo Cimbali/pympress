@@ -24,8 +24,8 @@
 #
 
 """
-:mod:`pympress.vlcvideo` -- widget to play videos with VLC backend
-------------------------------------------------------------------
+:mod:`pympress.media_overlay` -- widget to play videos with a backend like VLC
+------------------------------------------------------------------------------
 """
 
 from __future__ import print_function, unicode_literals
@@ -45,21 +45,10 @@ except:
 
 import ctypes
 import sys, os
-import vlc
 
 from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 from pympress import builder
 
-vlc_opts=['--no-video-title-show']
-if IS_POSIX:
-    vlc_opts.append('--no-xlib')
-
-if IS_WINDOWS and vlc.plugin_path:
-    # let python find the DLLs
-    os.environ['PATH'] = vlc.plugin_path + ';' + os.environ['PATH']
-
-#: A single vlc.Instance() to be shared by (possible) multiple players.
-instance = vlc.Instance(vlc_opts)
 
 def get_window_handle(window):
     """ Uses ctypes to call gdk_win32_window_get_handle which is not available
@@ -81,11 +70,8 @@ def get_window_handle(window):
     return gdkdll.gdk_win32_window_get_handle(drawingarea_gpointer)
 
 
-class VLCVideo(builder.Builder):
-    """ Simple VLC widget.
-
-    Its player can be controlled through the 'player' attribute, which
-    is a :class:`~vlc.MediaPlayer` instance.
+class VideoOverlay(builder.Builder):
+    """ Simple Video widget.
 
     Args:
         container (:class:`~Gtk.Overlay`): The container with the slide, at the top of which we add the movie area
@@ -96,8 +82,6 @@ class VLCVideo(builder.Builder):
     parent = None
     #: :class:`~Gtk.VBox` that contains all the elements to be overlayed.
     media_overlay = None
-    #: A :class:`~vlc.MediaPlayer` we got from the VLC module
-    player = None
     #: A :class:`~Gtk.HBox` containing a toolbar with buttons and :attr:`~progress` the progress bar
     toolbar = None
     #: :class:`~Gtk.Scale` that is the progress bar in the controls toolbar - if we have one.
@@ -125,14 +109,16 @@ class VLCVideo(builder.Builder):
     #: `int` holding the max time in ms
     maxval = 1
 
+    #: `type` of a class inheriting from :class:`~VideoOverlay`
+    _backend = None
+
     def __init__(self, container, show_controls, relative_margins, callback_getter):
-        super(VLCVideo, self).__init__()
+        super(VideoOverlay, self).__init__()
 
         self.parent = container
         self.relative_margins = relative_margins.copy()
-        self.player = instance.media_player_new() # before loading UI, needed to connect "map" signal
 
-        self.load_ui('vlcvideo')
+        self.load_ui('media_overlay')
         self.toolbar.set_visible(show_controls)
 
         self.progress.set_adjustment(Gtk.Adjustment(value = 0., lower = 0., upper = 1., step_increment=0.01))
@@ -143,12 +129,6 @@ class VLCVideo(builder.Builder):
         self.set_time = callback_getter('set_time')
         self.connect_signals(self)
 
-        event_manager = self.player.event_manager()
-        event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.hide))
-        event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged, self.update_range)
-        event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged, self.update_progress)
-        event_manager.event_attach(vlc.EventType.MediaPlayerPositionChanged, self.update_progress)
-
 
     def __def__(self):
         self.relative_margins.free()
@@ -156,25 +136,9 @@ class VLCVideo(builder.Builder):
 
 
     def handle_embed(self, mapped_widget):
-        """ Handler to embed the VLC player in the correct window, connected to the :func:`~.Gtk.Widget.signals.map` signal
+        """ Handler to embed the video player in the correct window, connected to the :attr:`~.Gtk.Widget.signals.map` signal
         """
-        # Do we need to be on the main thread? (especially for the mess from the win32 window handle)
-        #assert(isinstance(threading.current_thread(), threading._MainThread))
-        if sys.platform == 'win32':
-            self.player.set_hwnd(get_window_handle(self.movie_zone.get_window())) # get_property('window')
-        else:
-            self.player.set_xwindow(self.movie_zone.get_window().get_xid())
         return False
-
-
-    def format_millis(self, sc, pos):
-        """ Callback to format the current timestamp (in milliseconds) as minutes:seconds
-
-        Args:
-            sc (:class:`~Gtk.Scale`): The scale whose position we are formatting
-            pos (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video
-        """
-        return self.time_format.format(*divmod(int((self.maxval * pos) / 1000), 60))
 
 
     def progress_moved(self, rng, sc, val):
@@ -207,7 +171,7 @@ class VLCVideo(builder.Builder):
         self.dragging_position = event.type == Gdk.EventType.BUTTON_PRESS
 
         if self.dragging_position:
-            self.dragging_paused = self.player.is_playing()
+            self.dragging_paused = self.is_playing()
 
         return True
 
@@ -253,13 +217,28 @@ class VLCVideo(builder.Builder):
         return self.media_overlay.get_parent() is not None
 
 
+    def is_playing(self):
+        """ Returns whether the media is currently playing (and not paused).
+
+        Returns:
+            `bool`: `True` iff the media is playing.
+        """
+        raise NotImplementedError
+
+
+    def do_stop(self):
+        """ Stops playing in the backend player.
+        """
+        raise NotImplementedError
+
+
     def set_file(self, filepath):
         """ Sets the media file to be played by the widget.
 
         Args:
             filepath (`str`): The path to the media file path
         """
-        self.player.set_media(instance.media_new(filepath))
+        raise NotImplementedError
 
 
     def show(self):
@@ -279,12 +258,121 @@ class VLCVideo(builder.Builder):
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
-        self.player.stop()
+        self.do_stop()
         self.media_overlay.hide()
 
         if self.media_overlay.get_parent():
             self.parent.remove(self.media_overlay)
         return False
+
+
+    def do_play(self):
+        """ Start playing the media file.
+        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+        """
+        raise NotImplementedError
+
+
+    def do_play_pause(self):
+        """ Toggle pause mode of the media.
+        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+        """
+        raise NotImplementedError
+
+
+    def do_set_time(self, t):
+        """ Set the player at time t.
+        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+
+        Args:
+            t (`int`): the timestamp, in ms
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+        """
+        raise NotImplementedError
+
+
+    @classmethod
+    def factory(cls, *args):
+        """ Instantiates and returns a class of type :attr:`~_backend`
+        """
+        return cls._backend(*args)
+
+
+    @classmethod
+    def backend_version(cls):
+        """ Gets the used version of the backend
+        """
+        return cls._backend.version()
+
+
+class VLCVideo(VideoOverlay):
+    """ Simple VLC widget.
+
+    Its player can be controlled through the 'player' attribute, which is a :class:`~vlc.MediaPlayer` instance.
+    """
+
+    #: A single vlc.Instance() to be shared by (possible) multiple players.
+    _instance = None
+    #: A `str` indicating which backend this VideoOverlay uses, to which we will append the version
+    _version = 'VLC'
+
+    def __init__(self, *args, **kwargs):
+        self.player = self._instance.media_player_new() # before loading UI, needed to connect "map" signal
+
+        super(VLCVideo, self).__init__(*args, **kwargs)
+
+        event_manager = self.player.event_manager()
+        event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.hide))
+        event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged, self.update_range)
+        event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged, self.update_progress)
+
+
+    def format_millis(self, sc, val):
+        """ Callback to format the current timestamp (in milliseconds) as minutes:seconds
+
+        Args:
+            sc (:class:`~Gtk.Scale`): The scale whose position we are formatting
+            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video
+        """
+        return self.time_format.format(*divmod(int(val // 1000), 60))
+
+
+    def handle_embed(self, mapped_widget):
+        """ Handler to embed the VLC player in the correct window, connected to the :attr:`~.Gtk.Widget.signals.map` signal
+        """
+        # Do we need to be on the main thread? (especially for the mess from the win32 window handle)
+        #assert(isinstance(threading.current_thread(), threading._MainThread))
+        if sys.platform == 'win32':
+            self.player.set_hwnd(get_window_handle(self.movie_zone.get_window())) # get_property('window')
+        else:
+            self.player.set_xwindow(self.movie_zone.get_window().get_xid())
+        return False
+
+
+    def is_playing(self):
+        """ Returns whether the media is currently playing (and not paused).
+
+        Returns:
+            `bool`: `True` iff the media is playing.
+        """
+        return self.player.is_playing()
+
+
+    def set_file(self, filepath):
+        """ Sets the media file to be played by the widget.
+
+        Args:
+            filepath (`str`): The path to the media file path
+        """
+        self.player.set_media(self._instance.media_new(filepath))
 
 
     def update_range(self, vlc_evt = None):
@@ -298,7 +386,7 @@ class VLCVideo(builder.Builder):
         self.time_format = '{{:01}}:{{:02}} / {:01}:{:02}'.format(*divmod(sec, 60))
 
 
-    def update_progress(self, vlc_evt = None):
+    def update_progress(self, *args):
         """ Update the toolbar slider to the current time.
 
         Args:
@@ -336,6 +424,13 @@ class VLCVideo(builder.Builder):
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
         self.player.pause() if self.player.is_playing() else self.player.play()
+        return False
+
+
+    def do_stop(self):
+        """ Stops playing in the backend player.
+        """
+        self.player.stop()
 
 
     def do_set_time(self, t):
@@ -352,3 +447,26 @@ class VLCVideo(builder.Builder):
         self.update_progress()
         return False
 
+
+    @classmethod
+    def version(cls):
+        """ Gets the used version of the backend
+        """
+        return cls._version
+
+try:
+    import vlc
+
+    vlc_opts=['--no-video-title-show']
+    if IS_POSIX:
+        vlc_opts.append('--no-xlib')
+    elif IS_WINDOWS and vlc.plugin_path:
+        # let python find the DLLs
+        os.environ['PATH'] = vlc.plugin_path + ';' + os.environ['PATH']
+
+    VLCVideo._instance = vlc.Instance(vlc_opts)
+
+    VLCVideo._version += ' '+str(vlc.libvlc_get_version())
+    VideoOverlay._backend = VLCVideo
+except:
+    raise

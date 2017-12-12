@@ -36,11 +36,12 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib, Pango
 
 try:
-    from pympress import vlcvideo
-    vlc_enabled = True
+    from pympress import media_overlay
+    media_backend = media_overlay.VideoOverlay.backend_version()
 except Exception as e:
-    vlc_enabled = False
+    media_backend = None
     logger.exception(_("video support is disabled"))
+    raise
 
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
@@ -123,7 +124,7 @@ class Annotations(object):
 
 
 class Media(object):
-    #: `dict` of :class:`~pympress.vlcvideo.VLCVideo` ready to be added on top of the slides
+    #: `dict` of :class:`~pympress.media_overlay.VideoOverlay` ready to be added on top of the slides
     _media_overlays = {}
 
     #: :class:`~Gtk.Overlay` for the Content window.
@@ -165,7 +166,7 @@ class Media(object):
             current_page (:class:`~pympress.document.Page`): The page for twhich to prepare medias
             page_type (`int`): The page type: one of PDF_REGULAR, PDF_CONTENT_PAGE, or PDF_NOTES_PAGE
         """
-        if not vlc_enabled or page_type == PDF_NOTES_PAGE:
+        if not media_backend or page_type == PDF_NOTES_PAGE:
             return
 
         self.remove_media_overlays()
@@ -175,10 +176,10 @@ class Media(object):
 
             if media_id not in self._media_overlays:
                 def get_curryfied_callback(name):
-                    return lambda *args: vlcvideo.VLCVideo.find_callback_handler(self, name)(media_id, *args)
+                    return lambda *args: media_overlay.VideoOverlay.find_callback_handler(self, name)(media_id, *args)
 
-                v_da_c = vlcvideo.VLCVideo(self.c_overlay, show_controls, relative_margins, get_curryfied_callback)
-                v_da_p = vlcvideo.VLCVideo(self.p_overlay, True, relative_margins, get_curryfied_callback)
+                v_da_c = media_overlay.VLCVideo(self.c_overlay, show_controls, relative_margins, get_curryfied_callback)
+                v_da_p = media_overlay.VLCVideo(self.p_overlay, True, relative_margins, get_curryfied_callback)
 
                 if page_type == PDF_CONTENT_PAGE:
                     v_da_p.relative_margins.x2 = 2 * v_da_p.relative_margins.x2 - 1
@@ -198,7 +199,7 @@ class Media(object):
     def resize(self, which = None):
         """ Resize all media overlays that are a child of an overlay
         """
-        if not vlc_enabled:
+        if not media_backend:
             return
 
         needs_resizing = (which == 'content', which == 'presenter') if which is not None else (True, True)
@@ -216,7 +217,7 @@ class Media(object):
         Args:
             enable_notes (`bool`): Whether to enable note, thus transition from PDF_REGULAR to PDF_CONTENT_PAGE, or the opposite
         """
-        if not vlc_enabled:
+        if not media_backend:
             return
 
         if enable_notes:
@@ -276,13 +277,23 @@ class Media(object):
 
 
     @staticmethod
-    def vlc_support_enabled():
-        """ Check whether the VLC support is enabled or not.
+    def backend_version():
+        """ Returns which backend is used.
 
         Returns:
-            `bool`: whether vlc support is enabled
+            `str`: The name and version of the backend.
         """
-        return vlc_enabled
+        return media_backend
+
+
+    @staticmethod
+    def support_enabled():
+        """ Check whether the video support is enabled or not.
+
+        Returns:
+            `bool`: whether video support is enabled
+        """
+        return media_backend is not None
 
 
 class Cursor(object):
