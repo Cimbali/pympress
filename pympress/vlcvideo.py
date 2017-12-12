@@ -122,6 +122,8 @@ class VLCVideo(builder.Builder):
     dragging_paused = False
     #: Format of the video time, defaults to m:ss, changed to m:ss / m:ss when the max time is known
     time_format = '{:01}:{:02}'
+    #: `int` holding the max time in ms
+    maxval = 1
 
     def __init__(self, container, show_controls, relative_margins, callback_getter):
         super(VLCVideo, self).__init__()
@@ -133,6 +135,8 @@ class VLCVideo(builder.Builder):
         self.load_ui('vlcvideo')
         self.toolbar.set_visible(show_controls)
 
+        self.progress.set_adjustment(Gtk.Adjustment(0., 0., 1., .001, .01, .01))
+
         self.play = callback_getter('play')
         self.hide = callback_getter('hide')
         self.play_pause = callback_getter('play_pause')
@@ -143,6 +147,7 @@ class VLCVideo(builder.Builder):
         event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.hide))
         event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged, self.update_range)
         event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged, self.update_progress)
+        event_manager.event_attach(vlc.EventType.MediaPlayerPositionChanged, self.update_progress)
 
 
     def handle_embed(self, mapped_widget):
@@ -157,14 +162,14 @@ class VLCVideo(builder.Builder):
         return False
 
 
-    def format_millis(self, sc, val):
+    def format_millis(self, sc, pos):
         """ Callback to format the current timestamp (in milliseconds) as minutes:seconds
 
         Args:
             sc (:class:`~Gtk.Scale`): The scale whose position we are formatting
-            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video
+            pos (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video
         """
-        return self.time_format.format(*divmod(int(val // 1000), 60))
+        return self.time_format.format(*divmod(int((self.maxval * pos) / 1000), 60))
 
 
     def progress_moved(self, rng, sc, val):
@@ -215,9 +220,7 @@ class VLCVideo(builder.Builder):
 
         # get both ranges as (min, size) tuples of floats
         pixel_range = (float(self.progress.get_range_rect().x), float(self.progress.get_range_rect().width))
-        time_range = (self.progress.get_adjustment().get_lower(), self.progress.get_adjustment().get_upper() - self.progress.get_adjustment().get_lower())
-
-        self.set_time(int((event.x - pixel_range[0]) * time_range[1] / pixel_range[1] + time_range[0]))
+        self.player.set_position((event.x - pixel_range[0]) / pixel_range[1])
         return True
 
 
@@ -249,6 +252,7 @@ class VLCVideo(builder.Builder):
         Args:
             filepath (`str`): The path to the media file path
         """
+        print(filepath)
         self.player.set_media(instance.media_new(filepath))
 
 
@@ -283,12 +287,8 @@ class VLCVideo(builder.Builder):
         Args:
             vlc_evt (:class:`~vlc.Event`): The event that triggered the function call (if any)
         """
-        maxval = self.player.get_length()
-        self.progress.set_range(0, maxval)
-        self.progress.set_increments(maxval / 1000., maxval / 10.)
-
-        sec = round(maxval / 1000)
-        self.time_format = '{{:01}}:{{:02}} / {:01}:{:02}'.format(*divmod(sec, 60))
+        self.maxval = self.player.get_length() or 1.
+        self.time_format = '{{:01}}:{{:02}} / {:01}:{:02}'.format(*divmod(int(round(self.maxval / 1000)), 60))
 
 
     def update_progress(self, vlc_evt = None):
@@ -297,8 +297,7 @@ class VLCVideo(builder.Builder):
         Args:
             vlc_evt (:class:`~vlc.Event`): The event that triggered the function call (if any)
         """
-        self.progress.set_value(self.player.get_time())
-        self.progress.queue_draw()
+        self.progress.set_value(self.player.get_position())
 
 
     def do_play(self):
