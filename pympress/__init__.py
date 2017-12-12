@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 #       __init__.py
 #
 #       Copyright 2015 Cimbali <me@cimba.li>

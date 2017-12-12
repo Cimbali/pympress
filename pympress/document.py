@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 #       document.py
 #
 #       Copyright 2009, 2010 Thomas Jost <thomas.jost@gmail.com>
@@ -32,7 +34,7 @@ only rendering itself: the preparation of the target surface must be done
 elsewhere).
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import logging
 logger = logging.getLogger(__name__)

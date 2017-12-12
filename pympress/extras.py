@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 #       extras.py
 #
 #       Copyright 2017 Cimbali <me@cimba.li>
@@ -22,7 +24,7 @@
 -----------------------------------------------------------------------------------------------------
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import logging
 logger = logging.getLogger(__name__)
@@ -79,10 +81,8 @@ class Annotations(object):
         """
         list_annot = Gtk.ListStore(str)
 
-        bullet = b'\xe2\x97\x8f '.decode('utf-8') if sys.version_info > (3, 0) else '\xe2\x97\x8f '
-
         for annot in annotations:
-            list_annot.append((bullet + annot,))
+            list_annot.append(('● ' + annot,))
 
         self.scrollable_treelist.set_model(list_annot)
 

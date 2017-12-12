@@ -1,4 +1,6 @@
-#       generic_ui.py
+# -*- coding: utf-8 -*-
+#
+#       builder.py
 #
 #       Copyright 2017 Cimbali <me@cimba.li>
 #
@@ -26,7 +28,7 @@ building the widgets/objects from XML (glade) files, applying translation "manua
 to avoid dealing with all the mess of C/GNU gettext's bad portability.
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import logging
 logger = logging.getLogger(__name__)

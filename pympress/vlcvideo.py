@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 #       document.py
 #
 #       Copyright 2015 Cimbali <me@cimba.li>
@@ -26,7 +28,7 @@
 ------------------------------------------------------------------
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import logging
 logger = logging.getLogger(__name__)
