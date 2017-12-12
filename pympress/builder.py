@@ -82,8 +82,9 @@ class Builder(Gtk.Builder):
             Builder.__recursive_translate_widgets(a_widget.get_submenu())
 
 
-    def signal_resolver(self, attr_list):
-        """ Dynamically resolves a signal that is self.a.b.c() when attr_list is ['a', 'b', 'c'].
+    @staticmethod
+    def signal_resolver(target, attr_list):
+        """ Dynamically resolves a signal that is target.a.b.c() when attr_list is ['a', 'b', 'c'].
 
         This allows to specify multi-level signals in the XML files, instead of targeting everything at the main UI object.
 
@@ -97,18 +98,21 @@ class Builder(Gtk.Builder):
         Returns:
             function: The function to which we want to connect
         """
-        try:
-            target = self
-            for attr in attr_list:
+        top = target
+
+        for attr in attr_list:
+            try:
                 target = getattr(target, attr)
+            except AttributeError as e:
+                logger.error('Can not reach target of signal {}.{}()'.format(top, '.'.join(attr_list)), exc_info = True)
+                target = None
 
-            return target
-
-        except AttributeError as e:
-            logger.error('Can not reach target of signal {}.{}()'.format(self, '.'.join(attr_list)), exc_info = True)
+        return target
 
 
-    def get_callback_handler(self, handler_name):
+
+    @staticmethod
+    def find_callback_handler(target, handler_name):
         """ Returns the handler its name. Parse handler names and split on '.' to use some level of recursion.
 
         Args:
@@ -118,7 +122,7 @@ class Builder(Gtk.Builder):
             `function`: A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object
         """
         try:
-            return getattr(self, handler_name)
+            return getattr(target, handler_name)
 
         except AttributeError:
             attr_list =  handler_name.split('.')
@@ -127,11 +131,18 @@ class Builder(Gtk.Builder):
                 logger.error('Handler name not in target object. Expected "." but got: {}'.format(handler_name), exc_info = True)
                 raise
 
-            # Dynamically resolved handler for 'doc' (only) since self.doc may change
+            # Dynamically resolved handler for 'doc' (only) since target.doc may change
             if 'doc' in attr_list:
-                return lambda *args: Builder.signal_resolver(self, attr_list)(*args)
+                return lambda *args: Builder.signal_resolver(target, attr_list)(*args)
             else:
-                return  Builder.signal_resolver(self, attr_list)
+                return  Builder.signal_resolver(target, attr_list)
+
+
+    def get_callback_handler(self, handler_name):
+        """ Convenience non-static wrapper function for :func:`find_callback_handler` to serch in the builder object.
+
+        """ + Builder.find_callback_handler.__doc__
+        return self.find_callback_handler(self, handler_name)
 
 
     def signal_connector(self, builder, object, signal_name, handler_name, connect_object, flags, *user_data):

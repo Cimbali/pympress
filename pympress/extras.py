@@ -173,7 +173,7 @@ class Media(object):
 
             if media_id not in self._media_overlays:
                 def get_curryfied_callback(name):
-                    return lambda *args: vlcvideo.VLCVideo.get_callback_handler(self, name)(media_id, *args)
+                    return lambda *args: vlcvideo.VLCVideo.find_callback_handler(self, name)(media_id, *args)
 
                 v_da_c = vlcvideo.VLCVideo(self.c_overlay, show_controls, relative_margins, get_curryfied_callback)
                 v_da_p = vlcvideo.VLCVideo(self.p_overlay, True, relative_margins, get_curryfied_callback)
