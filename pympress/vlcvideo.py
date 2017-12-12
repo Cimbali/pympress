@@ -294,7 +294,8 @@ class VLCVideo(builder.Builder):
             vlc_evt (:class:`~vlc.Event`): The event that triggered the function call (if any)
         """
         self.maxval = self.player.get_length() or 1.
-        self.time_format = '{{:01}}:{{:02}} / {:01}:{:02}'.format(*divmod(int(round(self.maxval / 1000)), 60))
+        sec = round(self.maxval / 1000) if self.maxval > 500 else 1
+        self.time_format = '{{:01}}:{{:02}} / {:01}:{:02}'.format(*divmod(sec, 60))
 
 
     def update_progress(self, vlc_evt = None):
