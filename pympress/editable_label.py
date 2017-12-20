@@ -321,7 +321,7 @@ class EstimatedTalkTime(EditableLabel):
     stop_editing_page_number = lambda: None
 
 
-    def __init__(self, builder, ett):
+    def __init__(self, builder, ett = 0):
         """ Setup the talk time.
 
         Args:
@@ -332,10 +332,12 @@ class EstimatedTalkTime(EditableLabel):
 
         builder.load_widgets(self)
 
+        self.est_time = ett
         self.label_ett.set_text("{:02}:{:02}".format(*divmod(ett, 60)))
 
         self.shortcut_key = 'T'
         self.event_box = self.eb_ett
+
 
     def delayed_callback_connection(self, builder):
         """ Connect callbacks later than at init, due to circular dependencies.
@@ -345,6 +347,7 @@ class EstimatedTalkTime(EditableLabel):
             builder (builder.Builder): The builder from which to load widgets.
         """
         self.stop_editing_page_number = builder.get_callback_handler('page_number.stop_editing')
+
 
     def validate(self):
         """ Update estimated talk time from the input/
