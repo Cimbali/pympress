@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject
+from gi.repository import Gtk, Gdk, GLib
 import time
 
 from pympress import editable_label
@@ -51,6 +51,9 @@ class TimeLabelColorer(object):
     #: :class:`~Gdk.RGBA` The default color of the info labels
     label_color_default = None
 
+    #: :class:`~Gtk.CssProvider` affecting the style context of the labels
+    color_override = None
+
     #: `list` of tuples (`int`, :class:`~Gdk.RGBA`), which are the desired colors at the corresponding timestamps. Sorted on the timestamps.
     color_map = []
 
@@ -58,6 +61,8 @@ class TimeLabelColorer(object):
         self.label_time = label_time
 
         style_context = self.label_time.get_style_context()
+        self.color_override = Gtk.CssProvider()
+        style_context.add_provider(self.color_override, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION + 1)
 
         self.label_color_default = self.load_color_from_css(style_context)
         label_color_ett_reached = self.load_color_from_css(style_context, "ett-reached")
@@ -98,24 +103,7 @@ class TimeLabelColorer(object):
     def default_color(self):
         """ Forces to reset the default colors on the label.
         """
-        self.label_time.override_color(Gtk.StateType.NORMAL, self.label_color_default)
-
-
-    def calc_color(self, from_color, to_color, position):
-        """ Compute the interpolation between two colors.
-
-        Args:
-            from_color (:class:`~Gdk.RGBA`):  the color when position = 0
-            to_color (:class:`~Gdk.RGBA`):  the color when position = 1
-            position (`float`):  A value between 0 and 1 expressing how far from
-
-        Returns:
-            :class:`~Gdk.RGBA`: The color that is between from_color and to_color
-        """
-        color_tuple = lambda color: ( color.red, color.green, color.blue, color.alpha )
-        interpolate = lambda start, end: start + (end - start) * position
-
-        return Gdk.RGBA(*map(interpolate, color_tuple(from_color), color_tuple(to_color)))
+        self.color_override.load_from_data(''.encode('ascii'))
 
 
     def update_time_color(self, remaining):
@@ -142,9 +130,11 @@ class TimeLabelColorer(object):
 
         if prev_color:
             position = (remaining - prev_time) / (timestamp - prev_time)
-            color = self.calc_color(prev_color, color, position)
+            color_spec = '* {{color: mix({}, {}, {})}}'.format(prev_color.to_string(), color.to_string(), position)
+        else:
+            color_spec = '* {color: {}}'.format(color.to_string())
 
-        self.label_time.override_color(Gtk.StateType.NORMAL, color)
+        self.color_override.load_from_data(color_spec.encode('ascii'))
 
 
 class TimeCounter(object):
@@ -183,7 +173,7 @@ class TimeCounter(object):
         builder.load_widgets(self)
 
         # Setup timer for clocks
-        GObject.timeout_add(250, self.update_time)
+        GLib.timeout_add(250, self.update_time)
 
 
     def switch_pause(self, widget, event = None):

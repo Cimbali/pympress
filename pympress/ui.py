@@ -537,9 +537,9 @@ class UI(builder.Builder):
         """ Ask the user which file he means to open.
         """
         # Use a GTK file dialog to choose file
-        dialog = Gtk.FileChooserDialog(_('Open...'), self.p_win,
-                                       Gtk.FileChooserAction.OPEN,
-                                       (Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog = Gtk.FileChooserDialog(title = _('Open...'), transient_for = self.p_win,
+                                       action = Gtk.FileChooserAction.OPEN)
+        dialog.add_buttons(Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_position(Gtk.WindowPosition.CENTER)
 
@@ -571,8 +571,9 @@ class UI(builder.Builder):
             msg=_('Could not find the file "{}"').format(filename)
         else:
             msg=_('Error opening the file "{}"').format(filename)
-        dialog = Gtk.MessageDialog(self.p_win, Gtk.DialogFlags.MODAL,
-                                    Gtk.MessageType.ERROR, Gtk.ButtonsType.CLOSE, msg)
+        dialog = Gtk.MessageDialog(transient_for = self.p_win, flags = Gtk.DialogFlags.MODAL,
+                                    message_type = Gtk.MessageType.ERROR, message_format = msg)
+        dialog.add_buttons(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         dialog.set_position(Gtk.WindowPosition.CENTER)
         dialog.run()
         dialog.destroy()
@@ -1098,14 +1099,13 @@ class UI(builder.Builder):
         val = self.c_frame.get_property(prop)
 
         button = Gtk.SpinButton()
-        button.set_adjustment(Gtk.Adjustment(lower=0.0, upper=1.0, step_incr=0.01))
+        button.set_adjustment(Gtk.Adjustment(lower=0.0, upper=1.0, step_increment=0.01))
         button.set_digits(2)
         button.set_value(val)
         button.connect("value-changed", self.update_frame_position, prop)
 
-        popup = Gtk.Dialog(_("Adjust alignment of slides in projector screen"), self.p_win, 0,
-                (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                 Gtk.STOCK_OK, Gtk.ResponseType.OK))
+        popup = Gtk.Dialog(title = _("Adjust alignment of slides in projector screen"), transient_for = self.p_win)
+        popup.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK)
 
         box = popup.get_content_area()
         box.add(button)

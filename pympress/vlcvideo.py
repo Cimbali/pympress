@@ -135,7 +135,7 @@ class VLCVideo(builder.Builder):
         self.load_ui('vlcvideo')
         self.toolbar.set_visible(show_controls)
 
-        self.progress.set_adjustment(Gtk.Adjustment(0., 0., 1., .001, .01, .01))
+        self.progress.set_adjustment(Gtk.Adjustment(value = 0., lower = 0., upper = 1., step_increment=0.01))
 
         self.play = callback_getter('play')
         self.hide = callback_getter('hide')
