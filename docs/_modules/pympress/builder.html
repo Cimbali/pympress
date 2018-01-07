@@ -157,7 +157,9 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pympress.builder</h1><div class="highlight"><pre>
-<span></span><span class="c1">#       generic_ui.py</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       builder.py</span>
 <span class="c1">#</span>
 <span class="c1">#       Copyright 2017 Cimbali &lt;me@cimba.li&gt;</span>
 <span class="c1">#</span>
@@ -185,7 +187,7 @@
 <span class="sd">to avoid dealing with all the mess of C/GNU gettext&#39;s bad portability.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -239,8 +241,9 @@
             <span class="n">Builder</span><span class="o">.</span><span class="n">__recursive_translate_widgets</span><span class="p">(</span><span class="n">a_widget</span><span class="o">.</span><span class="n">get_submenu</span><span class="p">())</span>
 
 
-<div class="viewcode-block" id="Builder.signal_resolver"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.signal_resolver">[docs]</a>    <span class="k">def</span> <span class="nf">signal_resolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_list</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Dynamically resolves a signal that is self.a.b.c() when attr_list is [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;].</span>
+<div class="viewcode-block" id="Builder.signal_resolver"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.signal_resolver">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">signal_resolver</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">attr_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Dynamically resolves a signal that is target.a.b.c() when attr_list is [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;].</span>
 
 <span class="sd">        This allows to specify multi-level signals in the XML files, instead of targeting everything at the main UI object.</span>
 
@@ -254,18 +257,21 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            function: The function to which we want to connect</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span>
-            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attr_list</span><span class="p">:</span>
+        <span class="n">top</span> <span class="o">=</span> <span class="n">target</span>
+
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attr_list</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
                 <span class="n">target</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Can not reach target of signal </span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">()&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attr_list</span><span class="p">)),</span> <span class="n">exc_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>
 
-            <span class="k">return</span> <span class="n">target</span>
-
-        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Can not reach target of signal </span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">()&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attr_list</span><span class="p">)),</span> <span class="n">exc_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">target</span></div>
 
 
-<div class="viewcode-block" id="Builder.get_callback_handler"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.get_callback_handler">[docs]</a>    <span class="k">def</span> <span class="nf">get_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Builder.find_callback_handler"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.find_callback_handler">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">find_callback_handler</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the handler its name. Parse handler names and split on &#39;.&#39; to use some level of recursion.</span>
 
 <span class="sd">        Args:</span>
@@ -275,7 +281,7 @@
 <span class="sd">            `function`: A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="n">attr_list</span> <span class="o">=</span>  <span class="n">handler_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
@@ -284,11 +290,18 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Handler name not in target object. Expected &quot;.&quot; but got: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">handler_name</span><span class="p">),</span> <span class="n">exc_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
                 <span class="k">raise</span>
 
-            <span class="c1"># Dynamically resolved handler for &#39;doc&#39; (only) since self.doc may change</span>
+            <span class="c1"># Dynamically resolved handler for &#39;doc&#39; (only) since target.doc may change</span>
             <span class="k">if</span> <span class="s1">&#39;doc&#39;</span> <span class="ow">in</span> <span class="n">attr_list</span><span class="p">:</span>
-                <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Builder</span><span class="o">.</span><span class="n">signal_resolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_list</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Builder</span><span class="o">.</span><span class="n">signal_resolver</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">attr_list</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span>  <span class="n">Builder</span><span class="o">.</span><span class="n">signal_resolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_list</span><span class="p">)</span></div>
+                <span class="k">return</span>  <span class="n">Builder</span><span class="o">.</span><span class="n">signal_resolver</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">attr_list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Builder.get_callback_handler"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.get_callback_handler">[docs]</a>    <span class="k">def</span> <span class="nf">get_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Convenience non-static wrapper function for :func:`find_callback_handler` to serch in the builder object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span> <span class="o">+</span> <span class="n">Builder</span><span class="o">.</span><span class="n">find_callback_handler</span><span class="o">.</span><span class="vm">__doc__</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Builder.signal_connector"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.signal_connector">[docs]</a>    <span class="k">def</span> <span class="nf">signal_connector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">,</span> <span class="n">connect_object</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="o">*</span><span class="n">user_data</span><span class="p">):</span>
@@ -516,7 +529,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-242-gb240e7c&#39;',
+            VERSION:'b&#39;0.6-250-g2242582&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

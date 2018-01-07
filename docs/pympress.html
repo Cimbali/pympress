@@ -1704,11 +1704,6 @@ if one exists, <a class="reference external" href="https://docs.python.org/3.4/l
 </dd></dl>
 
 <dl class="function">
-<dt id="pympress.document.fileopen">
-<code class="descclassname">pympress.document.</code><code class="descname">fileopen</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pympress.document.fileopen" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="pympress.document.get_extension">
 <code class="descclassname">pympress.document.</code><code class="descname">get_extension</code><span class="sig-paren">(</span><em>mime_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#get_extension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.get_extension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a valid filename extension (recognized by python) for a given mime type.</p>
@@ -1751,9 +1746,9 @@ to avoid dealing with all the mess of C/GNU gettext's bad portability.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="pympress.builder.Builder.get_callback_handler">
-<code class="descname">get_callback_handler</code><span class="sig-paren">(</span><em>handler_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/builder.html#Builder.get_callback_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.builder.Builder.get_callback_handler" title="Permalink to this definition">¶</a></dt>
+<dl class="staticmethod">
+<dt id="pympress.builder.Builder.find_callback_handler">
+<em class="property">static </em><code class="descname">find_callback_handler</code><span class="sig-paren">(</span><em>target</em>, <em>handler_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/builder.html#Builder.find_callback_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.builder.Builder.find_callback_handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the handler its name. Parse handler names and split on '.' to use some level of recursion.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1768,6 +1763,11 @@ to avoid dealing with all the mess of C/GNU gettext's bad portability.</p>
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="method">
+<dt id="pympress.builder.Builder.get_callback_handler">
+<code class="descname">get_callback_handler</code><span class="sig-paren">(</span><em>handler_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/builder.html#Builder.get_callback_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.builder.Builder.get_callback_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pympress.builder.Builder.list_attributes">
@@ -1861,10 +1861,10 @@ This means that all attributes of target that are None at this time must exist u
 </table>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="pympress.builder.Builder.signal_resolver">
-<code class="descname">signal_resolver</code><span class="sig-paren">(</span><em>attr_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/builder.html#Builder.signal_resolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.builder.Builder.signal_resolver" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dynamically resolves a signal that is self.a.b.c() when attr_list is ['a', 'b', 'c'].</p>
+<em class="property">static </em><code class="descname">signal_resolver</code><span class="sig-paren">(</span><em>target</em>, <em>attr_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/builder.html#Builder.signal_resolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.builder.Builder.signal_resolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dynamically resolves a signal that is target.a.b.c() when attr_list is ['a', 'b', 'c'].</p>
 <p>This allows to specify multi-level signals in the XML files, instead of targeting everything at the main UI object.</p>
 <p>Also, resolving signals dynamically means the object properties of the top-level object can be replaced, and the signal
 will still connect to something meaningful. The downside is that this connection is done at runtime, thus probably less
@@ -1896,7 +1896,7 @@ Hence the prerendering isn't really done in parallel in another thread, but
 scheduled on the main thread at idle times using GLib.idle_add().</p>
 <dl class="class">
 <dt id="pympress.surfacecache.OrderedDict">
-<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.4/library/collections.html#collections.OrderedDict" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">collections.OrderedDict</span></code></a></p>
 <p>OrderedDict for python2 compatibility, adding move_to_end().</p>
 <dl class="method">
@@ -2586,7 +2586,7 @@ or <a class="reference internal" href="#pympress.ui.PDF_NOTES_PAGE" title="pympr
 
 <dl class="attribute">
 <dt id="pympress.pointer.Pointer.pointer">
-<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7f7ac59174c8 (GdkPixbuf at 0x556b4673db60)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pointer</code><em class="property"> = &lt;Pixbuf object at 0x7f3d438 (GdkPixbuf at 0x5ff3600)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/GdkPixbuf-2.0/classes/Pixbuf.html#GdkPixbuf.Pixbuf" title="(in GdkPixbuf 2.0 v2.0)"><code class="xref py py-class docutils literal"><span class="pre">Pixbuf</span></code></a> to read XML descriptions of GUIs and load them.</p>
 </dd></dl>
 
@@ -2798,7 +2798,7 @@ If it is an entry, then replace it with the label.</p>
 
 <dl class="class">
 <dt id="pympress.editable_label.EstimatedTalkTime">
-<em class="property">class </em><code class="descclassname">pympress.editable_label.</code><code class="descname">EstimatedTalkTime</code><span class="sig-paren">(</span><em>builder</em>, <em>ett</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#EstimatedTalkTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.editable_label.</code><code class="descname">EstimatedTalkTime</code><span class="sig-paren">(</span><em>builder</em>, <em>ett=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#EstimatedTalkTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pympress.editable_label.EditableLabel" title="pympress.editable_label.EditableLabel"><code class="xref py py-class docutils literal"><span class="pre">pympress.editable_label.EditableLabel</span></code></a></p>
 <dl class="method">
 <dt id="pympress.editable_label.EstimatedTalkTime.delayed_callback_connection">
@@ -2823,7 +2823,7 @@ Call this when the page_number module is initialized, but before needing the cal
 
 <dl class="attribute">
 <dt id="pympress.editable_label.EstimatedTalkTime.entry_ett">
-<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f7ac5927f30 (GtkEntry at 0x556b46874490)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
+<code class="descname">entry_ett</code><em class="property"> = &lt;Entry object at 0x7f8aab0 (GtkEntry at 0x59dd340)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Entry.html#Gtk.Entry" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Entry</span></code></a> used to set the estimated talk time.</p>
 </dd></dl>
 
@@ -3162,35 +3162,16 @@ Times are given in seconds. In between timestamps the color will interpolated li
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="pympress.talk_time.TimeLabelColorer.calc_color">
-<code class="descname">calc_color</code><span class="sig-paren">(</span><em>from_color</em>, <em>to_color</em>, <em>position</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/talk_time.html#TimeLabelColorer.calc_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.talk_time.TimeLabelColorer.calc_color" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the interpolation between two colors.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>from_color</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gdk-3.0/classes/RGBA.html#Gdk.RGBA" title="(in Gdk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">RGBA</span></code></a>) -- the color when position = 0</li>
-<li><strong>to_color</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gdk-3.0/classes/RGBA.html#Gdk.RGBA" title="(in Gdk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">RGBA</span></code></a>) -- the color when position = 1</li>
-<li><strong>position</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">float</span></code></a>) -- A value between 0 and 1 expressing how far from</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The color that is between from_color and to_color</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://lazka.github.io/pgi-docs/Gdk-3.0/classes/RGBA.html#Gdk.RGBA" title="(in Gdk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">RGBA</span></code></a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <dl class="attribute">
 <dt id="pympress.talk_time.TimeLabelColorer.color_map">
 <code class="descname">color_map</code><em class="property"> = []</em><a class="headerlink" href="#pympress.talk_time.TimeLabelColorer.color_map" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#list" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></a> of tuples (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>, <a class="reference external" href="https://lazka.github.io/pgi-docs/Gdk-3.0/classes/RGBA.html#Gdk.RGBA" title="(in Gdk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">RGBA</span></code></a>), which are the desired colors at the corresponding timestamps. Sorted on the timestamps.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.talk_time.TimeLabelColorer.color_override">
+<code class="descname">color_override</code><em class="property"> = None</em><a class="headerlink" href="#pympress.talk_time.TimeLabelColorer.color_override" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CssProvider.html#Gtk.CssProvider" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CssProvider</span></code></a> affecting the style context of the labels</p>
 </dd></dl>
 
 <dl class="method">
@@ -3292,7 +3273,7 @@ Times are given in seconds. In between timestamps the color will interpolated li
 
 <dl class="attribute">
 <dt id="pympress.config.Config.placeable_widgets">
-<code class="descname">placeable_widgets</code><em class="property"> = {'annotations', 'current', 'next', 'notes'}</em><a class="headerlink" href="#pympress.config.Config.placeable_widgets" title="Permalink to this definition">¶</a></dt>
+<code class="descname">placeable_widgets</code><em class="property"> = {'annotations', 'notes', 'current', 'next'}</em><a class="headerlink" href="#pympress.config.Config.placeable_widgets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set of strings that are the valid names of widgets from the presenter window that can be dynamically rearranged</p>
 </dd></dl>
 
@@ -3464,7 +3445,7 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 
 <dl class="attribute">
 <dt id="pympress.extras.Annotations.annotation_renderer">
-<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7f7ac58f9f30 (GtkCellRendererText at 0x556b46856110)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">annotation_renderer</code><em class="property"> = &lt;CellRendererText object at 0x7f004c8 (GtkCellRendererText at 0x60120f0)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CellRendererText.html#Gtk.CellRendererText" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CellRendererText</span></code></a> Text renderer for the annotations</p>
 </dd></dl>
 
@@ -3594,7 +3575,7 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 
 <dl class="method">
 <dt id="pympress.extras.Media.play_pause">
-<code class="descname">play_pause</code><span class="sig-paren">(</span><em>media_id</em>, <em>button=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.play_pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.play_pause" title="Permalink to this definition">¶</a></dt>
+<code class="descname">play_pause</code><span class="sig-paren">(</span><em>media_id</em>, <em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.play_pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.play_pause" title="Permalink to this definition">¶</a></dt>
 <dd><p>Toggles playing and pausing a media. Used as a callback.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -3908,7 +3889,7 @@ Should run on the main thread to ensure we avoid vlc plugins' reentrency problem
 
 <dl class="method">
 <dt id="pympress.vlcvideo.VLCVideo.format_millis">
-<code class="descname">format_millis</code><span class="sig-paren">(</span><em>sc</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.format_millis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.format_millis" title="Permalink to this definition">¶</a></dt>
+<code class="descname">format_millis</code><span class="sig-paren">(</span><em>sc</em>, <em>pos</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.format_millis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.format_millis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback to format the current timestamp (in milliseconds) as minutes:seconds</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -3916,7 +3897,7 @@ Should run on the main thread to ensure we avoid vlc plugins' reentrency problem
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>sc</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Scale</span></code></a>) -- The scale whose position we are formatting</li>
-<li><strong>val</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">float</span></code></a>) -- The position of the <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Scale</span></code></a>, which is the number of milliseconds elapsed in the video</li>
+<li><strong>pos</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">float</span></code></a>) -- The position of the <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Scale</span></code></a>, which is the number of milliseconds elapsed in the video</li>
 </ul>
 </td>
 </tr>
@@ -3950,6 +3931,12 @@ Should run on the main thread to ensure we avoid vlc plugins' reentrency problem
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.vlcvideo.VLCVideo.maxval">
+<code class="descname">maxval</code><em class="property"> = 1</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.maxval" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a> holding the max time in ms</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -4088,6 +4075,12 @@ Should run on the main thread to ensure we avoid vlc plugins' reentrency problem
 </dd></dl>
 
 <dl class="attribute">
+<dt id="pympress.vlcvideo.VLCVideo.time_format">
+<code class="descname">time_format</code><em class="property"> = '{:01}:{:02}'</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.time_format" title="Permalink to this definition">¶</a></dt>
+<dd><p><a href="#id1"><span class="problematic" id="id2">**</span></a>Format of the video time, defaults to m* -- ss, changed to m* -- ss / m:ss when the max time is known</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pympress.vlcvideo.VLCVideo.toolbar">
 <code class="descname">toolbar</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.toolbar" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -4192,7 +4185,7 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-242-gb240e7c&#39;',
+            VERSION:'b&#39;0.6-250-g2242582&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -157,7 +157,9 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pympress.extras</h1><div class="highlight"><pre>
-<span></span><span class="c1">#       extras.py</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       extras.py</span>
 <span class="c1">#</span>
 <span class="c1">#       Copyright 2017 Cimbali &lt;me@cimba.li&gt;</span>
 <span class="c1">#</span>
@@ -181,7 +183,7 @@
 <span class="sd">-----------------------------------------------------------------------------------------------------</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -238,10 +240,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">list_annot</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
-        <span class="n">bullet</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\xe2\x97\x8f</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="se">\xe2\x97\x8f</span><span class="s1"> &#39;</span>
-
         <span class="k">for</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
-            <span class="n">list_annot</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">bullet</span> <span class="o">+</span> <span class="n">annot</span><span class="p">,))</span>
+            <span class="n">list_annot</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;● &#39;</span> <span class="o">+</span> <span class="n">annot</span><span class="p">,))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">scrollable_treelist</span><span class="o">.</span><span class="n">set_model</span><span class="p">(</span><span class="n">list_annot</span><span class="p">)</span></div>
 
@@ -332,7 +332,7 @@
 
             <span class="k">if</span> <span class="n">media_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
                 <span class="k">def</span> <span class="nf">get_curryfied_callback</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="n">media_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span><span class="o">.</span><span class="n">find_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="n">media_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
                 <span class="n">v_da_c</span> <span class="o">=</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">get_curryfied_callback</span><span class="p">)</span>
                 <span class="n">v_da_p</span> <span class="o">=</span> <span class="n">vlcvideo</span><span class="o">.</span><span class="n">VLCVideo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_overlay</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">get_curryfied_callback</span><span class="p">)</span>
@@ -380,7 +380,7 @@
             <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_shown</span><span class="p">():</span> <span class="n">p</span><span class="o">.</span><span class="n">do_hide</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Media.play_pause"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.play_pause">[docs]</a>    <span class="k">def</span> <span class="nf">play_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">,</span> <span class="n">button</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Media.play_pause"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.play_pause">[docs]</a>    <span class="k">def</span> <span class="nf">play_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Toggles playing and pausing a media. Used as a callback.</span>
 
 <span class="sd">        Args:</span>
@@ -465,7 +465,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-242-gb240e7c&#39;',
+            VERSION:'b&#39;0.6-250-g2242582&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

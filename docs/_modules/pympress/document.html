@@ -157,7 +157,9 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pympress.document</h1><div class="highlight"><pre>
-<span></span><span class="c1">#       document.py</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       document.py</span>
 <span class="c1">#</span>
 <span class="c1">#       Copyright 2009, 2010 Thomas Jost &lt;thomas.jost@gmail.com&gt;</span>
 <span class="c1">#       Copyright 2015 Cimbali &lt;me@cimba.li&gt;</span>
@@ -191,7 +193,7 @@
 <span class="sd">elsewhere).</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -1018,7 +1020,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-242-gb240e7c&#39;',
+            VERSION:'b&#39;0.6-250-g2242582&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

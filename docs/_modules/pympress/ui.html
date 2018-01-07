@@ -157,7 +157,9 @@
            <div itemprop="articleBody">
             
   <h1>Source code for pympress.ui</h1><div class="highlight"><pre>
-<span></span><span class="c1">#       ui.py</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1">#       ui.py</span>
 <span class="c1">#</span>
 <span class="c1">#       Copyright 2010 Thomas Jost &lt;thomas.jost@gmail.com&gt;</span>
 <span class="c1">#       Copyright 2015 Cimbali &lt;me@cimba.li&gt;</span>
@@ -189,7 +191,7 @@
 <span class="sd">Both windows are managed by the :class:`~pympress.ui.UI` class.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -694,9 +696,9 @@
         <span class="sd">&quot;&quot;&quot; Ask the user which file he means to open.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Use a GTK file dialog to choose file</span>
-        <span class="n">dialog</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserDialog</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Open...&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">,</span>
-                                       <span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserAction</span><span class="o">.</span><span class="n">OPEN</span><span class="p">,</span>
-                                       <span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_OPEN</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">))</span>
+        <span class="n">dialog</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserDialog</span><span class="p">(</span><span class="n">title</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Open...&#39;</span><span class="p">),</span> <span class="n">transient_for</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">,</span>
+                                       <span class="n">action</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">FileChooserAction</span><span class="o">.</span><span class="n">OPEN</span><span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">add_buttons</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_OPEN</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">)</span>
         <span class="n">dialog</span><span class="o">.</span><span class="n">set_default_response</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">)</span>
         <span class="n">dialog</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">WindowPosition</span><span class="o">.</span><span class="n">CENTER</span><span class="p">)</span>
 
@@ -728,8 +730,9 @@
             <span class="n">msg</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Could not find the file &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">msg</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Error opening the file &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-        <span class="n">dialog</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">DialogFlags</span><span class="o">.</span><span class="n">MODAL</span><span class="p">,</span>
-                                    <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageType</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ButtonsType</span><span class="o">.</span><span class="n">CLOSE</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="n">dialog</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageDialog</span><span class="p">(</span><span class="n">transient_for</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">,</span> <span class="n">flags</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">DialogFlags</span><span class="o">.</span><span class="n">MODAL</span><span class="p">,</span>
+                                    <span class="n">message_type</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">MessageType</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">message_format</span> <span class="o">=</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="n">dialog</span><span class="o">.</span><span class="n">add_buttons</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_CLOSE</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">CLOSE</span><span class="p">)</span>
         <span class="n">dialog</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">WindowPosition</span><span class="o">.</span><span class="n">CENTER</span><span class="p">)</span>
         <span class="n">dialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
         <span class="n">dialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
@@ -1255,14 +1258,13 @@
         <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_frame</span><span class="o">.</span><span class="n">get_property</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
 
         <span class="n">button</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">SpinButton</span><span class="p">()</span>
-        <span class="n">button</span><span class="o">.</span><span class="n">set_adjustment</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Adjustment</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">step_incr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">))</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">set_adjustment</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Adjustment</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">step_increment</span><span class="o">=</span><span class="mf">0.01</span><span class="p">))</span>
         <span class="n">button</span><span class="o">.</span><span class="n">set_digits</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="n">button</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
         <span class="n">button</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;value-changed&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_frame_position</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span>
 
-        <span class="n">popup</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Dialog</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Adjust alignment of slides in projector screen&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_CANCEL</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">CANCEL</span><span class="p">,</span>
-                 <span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_OK</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">))</span>
+        <span class="n">popup</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Dialog</span><span class="p">(</span><span class="n">title</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Adjust alignment of slides in projector screen&quot;</span><span class="p">),</span> <span class="n">transient_for</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">)</span>
+        <span class="n">popup</span><span class="o">.</span><span class="n">add_buttons</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_CANCEL</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">CANCEL</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_OK</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">)</span>
 
         <span class="n">box</span> <span class="o">=</span> <span class="n">popup</span><span class="o">.</span><span class="n">get_content_area</span><span class="p">()</span>
         <span class="n">box</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">button</span><span class="p">)</span>
@@ -1470,7 +1472,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-242-gb240e7c&#39;',
+            VERSION:'b&#39;0.6-250-g2242582&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
