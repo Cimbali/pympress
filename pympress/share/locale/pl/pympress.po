@@ -38,9 +38,8 @@ msgstr "Duże przyciski"
 msgid "Clock"
 msgstr "Zegar"
 
-#, fuzzy
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Ostrzeżenie: okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnego ekranu!"
+msgstr "okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnego ekranu!"
 
 msgid "Content blanked"
 msgstr "Puste okno treści"
@@ -51,20 +50,17 @@ msgstr "Okno treści w trybie pełnego ekranu"
 msgid "Contributors:"
 msgstr "Współpracownicy:"
 
-#, fuzzy
 msgid "Could not disable DPMS screen blanking: got status "
-msgstr "Ostrzeżenie: nie można wyłączyć wygaszania ekranu DPMS: otrzymany status "
+msgstr "nie można wyłączyć wygaszania ekranu DPMS: otrzymany status "
 
-#, fuzzy
 msgid "Could not enable DPMS screen blanking: got status "
-msgstr "Ostrzeżenie: nie można włączyć wygaszania ekranu DPMS: otrzymany status "
+msgstr "nie można włączyć wygaszania ekranu DPMS: otrzymany status "
 
 msgid "Could not find the file \"{}\""
 msgstr "Nie mogę znaleźć pliku \"{}\""
 
-#, fuzzy
 msgid "Could not set screensaver status: got status "
-msgstr "Ostrzeżenie: nie można ustawić stanu wygaszacza ekranu: otrzymany status "
+msgstr "nie można ustawić stanu wygaszacza ekranu: otrzymany status "
 
 msgid "Current slide"
 msgstr "Bieżący slajd"
@@ -191,9 +187,8 @@ msgstr "Nie mogę uruchomić w trybie pełnego ekranu, nieznanego widżetu {}, p
 msgid "Unknown event {}"
 msgstr "Nieznane zdarzenie {}"
 
-#, fuzzy
 msgid "Unsupported OS: can't enable/disable screensaver"
-msgstr "Ostrzeżenie: nieobsługiwany system operacyjny: nie można włączyć/wyłączyć wygaszacza ekranu"
+msgstr "Nieobsługiwany system operacyjny: nie można włączyć/wyłączyć wygaszacza ekranu"
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Sposób użycia: {} [opcje] <plik_z_prezentacją>"
@@ -234,7 +229,6 @@ msgstr "_Adnotacje"
 msgid "_Blank screen"
 msgstr "_Pusty ekran"
 
-#, fuzzy
 msgid "_Blue"
 msgstr "_Niebieski"
 
@@ -304,13 +298,11 @@ msgstr "_Konfiguracja startowa"
 msgid "_Swap screens"
 msgstr "_Zamień ekrany"
 
-#, fuzzy
 msgid "access denied when trying to access screen saver settings in registry!"
-msgstr "Błąd: odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"
+msgstr "odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"
 
-#, fuzzy
 msgid "no action defined for this link!"
-msgstr "BŁĄÐ nie określono działania dla tego odnośnika!"
+msgstr "nie określono działania dla tego odnośnika!"
 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress jest małym czytnikiem PDF napisanym w Pythonie, używającym Popplera do renderowania plików PDF oraz GTK do tworzenia GUI.\n"
@@ -318,9 +310,8 @@ msgstr "pympress jest małym czytnikiem PDF napisanym w Pythonie, używającym P
 msgid "pympress presenter"
 msgstr "Okno presentera Pympress"
 
-#, fuzzy
 msgid "video support is disabled"
-msgstr "Ostrzeżenie: wyłączona obsługa wideo"
+msgstr "wyłączona obsługa wideo"
 
 msgid "{}, {}, {}, {}, or {}"
 msgstr "{}, {}, {}, {} lub {}"

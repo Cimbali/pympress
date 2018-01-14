@@ -21,5 +21,5 @@ for t in $translated; do
 done
 
 # then after updating translations:
-# (cd `dirname $t` && msgfmt pympress.po -o LC_MESSAGES/pympress.mo )
+# (cd `dirname $t` && msgfmt pympress.po -fo LC_MESSAGES/pympress.mo )
 

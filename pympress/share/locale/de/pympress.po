@@ -39,9 +39,8 @@ msgstr "Große Buttons"
 msgid "Clock"
 msgstr "Uhr"
 
-#, fuzzy
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Warnung: Inhalts- und Präsentator-Fenster dürfen beim Start im Vollbild-Modus nicht auf dem gleichen Monitor sein!"
+msgstr "Inhalts- und Präsentator-Fenster dürfen beim Start im Vollbild-Modus nicht auf dem gleichen Monitor sein!"
 
 msgid "Content blanked"
 msgstr "Inhaltsanzeige deaktiviert"
@@ -52,20 +51,17 @@ msgstr "Vollbildanzeige"
 msgid "Contributors:"
 msgstr "Beitragende:"
 
-#, fuzzy
 msgid "Could not disable DPMS screen blanking: got status "
-msgstr "Warnung: DPMS-Deaktivierung des Bildschirms kann nicht abgeschaltet werden: Status"
+msgstr "DPMS-Deaktivierung des Bildschirms kann nicht abgeschaltet werden: Status"
 
-#, fuzzy
 msgid "Could not enable DPMS screen blanking: got status "
-msgstr "Warnung: DPMS-Deaktivierung des Bildschirms kann nicht eingeschaltet werden: Status"
+msgstr "DPMS-Deaktivierung des Bildschirms kann nicht eingeschaltet werden: Status"
 
 msgid "Could not find the file \"{}\""
 msgstr "Die Datei \"{}\" konnte nicht gefunden werden"
 
-#, fuzzy
 msgid "Could not set screensaver status: got status "
-msgstr "Warnung: Bildschirmschoner-Status kann nicht gesetzt werden: Status"
+msgstr "Bildschirmschoner-Status kann nicht gesetzt werden: Status"
 
 msgid "Current slide"
 msgstr "Aktuelle Folie"
@@ -79,9 +75,8 @@ msgstr "FEHLER Für diesen Link ist keine Aktion definiert!"
 msgid "Error loading icon for about window"
 msgstr "Fehler beim Laden des Icons für das \"Über\"-Fenster"
 
-#, fuzzy
 msgid "Error opening the file \"{}\""
-msgstr "Die Datei \"{}\" konnte nicht gefunden werden"
+msgstr "Die Datei \"{}\" konnte nicht geöffnet werden"
 
 msgid "Error: access denied when trying to access screen saver settings in registry!"
 msgstr "Fehler: Zugriff auf die Bildschirmschoner-Einstellungen der Register nicht erlaubt!"
@@ -137,9 +132,8 @@ msgstr "Vollbild für Präsentator"
 msgid "Pympress Content"
 msgstr "Pympress-Inhalt"
 
-#, fuzzy
 msgid "Pympress can not extract attached file"
-msgstr "Pympress kann eingebettete Medien nicht extrahieren"
+msgstr "Pympress kann eingebettete Datei nicht extrahieren"
 
 msgid "Pympress can not extract embedded media"
 msgstr "Pympress kann eingebettete Medien nicht extrahieren"
@@ -192,9 +186,8 @@ msgstr "Unbekanntes Widget {} für das Vollbild, Abbruch."
 msgid "Unknown event {}"
 msgstr "Unbekanntes Event {}"
 
-#, fuzzy
 msgid "Unsupported OS: can't enable/disable screensaver"
-msgstr "Warnung: Nicht unterstütztes OS: Bildschirmschoner kann nicht aktiviert/deaktiviert werden"
+msgstr "Nicht unterstütztes OS: Bildschirmschoner kann nicht aktiviert/deaktiviert werden"
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Verwendung: {} [optionen] <Präsentationsdatei>"
@@ -235,9 +228,8 @@ msgstr "_Anmerkungen"
 msgid "_Blank screen"
 msgstr "_Leerer Bildschirm"
 
-#, fuzzy
 msgid "_Blue"
-msgstr "_Datei"
+msgstr "_Blau"
 
 msgid "_Close File"
 msgstr "Datei _schließen"
@@ -305,13 +297,11 @@ msgstr "_Startkonfiguration"
 msgid "_Swap screens"
 msgstr "Bildschirme _tauschen"
 
-#, fuzzy
 msgid "access denied when trying to access screen saver settings in registry!"
-msgstr "Fehler: Zugriff auf die Bildschirmschoner-Einstellungen der Register nicht erlaubt!"
+msgstr "Zugriff auf die Bildschirmschoner-Einstellungen der Register nicht erlaubt!"
 
-#, fuzzy
 msgid "no action defined for this link!"
-msgstr "FEHLER Für diesen Link ist keine Aktion definiert!"
+msgstr "für diesen Link ist keine Aktion definiert!"
 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress ist ein kleiner PDF-Reader, geschrieben in Python unter Verwendung von Poppler für die PDF-Anzeige und GTK für die GUI.\n"
@@ -319,9 +309,8 @@ msgstr "pympress ist ein kleiner PDF-Reader, geschrieben in Python unter Verwend
 msgid "pympress presenter"
 msgstr "pympress Präsentationen"
 
-#, fuzzy
 msgid "video support is disabled"
-msgstr "Warnung: Videounterstützung ist deaktiviert"
+msgstr "Videounterstützung ist deaktiviert"
 
 msgid "{}, {}, {}, {}, or {}"
 msgstr ""

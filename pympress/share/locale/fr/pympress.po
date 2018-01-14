@@ -124,7 +124,6 @@ msgstr "Présenteur en plein écran"
 msgid "Pympress Content"
 msgstr "Pympress Contenu"
 
-#, fuzzy
 msgid "Pympress can not extract attached file"
 msgstr "Pympress ne peut extraire le média intégré"
 
@@ -179,9 +178,8 @@ msgstr "Élement visuel {} inconnu à mettre en plein écran, abandonnée."
 msgid "Unknown event {}"
 msgstr "Évément inconnu {}"
 
-#, fuzzy
 msgid "Unsupported OS: can't enable/disable screensaver"
-msgstr "Attention: Système d'exploitation non pris en charge: impossible d'activer/désactiver l'économiseur d'écran"
+msgstr "Système d'exploitation non pris en charge: impossible d'activer/désactiver l'économiseur d'écran"
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Usage: {} [options] <fichier de présentation>"
@@ -291,13 +289,11 @@ msgstr "Configuration de démarrage"
 msgid "_Swap screens"
 msgstr "Échanger les écran_s"
 
-#, fuzzy
 msgid "access denied when trying to access screen saver settings in registry!"
-msgstr "Erreur: accès refusé lors de la modification des paramètres d'économiseur d'écran dans le registre !"
+msgstr "accès refusé lors de la modification des paramètres d'économiseur d'écran dans le registre !"
 
-#, fuzzy
 msgid "no action defined for this link!"
-msgstr "ERREUR pas d'action définie pour ce lien !"
+msgstr "pas d'action définie pour ce lien !"
 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress est un lecteur de PDF léger écrit en Python, utilisant Poppler pour afficher les PDF et GTK pour l'interface graphique.\n"
@@ -305,9 +301,8 @@ msgstr "pympress est un lecteur de PDF léger écrit en Python, utilisant Popple
 msgid "pympress presenter"
 msgstr "pympress présenteur"
 
-#, fuzzy
 msgid "video support is disabled"
-msgstr "Attention: la prise en charge vidéo est désactivée"
+msgstr "la prise en charge vidéo est désactivée"
 
 msgid "{}, {}, {}, {}, or {}"
 msgstr "{}, {}, {}, {}, ou {}"
