@@ -132,7 +132,7 @@ class TimeLabelColorer(object):
             position = (remaining - prev_time) / (timestamp - prev_time)
             color_spec = '* {{color: mix({}, {}, {})}}'.format(prev_color.to_string(), color.to_string(), position)
         else:
-            color_spec = '* {color: {}}'.format(color.to_string())
+            color_spec = '* {{color: {}}}'.format(color.to_string())
 
         self.color_override.load_from_data(color_spec.encode('ascii'))
 
