@@ -113,10 +113,11 @@ class Builder(Gtk.Builder):
 
     @staticmethod
     def find_callback_handler(target, handler_name):
-        """ Returns the handler its name. Parse handler names and split on '.' to use some level of recursion.
+        """ Returns the handler from its name, searching in target. Parse handler names and split on '.' to use recursion.
 
         Args:
-            handler_name (`str`): The name of the function to be connected to the signal
+            target (`object`): An object that has a method called `handler_name`
+            handler_name (`str`): The name of the function to be connected to a signal
 
         Returns:
             `function`: A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object
@@ -139,9 +140,15 @@ class Builder(Gtk.Builder):
 
 
     def get_callback_handler(self, handler_name):
-        """ Convenience non-static wrapper function for :func:`find_callback_handler` to serch in the builder object.
+        """ Convenience non-static wrapper function for :func:`find_callback_handler` to search in the builder object.
+        The `handler_name` function must be a method of this builder (realistically, a method of an inherited UI class' instance).
 
-        """ + Builder.find_callback_handler.__doc__
+        Args:
+            handler_name (`str`): The name of the function to be connected to a signal
+
+        Returns:
+            `function`: A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object
+        """
         return self.find_callback_handler(self, handler_name)
 
 

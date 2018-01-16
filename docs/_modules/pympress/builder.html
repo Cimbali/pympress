@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.0
+		v1.1.2
 	</div>
 
 	
@@ -272,10 +272,11 @@
 
 <div class="viewcode-block" id="Builder.find_callback_handler"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.find_callback_handler">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">find_callback_handler</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the handler its name. Parse handler names and split on &#39;.&#39; to use some level of recursion.</span>
+        <span class="sd">&quot;&quot;&quot; Returns the handler from its name, searching in target. Parse handler names and split on &#39;.&#39; to use recursion.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            handler_name (`str`): The name of the function to be connected to the signal</span>
+<span class="sd">            target (`object`): An object that has a method called `handler_name`</span>
+<span class="sd">            handler_name (`str`): The name of the function to be connected to a signal</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            `function`: A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object</span>
@@ -298,9 +299,15 @@
 
 
 <div class="viewcode-block" id="Builder.get_callback_handler"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.get_callback_handler">[docs]</a>    <span class="k">def</span> <span class="nf">get_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Convenience non-static wrapper function for :func:`find_callback_handler` to serch in the builder object.</span>
+        <span class="sd">&quot;&quot;&quot; Convenience non-static wrapper function for :func:`find_callback_handler` to search in the builder object.</span>
+<span class="sd">        The `handler_name` function must be a method of this builder (realistically, a method of an inherited UI class&#39; instance).</span>
 
-<span class="sd">        &quot;&quot;&quot;</span> <span class="o">+</span> <span class="n">Builder</span><span class="o">.</span><span class="n">find_callback_handler</span><span class="o">.</span><span class="vm">__doc__</span>
+<span class="sd">        Args:</span>
+<span class="sd">            handler_name (`str`): The name of the function to be connected to a signal</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `function`: A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler_name</span><span class="p">)</span></div>
 
 
@@ -529,7 +536,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-250-g2242582&#39;',
+            VERSION:'b&#39;0.6-254-g5c52a70&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

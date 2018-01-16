@@ -75,7 +75,7 @@ class SurfaceCache(object):
     surface_cache = {}
 
     #: `dict` containing functions that return a :class:`~cairo.Surface` given a :class:`~cairo.Context`, width `int` and height `int`
-    #: see :func:`~cairo.Surface.create_similar`
+    #: see :meth:`~cairo.Surface.create_similar`
     surface_factory = {}
 
     #: Size of the different managed widgets, as a `dict` of tuples
@@ -88,14 +88,13 @@ class SurfaceCache(object):
     surface_type = {}
 
     #: Dictionary of :class:`~threading.Lock` used for managing conccurent
-    #: accesses to :attr:`surface_cache`, :attr:`surface_size`, and :attr:`jobs`.
+    #: accesses to :attr:`surface_cache` and :attr:`surface_size`
     locks = {}
 
     #: The current :class:`~pympress.document.Document`.
     doc = None
 
-    #: :class:`~threading.Lock` used to manage conccurent accesses to
-    #: :attr:`doc`.
+    #: :class:`~threading.Lock` used to manage conccurent accesses to :attr:`doc`.
     doc_lock = None
 
     #: Set of active widgets

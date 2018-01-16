@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.0
+		v1.1.2
 	</div>
 
 	
@@ -234,7 +234,7 @@
     <span class="n">surface_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1">#: `dict` containing functions that return a :class:`~cairo.Surface` given a :class:`~cairo.Context`, width `int` and height `int`</span>
-    <span class="c1">#: see :func:`~cairo.Surface.create_similar`</span>
+    <span class="c1">#: see :meth:`~cairo.Surface.create_similar`</span>
     <span class="n">surface_factory</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1">#: Size of the different managed widgets, as a `dict` of tuples</span>
@@ -247,14 +247,13 @@
     <span class="n">surface_type</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1">#: Dictionary of :class:`~threading.Lock` used for managing conccurent</span>
-    <span class="c1">#: accesses to :attr:`surface_cache`, :attr:`surface_size`, and :attr:`jobs`.</span>
+    <span class="c1">#: accesses to :attr:`surface_cache` and :attr:`surface_size`</span>
     <span class="n">locks</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1">#: The current :class:`~pympress.document.Document`.</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="c1">#: :class:`~threading.Lock` used to manage conccurent accesses to</span>
-    <span class="c1">#: :attr:`doc`.</span>
+    <span class="c1">#: :class:`~threading.Lock` used to manage conccurent accesses to :attr:`doc`.</span>
     <span class="n">doc_lock</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1">#: Set of active widgets</span>
@@ -510,7 +509,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-250-g2242582&#39;',
+            VERSION:'b&#39;0.6-254-g5c52a70&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

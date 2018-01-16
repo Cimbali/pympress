@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.0
+		v1.1.2
 	</div>
 
 	
@@ -291,7 +291,7 @@
             <span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="n">remaining</span> <span class="o">-</span> <span class="n">prev_time</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">timestamp</span> <span class="o">-</span> <span class="n">prev_time</span><span class="p">)</span>
             <span class="n">color_spec</span> <span class="o">=</span> <span class="s1">&#39;* {{color: mix(</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">)}}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prev_color</span><span class="o">.</span><span class="n">to_string</span><span class="p">(),</span> <span class="n">color</span><span class="o">.</span><span class="n">to_string</span><span class="p">(),</span> <span class="n">position</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">color_spec</span> <span class="o">=</span> <span class="s1">&#39;* {color: </span><span class="si">{}</span><span class="s1">}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">color</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
+            <span class="n">color_spec</span> <span class="o">=</span> <span class="s1">&#39;* {{color: </span><span class="si">{}</span><span class="s1">}}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">color</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">color_override</span><span class="o">.</span><span class="n">load_from_data</span><span class="p">(</span><span class="n">color_spec</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">))</span></div></div>
 
@@ -455,7 +455,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-250-g2242582&#39;',
+            VERSION:'b&#39;0.6-254-g5c52a70&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

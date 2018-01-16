@@ -98,7 +98,7 @@ class VLCVideo(builder.Builder):
     media_overlay = None
     #: A :class:`~vlc.MediaPlayer` we got from the VLC module
     player = None
-    # A :class:`~Gtk.HBox` containing a toolbar with buttons and `~progress` the progress bar
+    #: A :class:`~Gtk.HBox` containing a toolbar with buttons and :attr:`~progress` the progress bar
     toolbar = None
     #: :class:`~Gtk.Scale` that is the progress bar in the controls toolbar - if we have one.
     progress = None
@@ -151,7 +151,7 @@ class VLCVideo(builder.Builder):
 
 
     def handle_embed(self, mapped_widget):
-        """ Handler to embed the VLC player in the correct window, connected to the :attr:`~.Gtk.Widget.signals.map` signal
+        """ Handler to embed the VLC player in the correct window, connected to the :func:`~.Gtk.Widget.signals.map` signal
         """
         # Do we need to be on the main thread? (especially for the mess from the win32 window handle)
         #assert(isinstance(threading.current_thread(), threading._MainThread))
@@ -271,7 +271,7 @@ class VLCVideo(builder.Builder):
         """ Remove widget from overlays. Needs to be callded via GLib.idle_add
 
         Returns:
-            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
         self.player.stop()
         self.media_overlay.hide()
@@ -305,7 +305,7 @@ class VLCVideo(builder.Builder):
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Returns:
-            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
         self.player.play()
         return False
@@ -316,7 +316,7 @@ class VLCVideo(builder.Builder):
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Returns:
-            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
         self.player.pause() if self.player.is_playing() else self.player.play()
 
@@ -329,7 +329,7 @@ class VLCVideo(builder.Builder):
             t (`int`): the timestamp, in ms
 
         Returns:
-            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
         self.player.set_time(t)
         self.update_progress()

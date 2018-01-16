@@ -57,7 +57,7 @@
 	<br />
 	<a href="index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.0
+		v1.1.2
 	</div>
 
 	
@@ -1704,6 +1704,11 @@ if one exists, <a class="reference external" href="https://docs.python.org/3.4/l
 </dd></dl>
 
 <dl class="function">
+<dt id="pympress.document.fileopen">
+<code class="descclassname">pympress.document.</code><code class="descname">fileopen</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pympress.document.fileopen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="pympress.document.get_extension">
 <code class="descclassname">pympress.document.</code><code class="descname">get_extension</code><span class="sig-paren">(</span><em>mime_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#get_extension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.get_extension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a valid filename extension (recognized by python) for a given mime type.</p>
@@ -1749,16 +1754,22 @@ to avoid dealing with all the mess of C/GNU gettext's bad portability.</p>
 <dl class="staticmethod">
 <dt id="pympress.builder.Builder.find_callback_handler">
 <em class="property">static </em><code class="descname">find_callback_handler</code><span class="sig-paren">(</span><em>target</em>, <em>handler_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/builder.html#Builder.find_callback_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.builder.Builder.find_callback_handler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the handler its name. Parse handler names and split on '.' to use some level of recursion.</p>
+<dd><p>Returns the handler from its name, searching in target. Parse handler names and split on '.' to use recursion.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>handler_name</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>) -- The name of the function to be connected to the signal</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>target</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#object" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">object</span></code></a>) -- An object that has a method called <code class="xref py py-obj docutils literal"><span class="pre">handler_name</span></code></li>
+<li><strong>handler_name</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>) -- The name of the function to be connected to a signal</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-obj docutils literal"><span class="pre">function</span></code></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-obj docutils literal"><span class="pre">function</span></code></p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1767,7 +1778,21 @@ to avoid dealing with all the mess of C/GNU gettext's bad portability.</p>
 <dl class="method">
 <dt id="pympress.builder.Builder.get_callback_handler">
 <code class="descname">get_callback_handler</code><span class="sig-paren">(</span><em>handler_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/builder.html#Builder.get_callback_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.builder.Builder.get_callback_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convenience non-static wrapper function for <a class="reference internal" href="#pympress.builder.Builder.find_callback_handler" title="pympress.builder.Builder.find_callback_handler"><code class="xref py py-func docutils literal"><span class="pre">find_callback_handler()</span></code></a> to search in the builder object.
+The <code class="xref py py-obj docutils literal"><span class="pre">handler_name</span></code> function must be a method of this builder (realistically, a method of an inherited UI class' instance).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>handler_name</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>) -- The name of the function to be connected to a signal</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-obj docutils literal"><span class="pre">function</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="pympress.builder.Builder.list_attributes">
@@ -1896,7 +1921,7 @@ Hence the prerendering isn't really done in parallel in another thread, but
 scheduled on the main thread at idle times using GLib.idle_add().</p>
 <dl class="class">
 <dt id="pympress.surfacecache.OrderedDict">
-<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.surfacecache.</code><code class="descname">OrderedDict</code><a class="reference internal" href="_modules/pympress/surfacecache.html#OrderedDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.surfacecache.OrderedDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.4/library/collections.html#collections.OrderedDict" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">collections.OrderedDict</span></code></a></p>
 <p>OrderedDict for python2 compatibility, adding move_to_end().</p>
 <dl class="method">
@@ -1973,8 +1998,7 @@ structures, and creates a new thread for prerendering pages for this widget.</p>
 <dl class="attribute">
 <dt id="pympress.surfacecache.SurfaceCache.doc_lock">
 <code class="descname">doc_lock</code><em class="property"> = None</em><a class="headerlink" href="#pympress.surfacecache.SurfaceCache.doc_lock" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/threading.html#threading.Lock" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">Lock</span></code></a> used to manage conccurent accesses to
-<a class="reference internal" href="#pympress.surfacecache.SurfaceCache.doc" title="pympress.surfacecache.SurfaceCache.doc"><code class="xref py py-attr docutils literal"><span class="pre">doc</span></code></a>.</p>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/threading.html#threading.Lock" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">Lock</span></code></a> used to manage conccurent accesses to <a class="reference internal" href="#pympress.surfacecache.SurfaceCache.doc" title="pympress.surfacecache.SurfaceCache.doc"><code class="xref py py-attr docutils literal"><span class="pre">doc</span></code></a>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2037,7 +2061,7 @@ structures, and creates a new thread for prerendering pages for this widget.</p>
 <dt id="pympress.surfacecache.SurfaceCache.locks">
 <code class="descname">locks</code><em class="property"> = {}</em><a class="headerlink" href="#pympress.surfacecache.SurfaceCache.locks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dictionary of <a class="reference external" href="https://docs.python.org/3.4/library/threading.html#threading.Lock" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">Lock</span></code></a> used for managing conccurent
-accesses to <a class="reference internal" href="#pympress.surfacecache.SurfaceCache.surface_cache" title="pympress.surfacecache.SurfaceCache.surface_cache"><code class="xref py py-attr docutils literal"><span class="pre">surface_cache</span></code></a>, <a class="reference internal" href="#pympress.surfacecache.SurfaceCache.surface_size" title="pympress.surfacecache.SurfaceCache.surface_size"><code class="xref py py-attr docutils literal"><span class="pre">surface_size</span></code></a>, and <code class="xref py py-attr docutils literal"><span class="pre">jobs</span></code>.</p>
+accesses to <a class="reference internal" href="#pympress.surfacecache.SurfaceCache.surface_cache" title="pympress.surfacecache.SurfaceCache.surface_cache"><code class="xref py py-attr docutils literal"><span class="pre">surface_cache</span></code></a> and <a class="reference internal" href="#pympress.surfacecache.SurfaceCache.surface_size" title="pympress.surfacecache.SurfaceCache.surface_size"><code class="xref py py-attr docutils literal"><span class="pre">surface_size</span></code></a></p>
 </dd></dl>
 
 <dl class="attribute">
@@ -2157,7 +2181,7 @@ popped from the start of the cache.</p>
 <dt id="pympress.surfacecache.SurfaceCache.surface_factory">
 <code class="descname">surface_factory</code><em class="property"> = {}</em><a class="headerlink" href="#pympress.surfacecache.SurfaceCache.surface_factory" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">dict</span></code></a> containing functions that return a <a class="reference external" href="https://www.cairographics.org/documentation/pycairo/3/reference/surfaces.html#cairo.Surface" title="(in Pycairo v1.10)"><code class="xref py py-class docutils literal"><span class="pre">Surface</span></code></a> given a <a class="reference external" href="https://www.cairographics.org/documentation/pycairo/3/reference/context.html#cairo.Context" title="(in Pycairo v1.10)"><code class="xref py py-class docutils literal"><span class="pre">Context</span></code></a>, width <a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a> and height <a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>
-see <code class="xref py py-func docutils literal"><span class="pre">create_similar()</span></code></p>
+see <a class="reference external" href="https://www.cairographics.org/documentation/pycairo/3/reference/surfaces.html#cairo.Surface.create_similar" title="(in Pycairo v1.10)"><code class="xref py py-meth docutils literal"><span class="pre">create_similar()</span></code></a></p>
 </dd></dl>
 
 <dl class="attribute">
@@ -2586,7 +2610,7 @@ or <a class="reference internal" href="#pympress.ui.PDF_NOTES_PAGE" title="pympr
 
 <dl class="attribute">
 <dt id="pympress.pointer.Pointer.pointer">
-<code class="descname">pointer</code><em class="property"> = &lt;Pixbuf object at 0x7f3d438 (GdkPixbuf at 0x5ff3600)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7f9c722aa048 (GdkPixbuf at 0x55c3e86d0400)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/GdkPixbuf-2.0/classes/Pixbuf.html#GdkPixbuf.Pixbuf" title="(in GdkPixbuf 2.0 v2.0)"><code class="xref py py-class docutils literal"><span class="pre">Pixbuf</span></code></a> to read XML descriptions of GUIs and load them.</p>
 </dd></dl>
 
@@ -2823,7 +2847,7 @@ Call this when the page_number module is initialized, but before needing the cal
 
 <dl class="attribute">
 <dt id="pympress.editable_label.EstimatedTalkTime.entry_ett">
-<code class="descname">entry_ett</code><em class="property"> = &lt;Entry object at 0x7f8aab0 (GtkEntry at 0x59dd340)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
+<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f9c722b76c0 (GtkEntry at 0x55c3e880c490)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Entry.html#Gtk.Entry" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">Entry</span></code></a> used to set the estimated talk time.</p>
 </dd></dl>
 
@@ -3273,7 +3297,7 @@ Times are given in seconds. In between timestamps the color will interpolated li
 
 <dl class="attribute">
 <dt id="pympress.config.Config.placeable_widgets">
-<code class="descname">placeable_widgets</code><em class="property"> = {'annotations', 'notes', 'current', 'next'}</em><a class="headerlink" href="#pympress.config.Config.placeable_widgets" title="Permalink to this definition">¶</a></dt>
+<code class="descname">placeable_widgets</code><em class="property"> = {'next', 'annotations', 'current', 'notes'}</em><a class="headerlink" href="#pympress.config.Config.placeable_widgets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set of strings that are the valid names of widgets from the presenter window that can be dynamically rearranged</p>
 </dd></dl>
 
@@ -3445,7 +3469,7 @@ Raises NameError in python3 as 'unicode' is undefined</p>
 
 <dl class="attribute">
 <dt id="pympress.extras.Annotations.annotation_renderer">
-<code class="descname">annotation_renderer</code><em class="property"> = &lt;CellRendererText object at 0x7f004c8 (GtkCellRendererText at 0x60120f0)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7f9c72a8bee8 (GtkCellRendererText at 0x55c3e87ee110)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CellRendererText.html#Gtk.CellRendererText" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">CellRendererText</span></code></a> Text renderer for the annotations</p>
 </dd></dl>
 
@@ -3814,7 +3838,7 @@ is a <a class="reference external" href="https://www.olivieraubert.net/vlc/pytho
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<code class="xref py py-meth docutils literal"><span class="pre">idle_add()</span></code> convention)</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<a class="reference external" href="https://lazka.github.io/pgi-docs/GLib-2.0/functions.html#GLib.idle_add" title="(in GLib 2.0 v2.0)"><code class="xref py py-func docutils literal"><span class="pre">idle_add()</span></code></a> convention)</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
 </tr>
@@ -3831,7 +3855,7 @@ Should run on the main thread to ensure we avoid vlc plugins' reentrency problem
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<code class="xref py py-meth docutils literal"><span class="pre">idle_add()</span></code> convention)</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<a class="reference external" href="https://lazka.github.io/pgi-docs/GLib-2.0/functions.html#GLib.idle_add" title="(in GLib 2.0 v2.0)"><code class="xref py py-func docutils literal"><span class="pre">idle_add()</span></code></a> convention)</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
 </tr>
@@ -3848,7 +3872,7 @@ Should run on the main thread to ensure we avoid vlc plugins' reentrency problem
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<code class="xref py py-meth docutils literal"><span class="pre">idle_add()</span></code> convention)</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<a class="reference external" href="https://lazka.github.io/pgi-docs/GLib-2.0/functions.html#GLib.idle_add" title="(in GLib 2.0 v2.0)"><code class="xref py py-func docutils literal"><span class="pre">idle_add()</span></code></a> convention)</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
 </tr>
@@ -3867,7 +3891,7 @@ Should run on the main thread to ensure we avoid vlc plugins' reentrency problem
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>) -- the timestamp, in ms</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<code class="xref py py-meth docutils literal"><span class="pre">idle_add()</span></code> convention)</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> iff this function should be run again (<a class="reference external" href="https://lazka.github.io/pgi-docs/GLib-2.0/functions.html#GLib.idle_add" title="(in GLib 2.0 v2.0)"><code class="xref py py-func docutils literal"><span class="pre">idle_add()</span></code></a> convention)</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal"><span class="pre">bool</span></code></a></td>
 </tr>
@@ -3908,7 +3932,7 @@ Should run on the main thread to ensure we avoid vlc plugins' reentrency problem
 <dl class="method">
 <dt id="pympress.vlcvideo.VLCVideo.handle_embed">
 <code class="descname">handle_embed</code><span class="sig-paren">(</span><em>mapped_widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/vlcvideo.html#VLCVideo.handle_embed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.handle_embed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handler to embed the VLC player in the correct window, connected to the <code class="xref py py-attr docutils literal"><span class="pre">map</span></code> signal</p>
+<dd><p>Handler to embed the VLC player in the correct window, connected to the <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Widget.html#Gtk.Widget.signals.map" title="(in Gtk 3.0 v3.0)"><code class="xref py py-func docutils literal"><span class="pre">map()</span></code></a> signal</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -4083,7 +4107,8 @@ Should run on the main thread to ensure we avoid vlc plugins' reentrency problem
 <dl class="attribute">
 <dt id="pympress.vlcvideo.VLCVideo.toolbar">
 <code class="descname">toolbar</code><em class="property"> = None</em><a class="headerlink" href="#pympress.vlcvideo.VLCVideo.toolbar" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/HBox.html#Gtk.HBox" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal"><span class="pre">HBox</span></code></a> containing a toolbar with buttons and <a class="reference internal" href="#pympress.vlcvideo.VLCVideo.progress" title="pympress.vlcvideo.VLCVideo.progress"><code class="xref py py-attr docutils literal"><span class="pre">progress</span></code></a> the progress bar</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pympress.vlcvideo.VLCVideo.update_progress">
@@ -4185,7 +4210,7 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-250-g2242582&#39;',
+            VERSION:'b&#39;0.6-254-g5c52a70&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
