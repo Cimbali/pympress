@@ -74,9 +74,8 @@ msgstr "BŁĄÐ nie określono działania dla tego odnośnika!"
 msgid "Error loading icon for about window"
 msgstr "Błąd ładowania ikony dla okna \"O\""
 
-#, fuzzy
 msgid "Error opening the file \"{}\""
-msgstr "Nie mogę znaleźć pliku \"{}\""
+msgstr "Błąd podczas otwierania pliku \"{}\""
 
 msgid "Error: access denied when trying to access screen saver settings in registry!"
 msgstr "Błąd: odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"
@@ -132,9 +131,8 @@ msgstr "Okno prelegenta w trybie pełnego ekranu"
 msgid "Pympress Content"
 msgstr "Okno treści Pympress"
 
-#, fuzzy
 msgid "Pympress can not extract attached file"
-msgstr "Pympress nie może wyodrębnić osadzonych mediów"
+msgstr "Pympress nie może wyodrębnić załączonego pliku"
 
 msgid "Pympress can not extract embedded media"
 msgstr "Pympress nie może wyodrębnić osadzonych mediów"
