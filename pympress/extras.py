@@ -181,6 +181,9 @@ class Media(object):
                 v_da_c.set_file(filename)
                 v_da_p.set_file(filename)
 
+                v_da_c.mute(True)
+                v_da_p.mute(False)
+
                 self._media_overlays[media_id] = (v_da_c, v_da_p)
 
 

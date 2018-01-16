@@ -252,7 +252,6 @@ class VLCVideo(builder.Builder):
         Args:
             filepath (`str`): The path to the media file path
         """
-        print(filepath)
         self.player.set_media(instance.media_new(filepath))
 
 
@@ -298,6 +297,16 @@ class VLCVideo(builder.Builder):
             vlc_evt (:class:`~vlc.Event`): The event that triggered the function call (if any)
         """
         self.progress.set_value(self.player.get_position())
+
+
+    def mute(self, value):
+        """ Mutes the player.
+
+        Args:
+            value (`bool`): `True` iff this player should be muted
+        """
+        GLib.idle_add(self.player.audio_set_volume, 0 if value else 100)
+        return False
 
 
     def do_play(self):
