@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk, GObject, GLib
 
 from pympress import util
 
@@ -108,7 +108,6 @@ class Builder(Gtk.Builder):
                 target = None
 
         return target
-
 
 
     @staticmethod
@@ -271,7 +270,7 @@ class Builder(Gtk.Builder):
                 w = leaf_widgets[w_desc]
 
             else:
-                # get new container widget, attempt to recycle the containers we removed
+                # get new container widget
                 if 'resizeable' in w_desc and w_desc['resizeable']:
                     orientation = getattr(Gtk.Orientation, w_desc['orientation'].upper())
                     w = Gtk.Paned.new(orientation)
@@ -294,6 +293,8 @@ class Builder(Gtk.Builder):
                         pane_resize.add(w)
                     else:
                         pane_handle_pos[w] = 0.5
+
+                    w.connect("size-allocate", self.resize_paned, pane_handle_pos[w])
 
                     # if more than 2 children are to be added, add the 2+ from the right side in a new child Gtk.Paned
                     widgets_to_add.append((w, w_desc['children'][0] if len(w_desc['children']) == 1 else w_desc))
@@ -320,24 +321,28 @@ class Builder(Gtk.Builder):
                     else:
                         w.set_margin_bottom(8)
 
-            # hierarchichally ordered list of widgets
-            widgets.append(w)
-
-        for w in widgets:
-            w.queue_resize()
-            w.show_now()
-            w.get_parent().check_resize()
-
-        for p in (w for w in widgets if issubclass(type(w), Gtk.Box) or issubclass(type(w), Gtk.Paned)):
-            p.check_resize()
-            if p in pane_resize:
-                if p.get_orientation() == Gtk.Orientation.HORIZONTAL:
-                    pane_pos = int(round(Gtk.Widget.get_allocated_width(p) * pane_handle_pos[p]))
-                else:
-                    pane_pos = int(round(Gtk.Widget.get_allocated_height(p) * pane_handle_pos[p]))
-
-                p.set_position(pane_pos)
-
         return pane_handle_pos
 
+
+    @staticmethod
+    def resize_paned(paned, rect, relpos):
+        """ Resize `~paned` to have its handle at `~relpos`, then disconnect this signal handler.
+        Called from the :func:`Gtk.Widget.signals.size_allocate` signal.
+
+        Args:
+            paned (:class:`~Gtk.Paned`): Panel whose size has just been allocated, and whose handle needs initial placement.
+            rect (:class:`~Gdk.Rectangle`): The rectangle specifying the size that has just been allocated to `~paned`
+            relpos (`float`): A number between `0.` and `1.` that specifies the handle position
+
+        Returns:
+            `True`
+        """
+        size = rect.width if paned.get_orientation() == Gtk.Orientation.HORIZONTAL else rect.height
+        handle_pos = int(round(relpos * size))
+        GLib.idle_add(paned.set_position, handle_pos)
+
+        sig = GObject.signal_lookup('size-allocate', Gtk.Paned)
+        hnd = GObject.signal_handler_find(paned, GObject.SignalMatchType.ID, sig, 0, None, None, None)
+        GObject.signal_handler_disconnect(paned, hnd)
+        return True
 
