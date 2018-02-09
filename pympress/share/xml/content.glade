@@ -8,6 +8,7 @@
     <property name="can_focus">True</property>
     <property name="events">GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
     <property name="title" translatable="yes">Pympress Content</property>
+    <property name="role">content</property>
     <property name="window_position">center</property>
     <property name="deletable">False</property>
     <signal name="destroy" handler="save_and_quit" swapped="no"/>
