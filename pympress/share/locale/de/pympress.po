@@ -7,12 +7,14 @@ msgstr ""
 "Project-Id-Version: Pympress v1.1.2\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
 "POT-Creation-Date: 2016-10-24 15:50+0200\n"
-"PO-Revision-Date: 2017-02-28 11:08+0100\n"
+"PO-Revision-Date: 2018-02-09 17:14+0100\n"
 "Last-Translator: FriedrichFroebel\n"
-"Language: German\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.8.7.1\n"
 
 msgid "(and optionally seconds)"
 msgstr "(und optional Sekunden)"
@@ -75,13 +77,13 @@ msgid "Error opening the file \"{}\""
 msgstr "Die Datei \"{}\" konnte nicht geöffnet werden"
 
 msgid "Error: access denied when trying to access screen saver settings in registry!"
-msgstr "Fehler: Zugriff auf die Bildschirmschoner-Einstellungen der Register nicht erlaubt!"
+msgstr "Fehler: Zugriff auf die Bildschirmschoner-Einstellungen der Registry nicht erlaubt!"
 
 msgid "Highlight"
 msgstr "Hervorheben"
 
 msgid "Invalid log level \"{}\", try one of {}"
-msgstr ""
+msgstr "Ungültiges Log-Level \"{}\", versuche eines aus {}"
 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Ungültige Zeit (mm oder mm:ss erwartet), habe \"{}\""
@@ -101,15 +103,14 @@ msgstr ""
 "\n"
 "Die zu öffnende PDF-Datei kann via Kommandozeile übergeben werden, falls der \"Datei öffnen\"-Dialog nicht verwendet werden soll."
 
-#, fuzzy
 msgid "Not starting content or presenter window full screen because there is only one monitor"
-msgstr "Inhalts- und Präsentator-Fenster nicht im Vollbild-Modus gestarted weil es nur ein Monitor gibt!"
+msgstr "Inhalts- und Präsentator-Fenster werden nicht im Vollbild gestartet, da nur ein Monitor vorhanden ist"
 
 msgid "Notes"
 msgstr "Notizen"
 
 msgid "Open _Recent"
-msgstr "Benutzte Dokumente"
+msgstr "_Kürzlich geöffnet"
 
 msgid "Open..."
 msgstr "Öffnen..."
@@ -126,7 +127,6 @@ msgstr "Pause"
 msgid "Play"
 msgstr "Wiedergabe"
 
-#, fuzzy
 msgid "Pointer"
 msgstr "Zeiger"
 
@@ -140,7 +140,7 @@ msgid "Pympress Presenter"
 msgstr "Pympress Präsentationen"
 
 msgid "Pympress can not extract attached file"
-msgstr "Pympress kann eingebettete Datei nicht extrahieren"
+msgstr "Pympress kann angehängte Datei nicht extrahieren"
 
 msgid "Pympress can not extract embedded media"
 msgstr "Pympress kann eingebettete Medien nicht extrahieren"
@@ -164,10 +164,10 @@ msgid "Pympress does not yet support link type \"{}\" to \"{}\""
 msgstr "Pympress unterstützt den Link-Typ \"{}\" nach \"{}\" noch nicht"
 
 msgid "Set level of verbosity in log file:"
-msgstr ""
+msgstr "Verbositäts-Level für die Logdatei setzen:"
 
 msgid "Set talk _Time"
-msgstr "Redezeit setzen"
+msgstr "_Redezeit setzen"
 
 msgid "Slide number"
 msgstr "Foliennummer"
@@ -191,7 +191,7 @@ msgid "Time estimation"
 msgstr "Geschätzte Zeit"
 
 msgid "Unknow widget {} to be fullscreened, aborting."
-msgstr "Unbekanntes Widget {} für das Vollbild, Abbruch."
+msgstr "Unbekanntes Widget {} für die Vollbildanzeige, Abbruch."
 
 msgid "Unknown event {}"
 msgstr "Unbekanntes Event {}"
@@ -200,7 +200,7 @@ msgid "Unsupported OS: can't enable/disable screensaver"
 msgstr "Nicht unterstütztes OS: Bildschirmschoner kann nicht aktiviert/deaktiviert werden"
 
 msgid "Usage: {} [options] <presentation_file>"
-msgstr "Verwendung: {} [optionen] <Präsentationsdatei>"
+msgstr "Verwendung: {} [Optionen] <Präsentationsdatei>"
 
 msgid "Video support using VLC is disabled."
 msgstr "Videounterstützung auf Basis von VLC ist deaktiviert."
@@ -212,13 +212,13 @@ msgid "Warning: Content and presenter window must not be on the same monitor if 
 msgstr "Warnung: Inhalts- und Präsentator-Fenster dürfen beim Start im Vollbild-Modus nicht auf dem gleichen Monitor sein!"
 
 msgid "Warning: Could not disable DPMS screen blanking: got status "
-msgstr "Warnung: DPMS-Deaktivierung des Bildschirms kann nicht abgeschaltet werden: Status"
+msgstr "Warnung: DPMS-Deaktivierung des Bildschirms kann nicht abgeschaltet werden: Status "
 
 msgid "Warning: Could not enable DPMS screen blanking: got status "
-msgstr "Warnung: DPMS-Deaktivierung des Bildschirms kann nicht eingeschaltet werden: Status"
+msgstr "Warnung: DPMS-Deaktivierung des Bildschirms kann nicht eingeschaltet werden: Status "
 
 msgid "Warning: Could not set screensaver status: got status "
-msgstr "Warnung: Bildschirmschoner-Status kann nicht gesetzt werden: Status"
+msgstr "Warnung: Bildschirmschoner-Status kann nicht gesetzt werden: Status "
 
 msgid "Warning: Unsupported OS: can't enable/disable screensaver"
 msgstr "Warnung: Nicht unterstütztes OS: Bildschirmschoner kann nicht aktiviert/deaktiviert werden"
@@ -236,7 +236,7 @@ msgid "_Annotations"
 msgstr "_Anmerkungen"
 
 msgid "_Blank screen"
-msgstr "_Leerer Bildschirm"
+msgstr "_Schwarzer Bildschirm"
 
 msgid "_Blue"
 msgstr "_Blau"
@@ -251,7 +251,7 @@ msgid "_File"
 msgstr "_Datei"
 
 msgid "_First"
-msgstr "_Beginn"
+msgstr "_Anfang"
 
 msgid "_Fullscreen"
 msgstr "_Vollbild"
@@ -308,7 +308,7 @@ msgid "_Swap screens"
 msgstr "Bildschirme _tauschen"
 
 msgid "access denied when trying to access screen saver settings in registry!"
-msgstr "Zugriff auf die Bildschirmschoner-Einstellungen der Register nicht erlaubt!"
+msgstr "Zugriff auf die Bildschirmschoner-Einstellungen der Registry nicht erlaubt!"
 
 msgid "no action defined for this link!"
 msgstr "für diesen Link ist keine Aktion definiert!"
