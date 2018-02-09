@@ -1,18 +1,18 @@
 # Pympress french translation
-# Copyright (C)
-# Cimbali <me@cimba.li>, 2016
+# This file is distributed under the same license as the Pympress package.
+# Cimbali <me@cimba.li>, 2016.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Pympress v1.0\n"
+"Project-Id-Version: Pympress v1.1.2\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
 "POT-Creation-Date: 2016-10-24 15:50+0200\n"
 "PO-Revision-Date: 2016-07-30 19:34+0200\n"
 "Last-Translator: Cimbali <me@cimba.li>\n"
+"Language: French\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: pygettext.py 1.5\n"
 
 msgid "(and optionally seconds)"
 msgstr "(et secondes, optionellement)"
@@ -49,6 +49,9 @@ msgstr "Contributeurs"
 
 msgid "Could not disable DPMS screen blanking: got status "
 msgstr "Attention: Impossible de désactiver l'extinction d'écran DPMS: "
+
+msgid "Could not enable DPMS screen blanking: got status "
+msgstr "Attention: Impossible d'activer l'extinction d'écran DPMS: "
 
 msgid "Could not find the file \"{}\""
 msgstr "Impossible d'ouvrir le fichier \"{}\""
@@ -115,6 +118,12 @@ msgstr "Otions:"
 msgid "PDF files"
 msgstr "Fichiers PDF"
 
+msgid "Pause"
+msgstr "Pause"
+
+msgid "Play"
+msgstr "Lire"
+
 msgid "Pointer"
 msgstr "Pointeur"
 
@@ -123,6 +132,9 @@ msgstr "Présenteur en plein écran"
 
 msgid "Pympress Content"
 msgstr "Pympress Contenu"
+
+msgid "Pympress Presenter"
+msgstr "Pympress Présenteur"
 
 msgid "Pympress can not extract attached file"
 msgstr "Pympress ne peut extraire le média intégré"
@@ -159,6 +171,9 @@ msgstr "Diapo numéro"
 
 msgid "Some preferences are saved in "
 msgstr "Certaines préférences sont sauvegardées dans"
+
+msgid "Stop"
+msgstr "Stop"
 
 msgid "The estimated (intended) talk time in minutes"
 msgstr "Durée estimée (prévue) de la présentation, en minutes"
@@ -297,9 +312,6 @@ msgstr "pas d'action définie pour ce lien !"
 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress est un lecteur de PDF léger écrit en Python, utilisant Poppler pour afficher les PDF et GTK pour l'interface graphique.\n"
-
-msgid "pympress presenter"
-msgstr "pympress présenteur"
 
 msgid "video support is disabled"
 msgstr "la prise en charge vidéo est désactivée"

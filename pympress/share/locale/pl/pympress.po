@@ -1,21 +1,18 @@
 # Pympress Polish translation
-# Copyright (C) 2017
 # This file is distributed under the same license as the Pympress package.
 # Stanisław Polak <polak@icsr.agh.edu.pl>, 2017.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Pympress v1.0\n"
+"Project-Id-Version: Pympress v1.1.2\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
 "POT-Creation-Date: 2016-10-24 15:50+0200\n"
 "PO-Revision-Date: 2017-04-23 15:22+0200\n"
 "Last-Translator: Stanisław Polak <polak@icsr.agh.edu.pl>\n"
-"Language-Team: \n"
+"Language: Polish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: Polish\n"
 
 msgid "(and optionally seconds)"
 msgstr "(oraz opcjonalnie w sekundach)"
@@ -122,6 +119,12 @@ msgstr "Opcje:"
 msgid "PDF files"
 msgstr "Pliki PDF"
 
+msgid "Pause"
+msgstr "Wstrzymaj"
+
+msgid "Play"
+msgstr "Odtwarzaj"
+
 msgid "Pointer"
 msgstr "Wskaźnik"
 
@@ -130,6 +133,9 @@ msgstr "Okno prelegenta w trybie pełnego ekranu"
 
 msgid "Pympress Content"
 msgstr "Okno treści Pympress"
+
+msgid "Pympress Presenter"
+msgstr "Okno presentera Pympress"
 
 msgid "Pympress can not extract attached file"
 msgstr "Pympress nie może wyodrębnić załączonego pliku"
@@ -166,6 +172,9 @@ msgstr "Numer slajdu"
 
 msgid "Some preferences are saved in "
 msgstr "Niektóre ustawienia są zapisywane w "
+
+msgid "Stop"
+msgstr "Zatrzymaj"
 
 msgid "The estimated (intended) talk time in minutes"
 msgstr "Przewidywany (spodziewany) czas trwania wystąpienia (prelekcji) w minutach"
@@ -304,9 +313,6 @@ msgstr "nie określono działania dla tego odnośnika!"
 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress jest małym czytnikiem PDF napisanym w Pythonie, używającym Popplera do renderowania plików PDF oraz GTK do tworzenia GUI.\n"
-
-msgid "pympress presenter"
-msgstr "Okno presentera Pympress"
 
 msgid "video support is disabled"
 msgstr "wyłączona obsługa wideo"

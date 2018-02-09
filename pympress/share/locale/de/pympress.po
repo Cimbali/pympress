@@ -1,22 +1,18 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Pympress german translation
 # This file is distributed under the same license as the Pympress package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# FriedrichFröbel <FriedrichFroebel.GC@t-online.de>, 2017.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Pympress v1.0\n"
+"Project-Id-Version: Pympress v1.1.2\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
 "POT-Creation-Date: 2016-10-24 15:50+0200\n"
 "PO-Revision-Date: 2017-02-28 11:08+0100\n"
 "Last-Translator: FriedrichFroebel\n"
-"Language-Team: \n"
+"Language: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: de\n"
-"X-Generator: Poedit 1.8.7.1\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "(and optionally seconds)"
 msgstr "(und optional Sekunden)"
@@ -105,14 +101,15 @@ msgstr ""
 "\n"
 "Die zu öffnende PDF-Datei kann via Kommandozeile übergeben werden, falls der \"Datei öffnen\"-Dialog nicht verwendet werden soll."
 
+#, fuzzy
 msgid "Not starting content or presenter window full screen because there is only one monitor"
-msgstr ""
+msgstr "Inhalts- und Präsentator-Fenster nicht im Vollbild-Modus gestarted weil es nur ein Monitor gibt!"
 
 msgid "Notes"
 msgstr "Notizen"
 
 msgid "Open _Recent"
-msgstr ""
+msgstr "Benutzte Dokumente"
 
 msgid "Open..."
 msgstr "Öffnen..."
@@ -123,14 +120,24 @@ msgstr "Optionen:"
 msgid "PDF files"
 msgstr "PDF-Dateien"
 
+msgid "Pause"
+msgstr "Pause"
+
+msgid "Play"
+msgstr "Wiedergabe"
+
+#, fuzzy
 msgid "Pointer"
-msgstr ""
+msgstr "Zeiger"
 
 msgid "Presenter fullscreen"
 msgstr "Vollbild für Präsentator"
 
 msgid "Pympress Content"
 msgstr "Pympress-Inhalt"
+
+msgid "Pympress Presenter"
+msgstr "Pympress Präsentationen"
 
 msgid "Pympress can not extract attached file"
 msgstr "Pympress kann eingebettete Datei nicht extrahieren"
@@ -167,6 +174,9 @@ msgstr "Foliennummer"
 
 msgid "Some preferences are saved in "
 msgstr "Ein Teil der Einstellungen ist gespeichert unter"
+
+msgid "Stop"
+msgstr "Stopp"
 
 msgid "The estimated (intended) talk time in minutes"
 msgstr "Die geschätzte (angestrebte) Redezeit in Minuten"
@@ -235,7 +245,7 @@ msgid "_Close File"
 msgstr "Datei _schließen"
 
 msgid "_Disabled"
-msgstr ""
+msgstr "_Deaktiviert"
 
 msgid "_File"
 msgstr "_Datei"
@@ -250,7 +260,7 @@ msgid "_Go to..."
 msgstr "_Springen zu..."
 
 msgid "_Green"
-msgstr ""
+msgstr "_Grün"
 
 msgid "_Help"
 msgstr "_Hilfe"
@@ -286,7 +296,7 @@ msgid "_Quit"
 msgstr "_Beenden"
 
 msgid "_Red"
-msgstr ""
+msgstr "_Rot"
 
 msgid "_Reset timer"
 msgstr "Timer _zurücksetzen"
@@ -306,11 +316,8 @@ msgstr "für diesen Link ist keine Aktion definiert!"
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress ist ein kleiner PDF-Reader, geschrieben in Python unter Verwendung von Poppler für die PDF-Anzeige und GTK für die GUI.\n"
 
-msgid "pympress presenter"
-msgstr "pympress Präsentationen"
-
 msgid "video support is disabled"
 msgstr "Videounterstützung ist deaktiviert"
 
 msgid "{}, {}, {}, {}, or {}"
-msgstr ""
+msgstr "{}, {}, {}, {}, oder {}"
