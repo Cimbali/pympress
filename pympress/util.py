@@ -85,7 +85,7 @@ def __get_resource_path(*path_parts):
         return os.path.join(os.path.dirname(sys.executable), *path_parts)
     else:
         req = pkg_resources.Requirement.parse('pympress')
-        return pkg_resources.resource_filename(req, os.path.join('pympress', *path_parts))
+        return pkg_resources.resource_filename(req, '/'.join(('pympress',) + path_parts))
 
 
 def __get_resource_list(*path_parts):
@@ -103,7 +103,7 @@ def __get_resource_list(*path_parts):
         return os.listdir(os.path.join(os.path.dirname(sys.executable), *path_parts))
     else:
         req = pkg_resources.Requirement.parse('pympress')
-        return pkg_resources.resource_listdir(req, os.path.join('pympress', *path_parts))
+        return pkg_resources.resource_listdir(req, '/'.join(('pympress',) + path_parts))
 
 
 def get_locale_dir():
