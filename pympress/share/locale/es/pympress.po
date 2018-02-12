@@ -1,0 +1,322 @@
+# Pympress spanish translation
+# This file is distributed under the same license as the Pympress package.
+# Suso Comesaña <susocomesanha@lavabit.com>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Pympress v1.1.2\n"
+"Report-Msgid-Bugs-To: susocomesanha@lavabit.com\n"
+"POT-Creation-Date: 2018-02-10 15:50+0200\n"
+"PO-Revision-Date: 2018-02-10 19:34+0200\n"
+"Last-Translator: Suso Comesaña <susocomesanha@lavabit.com>\n"
+"Language: Spanish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "(and optionally seconds)"
+msgstr "(y segundos, opcionalmente)"
+
+msgid "(paused)"
+msgstr "(en pausa)"
+
+msgid "Adjust alignment of slides in projector screen"
+msgstr "Ajuste de la alineación de diapositivas en la pantalla del proyector"
+
+msgid "All files"
+msgstr "Todos los archivos"
+
+msgid "Annotations"
+msgstr "Notas"
+
+msgid "Big buttons"
+msgstr "Botones grandes"
+
+msgid "Clock"
+msgstr "Reloj"
+
+msgid "Content and presenter window must not be on the same monitor if you start full screen!"
+msgstr "Atención: La ventana de contenido y presentación no puede estar en la misma pantalla para comenzar en pantalla completa!"
+
+msgid "Content blanked"
+msgstr "Contenido oculto"
+
+msgid "Content fullscreen"
+msgstr "Contenido a pantalla completa"
+
+msgid "Contributors:"
+msgstr "Colaboradores"
+
+msgid "Could not disable DPMS screen blanking: got status "
+msgstr "No se puede deshabilitar el apagado de pantalla con DPMS: se obtuvo estado "
+
+msgid "Could not enable DPMS screen blanking: got status "
+msgstr "No se pudo activar el apagado de pantalla con DPMS: se obtuvo estado "
+
+msgid "Could not find the file \"{}\""
+msgstr "No se puede abrir el archivo \"{}\""
+
+msgid "Could not set screensaver status: got status "
+msgstr "Atención: El estado del protector de pantalla no se puede recuperar: "
+
+msgid "Current slide"
+msgstr "Diapo actual"
+
+msgid "ERROR Unknown widget to start fullscreen: {}"
+msgstr "ERROR elemento visual desconocido que se mostrará en pantalla completa: {}"
+
+msgid "ERROR no action defined for this link!"
+msgstr "ERROR No hay acciones definidas para este enlace !"
+
+msgid "Error loading icon for about window"
+msgstr "Error al cargar los iconos"
+
+msgid "Error opening the file \"{}\""
+msgstr "No se puede abrir el archivo \"{}\""
+
+msgid "Error: access denied when trying to access screen saver settings in registry!"
+msgstr "Error: Acceso denegado al cambiar la configuración del protector de pantalla durante el registro. !"
+
+msgid "Highlight"
+msgstr "Resaltar"
+
+msgid "Invalid log level \"{}\", try one of {}"
+msgstr "Nivel de registro incorrecto \"{}\", seleccione una de las siguientes opciones {}"
+
+msgid "Invalid time (mm or mm:ss expected), got \"{}\""
+msgstr "Tiempo no válido (mm ou mm:ss de espera), obtenido \"{}\""
+
+msgid "Next slide"
+msgstr "Siguiente diapo"
+
+msgid "No action was defined for this link"
+msgstr "No se definió ninguna acción para este enlace"
+
+msgid ""
+"No file selected!\n"
+"\n"
+"You can specify the PDF file to open on the command line if you don't want to use the \"Open File\" dialog."
+msgstr ""
+"No se ha seleccionado ningún archivo !\n"
+"Puede especificar el archivo PDF a abrir en la línea de comandos si no desea utilizar el cuadro de diálogo \"Abrir archivo\"."
+
+msgid "Not starting content or presenter window full screen because there is only one monitor"
+msgstr "Es imposible poner el contenido o la ventana de visualización en pantalla completa porque sólo hay un monitor."
+
+msgid "Notes"
+msgstr "Notas"
+
+msgid "Open _Recent"
+msgstr "Abierto _Recientemente"
+
+msgid "Open..."
+msgstr "Abrir..."
+
+msgid "Options:"
+msgstr "Opciones:"
+
+msgid "PDF files"
+msgstr "Fichiros PDF"
+
+msgid "Pause"
+msgstr "Pausa"
+
+msgid "Play"
+msgstr "Ejecutar"
+
+msgid "Pointer"
+msgstr "Puntero"
+
+msgid "Presenter fullscreen"
+msgstr "Presentación a pantalla completa"
+
+msgid "Pympress Content"
+msgstr "Contenido de pympress"
+
+msgid "Pympress Presenter"
+msgstr "Presentador de Pympress"
+
+msgid "Pympress can not extract attached file"
+msgstr "Pympress no puede extraer archivos adjuntos"
+
+msgid "Pympress can not extract embedded media"
+msgstr "Pympress no puede extraer los medios incorporados"
+
+msgid "Pympress can not find file "
+msgstr "Pympress no puede encontrar el archivo "
+
+msgid "Pympress can not interpret annotation of type:"
+msgstr "Pympress no puede interpretar anotaciones del tipo: "
+
+msgid "Pympress does not recognize link type \"{}\""
+msgstr "Pympress no reconoce enlaces de tipo \"{}\""
+
+msgid "Pympress does not recognize link type \"{}\" to \"{}\""
+msgstr "Pympress no reconoce enlaces de tipo \"{}\" hacia \"{}\""
+
+msgid "Pympress does not yet support link type \"{}\""
+msgstr "Pympress aún no soporta enlaces como \"{}\""
+
+msgid "Pympress does not yet support link type \"{}\" to \"{}\""
+msgstr "Pympress aún no soporta enlaces como \"{}\" hacia \"{}\""
+
+msgid "Set level of verbosity in log file:"
+msgstr "Nivel de detalle en los logs:"
+
+msgid "Set talk _Time"
+msgstr "Seleccionar el _Tiempo de duración de la presentación"
+
+msgid "Slide number"
+msgstr "Número de Diapo"
+
+msgid "Some preferences are saved in "
+msgstr "Algunas preferencias se guardan en"
+
+msgid "Stop"
+msgstr "Parar"
+
+msgid "The estimated (intended) talk time in minutes"
+msgstr "Duración estimada (prevista) de la presentación, en minutos"
+
+msgid "This help"
+msgstr "Este es un mensaje de ayuda"
+
+msgid "Time elapsed"
+msgstr "Tiempo transcurrido"
+
+msgid "Time estimation"
+msgstr "Tiempo estimado"
+
+msgid "Unknow widget {} to be fullscreened, aborting."
+msgstr "Elemento visual {} desconocido a pantalla completa, parando."
+
+msgid "Unknown event {}"
+msgstr "Evento desconocido {}"
+
+msgid "Unsupported OS: can't enable/disable screensaver"
+msgstr "Sistema operativo no soportado: ningún salvapantallas se puede activar/desactivar."
+
+msgid "Usage: {} [options] <presentation_file>"
+msgstr "Uso: {} [opciones] <archivo_de_presentación>."
+
+msgid "Video support using VLC is disabled."
+msgstr "El soporte de vídeo con VLC está desactivado"
+
+msgid "Video support using VLC is enabled."
+msgstr "Soporte de vídeo con VLC habilitado"
+
+msgid "Warning: Content and presenter window must not be on the same monitor if you start full screen!"
+msgstr "Atención: La ventana de contenido y presentación no puede estar en la misma pantalla para comenzar en pantalla completa!"
+
+msgid "Warning: Could not disable DPMS screen blanking: got status "
+msgstr "tención: No es posible desactivar el apagado de la pantalla con DPMS: estado obtenido "
+
+msgid "Warning: Could not enable DPMS screen blanking: got status "
+msgstr "Atención: No se puede apagar la pantalla con DPMS: estado obtenido"
+
+msgid "Warning: Could not set screensaver status: got status "
+msgstr "Atención: El estado del protector de pantalla no se puede recuperar: "
+
+msgid "Warning: Unsupported OS: can't enable/disable screensaver"
+msgstr "Atención: El sistema operativo no es compatible: el protector de pantalla no se puede activar/desactivar."
+
+msgid "Warning: video support is disabled"
+msgstr "Atención: El soporte de vídeo está desactivado"
+
+msgid "_About"
+msgstr "_Sobre"
+
+msgid "_Align content"
+msgstr "_Alinear contenido"
+
+msgid "_Annotations"
+msgstr "_Anotaciones"
+
+msgid "_Blank screen"
+msgstr "Ocultar pantalla"
+
+msgid "_Blue"
+msgstr "_Azul"
+
+msgid "_Close File"
+msgstr "Cerrar fichero"
+
+msgid "_Disabled"
+msgstr "_Desactivado"
+
+msgid "_File"
+msgstr "_Fichero"
+
+msgid "_First"
+msgstr "_Primero"
+
+msgid "_Fullscreen"
+msgstr "Plein écran"
+
+msgid "_Go to..."
+msgstr "_Ir a..."
+
+msgid "_Green"
+msgstr "Verde"
+
+msgid "_Help"
+msgstr "_Ayuda"
+
+msgid "_Highlight"
+msgstr "_Resaltar"
+
+msgid "_Last"
+msgstr "_ültimo"
+
+msgid "_Navigation"
+msgstr "_Navigación"
+
+msgid "_Next"
+msgstr "_Siguiente"
+
+msgid "_Notes mode"
+msgstr "Modo _Notas"
+
+msgid "_Open"
+msgstr "_Abrir"
+
+msgid "_Pause timer"
+msgstr "Temporizador en _pausa"
+
+msgid "_Presentation"
+msgstr "_Presentación"
+
+msgid "_Previous"
+msgstr "_Précédent"
+
+msgid "_Quit"
+msgstr "_Salir"
+
+msgid "_Red"
+msgstr "_Rojo"
+
+msgid "_Reset timer"
+msgstr "_Reinicializar el temporizador"
+
+msgid "_Starting Configuration"
+msgstr "Configuración del _inicio"
+
+msgid "_Swap screens"
+msgstr "_Intercambio de pantallass"
+
+msgid "access denied when trying to access screen saver settings in registry!"
+msgstr "acceso denegado al cambiar la configuración del protector de pantalla durante el registro !"
+
+msgid "no action defined for this link!"
+msgstr "ninguna acción definida para este enlace !"
+
+msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
+msgstr "pympress es un lector de PDF ligero escrito en Python, usando Poppler para mostrar PDF y GTK en la interfaz gráfica de usuario..\n"
+
+msgid "video support is disabled"
+msgstr "El soporte de vídeo está desactivado"
+
+msgid "{}, {}, {}, {}, or {}"
+msgstr "{}, {}, {}, {}, o {}"
+
+
