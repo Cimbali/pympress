@@ -48,10 +48,10 @@ msgid "Contributors:"
 msgstr "Colaboradores"
 
 msgid "Could not disable DPMS screen blanking: got status "
-msgstr "Atención: No es posible desactivar el apagado de la pantalla del DPMS: "
+msgstr "No se puede deshabilitar el apagado de pantalla con DPMS: se obtuvo estado "
 
 msgid "Could not enable DPMS screen blanking: got status "
-msgstr "Atención: La pantalla del DPMS no se puede apagar: "
+msgstr "No se pudo activar el apagado de pantalla con DPMS: se obtuvo estado "
 
 msgid "Could not find the file \"{}\""
 msgstr "No se puede abrir el archivo \"{}\""
@@ -84,7 +84,7 @@ msgid "Invalid log level \"{}\", try one of {}"
 msgstr "Nivel de registro incorrecto \"{}\", seleccione una de las siguientes opciones {}"
 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
-msgstr "Tiempo no vślido (mm ou mm:ss de espera), obtenido \"{}\" reçu"
+msgstr "Tiempo no válido (mm ou mm:ss de espera), obtenido \"{}\""
 
 msgid "Next slide"
 msgstr "Siguiente diapo"
@@ -107,7 +107,7 @@ msgid "Notes"
 msgstr "Notas"
 
 msgid "Open _Recent"
-msgstr "Abierto _recientemente"
+msgstr "Abierto _Recientemente"
 
 msgid "Open..."
 msgstr "Abrir..."
@@ -137,7 +137,7 @@ msgid "Pympress Presenter"
 msgstr "Presentador de Pympress"
 
 msgid "Pympress can not extract attached file"
-msgstr "Presentador de Pympress"
+msgstr "Pympress no puede extraer archivos adjuntos"
 
 msgid "Pympress can not extract embedded media"
 msgstr "Pympress no puede extraer los medios incorporados"
