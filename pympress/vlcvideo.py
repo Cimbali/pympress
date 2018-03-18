@@ -194,13 +194,15 @@ class VLCVideo(builder.Builder):
             logger.warning('Unexpected widget or event type, expecting mouse release from Gtk.Scale: {}'.format((widget, event, event.type)))
             return False
 
+        # immediate update on first click, otherwise set mouse_motion do the job
+        if not self.dragging_position and event.type == Gdk.EventType.BUTTON_PRESS:
+            pixel_range = (float(self.progress.get_range_rect().x), float(self.progress.get_range_rect().width))
+            self.set_time(int(self.maxval * (event.x - pixel_range[0]) / pixel_range[1]))
+
         self.dragging_position = event.type == Gdk.EventType.BUTTON_PRESS
 
         if self.dragging_position:
             self.dragging_paused = self.player.is_playing()
-
-        if self.dragging_paused:
-            self.play_pause()
 
         return True
 
@@ -220,7 +222,7 @@ class VLCVideo(builder.Builder):
 
         # get both ranges as (min, size) tuples of floats
         pixel_range = (float(self.progress.get_range_rect().x), float(self.progress.get_range_rect().width))
-        self.player.set_position((event.x - pixel_range[0]) / pixel_range[1])
+        self.set_time(int(self.maxval * (event.x - pixel_range[0]) / pixel_range[1]))
         return True
 
 
