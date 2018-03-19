@@ -703,7 +703,7 @@ class UI(builder.Builder):
         for p in list(range(self.page_preview_nb+1, page_max)) + list(range(self.page_preview_nb, page_min, -1)):
             self.cache.prerender(p)
 
-        self.medias.replace_media_overlays(self.doc.current_page())
+        self.medias.replace_media_overlays(self.doc.current_page(), page_type)
 
 
     def on_draw(self, widget, cairo_context):
@@ -1222,6 +1222,7 @@ class UI(builder.Builder):
             # make sure visibility is right
             self.p_frame_annot.set_visible(self.show_annotations)
 
+        self.medias.adjust_margins_for_mode(self.notes_mode)
         self.pane_handle_pos.update(pane_handles)
         self.p_central.show_all()
         self.on_page_change(False)

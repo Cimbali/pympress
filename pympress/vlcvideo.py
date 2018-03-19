@@ -129,7 +129,7 @@ class VLCVideo(builder.Builder):
         super(VLCVideo, self).__init__()
 
         self.parent = container
-        self.relative_margins = relative_margins
+        self.relative_margins = relative_margins.copy()
         self.player = instance.media_player_new() # before loading UI, needed to connect "map" signal
 
         self.load_ui('vlcvideo')
@@ -148,6 +148,11 @@ class VLCVideo(builder.Builder):
         event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged, self.update_range)
         event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged, self.update_progress)
         event_manager.event_attach(vlc.EventType.MediaPlayerPositionChanged, self.update_progress)
+
+
+    def __def__(self):
+        self.relative_margins.free()
+        super(VLCVideo, self).__init__()
 
 
     def handle_embed(self, mapped_widget):

@@ -41,6 +41,8 @@ except Exception as e:
     vlc_enabled = False
     logger.exception(_("video support is disabled"))
 
+from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
+
 
 class Annotations(object):
     #: The containing widget for the annotations
@@ -155,18 +157,17 @@ class Media(object):
         self._media_overlays.clear()
 
 
-    def replace_media_overlays(self, current_page):
+    def replace_media_overlays(self, current_page, page_type):
         """ Remove current media overlays, add new ones if page contains media.
 
         Args:
             current_page (:class:`~pympress.document.Page`): The page for twhich to prepare medias
+            page_type (`int`): The page type: one of PDF_REGULAR, PDF_CONTENT_PAGE, or PDF_NOTES_PAGE
         """
-        if not vlc_enabled:
+        if not vlc_enabled or page_type == PDF_NOTES_PAGE:
             return
 
         self.remove_media_overlays()
-
-        pw, ph = current_page.get_size()
 
         for relative_margins, filename, show_controls in current_page.get_media():
             media_id = hash((relative_margins, filename, show_controls))
@@ -177,6 +178,12 @@ class Media(object):
 
                 v_da_c = vlcvideo.VLCVideo(self.c_overlay, show_controls, relative_margins, get_curryfied_callback)
                 v_da_p = vlcvideo.VLCVideo(self.p_overlay, True, relative_margins, get_curryfied_callback)
+
+                if page_type == PDF_CONTENT_PAGE:
+                    v_da_p.relative_margins.x2 = 2 * v_da_p.relative_margins.x2 - 1
+                    v_da_c.relative_margins.x2 = 2 * v_da_c.relative_margins.x2 - 1
+                    v_da_p.relative_margins.x1 *= 2
+                    v_da_c.relative_margins.x1 *= 2
 
                 v_da_c.set_file(filename)
                 v_da_p.set_file(filename)
@@ -197,6 +204,30 @@ class Media(object):
         for media_id in self._media_overlays:
             for widget in (w for w, r in zip(self._media_overlays[media_id], needs_resizing) if r and w.is_shown()):
                 widget.resize()
+
+
+    def adjust_margins_for_mode(self, enable_notes):
+        """ Adjust the relative margins of child widgets for notes mode update.
+
+        Note that we apply the changes regular -> content and content -> regular without checking the
+        initial state, as we do not store it. So take care to call this function appropriately.
+
+        Args:
+            enable_notes (`bool`): Whether to enable note, thus transition from PDF_REGULAR to PDF_CONTENT_PAGE, or the opposite
+        """
+        if not vlc_enabled:
+            return
+
+        if enable_notes:
+            for media_id in self._media_overlays:
+                for widget in self._media_overlays[media_id]:
+                    widget.relative_margins.x2 = 2 * widget.relative_margins.x2 - 1
+                    widget.relative_margins.x1 *= 2
+        else:
+            for media_id in self._media_overlays:
+                for widget in self._media_overlays[media_id]:
+                    widget.relative_margins.x2 = widget.relative_margins.x2 / 2 + 0.5
+                    widget.relative_margins.x1 /= 2
 
 
     def play(self, media_id, button = None):
