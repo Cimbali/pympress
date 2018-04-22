@@ -33,6 +33,8 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
+from collections import deque
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject, GLib
@@ -259,12 +261,12 @@ class Builder(Gtk.Builder):
             containers.pop().destroy()
 
         # iterate over new layout to build it, using a BFS
-        widgets_to_add = [(top_widget, layout)]
+        widgets_to_add = deque([(top_widget, layout)])
         pane_resize = set()
         pane_handle_pos = {}
 
         while widgets_to_add:
-            parent, w_desc = widgets_to_add.pop(0)
+            parent, w_desc = widgets_to_add.popleft()
 
             if type(w_desc) is str:
                 w = leaf_widgets[w_desc]
@@ -303,7 +305,7 @@ class Builder(Gtk.Builder):
                     w.set_homogeneous(True)
                     w.set_spacing(10)
 
-                    widgets_to_add += [(w, c) for c in w_desc['children']]
+                    widgets_to_add.extend((w, c) for c in w_desc['children'])
 
             if issubclass(type(parent), Gtk.Box):
                 parent.pack_start(w, True, True, 0)
