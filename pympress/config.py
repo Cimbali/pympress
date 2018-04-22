@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 import os.path
 import json
+from collections import deque
 
 try:
     import configparser
@@ -214,10 +215,10 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         of all the resizeable items (if and only if resizeable).
         """
 
-        next_visits = [layout]
+        next_visits = deque([layout])
         widget_seen = set()
         while next_visits:
-            w_desc = next_visits.pop(0)
+            w_desc = next_visits.popleft()
             if type(w_desc) is str:
                 if w_desc not in expected_widgets:
                     raise ValueError('Unrecognized widget "{}", pick one of: {}'.format(w_desc, ', '.join(expected_widgets)))
@@ -239,7 +240,7 @@ class Config(configparser.ConfigParser, object): # python 2 fix
                     elif type(w_desc['proportions']) is not list or any(type(n) is not float for n in w_desc['proportions']) or len(w_desc['proportions']) != len(w_desc['children']) or abs(sum(w_desc['proportions']) - 1) > 1e-10:
                         raise ValueError('"proportions" must be a list of floats (one per separator), between 0 and 1, at node {}'.format(w_desc))
 
-                next_visits += w_desc['children']
+                next_visits.extend(w_desc['children'])
             else:
                 raise ValueError('Unexpected type {}, nodes must be dicts or strings, at node {}'.format(type(w_desc), w_desc))
         widget_missing = expected_widgets - widget_seen
