@@ -76,7 +76,7 @@ Pympress relies on:
 * [Poppler](http://poppler.freedesktop.org/), the PDF rendering library.
 * [Gtk+ 3](http://www.gtk.org/), a toolkit for creating graphical user interfaces, and [its dependencies](https://www.gtk.org/overview.php), specifically:
   * [Cairo](https://www.cairographics.org/) (and python bindings for cairo), the graphics library which is used to pre-render and draw over PDF pages.
-  * Gdk, a lower-level graphics library to handles icons.
+  * Gdk, a lower-level graphics library to handle icons.
 * [PyGi, the python bindings for Gtk+3](https://wiki.gnome.org/Projects/PyGObject). PyGi is also known as *pygobject3*, just *pygobject* or *python3-gi*.
   * Introspection bindings for poppler may be shipped separately, ensure you have those as well (`typelib-1_0-Poppler-0_18` on OpenSUSE, `gir1.2-poppler-0.18` on Ubuntu)
 * optionally [VLC](https://www.videolan.org/vlc/), to play videos (with the same bitness as Python)
