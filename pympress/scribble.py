@@ -50,6 +50,14 @@ class Scribbler(builder.Builder):
     #: `int` current stroke width of the scribbling tool
     scribble_width = 1
 
+    #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
+    zoom_selecting = False
+    zoom_points = None
+    zoom_factor = 1.
+    zoom_offset = (0, 0)
+    #: :class:`~Gtk.Button` that is clicked to stop zooming, unsensitive when there is no zooming
+    zoom_stop_button = None
+
     #: :class:`~Gtk.HBox` that is replaces normal panes when scribbling is toggled, contains buttons and scribble drawing area
     scribble_overlay = None
     #: :class:`~Gtk.DrawingArea` for the scribbling in the Presenter window. Actually redraws the slide.
@@ -137,6 +145,44 @@ class Scribbler(builder.Builder):
         return True
 
 
+    def start_zooming(self, *args):
+        """ Setup for the user to select the zooming area.
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        self.zoom_selecting = True
+
+        return True
+
+
+    def stop_zooming(self, *args):
+        """ Cancel the zooming, if it was enabled.
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        self.zoom_selecting = False
+        self.zoom_points = None
+        self.zoom_factor = 1.
+        self.zoom_offset = (0, 0)
+        self.zoom_stop_button.set_sensitive(False)
+        self.scribble_c_da.queue_draw()
+        self.scribble_p_da.queue_draw()
+
+        return True
+
+
+    def get_slide_point(self, widget, event):
+        """ Gets the point on the slide on a scale (0..1, 0..1), from its position in the widget.
+        """
+        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+        ex, ey = event.get_coords()
+
+        return ((ex / ww - self.zoom_offset[0]) / self.zoom_factor, (ey / wh - self.zoom_offset[1]) / self.zoom_factor)
+
+
+
     def track_scribble(self, widget, event):
         """ Draw the scribble following the mouse's moves.
 
@@ -148,15 +194,20 @@ class Scribbler(builder.Builder):
             `bool`: whether the event was consumed
         """
         if self.scribble_drawing:
-            ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
-            ex, ey = event.get_coords()
-            self.scribble_list[-1][2].append((ex / ww, ey / wh))
+            self.scribble_list[-1][2].append(self.get_slide_point(widget, event))
 
             self.scribble_c_da.queue_draw()
             self.scribble_p_da.queue_draw()
             return True
-        else:
-            return False
+
+        elif self.zoom_selecting and self.zoom_points:
+            self.zoom_points[1] = self.get_slide_point(widget, event)
+
+            self.scribble_c_da.queue_draw()
+            self.scribble_p_da.queue_draw()
+            return True
+
+        return False
 
 
     def toggle_scribble(self, widget, event):
@@ -169,17 +220,44 @@ class Scribbler(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
-        if not self.scribbling_mode:
-            return False
+        if self.scribbling_mode:
+            if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
+                if self.zoom_selecting:
+                    p = self.get_slide_point(widget, event)
+                    self.zoom_points = [p, p]
+                else:
+                    self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
+                    self.scribble_drawing = True
 
-        if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
-            self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
-            self.scribble_drawing = True
+                return self.track_scribble(widget, event)
 
-            return self.track_scribble(widget, event)
-        elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
-            self.scribble_drawing = False
-            return True
+            elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
+                if self.zoom_selecting and self.zoom_points:
+                    self.zoom_points[1] = self.get_slide_point(widget, event)
+
+                    xmin, xmax = sorted(p[0] for p in self.zoom_points)
+                    ymin, ymax = sorted(p[1] for p in self.zoom_points)
+                    self.zoom_points = None
+
+                    try:
+                        # zoom by dimension less zoomed, to fit box while maintaining aspect ratio
+                        self.zoom_factor = 1. / max(ymax - ymin, xmax - xmin)
+
+                        # make center of drawn rectangle the center of the zoomed slide
+                        self.zoom_offset = (.5 - self.zoom_factor * (xmin + xmax) / 2,
+                                            .5 - self.zoom_factor * (ymin + ymax) / 2)
+                    except ZeroDivisionError:
+                        self.zoom_factor = 1.
+                        self.zoom_offset = (0, 0)
+
+                    # stop drawing rectangles
+                    self.zoom_selecting = False
+                    self.scribble_c_da.queue_draw()
+                    self.scribble_p_da.queue_draw()
+                    self.zoom_stop_button.set_sensitive(True)
+                else:
+                    self.scribble_drawing = False
+                return True
 
         return False
 
@@ -192,6 +270,9 @@ class Scribbler(builder.Builder):
             cairo_context (:class:`~cairo.Context`): The canvas on which to render the drawings
         """
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+
+        cairo_context.translate(ww * self.zoom_offset[0], wh * self.zoom_offset[1])
+        cairo_context.scale(self.zoom_factor, self.zoom_factor)
 
         if widget is not self.scribble_c_da:
             page = self.get_current_page()
@@ -228,6 +309,26 @@ class Scribbler(builder.Builder):
                 cairo_context.line_to(*p)
             cairo_context.stroke()
 
+        if self.zoom_selecting and self.zoom_points and widget is not self.scribble_c_da:
+            xmin, xmax = sorted(p[0] * ww for p in self.zoom_points)
+            ymin, ymax = sorted(p[1] * wh for p in self.zoom_points)
+
+            rect = Gdk.Rectangle()
+            rect.x = xmin
+            rect.width = xmax - xmin
+            rect.y = ymin
+            rect.height = ymax - ymin
+
+            cairo_context.set_line_width(3)
+            cairo_context.set_line_cap(cairo.LINE_CAP_SQUARE)
+            Gdk.cairo_rectangle(cairo_context, rect)
+            cairo_context.set_source_rgba(.1, .1, 1, .4)
+            cairo_context.stroke()
+
+            Gdk.cairo_rectangle(cairo_context, rect)
+            cairo_context.set_source_rgba(.5, .5, 1, .2)
+            cairo_context.fill()
+
 
     def update_color(self, widget):
         """ Callback for the color chooser button, to set scribbling color
@@ -252,6 +353,15 @@ class Scribbler(builder.Builder):
 
 
     def clear_scribble(self, *args):
+        """ Callback for the scribble clear button, to remove all scribbles
+        """
+        del self.scribble_list[:]
+
+        self.redraw_current_slide()
+        self.scribble_p_da.queue_draw()
+
+
+    def clear_zooming(self, *args):
         """ Callback for the scribble clear button, to remove all scribbles
         """
         del self.scribble_list[:]

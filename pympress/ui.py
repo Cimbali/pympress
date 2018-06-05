@@ -686,9 +686,10 @@ class UI(builder.Builder):
 
         self.p_da_next.queue_draw()
 
-        # Remove scribbles and scribbling mode
+        # Remove scribbles and scribbling/zooming modes
         self.scribbler.disable_scribbling()
         self.scribbler.clear_scribble()
+        self.scribbler.stop_zooming()
 
         # Start counter if needed
         if unpause:
@@ -744,6 +745,10 @@ class UI(builder.Builder):
         wtype = self.cache.get_widget_type(name)
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
+        if widget is self.p_da_cur or widget is self.c_da:
+            cairo_context.translate(ww * self.scribbler.zoom_offset[0], wh * self.scribbler.zoom_offset[1])
+            cairo_context.scale(self.scribbler.zoom_factor, self.scribbler.zoom_factor)
+
         if pb is None:
             if self.resize_panes and widget in [self.p_da_next, self.p_da_cur, self.p_da_notes]:
                 # too slow to render here when resize_panes things
@@ -763,6 +768,7 @@ class UI(builder.Builder):
             # Cache hit: draw the surface from the cache to the widget
             cairo_context.set_source_surface(pb, 0, 0)
             cairo_context.paint()
+
 
         if widget is self.c_da or widget is self.p_da_cur:
             self.laser.render_pointer(cairo_context, ww, wh)
@@ -930,13 +936,12 @@ class UI(builder.Builder):
             return self.click_link(widget, event)
 
 
-    def mouse_pos_in_page(self, widget, event, page):
+    def mouse_pos_in_page(self, widget, event):
         """ Normalize event coordinates from widget size and notes mode
 
         Args:
             widget (:class:`~Gtk.Widget`):  the widget that received the click
             event (:class:`~Gdk.Event`):  the GTK event containing the click position
-            page (:class:`~pympress.document.Page`): The page that was clicked
 
         Returns:
             `(float, float)`: the relative position in the full slide
@@ -944,15 +949,17 @@ class UI(builder.Builder):
         x, y = event.get_coords()
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
+        x = (x / ww - self.scribbler.zoom_offset[0]) / self.scribbler.zoom_factor
+        y = (y / wh - self.scribbler.zoom_offset[0]) / self.scribbler.zoom_factor
+
         if not self.notes_mode:
-            # PDF_REGULAR page, the allocated size is the page size
-            return x/ww, y/wh
+            return x, y
         elif widget is self.p_da_notes:
             # PDF_NOTES_PAGE, the allocated size is the right half of the page
-            return (ww + x) / (2 * ww), y / wh
+            return (1 + x) / 2., y
         else:
             # PDF_CONTENT_PAGE, the allocated size is left half of the page
-            return x / (2 * ww), y / wh
+            return x / 2., y
 
 
     def click_link(self, widget, event):
@@ -978,7 +985,7 @@ class UI(builder.Builder):
         else:
             page = self.doc.current_page()
 
-        x, y = self.mouse_pos_in_page(widget, event, page)
+        x, y = self.mouse_pos_in_page(widget, event)
         link = page.get_link_at(x, y)
 
         if event.type == Gdk.EventType.BUTTON_PRESS and link is not None:
@@ -1011,7 +1018,7 @@ class UI(builder.Builder):
         else:
             page = self.doc.current_page()
 
-        x, y = self.mouse_pos_in_page(widget, event, page)
+        x, y = self.mouse_pos_in_page(widget, event)
 
         if page.get_link_at(x, y):
             extras.Cursor.set_cursor(widget, 'pointer')

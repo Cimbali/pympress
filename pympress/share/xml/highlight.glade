@@ -139,6 +139,45 @@
                 <property name="position">4</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkButton" id="zoom_stop_button">
+                <property name="label">gtk-zoom-out</property>
+                <property name="width_request">80</property>
+                <property name="height_request">80</property>
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <property name="always_show_image">True</property>
+                <signal name="clicked" handler="stop_zooming" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="pack_type">end</property>
+                <property name="position">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="zoom_start_button">
+                <property name="label">gtk-zoom-in</property>
+                <property name="width_request">80</property>
+                <property name="height_request">80</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <property name="always_show_image">True</property>
+                <signal name="clicked" handler="start_zooming" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="pack_type">end</property>
+                <property name="position">6</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
