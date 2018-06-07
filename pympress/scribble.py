@@ -34,7 +34,7 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
-from pympress import builder, surfacecache, document
+from pympress import builder, surfacecache, document, extras
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
 
@@ -57,11 +57,15 @@ class Scribbler(builder.Builder):
     zoom_offset = (0, 0)
     #: :class:`~Gtk.Button` that is clicked to stop zooming, unsensitive when there is no zooming
     zoom_stop_button = None
+    #: :class:`~Gtk.MenuItem` that is clicked to stop zooming
+    menu_zoom_out = None
 
     #: :class:`~Gtk.HBox` that is replaces normal panes when scribbling is toggled, contains buttons and scribble drawing area
     scribble_overlay = None
     #: :class:`~Gtk.DrawingArea` for the scribbling in the Content window. On top of existing overlays and slide.
     c_da = None
+    #: :class:`~Gtk.DrawingArea` for the Presenter window. Draws on top of existing overlays and slide.
+    p_da_cur = None
     #: :class:`~Gtk.DrawingArea` for the scribbles in the Presenter window. Actually redraws the slide.
     scribble_p_da = None
     #: :class:`~Gtk.EventBox` for the scribbling in the Content window, captures freehand drawing
@@ -137,7 +141,11 @@ class Scribbler(builder.Builder):
         elif name.upper() == 'Z' and ctrl_pressed:
             self.pop_scribble()
         elif name == 'Escape':
-            self.disable_scribbling()
+            if self.zoom_selecting:
+                self.zoom_selecting = False
+                extras.Cursor.set_cursor(self.p_central)
+            else:
+                self.disable_scribbling()
         else:
             return False
         return True
@@ -150,6 +158,7 @@ class Scribbler(builder.Builder):
             `bool`: whether the event was consumed
         """
         self.zoom_selecting = True
+        extras.Cursor.set_cursor(self.p_central, 'crosshair')
 
         return True
 
@@ -160,12 +169,15 @@ class Scribbler(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
+        extras.Cursor.set_cursor(self.p_central)
         self.zoom_selecting = False
         self.zoom_points = None
         self.zoom_factor = 1.
         self.zoom_offset = (0, 0)
         self.zoom_stop_button.set_sensitive(False)
+        self.menu_zoom_out.set_sensitive(False)
         self.c_da.queue_draw()
+        self.p_da_cur.queue_draw()
         self.scribble_p_da.queue_draw()
 
         return True
@@ -195,6 +207,7 @@ class Scribbler(builder.Builder):
             self.scribble_list[-1][2].append(self.get_slide_point(widget, event))
 
             self.c_da.queue_draw()
+            self.p_da_cur.queue_draw()
             self.scribble_p_da.queue_draw()
             return True
 
@@ -202,6 +215,7 @@ class Scribbler(builder.Builder):
             self.zoom_points[1] = self.get_slide_point(widget, event)
 
             self.c_da.queue_draw()
+            self.p_da_cur.queue_draw()
             self.scribble_p_da.queue_draw()
             return True
 
@@ -218,44 +232,47 @@ class Scribbler(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
-        if self.scribbling_mode:
-            if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
-                if self.zoom_selecting:
-                    p = self.get_slide_point(widget, event)
-                    self.zoom_points = [p, p]
-                else:
-                    self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
-                    self.scribble_drawing = True
+        if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
+            if self.zoom_selecting:
+                p = self.get_slide_point(widget, event)
+                self.zoom_points = [p, p]
+            elif self.scribbling_mode:
+                self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
+                self.scribble_drawing = True
 
-                return self.track_scribble(widget, event)
+            return self.track_scribble(widget, event)
 
-            elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
-                if self.zoom_selecting and self.zoom_points:
-                    self.zoom_points[1] = self.get_slide_point(widget, event)
+        elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
+            if self.zoom_selecting and self.zoom_points:
+                self.zoom_points[1] = self.get_slide_point(widget, event)
 
-                    xmin, xmax = sorted(p[0] for p in self.zoom_points)
-                    ymin, ymax = sorted(p[1] for p in self.zoom_points)
-                    self.zoom_points = None
+                xmin, xmax = sorted(p[0] for p in self.zoom_points)
+                ymin, ymax = sorted(p[1] for p in self.zoom_points)
+                self.zoom_points = None
 
-                    try:
-                        # zoom by dimension less zoomed, to fit box while maintaining aspect ratio
-                        self.zoom_factor = 1. / max(ymax - ymin, xmax - xmin)
+                try:
+                    # zoom by dimension less zoomed, to fit box while maintaining aspect ratio
+                    self.zoom_factor = 1. / max(ymax - ymin, xmax - xmin)
 
-                        # make center of drawn rectangle the center of the zoomed slide
-                        self.zoom_offset = (.5 - self.zoom_factor * (xmin + xmax) / 2,
-                                            .5 - self.zoom_factor * (ymin + ymax) / 2)
-                    except ZeroDivisionError:
-                        self.zoom_factor = 1.
-                        self.zoom_offset = (0, 0)
+                    # make center of drawn rectangle the center of the zoomed slide
+                    self.zoom_offset = (.5 - self.zoom_factor * (xmin + xmax) / 2,
+                                        .5 - self.zoom_factor * (ymin + ymax) / 2)
+                except ZeroDivisionError:
+                    self.zoom_factor = 1.
+                    self.zoom_offset = (0, 0)
 
-                    # stop drawing rectangles
-                    self.zoom_selecting = False
-                    self.c_da.queue_draw()
-                    self.scribble_p_da.queue_draw()
-                    self.zoom_stop_button.set_sensitive(True)
-                else:
-                    self.scribble_drawing = False
-                return True
+                # stop drawing rectangles and reset cursor (NB don't use window, this bugs)
+                extras.Cursor.set_cursor(self.p_central)
+
+                self.zoom_selecting = False
+                self.c_da.queue_draw()
+                self.p_da_cur.queue_draw()
+                self.scribble_p_da.queue_draw()
+                self.zoom_stop_button.set_sensitive(True)
+                self.menu_zoom_out.set_sensitive(True)
+            elif self.scribbling_mode:
+                self.scribble_drawing = False
+            return True
 
         return False
 
@@ -487,6 +504,9 @@ class Scribbler(builder.Builder):
         self.p_central.pack_start(p_layout, True, True, 0)
         self.scribbling_mode = False
         self.pres_highlight.set_active(self.scribbling_mode)
+
+        self.zoom_selecting = False
+        extras.Cursor.set_cursor(self.p_central)
 
         return True
 
