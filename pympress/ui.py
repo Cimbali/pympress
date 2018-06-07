@@ -373,7 +373,7 @@ class UI(builder.Builder):
             event (:class:`~Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
         if widget is self.p_win:
-            p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_frame_cur.get_parent_window())
+            p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_central.get_parent_window())
             self.config.set('presenter', 'monitor', str(p_monitor))
             cw = self.p_central.get_allocated_width()
             ch = self.p_central.get_allocated_height()
@@ -1130,7 +1130,7 @@ class UI(builder.Builder):
         screen = self.p_win.get_screen()
 
         # Though Gtk.Window is a Gtk.Widget get_parent_window() actually returns None on self.{c,p}_win
-        p_monitor = screen.get_monitor_at_window(self.p_frame_cur.get_parent_window())
+        p_monitor = screen.get_monitor_at_window(self.p_central.get_parent_window())
         c_monitor = screen.get_monitor_at_window(self.c_frame.get_parent_window())
 
         if screen.get_n_monitors() == 1 or p_monitor == c_monitor:
