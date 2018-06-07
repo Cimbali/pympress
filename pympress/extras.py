@@ -288,9 +288,10 @@ class Cursor(object):
     #: a static `dict` of :class:`~Gdk.Cursor`s, ready to use
     _cursors = {
         'parent': None,
-        'default': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'default'),
-        'pointer': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'pointer'),
-        'invisible': Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'none'),
+        'default': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.LEFT_PTR),
+        'pointer': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.HAND1),
+        'crosshair': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.CROSSHAIR),
+        'invisible': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.BLANK_CURSOR),
     }
 
     @classmethod
