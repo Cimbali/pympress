@@ -60,19 +60,17 @@ class Scribbler(builder.Builder):
 
     #: :class:`~Gtk.HBox` that is replaces normal panes when scribbling is toggled, contains buttons and scribble drawing area
     scribble_overlay = None
-    #: :class:`~Gtk.DrawingArea` for the scribbling in the Presenter window. Actually redraws the slide.
-    scribble_c_da = None
-    #: :class:`~Gtk.DrawingArea` for the scribbles in the Content window. On top of existing overlays and slide.
+    #: :class:`~Gtk.DrawingArea` for the scribbling in the Content window. On top of existing overlays and slide.
+    c_da = None
+    #: :class:`~Gtk.DrawingArea` for the scribbles in the Presenter window. Actually redraws the slide.
     scribble_p_da = None
-    #: :class:`~Gtk.EventBox` for the scribbling in the Presenter window, captures freehand drawing
-    scribble_c_eb = None
     #: :class:`~Gtk.EventBox` for the scribbling in the Content window, captures freehand drawing
+    scribble_c_eb = None
+    #: :class:`~Gtk.EventBox` for the scribbling in the Presenter window, captures freehand drawing
     scribble_p_eb = None
     #: :class:`~Gtk.AspectFrame` for the slide in the Presenter's highlight mode
     scribble_p_frame = None
 
-    #: :class:`~Gtk.Overlay` for the Content window.
-    c_overlay = None
     #: A :class:`~Gtk.OffscreenWindow` where we render the scribbling interface when it's not shown
     off_render = None
     #: :class:`~Gtk.Box` in the Presenter window, where we insert scribbling.
@@ -167,7 +165,7 @@ class Scribbler(builder.Builder):
         self.zoom_factor = 1.
         self.zoom_offset = (0, 0)
         self.zoom_stop_button.set_sensitive(False)
-        self.scribble_c_da.queue_draw()
+        self.c_da.queue_draw()
         self.scribble_p_da.queue_draw()
 
         return True
@@ -196,14 +194,14 @@ class Scribbler(builder.Builder):
         if self.scribble_drawing:
             self.scribble_list[-1][2].append(self.get_slide_point(widget, event))
 
-            self.scribble_c_da.queue_draw()
+            self.c_da.queue_draw()
             self.scribble_p_da.queue_draw()
             return True
 
         elif self.zoom_selecting and self.zoom_points:
             self.zoom_points[1] = self.get_slide_point(widget, event)
 
-            self.scribble_c_da.queue_draw()
+            self.c_da.queue_draw()
             self.scribble_p_da.queue_draw()
             return True
 
@@ -252,7 +250,7 @@ class Scribbler(builder.Builder):
 
                     # stop drawing rectangles
                     self.zoom_selecting = False
-                    self.scribble_c_da.queue_draw()
+                    self.c_da.queue_draw()
                     self.scribble_p_da.queue_draw()
                     self.zoom_stop_button.set_sensitive(True)
                 else:
@@ -271,10 +269,53 @@ class Scribbler(builder.Builder):
         """
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
+        cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
+
+        for color, width, points in self.scribble_list:
+            points = [(p[0] * ww, p[1] * wh) for p in points]
+
+            cairo_context.set_source_rgba(*color)
+            cairo_context.set_line_width(width)
+            cairo_context.move_to(*points[0])
+
+            for p in points[1:]:
+                cairo_context.line_to(*p)
+            cairo_context.stroke()
+
+        if self.zoom_selecting and self.zoom_points and widget is not self.c_da:
+            xmin, xmax = sorted(p[0] * ww for p in self.zoom_points)
+            ymin, ymax = sorted(p[1] * wh for p in self.zoom_points)
+
+            rect = Gdk.Rectangle()
+            rect.x = xmin
+            rect.width = xmax - xmin
+            rect.y = ymin
+            rect.height = ymax - ymin
+
+            cairo_context.set_line_width(3)
+            cairo_context.set_line_cap(cairo.LINE_CAP_SQUARE)
+            Gdk.cairo_rectangle(cairo_context, rect)
+            cairo_context.set_source_rgba(.1, .1, 1, .4)
+            cairo_context.stroke()
+
+            Gdk.cairo_rectangle(cairo_context, rect)
+            cairo_context.set_source_rgba(.5, .5, 1, .2)
+            cairo_context.fill()
+
+
+    def draw_scribble_da(self, widget, cairo_context):
+        """ Paint the slide where the user can draw scribbles.
+
+        Args:
+            widget (:class:`~Gtk.DrawingArea`): The widget where to draw the scribbles.
+            cairo_context (:class:`~cairo.Context`): The canvas on which to render the drawings
+        """
+        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+
         cairo_context.translate(ww * self.zoom_offset[0], wh * self.zoom_offset[1])
         cairo_context.scale(self.zoom_factor, self.zoom_factor)
 
-        if widget is not self.scribble_c_da:
+        if widget is not self.c_da:
             page = self.get_current_page()
             wtype = PDF_CONTENT_PAGE if self.get_notes_mode() else PDF_REGULAR
             nb = page.number()
@@ -296,39 +337,7 @@ class Scribbler(builder.Builder):
                 cairo_context.set_source_surface(pb, 0, 0)
                 cairo_context.paint()
 
-        cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
-
-        for color, width, points in self.scribble_list:
-            points = [(p[0] * ww, p[1] * wh) for p in points]
-
-            cairo_context.set_source_rgba(*color)
-            cairo_context.set_line_width(width)
-            cairo_context.move_to(*points[0])
-
-            for p in points[1:]:
-                cairo_context.line_to(*p)
-            cairo_context.stroke()
-
-        if self.zoom_selecting and self.zoom_points and widget is not self.scribble_c_da:
-            xmin, xmax = sorted(p[0] * ww for p in self.zoom_points)
-            ymin, ymax = sorted(p[1] * wh for p in self.zoom_points)
-
-            rect = Gdk.Rectangle()
-            rect.x = xmin
-            rect.width = xmax - xmin
-            rect.y = ymin
-            rect.height = ymax - ymin
-
-            cairo_context.set_line_width(3)
-            cairo_context.set_line_cap(cairo.LINE_CAP_SQUARE)
-            Gdk.cairo_rectangle(cairo_context, rect)
-            cairo_context.set_source_rgba(.1, .1, 1, .4)
-            cairo_context.stroke()
-
-            Gdk.cairo_rectangle(cairo_context, rect)
-            cairo_context.set_source_rgba(.5, .5, 1, .2)
-            cairo_context.fill()
-
+        self.draw_scribble(widget, cairo_context)
 
     def update_color(self, widget):
         """ Callback for the color chooser button, to set scribbling color
@@ -453,10 +462,6 @@ class Scribbler(builder.Builder):
         self.off_render.add(p_layout)
 
         self.p_central.queue_draw()
-
-        # Also make sure our overlay on Content window is visible
-        self.c_overlay.reorder_overlay(self.scribble_c_eb, 1)
-        self.c_overlay.show_all()
 
         self.scribbling_mode = True
         self.pres_highlight.set_active(self.scribbling_mode)

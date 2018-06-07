@@ -771,9 +771,8 @@ class UI(builder.Builder):
 
 
         if widget is self.c_da or widget is self.p_da_cur:
+            self.scribbler.draw_scribble(widget, cairo_context)
             self.laser.render_pointer(cairo_context, ww, wh)
-
-        cairo_context.paint()
 
 
     def redraw_current_slide(self):

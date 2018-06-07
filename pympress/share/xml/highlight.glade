@@ -29,7 +29,7 @@
                     <property name="name">scribble_p_da</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <signal name="draw" handler="draw_scribble" swapped="no"/>
+                    <signal name="draw" handler="draw_scribble_da" swapped="no"/>
                     <signal name="configure-event" handler="on_configure_da" swapped="no"/>
                   </object>
                 </child>
