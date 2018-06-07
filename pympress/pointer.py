@@ -116,6 +116,7 @@ class Pointer(object):
             x = ww * self.pointer_pos[0] - self.pointer.get_width() / 2
             y = wh * self.pointer_pos[1] - self.pointer.get_height() / 2
             Gdk.cairo_set_source_pixbuf(cairo_context, self.pointer, x, y)
+            cairo_context.paint()
 
 
     def track_pointer(self, widget, event):
