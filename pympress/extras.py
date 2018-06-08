@@ -408,6 +408,20 @@ class Zoom(object):
         return ((ex / ww - self.shift[0]) / self.scale, (ey / wh - self.shift[1]) / self.scale)
 
 
+    def get_matrix(self, ww, wh):
+        """ Returns the :class:`~cairo.Matrix` used to perform the zoom for the widget of size ww x wh.
+
+        Args:
+            ww (`float`):  widget width
+            wh (`float`):  widget height
+
+        Returns:
+            :class:`~cairo.Matrix`: the zoom transformation matrix
+        """
+        return cairo.Matrix(xx = self.scale, x0 = ww * self.shift[0],
+                            yy = self.scale, y0 = wh * self.shift[1])
+
+
     def track_zoom_target(self, widget, event):
         """ Draw the zoom's target rectangle.
 

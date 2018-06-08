@@ -752,11 +752,10 @@ class UI(builder.Builder):
 
         if self.zoom.scale != 1. and (widget is self.p_da_cur or widget is self.c_da
                                       or widget is self.scribbler.scribble_p_da):
-            zoom = cairo.Matrix(xx = self.zoom.scale, x0 = ww * self.zoom.shift[0],
-                                yy = self.zoom.scale, y0 = wh * self.zoom.shift[1])
+            zoom_matrix = self.zoom.get_matrix(ww, wh)
             name += '_zoomed'
         else:
-            zoom = cairo.Matrix()
+            zoom_matrix = cairo.Matrix()
 
         pb = self.cache.get(name, nb)
         if pb is None:
@@ -768,7 +767,7 @@ class UI(builder.Builder):
             pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
 
             cairo_prerender = cairo.Context(pb)
-            cairo_prerender.transform(zoom)
+            cairo_prerender.transform(zoom_matrix)
             page.render_cairo(cairo_prerender, ww, wh, wtype)
 
             self.cache.set(name, nb, pb)
@@ -782,12 +781,15 @@ class UI(builder.Builder):
 
         if widget is self.c_da or widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
             cairo_context.save()
-            cairo_context.transform(zoom)
+            cairo_context.transform(zoom_matrix)
+
             self.scribbler.draw_scribble(widget, cairo_context)
             self.zoom.draw_zoom_target(widget, cairo_context)
+
             cairo_context.restore()
 
         if widget is self.c_da or widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
+            # do not use the zoom matrix for the pointer, it is relative to the screen not the slide
             self.laser.render_pointer(cairo_context, ww, wh)
 
 
