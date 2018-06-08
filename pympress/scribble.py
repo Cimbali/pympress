@@ -52,8 +52,6 @@ class Scribbler(builder.Builder):
 
     #: :class:`~Gtk.HBox` that is replaces normal panes when scribbling is toggled, contains buttons and scribble drawing area
     scribble_overlay = None
-    #: :class:`~Gtk.DrawingArea` for the scribbling in the Content window. On top of existing overlays and slide.
-    c_da = None
     #: :class:`~Gtk.DrawingArea` for the scribbles in the Presenter window. Actually redraws the slide.
     scribble_p_da = None
     #: :class:`~Gtk.EventBox` for the scribbling in the Content window, captures freehand drawing
@@ -71,13 +69,15 @@ class Scribbler(builder.Builder):
     #: :class:`~Gtk.CheckMenuItem` that shows whether the scribbling is toggled
     pres_highlight = None
 
-    #: :class:`~pympress.surfacecache.SurfaceCache` instance.
-    cache = None
+    #: callback, to be connected to :func:`~pympress.surfacecache.SurfaceCache.resize_widget`
+    resize_cache = lambda: None
+    #: callback, to be connected to :func:`~pympress.ui.UI.on_draw`
+    on_draw = lambda: None
+    #: callback, to be connected to :func:`~pympress.ui.UI.track_motions`
+    track_motions = lambda: None
+    #: callback, to be connected to :func:`~pympress.ui.UI.track_clicks`
+    track_clicks = lambda: None
 
-    #: callback, to be connected to :func:`~pympress.document.Document.current_page`
-    get_current_page = lambda: None
-    #: callback, to be connected to :func:`~pympress.ui.UI.notes_mode`
-    get_notes_mode = lambda: None
     #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
     redraw_current_slide = lambda: None
 
@@ -92,20 +92,19 @@ class Scribbler(builder.Builder):
         super(Scribbler, self).__init__()
 
         self.load_ui('highlight')
-        self.connect_signals(self)
         builder.load_widgets(self)
 
-        self.get_notes_mode = builder.get_callback_handler('get_notes_mode')
-        self.get_current_page = builder.get_callback_handler('doc.current_page')
+        self.on_draw = builder.get_callback_handler('on_draw')
+        self.track_motions = builder.get_callback_handler('track_motions')
+        self.track_clicks = builder.get_callback_handler('track_clicks')
         self.redraw_current_slide = builder.get_callback_handler('redraw_current_slide')
+        self.resize_cache = builder.get_callback_handler('cache.resize_widget')
 
-        # Surface cache
-        self.cache = surfacecache.SurfaceCache(document.EmptyDocument(), config.getint('cache', 'maxpages'))
+        self.connect_signals(self)
 
         self.scribble_color = Gdk.RGBA()
         self.scribble_color.parse(config.get('scribble', 'color'))
         self.scribble_width = config.getint('scribble', 'width')
-        self.cache.add_widget(self.scribble_p_da, PDF_CONTENT_PAGE if notes_mode else PDF_REGULAR, False)
 
         self.config = config
 
@@ -150,8 +149,7 @@ class Scribbler(builder.Builder):
             ex, ey = event.get_coords()
             self.scribble_list[-1][2].append((ex / ww, ey / wh))
 
-            self.c_da.queue_draw()
-            self.scribble_p_da.queue_draw()
+            self.redraw_current_slide()
             return True
         else:
             return False
@@ -205,42 +203,6 @@ class Scribbler(builder.Builder):
             cairo_context.stroke()
 
 
-    def draw_scribble_da(self, widget, cairo_context):
-        """ Paint the slide where the user can draw scribbles.
-
-        Args:
-            widget (:class:`~Gtk.DrawingArea`): The widget where to draw the scribbles.
-            cairo_context (:class:`~cairo.Context`): The canvas on which to render the drawings
-        """
-        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
-
-        cairo_context.translate(ww * self.zoom_offset[0], wh * self.zoom_offset[1])
-        cairo_context.scale(self.zoom_factor, self.zoom_factor)
-
-        if widget is not self.c_da:
-            page = self.get_current_page()
-            wtype = PDF_CONTENT_PAGE if self.get_notes_mode() else PDF_REGULAR
-            nb = page.number()
-            pb = self.cache.get("scribble_p_da", nb)
-
-            if pb is None:
-                # Cache miss: render the page, and save it to the cache
-                pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
-
-                cairo_prerender = cairo.Context(pb)
-                page.render_cairo(cairo_prerender, ww, wh, wtype)
-
-                cairo_context.set_source_surface(pb, 0, 0)
-                cairo_context.paint()
-
-                self.cache.set("scribble_p_da", nb, pb)
-            else:
-                # Cache hit: draw the surface from the cache to the widget
-                cairo_context.set_source_surface(pb, 0, 0)
-                cairo_context.paint()
-
-        self.draw_scribble(widget, cairo_context)
-
     def update_color(self, widget):
         """ Callback for the color chooser button, to set scribbling color
 
@@ -269,7 +231,6 @@ class Scribbler(builder.Builder):
         del self.scribble_list[:]
 
         self.redraw_current_slide()
-        self.scribble_p_da.queue_draw()
 
 
     def pop_scribble(self, *args):
@@ -279,7 +240,6 @@ class Scribbler(builder.Builder):
             self.scribble_list.pop()
 
         self.redraw_current_slide()
-        self.scribble_p_da.queue_draw()
 
 
     def on_configure_da(self, widget, event):
@@ -293,7 +253,7 @@ class Scribbler(builder.Builder):
         if not event.send_event:
             return
 
-        self.cache.resize_widget(widget.get_name(), event.width, event.height)
+        self.resize_cache(widget.get_name(), event.width, event.height)
 
 
     def switch_scribbling(self, widget, event = None, name = None):
@@ -340,11 +300,6 @@ class Scribbler(builder.Builder):
         """
         if self.scribbling_mode:
             return False
-
-        page = self.get_current_page()
-        wtype = PDF_CONTENT_PAGE if self.get_notes_mode() else PDF_REGULAR
-        pr = page.get_aspect_ratio(wtype)
-        self.scribble_p_frame.set_property('ratio', pr)
 
         p_layout = self.p_central.get_children()[0]
 

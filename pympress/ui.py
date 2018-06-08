@@ -219,7 +219,6 @@ class UI(builder.Builder):
         # Initialize doc last. Use notes mode by default if the document has notes
         if docpath:
             self.swap_document(docpath)
-            self.scribbler.cache.swap_document(docpath)
         else:
             GLib.idle_add(self.pick_file)
 
@@ -279,15 +278,11 @@ class UI(builder.Builder):
         for n in init_checkstates:
             self.get_object(n).set_active(init_checkstates[n])
 
-        if self.notes_mode:
-            self.cache.add_widget(self.p_da_cur, PDF_CONTENT_PAGE)
-            self.cache.add_widget(self.p_da_next, PDF_CONTENT_PAGE)
-            self.cache.add_widget(self.p_da_notes, PDF_NOTES_PAGE)
-        else:
-            self.cache.add_widget(self.p_da_cur, PDF_REGULAR)
-            self.cache.add_widget(self.p_da_next, PDF_REGULAR)
-            self.cache.add_widget(self.p_da_notes, PDF_REGULAR, False)
-
+        slide_type = PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR
+        self.cache.add_widget(self.p_da_cur, slide_type)
+        self.cache.add_widget(self.p_da_next, slide_type)
+        self.cache.add_widget(self.p_da_notes, PDF_NOTES_PAGE if self.notes_mode else PDF_REGULAR, self.notes_mode)
+        self.cache.add_widget(self.scribbler.scribble_p_da, slide_type, False)
 
         # set default value
         self.page_number.set_last(self.doc.pages_number())
@@ -492,7 +487,6 @@ class UI(builder.Builder):
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
-        self.scribbler.cache.swap_document(self.doc)
         self.page_number.set_last(self.doc.pages_number())
         self.medias.purge_media_overlays()
 
@@ -667,18 +661,24 @@ class UI(builder.Builder):
 
         # Aspect ratios and queue redraws
         if not self.notes_mode:
-            page_type = document.PDF_REGULAR
+            notes_type = page_type = document.PDF_REGULAR
         else:
             page_type = document.PDF_CONTENT_PAGE
+            notes_type = document.PDF_NOTES_PAGE
 
-            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(document.PDF_NOTES_PAGE))
-            self.p_da_notes.queue_draw()
+        self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(notes_type))
+        self.p_da_notes.queue_draw()
 
-        self.c_frame.set_property('ratio', page_cur.get_aspect_ratio(page_type))
+        pr = page_cur.get_aspect_ratio(page_type)
+
+        self.c_frame.set_property('ratio', pr)
         self.c_da.queue_draw()
 
-        self.p_frame_cur.set_property('ratio', page_cur.get_aspect_ratio(page_type))
+        self.p_frame_cur.set_property('ratio', pr)
         self.p_da_cur.queue_draw()
+
+        self.scribbler.scribble_p_frame.set_property('ratio', pr)
+        self.scribbler.scribble_p_frame.queue_draw()
 
         if page_next is not None:
             pr = page_next.get_aspect_ratio(page_type)
@@ -724,7 +724,7 @@ class UI(builder.Builder):
             if self.blanked:
                 return
             page = self.doc.page(self.doc.current_page().number())
-        elif widget is self.p_da_notes or widget is self.p_da_cur:
+        elif widget is self.p_da_notes or widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
             # Current page 'preview'
             page = self.doc.page(self.page_preview_nb)
         else:
@@ -764,7 +764,7 @@ class UI(builder.Builder):
             cairo_context.set_source_surface(pb, 0, 0)
             cairo_context.paint()
 
-        if widget is self.c_da or widget is self.p_da_cur:
+        if widget is self.c_da or widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
             self.scribbler.draw_scribble(widget, cairo_context)
             self.laser.render_pointer(cairo_context, ww, wh)
 
@@ -774,6 +774,7 @@ class UI(builder.Builder):
         """
         self.c_da.queue_draw()
         self.p_da_cur.queue_draw()
+        self.scribbler.scribble_p_da.queue_draw()
 
 
     ##############################################################################
@@ -1197,11 +1198,11 @@ class UI(builder.Builder):
             self.cache.set_widget_type("c_da", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
             self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
-            self.scribbler.cache.set_widget_type("scribble_p_da", PDF_REGULAR)
+            self.cache.set_widget_type("scribble_p_da", PDF_REGULAR)
             self.cache.disable_prerender("p_da_cur")
 
-            self.cache.disable_prerender("p_da_notes")
             self.cache.set_widget_type("p_da_notes", PDF_REGULAR)
+            self.cache.enable_prerender("p_da_notes")
 
             self.config.update_notes_layout(self.p_central.get_children()[0], self.pane_handle_pos)
             pane_handles = self.replace_layout(self.config.get_plain_layout(), self.p_central, self.placeable_widgets, self.on_pane_event)
@@ -1213,7 +1214,7 @@ class UI(builder.Builder):
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_cur", PDF_CONTENT_PAGE)
-            self.scribbler.cache.set_widget_type("scribble_p_da", PDF_CONTENT_PAGE)
+            self.cache.set_widget_type("scribble_p_da", PDF_CONTENT_PAGE)
             self.cache.enable_prerender("p_da_cur")
 
             self.cache.set_widget_type("p_da_notes", PDF_NOTES_PAGE)
