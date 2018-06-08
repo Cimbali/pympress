@@ -81,6 +81,8 @@ class Scribbler(builder.Builder):
 
     #: callback, to be connected to :func:`~pympress.surfacecache.SurfaceCache.resize_widget`
     resize_cache = lambda: None
+    #: callback, to be connected to :func:`~pympress.surfacecache.SurfaceCache.clear_cache
+    clear_cache = lambda: None
     #: callback, to be connected to :func:`~pympress.ui.UI.on_draw`
     on_draw = lambda: None
     #: callback, to be connected to :func:`~pympress.ui.UI.track_motions`
@@ -109,6 +111,7 @@ class Scribbler(builder.Builder):
         self.track_clicks = builder.get_callback_handler('track_clicks')
         self.redraw_current_slide = builder.get_callback_handler('redraw_current_slide')
         self.resize_cache = builder.get_callback_handler('cache.resize_widget')
+        self.clear_cache = builder.get_callback_handler('clear_zoom_cache')
 
         self.connect_signals(self)
 
@@ -175,6 +178,7 @@ class Scribbler(builder.Builder):
         self.menu_zoom_out.set_sensitive(False)
 
         self.redraw_current_slide()
+        self.clear_cache()
 
         return True
 
@@ -292,6 +296,7 @@ class Scribbler(builder.Builder):
             extras.Cursor.set_cursor(self.p_central)
 
             self.zoom_selecting = False
+            self.clear_cache()
             self.redraw_current_slide()
             self.zoom_stop_button.set_sensitive(True)
             self.menu_zoom_out.set_sensitive(True)

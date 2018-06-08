@@ -245,6 +245,7 @@ class UI(builder.Builder):
             page_type = document.PDF_REGULAR
 
         self.cache.add_widget(self.c_da, page_type)
+        self.cache.add_widget(self.c_da, page_type, zoomed = True)
         self.c_frame.set_property("ratio", self.doc.current_page().get_aspect_ratio(page_type))
 
 
@@ -280,9 +281,12 @@ class UI(builder.Builder):
 
         slide_type = PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR
         self.cache.add_widget(self.p_da_cur, slide_type)
+        self.cache.add_widget(self.p_da_cur, slide_type, zoomed = True)
         self.cache.add_widget(self.p_da_next, slide_type)
-        self.cache.add_widget(self.p_da_notes, PDF_NOTES_PAGE if self.notes_mode else PDF_REGULAR, self.notes_mode)
-        self.cache.add_widget(self.scribbler.scribble_p_da, slide_type, False)
+        self.cache.add_widget(self.p_da_notes, PDF_NOTES_PAGE if self.notes_mode else PDF_REGULAR,
+                                               prerender_enabled = self.notes_mode)
+        self.cache.add_widget(self.scribbler.scribble_p_da, slide_type, prerender_enabled = False)
+        self.cache.add_widget(self.scribbler.scribble_p_da, slide_type, zoomed = True)
 
         # set default value
         self.page_number.set_last(self.doc.pages_number())
@@ -737,18 +741,20 @@ class UI(builder.Builder):
         if not page.can_render():
             return
 
-        # Instead of rendering the document to a Cairo surface (which is slow),
-        # use a surface from the cache if possible.
         name = widget.get_name()
         nb = page.number()
-        pb = self.cache.get(name, nb)
         wtype = self.cache.get_widget_type(name)
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
-        if widget is self.p_da_cur or widget is self.c_da or widget is self.scribbler.scribble_p_da:
-            cairo_context.translate(ww * self.scribbler.zoom_offset[0], wh * self.scribbler.zoom_offset[1])
-            cairo_context.scale(self.scribbler.zoom_factor, self.scribbler.zoom_factor)
+        if self.scribbler.zoom_factor != 1. and (widget is self.p_da_cur or widget is self.c_da
+                                                or widget is self.scribbler.scribble_p_da):
+            zoom = cairo.Matrix(xx = self.scribbler.zoom_factor, x0 = ww * self.scribbler.zoom_offset[0],
+                                yy = self.scribbler.zoom_factor, y0 = wh * self.scribbler.zoom_offset[1])
+            name += '_zoomed'
+        else:
+            zoom = cairo.Matrix()
 
+        pb = self.cache.get(name, nb)
         if pb is None:
             if self.resize_panes and widget in [self.p_da_next, self.p_da_cur, self.p_da_notes]:
                 # too slow to render here when resize_panes things
@@ -758,6 +764,7 @@ class UI(builder.Builder):
             pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
 
             cairo_prerender = cairo.Context(pb)
+            cairo_prerender.transform(zoom)
             page.render_cairo(cairo_prerender, ww, wh, wtype)
 
             self.cache.set(name, nb, pb)
@@ -769,12 +776,23 @@ class UI(builder.Builder):
             cairo_context.set_source_surface(pb, 0, 0)
             cairo_context.paint()
 
-        if widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
+        if widget is self.c_da or widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
+            cairo_context.save()
+            cairo_context.transform(zoom)
             self.scribbler.draw_scribble(widget, cairo_context)
             self.scribbler.draw_zoom_target(widget, cairo_context)
+            cairo_context.restore()
 
         if widget is self.c_da or widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
             self.laser.render_pointer(cairo_context, ww, wh)
+
+
+    def clear_zoom_cache(self):
+        """ Callback to clear the cache of zoomed widgets.
+        """
+        self.cache.clear_cache(self.c_da.get_name() + '_zoomed')
+        self.cache.clear_cache(self.p_da_cur.get_name() + '_zoomed')
+        self.cache.clear_cache(self.scribbler.scribble_p_da.get_name() + '_zoomed')
 
 
     def redraw_current_slide(self):
@@ -1205,8 +1223,10 @@ class UI(builder.Builder):
         if self.notes_mode:
             self.notes_mode = False
             self.cache.set_widget_type("c_da", PDF_REGULAR)
+            self.cache.set_widget_type("c_da_zoomed", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
             self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
+            self.cache.set_widget_type("p_da_cur_zoomed", PDF_REGULAR)
             self.cache.set_widget_type("scribble_p_da", PDF_REGULAR)
             self.cache.disable_prerender("p_da_cur")
 
@@ -1221,8 +1241,10 @@ class UI(builder.Builder):
         else:
             self.notes_mode = True
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
+            self.cache.set_widget_type("c_da_zoomed", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_cur", PDF_CONTENT_PAGE)
+            self.cache.set_widget_type("p_da_cur_zoomed", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("scribble_p_da", PDF_CONTENT_PAGE)
             self.cache.enable_prerender("p_da_cur")
 

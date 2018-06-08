@@ -109,7 +109,7 @@ class SurfaceCache(object):
         self.doc_lock = threading.Lock()
 
 
-    def add_widget(self, widget, wtype, start_enabled = True):
+    def add_widget(self, widget, wtype, prerender_enabled = True, zoomed = False):
         """ Add a widget to the list of widgets that have to be managed (for caching and prerendering).
 
         This creates new entries for ``widget_name`` in the needed internal data
@@ -118,16 +118,16 @@ class SurfaceCache(object):
         Args:
             widget (:class:`~Gtk.Widget`):  The widget for which we need to cache
             wtype (`int`):  type of document handled by the widget (see :attr:`surface_type`)
-            start_enabled (`bool`):  whether this widget is initially in the list of widgets to prerender
+            prerender_enabled (`bool`):  whether this widget is initially in the list of widgets to prerender
         """
-        widget_name = widget.get_name()
-        self.surface_cache[widget_name] = OrderedDict()
-        self.surface_size[widget_name] = (-1, -1)
-        self.surface_type[widget_name] = wtype
-        self.locks[widget_name] = threading.Lock()
-        self.surface_factory[widget_name] = lambda c, w, h: widget.get_window().create_similar_surface(c, w, h)
-        if start_enabled:
-            self.enable_prerender(widget_name)
+        widget_name = widget.get_name() + ('_zoomed' if zoomed else '')
+        with self.locks.setdefault(widget_name, threading.Lock()):
+            self.surface_cache[widget_name] = OrderedDict()
+            self.surface_size[widget_name] = (-1, -1)
+            self.surface_type[widget_name] = wtype
+            self.surface_factory[widget_name] = lambda c, w, h: widget.get_window().create_similar_surface(c, w, h)
+            if prerender_enabled and not zoomed:
+                self.enable_prerender(widget_name)
 
 
     def swap_document(self, new_doc):
@@ -188,6 +188,16 @@ class SurfaceCache(object):
             `int`: type of document handled by the widget (see :attr:`surface_type`)
         """
         return self.surface_type[widget_name]
+
+
+    def clear_cache(self, widget_name):
+        """ Remove all cached values for a given widget. Useful for zoomed views.
+
+        Args:
+            widget_name (`str`):  name of the widget that is resized
+        """
+        with self.locks[widget_name]:
+            self.surface_cache[widget_name].clear()
 
 
     def resize_widget(self, widget_name, width, height):
