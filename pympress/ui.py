@@ -145,6 +145,8 @@ class UI(builder.Builder):
     annotations = None
     #: Class :class:`~pympress.extras.Media` managing keeping track of and callbacks on media overlays
     medias = None
+    #: Class :class:`~pympress.extras.Zoom` managing the zoom level of the current slide.
+    zoom = None
 
     #: Software-implemented laser pointer, :class:`~pympress.pointer.Pointer`
     laser = None
@@ -181,6 +183,7 @@ class UI(builder.Builder):
         self.load_ui('presenter')
         self.load_ui('content')
 
+        self.zoom = extras.Zoom(self)
         self.scribbler = scribble.Scribbler(self.config, self, self.notes_mode)
         self.annotations = extras.Annotations(self)
         self.medias = extras.Media(self)
@@ -191,6 +194,7 @@ class UI(builder.Builder):
 
         # solve circular creation-time dependency
         self.est_time.delayed_callback_connection(self)
+        self.zoom.delayed_callback_connection(self.scribbler)
 
         # Get placeable widgets. NB, ids are slightly shorter than names.
         self.placeable_widgets = {
@@ -693,7 +697,7 @@ class UI(builder.Builder):
         # Remove scribbles and scribbling/zooming modes
         self.scribbler.disable_scribbling()
         self.scribbler.clear_scribble()
-        self.scribbler.stop_zooming()
+        self.zoom.stop_zooming()
 
         # Start counter if needed
         if unpause:
@@ -746,10 +750,10 @@ class UI(builder.Builder):
         wtype = self.cache.get_widget_type(name)
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
-        if self.scribbler.zoom_factor != 1. and (widget is self.p_da_cur or widget is self.c_da
-                                                or widget is self.scribbler.scribble_p_da):
-            zoom = cairo.Matrix(xx = self.scribbler.zoom_factor, x0 = ww * self.scribbler.zoom_offset[0],
-                                yy = self.scribbler.zoom_factor, y0 = wh * self.scribbler.zoom_offset[1])
+        if self.zoom.scale != 1. and (widget is self.p_da_cur or widget is self.c_da
+                                      or widget is self.scribbler.scribble_p_da):
+            zoom = cairo.Matrix(xx = self.zoom.scale, x0 = ww * self.zoom.shift[0],
+                                yy = self.zoom.scale, y0 = wh * self.zoom.shift[1])
             name += '_zoomed'
         else:
             zoom = cairo.Matrix()
@@ -780,7 +784,7 @@ class UI(builder.Builder):
             cairo_context.save()
             cairo_context.transform(zoom)
             self.scribbler.draw_scribble(widget, cairo_context)
-            self.scribbler.draw_zoom_target(widget, cairo_context)
+            self.zoom.draw_zoom_target(widget, cairo_context)
             cairo_context.restore()
 
         if widget is self.c_da or widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
@@ -827,6 +831,8 @@ class UI(builder.Builder):
         if self.page_number.on_keypress(widget, event):
             return True
         elif self.est_time.on_keypress(widget, event):
+            return True
+        elif self.zoom.nav_zoom(name, ctrl_pressed):
             return True
         elif self.scribbler.nav_scribble(name, ctrl_pressed):
             return True
@@ -928,7 +934,7 @@ class UI(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
-        if self.scribbler.track_zoom_target(widget, event):
+        if self.zoom.track_zoom_target(widget, event):
             return True
         elif self.scribbler.track_scribble(widget, event):
             return True
@@ -950,7 +956,7 @@ class UI(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
-        if self.scribbler.toggle_zoom_target(widget, event):
+        if self.zoom.toggle_zoom_target(widget, event):
             return True
         elif self.scribbler.toggle_scribble(widget, event):
             return True
@@ -970,7 +976,7 @@ class UI(builder.Builder):
         Returns:
             `(float, float)`: the relative position in the full slide
         """
-        x, y = self.scribbler.get_slide_point(widget, event)
+        x, y = self.zoom.get_slide_point(widget, event)
 
         if not self.notes_mode:
             return x, y

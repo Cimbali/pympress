@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 import sys
 import gi
+import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib, Pango
 
@@ -305,3 +306,203 @@ class Cursor(object):
         widget.get_window().set_cursor(cls._cursors[cursor_name])
 
 
+class Zoom(object):
+    #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
+    zoom_selecting = False
+    zoom_points = None
+    scale = 1.
+    shift = (0, 0)
+
+    #: a callback for the :func:`~Gtk.Button.set_sensitive` function of the zoom-out button in the scribble interface
+    set_scribble_zoomout_sensitive = lambda: None
+    #: :class:`~Gtk.MenuItem` that is clicked to stop zooming
+    menu_zoom_out = None
+    #: :class:`~Gtk.Box` in the Presenter window, used to reliably set cursors.
+    p_central = None
+
+    #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
+    redraw_current_slide = lambda: None
+    #: callback, to be connected to :func:`~pympress.ui.UI.clear_cache`
+    clear_cache = lambda: None
+
+    def __init__(self, builder):
+        """ Setup all the necessary for zooming
+
+        Args:
+            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+        """
+        super(Zoom, self).__init__()
+        builder.load_widgets(self)
+
+        self.redraw_current_slide = builder.get_callback_handler('redraw_current_slide')
+        self.clear_cache = builder.get_callback_handler('clear_zoom_cache')
+
+
+    def delayed_callback_connection(self, scribble_builder):
+        """ Connect callbacks later than at init, due to circular dependencies.
+        Call this when the page_number module is initialized, but before needing the callback.
+
+        Args:
+            builder (builder.Builder): The builder from which to load widgets for scribble
+        """
+        self.set_scribble_zoomout_sensitive = scribble_builder.get_callback_handler('zoom_stop_button.set_sensitive')
+
+
+    def start_zooming(self, *args):
+        """ Setup for the user to select the zooming area.
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        self.zoom_selecting = True
+        Cursor.set_cursor(self.p_central, 'crosshair')
+
+        return True
+
+
+    def stop_zooming(self, *args):
+        """ Cancel the zooming, if it was enabled.
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        Cursor.set_cursor(self.p_central)
+        self.zoom_selecting = False
+        self.zoom_points = None
+        self.scale = 1.
+        self.shift = (0, 0)
+        self.set_scribble_zoomout_sensitive(False)
+        self.menu_zoom_out.set_sensitive(False)
+
+        self.redraw_current_slide()
+        self.clear_cache()
+
+        return True
+
+
+    def nav_zoom(self, name, ctrl_pressed):
+        """ Handles an key press event: stop trying to select an area to zoom.
+
+        Args:
+            name (`str`): The name of the key pressed
+            ctrl_pressed (`bool`): whether the ctrl modifier key was pressed
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        if name == 'Escape' and self.zoom_selecting:
+            Cursor.set_cursor(self.p_central)
+            self.zoom_selecting = False
+            self.zoom_points = None
+            return True
+
+        return False
+
+
+    def get_slide_point(self, widget, event):
+        """ Gets the point on the slide on a scale (0..1, 0..1), from its position in the widget.
+        """
+        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+        ex, ey = event.get_coords()
+
+        return ((ex / ww - self.shift[0]) / self.scale, (ey / wh - self.shift[1]) / self.scale)
+
+
+    def track_zoom_target(self, widget, event):
+        """ Draw the zoom's target rectangle.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        if self.zoom_selecting and self.zoom_points:
+            self.zoom_points[1] = self.get_slide_point(widget, event)
+
+            self.redraw_current_slide()
+            return True
+
+        return False
+
+
+    def toggle_zoom_target(self, widget, event):
+        """ Start/stop drawing the zoom's target rectangle.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        if not self.zoom_selecting:
+            return False
+
+        if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
+            p = self.get_slide_point(widget, event)
+            self.zoom_points = [p, p]
+
+            return self.track_zoom_target(widget, event)
+
+        elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE and self.zoom_points:
+            self.zoom_points[1] = self.get_slide_point(widget, event)
+
+            xmin, xmax = sorted(p[0] for p in self.zoom_points)
+            ymin, ymax = sorted(p[1] for p in self.zoom_points)
+            self.zoom_points = None
+
+            try:
+                # zoom by dimension less zoomed, to fit box while maintaining aspect ratio
+                self.scale = 1. / max(ymax - ymin, xmax - xmin)
+
+                # make center of drawn rectangle the center of the zoomed slide
+                self.shift = (.5 - self.scale * (xmin + xmax) / 2,
+                                    .5 - self.scale * (ymin + ymax) / 2)
+            except ZeroDivisionError:
+                self.scale = 1.
+                self.shift = (0, 0)
+
+            # stop drawing rectangles and reset cursor (NB don't use window, this bugs)
+            Cursor.set_cursor(self.p_central)
+
+            self.zoom_selecting = False
+            self.clear_cache()
+            self.redraw_current_slide()
+            self.set_scribble_zoomout_sensitive(True)
+            self.menu_zoom_out.set_sensitive(True)
+
+            return True
+
+        return False
+
+
+    def draw_zoom_target(self, widget, cairo_context):
+        """ Perform the drawings by user.
+
+        Args:
+            widget (:class:`~Gtk.DrawingArea`): The widget where to draw the scribbles.
+            cairo_context (:class:`~cairo.Context`): The canvas on which to render the drawings
+        """
+        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+
+        if self.zoom_selecting and self.zoom_points:
+            xmin, xmax = sorted(p[0] * ww for p in self.zoom_points)
+            ymin, ymax = sorted(p[1] * wh for p in self.zoom_points)
+
+            rect = Gdk.Rectangle()
+            rect.x = xmin
+            rect.width = xmax - xmin
+            rect.y = ymin
+            rect.height = ymax - ymin
+
+            cairo_context.set_line_width(3)
+            cairo_context.set_line_cap(cairo.LINE_CAP_SQUARE)
+            Gdk.cairo_rectangle(cairo_context, rect)
+            cairo_context.set_source_rgba(.1, .1, 1, .4)
+            cairo_context.stroke()
+
+            Gdk.cairo_rectangle(cairo_context, rect)
+            cairo_context.set_source_rgba(.5, .5, 1, .2)
+            cairo_context.fill()

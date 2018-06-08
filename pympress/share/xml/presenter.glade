@@ -283,7 +283,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">_Zoom in</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="scribbler.start_zooming" swapped="no"/>
+                        <signal name="activate" handler="zoom.start_zooming" swapped="no"/>
                         <accelerator key="z" signal="activate"/>
                       </object>
                     </child>
@@ -294,7 +294,7 @@
                         <property name="label" translatable="yes">_Undo zoom</property>
                         <property name="use_underline">True</property>
                         <property name="sensitive">False</property>
-                        <signal name="activate" handler="scribbler.stop_zooming" swapped="no"/>
+                        <signal name="activate" handler="zoom.stop_zooming" swapped="no"/>
                         <accelerator key="u" signal="activate"/>
                       </object>
                     </child>
