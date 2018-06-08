@@ -34,7 +34,7 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
-from pympress import builder, surfacecache, document
+from pympress import builder, surfacecache, document, extras
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
 
@@ -136,7 +136,11 @@ class Scribbler(builder.Builder):
         elif name.upper() == 'Z' and ctrl_pressed:
             self.pop_scribble()
         elif name == 'Escape':
-            self.disable_scribbling()
+            if self.zoom_selecting:
+                self.zoom_selecting = False
+                extras.Cursor.set_cursor(self.p_central)
+            else:
+                self.disable_scribbling()
         else:
             return False
         return True
@@ -149,6 +153,7 @@ class Scribbler(builder.Builder):
             `bool`: whether the event was consumed
         """
         self.zoom_selecting = True
+        extras.Cursor.set_cursor(self.p_central, 'crosshair')
 
         return True
 
@@ -159,6 +164,7 @@ class Scribbler(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
+        extras.Cursor.set_cursor(self.p_central)
         self.zoom_selecting = False
         self.zoom_points = None
         self.zoom_factor = 1.
@@ -279,7 +285,9 @@ class Scribbler(builder.Builder):
                 self.zoom_factor = 1.
                 self.zoom_offset = (0, 0)
 
-            # stop drawing rectangles
+            # stop drawing rectangles and reset cursor (NB don't use window, this bugs)
+            extras.Cursor.set_cursor(self.p_central)
+
             self.zoom_selecting = False
             self.redraw_current_slide()
             self.zoom_stop_button.set_sensitive(True)
@@ -474,6 +482,9 @@ class Scribbler(builder.Builder):
         self.p_central.pack_start(p_layout, True, True, 0)
         self.scribbling_mode = False
         self.pres_highlight.set_active(self.scribbling_mode)
+
+        self.zoom_selecting = False
+        extras.Cursor.set_cursor(self.p_central)
 
         return True
 
