@@ -1206,6 +1206,9 @@ class UI(builder.Builder):
 
             self.config.update_notes_layout(self.p_central.get_children()[0], self.pane_handle_pos)
             pane_handles = self.replace_layout(self.config.get_plain_layout(), self.p_central, self.placeable_widgets, self.on_pane_event)
+
+            # make sure visibility is right
+            self.p_frame_annot.set_visible(self.show_annotations)
         else:
             self.notes_mode = True
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
@@ -1219,8 +1222,6 @@ class UI(builder.Builder):
 
             self.config.update_plain_layout(self.p_central.get_children()[0], self.pane_handle_pos)
             pane_handles = self.replace_layout(self.config.get_notes_layout(), self.p_central, self.placeable_widgets, self.on_pane_event)
-            # make sure visibility is right
-            self.p_frame_annot.set_visible(self.show_annotations)
 
         self.medias.adjust_margins_for_mode(self.notes_mode)
         self.pane_handle_pos.update(pane_handles)
