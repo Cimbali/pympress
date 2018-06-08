@@ -66,10 +66,10 @@ class SurfaceCache(object):
         max_pages (`int`): The maximum page number.
     """
 
-    #: The actual cache. It is a `dict` of :class:`~pympress.surfacecache.Cache`:
-    #: its keys are widget names and its values are `dict` whose keys are page
+    #: The actual cache. It is a `dict` of :class:`~collections.OrderedDict`:
+    #: its keys are widget sizes and its values are `dict` whose keys are page
     #: numbers and values are instances of :class:`~cairo.ImageSurface`.
-    #: In each :class:`~pympress.surfacecache.Cache` keys are ordered by Least Recently
+    #: In each :class:`~collections.OrderedDict` keys are ordered by Least Recently
     #: Used (get or set), when the size is beyond :attr:`max_pages`, pages are
     #: popped from the start of the cache.
     surface_cache = {}
@@ -88,7 +88,7 @@ class SurfaceCache(object):
     surface_type = {}
 
     #: Dictionary of :class:`~threading.Lock` used for managing conccurent
-    #: accesses to :attr:`surface_cache` and :attr:`surface_size`
+    #: accesses to :attr:`surface_size`
     locks = {}
 
     #: The current :class:`~pympress.document.Document`.
@@ -121,7 +121,6 @@ class SurfaceCache(object):
             start_enabled (`bool`):  whether this widget is initially in the list of widgets to prerender
         """
         widget_name = widget.get_name()
-        self.surface_cache[widget_name] = OrderedDict()
         self.surface_size[widget_name] = (-1, -1)
         self.surface_type[widget_name] = wtype
         self.locks[widget_name] = threading.Lock()
@@ -200,8 +199,13 @@ class SurfaceCache(object):
         """
         with self.locks[widget_name]:
             if (width, height) != self.surface_size[widget_name]:
-                self.surface_cache[widget_name].clear()
+                old_size = self.surface_size[widget_name]
                 self.surface_size[widget_name] = (width, height)
+                self.surface_cache[(width, height)] = OrderedDict()
+
+                if not any(s == old_size for s in self.surface_size.values()):
+                    self.surface_cache[old_size].clear()
+                    del self.surface_cache[old_size]
 
 
     def get(self, widget_name, page_nb):
@@ -215,8 +219,8 @@ class SurfaceCache(object):
             :class:`~cairo.ImageSurface`: the cached page if available, or `None` otherwise
         """
         with self.locks[widget_name]:
-            pc = self.surface_cache[widget_name]
-            if page_nb in pc:
+            pc = self.surface_cache.get(self.surface_size[widget_name])
+            if pc and page_nb in pc:
                 pc.move_to_end(page_nb)
                 return pc[page_nb]
             else:
@@ -232,7 +236,7 @@ class SurfaceCache(object):
             val (:class:`~cairo.ImageSurface`):  content to store in the cache
         """
         with self.locks[widget_name]:
-            pc = self.surface_cache[widget_name]
+            pc = self.surface_cache.set_default(self.surface_size[widget_name], OrderedDict())
             pc[page_nb] = val
             pc.move_to_end(page_nb)
 
@@ -269,7 +273,7 @@ class SurfaceCache(object):
         """
 
         with self.locks[widget_name]:
-            if page_nb in self.surface_cache[widget_name]:
+            if page_nb in self.surface_cache[self.surface_size[widget_name]]:
                 # Already in cache
                 return False
             ww, wh = self.surface_size[widget_name]
@@ -296,10 +300,11 @@ class SurfaceCache(object):
 
         # Save if possible and necessary
         with self.locks[widget_name]:
-            pc = self.surface_cache[widget_name]
-            if (ww, wh) == self.surface_size[widget_name] and not page_nb in pc:
-                pc[page_nb] = surface
-                pc.move_to_end(page_nb)
+            if (ww, wh) == self.surface_size[widget_name]:
+                pc = self.surface_cache.set_default((ww, wh), OrderedDict())
+                if page_nb not in pc:
+                    pc[page_nb] = surface
+                    pc.move_to_end(page_nb)
 
             while len(pc) > self.max_pages:
                 pc.popitem(False)
