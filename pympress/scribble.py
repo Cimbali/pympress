@@ -57,6 +57,8 @@ class Scribbler(builder.Builder):
     zoom_offset = (0, 0)
     #: :class:`~Gtk.Button` that is clicked to stop zooming, unsensitive when there is no zooming
     zoom_stop_button = None
+    #: :class:`~Gtk.MenuItem` that is clicked to stop zooming
+    menu_zoom_out = None
 
     #: :class:`~Gtk.HBox` that is replaces normal panes when scribbling is toggled, contains buttons and scribble drawing area
     scribble_overlay = None
@@ -170,6 +172,7 @@ class Scribbler(builder.Builder):
         self.zoom_factor = 1.
         self.zoom_offset = (0, 0)
         self.zoom_stop_button.set_sensitive(False)
+        self.menu_zoom_out.set_sensitive(False)
 
         self.redraw_current_slide()
 
@@ -291,6 +294,7 @@ class Scribbler(builder.Builder):
             self.zoom_selecting = False
             self.redraw_current_slide()
             self.zoom_stop_button.set_sensitive(True)
+            self.menu_zoom_out.set_sensitive(True)
 
             return True
 

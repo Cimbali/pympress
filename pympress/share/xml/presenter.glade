@@ -277,6 +277,27 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_zoom_in">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Zoom in</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="scribbler.start_zooming" swapped="no"/>
+                        <accelerator key="z" signal="activate"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_zoom_out">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Undo zoom</property>
+                        <property name="use_underline">True</property>
+                        <property name="sensitive">False</property>
+                        <signal name="activate" handler="scribbler.stop_zooming" swapped="no"/>
+                        <accelerator key="u" signal="activate"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
