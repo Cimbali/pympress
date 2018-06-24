@@ -81,9 +81,8 @@ Pympress relies on:
   * Introspection bindings for poppler may be shipped separately, ensure you have those as well (`typelib-1_0-Poppler-0_18` on OpenSUSE, `gir1.2-poppler-0.18` on Ubuntu)
 * optionally [VLC](https://www.videolan.org/vlc/), to play videos (with the same bitness as Python)
 
-On windows (using Python on Windows), GTK+3, Poppler and their python bindings are all shipped together in [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/). *Be sure to check the supported Python versions (up to 3.4 at the time of writing)*, they appear in the FEATURES list in the linked page. Be sure to tick all the necessary dependencies in the installer (Poppler, Cairo, Gdk-Pixbuf).
-
-On other platforms they are often installed by default, or easily available through your package or software manager.
+### On linux platforms
+The dependencies are often installed by default, or easily available through your package or software manager.
 For example, on ubuntu, you can run the following as root to make sure you have all the prerequisites *assuming you use python3*:
 
     apt-get install python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gi python3-cairo gir1.2-gtk-3.0 gir1.2-poppler-0.18
@@ -92,9 +91,24 @@ Different distributions might have different package naming conventions, for exa
 
     zypper in python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gobject python3-gobject-Gdk python3-cairo typelib-1_0-GdkPixbuf-2_0 typelib-1_0-Gtk-3_0 typelib-1_0-Poppler-0_18
 
-On windows using MSYS2 (replace x86_64 with i686 if you're using a 32 bit machine):
+### On windows
+There are two ways to get the dependencies:
 
-    pacman -S --needed mingw-w64-x86_64-gtk3 mingw-w64-x86_64-cairo mingw-w64-x86_64-poppler mingw-w64-x86_64-python3 mingw-w64-x86_64-vlc python3-pip mingw-w64-x86_64-python3-pip mingw-w64-x86_64-python3-gobject mingw-w64-x86_64-python3-cairo
+1. using MSYS2 (replace x86_64 with i686 if you're using a 32 bit machine):
+
+        pacman -S --needed mingw-w64-x86_64-gtk3 mingw-w64-x86_64-cairo mingw-w64-x86_64-poppler mingw-w64-x86_64-python3 mingw-w64-x86_64-vlc python3-pip mingw-w64-x86_64-python3-pip mingw-w64-x86_64-python3-gobject mingw-w64-x86_64-python3-cairo
+
+2. Using PyGobjectWin32. *Be sure to check the supported Python versions (up to 3.4 at the time of writing)*, they appear in the FEATURES list in the linked page.
+  - Install native [python for windows](https://www.python.org/downloads/windows/)
+  - Get GTK+3, Poppler and their python bindings by executing [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/).  Be sure to tick all the necessary dependencies in the installer (Poppler, Cairo, Gdk-Pixbuf).
+
+Alternately, you can build your Gtk+3 stack from source using MSVC, see [the Gnome wiki](https://wiki.gnome.org/Projects/GTK+/Win32/MSVCCompilationOfGTKStack) and [this python script that compiles the whole Gtk+3 stack](https://github.com/wingtk/gvsbuild/)
+
+### On macOS
+
+Dependencies can be installed using [Homebrew](https://brew.sh/):
+
+    brew install gtk+3 poppler gobject-introspection
 
 # Contributing
 
