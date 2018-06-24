@@ -80,6 +80,8 @@ class Scribbler(builder.Builder):
     #: callback, to be connected to :func:`~pympress.ui.UI.track_clicks`
     track_clicks = lambda: None
 
+    #: callback, to be connected to :func:`~pympress.ui.UI.swap_layout`
+    swap_layout = lambda: None
     #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
     redraw_current_slide = lambda: None
 
@@ -106,6 +108,7 @@ class Scribbler(builder.Builder):
         self.on_draw = builder.get_callback_handler('on_draw')
         self.track_motions = builder.get_callback_handler('track_motions')
         self.track_clicks = builder.get_callback_handler('track_clicks')
+        self.swap_layout = builder.get_callback_handler('swap_layout')
         self.redraw_current_slide = builder.get_callback_handler('redraw_current_slide')
         self.resize_cache = builder.get_callback_handler('cache.resize_widget')
         self.get_slide_point = builder.get_callback_handler('zoom.get_slide_point')
@@ -311,15 +314,12 @@ class Scribbler(builder.Builder):
         if self.scribbling_mode:
             return False
 
+        self.off_render.remove(self.scribble_overlay)
+        self.swap_layout(None, 'highlight')
         p_layout = self.p_central.get_children()[0]
 
-        self.p_central.remove(p_layout)
-        self.off_render.remove(self.scribble_overlay)
-
-        self.p_central.pack_start(self.scribble_overlay, True, True, 0)
-        self.off_render.add(p_layout)
-
         self.p_central.queue_draw()
+        self.scribble_overlay.queue_draw()
 
         self.scribbling_mode = True
         self.pres_highlight.set_active(self.scribbling_mode)
@@ -336,13 +336,10 @@ class Scribbler(builder.Builder):
         if not self.scribbling_mode:
             return False
 
-        p_layout = self.off_render.get_child()
-
-        self.p_central.remove(self.scribble_overlay)
-        self.off_render.remove(p_layout)
+        self.swap_layout('highlight', None)
+        p_layout = self.p_central.get_children()[0]
 
         self.off_render.add(self.scribble_overlay)
-        self.p_central.pack_start(p_layout, True, True, 0)
         self.scribbling_mode = False
         self.pres_highlight.set_active(self.scribbling_mode)
 

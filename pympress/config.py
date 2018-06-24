@@ -90,7 +90,7 @@ class Config(configparser.ConfigParser, object): # python 2 fix
     layout = {}
 
     #: Map of strings that are the valid representations of widgets from the presenter window that can be dynamically rearranged, mapping to their names
-    placeable_widgets = {"notes": "p_frame_notes", "current": "p_frame_cur", "next": "p_frame_next", "annotations": "p_frame_annot"}
+    placeable_widgets = {"notes": "p_frame_notes", "current": "p_frame_cur", "next": "p_frame_next", "annotations": "p_frame_annot", "highlight": "scribble_overlay"}
 
     @staticmethod
     def path_to_config():
@@ -163,6 +163,9 @@ class Config(configparser.ConfigParser, object): # python 2 fix
 
         if not config.has_option('layout', 'plain'):
             config.set('layout', 'plain', '')
+
+        if not config.has_option('layout', 'highlight'):
+            config.set('layout', 'highlight', '')
 
         if not config.has_option('scribble', 'color'):
             config.set('scribble', 'color', Gdk.RGBA(1., 0., 0., 1.).to_string())
@@ -253,11 +256,13 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         default_layout = {
             'notes':     '{"resizeable":true, "orientation":"horizontal", "children":["notes", {"resizeable":false, "children":["current", "next"], "orientation":"vertical"}], "proportions": [0.60, 0.40]}',
             'plain':     '{"resizeable":true, "orientation":"horizontal", "children":["current", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}',
+            'highlight': '{"resizeable":true, "orientation":"horizontal", "children":["highlight", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}'
         }
 
         widget_reqs = {
-            'notes':     (self.placeable_widgets.keys() - {"annotations"},),
-            'plain':     (self.placeable_widgets.keys() - {"notes"},),
+            'notes':     (set(self.placeable_widgets.keys()) - {"annotations", "highlight"},),
+            'plain':     (set(self.placeable_widgets.keys()) - {"notes", "highlight"},),
+            'highlight': ({"highlight"}, set(self.placeable_widgets.keys()) - {"highlight"})
         }
 
         for layout_name in default_layout:

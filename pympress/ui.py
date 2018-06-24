@@ -200,6 +200,7 @@ class UI(builder.Builder):
         self.placeable_widgets = {
             name: self.get_object(widget_name) for name, widget_name in self.config.placeable_widgets.items()
         }
+        self.placeable_widgets['highlight'] = self.scribbler.scribble_overlay
 
         # Initialize windows and screens
         self.setup_screens()
@@ -1301,7 +1302,7 @@ class UI(builder.Builder):
                     size = parent.get_parent().get_allocated_height()
                 parent.set_position(self.pane_handle_pos[parent] * size)
 
-        self.on_page_change(False)
+        self.annotations.add_annotations(self.doc.current_page().get_annotations())
         self.pres_annot.set_active(self.show_annotations)
 
         return True

@@ -251,7 +251,9 @@ class Builder(Gtk.Builder):
         i = 0
         while i < len(widgets):
             w = widgets[i]
-            if issubclass(type(w), Gtk.Box) or issubclass(type(w), Gtk.Paned):
+            if w in self.placeable_widgets.values():
+                pass
+            elif issubclass(type(w), Gtk.Box) or issubclass(type(w), Gtk.Paned):
                 widgets.extend(w.get_children())
                 containers.append(w)
             w.get_parent().remove(w)
