@@ -196,9 +196,9 @@ class UI(builder.Builder):
         self.est_time.delayed_callback_connection(self)
         self.zoom.delayed_callback_connection(self.scribbler)
 
-        # Get placeable widgets. NB, ids are slightly shorter than names.
+        # Get placeable widgets. NB, get the highlight one manually from the scribbler class
         self.placeable_widgets = {
-            name: self.get_object('p_frame_' + ('cur' if name == 'current' else name[:5])) for name in self.config.placeable_widgets
+            name: self.get_object(widget_name) for name, widget_name in self.config.placeable_widgets.items()
         }
 
         # Initialize windows and screens
@@ -256,11 +256,7 @@ class UI(builder.Builder):
     def make_pwin(self):
         """ Initializes the presenter window.
         """
-        if self.notes_mode:
-            layout = self.config.get_notes_layout()
-        else:
-            layout = self.config.get_plain_layout()
-
+        layout = self.config.get_layout('notes' if self.notes_mode else 'plain')
         pane_handles = self.replace_layout(layout, self.p_central, self.placeable_widgets, self.on_pane_event)
         self.pane_handle_pos.update(pane_handles)
 
@@ -439,10 +435,8 @@ class UI(builder.Builder):
 
         self.doc.cleanup_media_files()
 
-        if self.notes_mode:
-            self.config.update_notes_layout(self.p_central.get_children()[0], self.pane_handle_pos)
-        else:
-            self.config.update_plain_layout(self.p_central.get_children()[0], self.pane_handle_pos)
+        self.config.update_layout('notes' if self.notes_mode else 'plain',
+                                  self.p_central.get_children()[0], self.pane_handle_pos)
 
         self.config.save_config()
         Gtk.main_quit()
@@ -1217,6 +1211,27 @@ class UI(builder.Builder):
 
         return True
 
+
+    def swap_layout(self, old, new):
+        """ Save the old layout in the prefs, load the new layout
+
+        Args:
+            old (`str`): the name of the layout to save, `None` to use plain or notes automatically
+            new (`str`): the name of the layout to load, `None` to use plain or notes automatically
+        """
+        if old is None: old = 'notes' if self.notes_mode else 'plain'
+        if new is None: new = 'notes' if self.notes_mode else 'plain'
+
+        self.config.update_layout(old, self.p_central.get_children()[0], self.pane_handle_pos)
+        pane_handles = self.replace_layout(self.config.get_layout(new), self.p_central,
+                                           self.placeable_widgets, self.on_pane_event)
+        self.pane_handle_pos.update(pane_handles)
+
+        # queue visibility of all newly added widgets, make sure visibility is right
+        self.p_central.show_all()
+        self.p_frame_annot.set_visible(self.show_annotations)
+
+
     def switch_mode(self, widget, event = None):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
 
@@ -1229,7 +1244,6 @@ class UI(builder.Builder):
         self.scribbler.disable_scribbling()
 
         if self.notes_mode:
-            self.notes_mode = False
             self.cache.set_widget_type("c_da", PDF_REGULAR)
             self.cache.set_widget_type("c_da_zoomed", PDF_REGULAR)
             self.cache.set_widget_type("p_da_next", PDF_REGULAR)
@@ -1241,13 +1255,8 @@ class UI(builder.Builder):
             self.cache.set_widget_type("p_da_notes", PDF_REGULAR)
             self.cache.enable_prerender("p_da_notes")
 
-            self.config.update_notes_layout(self.p_central.get_children()[0], self.pane_handle_pos)
-            pane_handles = self.replace_layout(self.config.get_plain_layout(), self.p_central, self.placeable_widgets, self.on_pane_event)
-
-            # make sure visibility is right
-            self.p_frame_annot.set_visible(self.show_annotations)
+            self.swap_layout('notes', 'plain')
         else:
-            self.notes_mode = True
             self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("c_da_zoomed", PDF_CONTENT_PAGE)
             self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
@@ -1259,12 +1268,10 @@ class UI(builder.Builder):
             self.cache.set_widget_type("p_da_notes", PDF_NOTES_PAGE)
             self.cache.enable_prerender("p_da_notes")
 
-            self.config.update_plain_layout(self.p_central.get_children()[0], self.pane_handle_pos)
-            pane_handles = self.replace_layout(self.config.get_notes_layout(), self.p_central, self.placeable_widgets, self.on_pane_event)
+            self.swap_layout('plain', 'notes')
 
+        self.notes_mode = not self.notes_mode
         self.medias.adjust_margins_for_mode(self.notes_mode)
-        self.pane_handle_pos.update(pane_handles)
-        self.p_central.show_all()
         self.on_page_change(False)
         self.pres_notes.set_active(self.notes_mode)
 

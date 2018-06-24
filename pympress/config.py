@@ -86,13 +86,11 @@ def layout_from_json(layout_string):
 class Config(configparser.ConfigParser, object): # python 2 fix
     """ Manage configuration :Get the configuration from its file and store its back.
     """
-    #: `dict`-tree of presenter layout for the notes mode
-    notes_layout = {}
-    #: `dict`-tree of presenter layout for the non-notes mode
-    plain_layout = {}
+    #: `dict`-tree of presenter layouts for various modes
+    layout = {}
 
-    #: Set of strings that are the valid names of widgets from the presenter window that can be dynamically rearranged
-    placeable_widgets = {"notes", "current", "next", "annotations"}
+    #: Map of strings that are the valid representations of widgets from the presenter window that can be dynamically rearranged, mapping to their names
+    placeable_widgets = {"notes": "p_frame_notes", "current": "p_frame_cur", "next": "p_frame_next", "annotations": "p_frame_annot"}
 
     @staticmethod
     def path_to_config():
@@ -179,8 +177,8 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         """ Save the configuration to its file.
         """
         # serialize the layouts
-        self.set('layout', 'notes', json.dumps(self.notes_layout, indent=4))
-        self.set('layout', 'plain', json.dumps(self.plain_layout, indent=4))
+        for layout_name in self.layout:
+            self.set('layout', layout_name, json.dumps(self.layout[layout_name], indent=4))
 
         with open(self.path_to_config(), 'w') as configfile:
             self.write(configfile)
@@ -196,12 +194,13 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         self.set(window, start_conf, 'on' if check_item.get_active() else 'off')
 
 
-    def validate_layout(self, layout, expected_widgets):
+    def validate_layout(self, layout, expected_widgets, optional_widgets = set()):
         """ Validate layout: check whether the layout of widgets built from the config string is valid.
 
         Args:
             layout (`dict`): the json-parsed config string
-            expected_widgets (`set`): strings with the names of widgets for this layout
+            expected_widgets (`set`): strings with the names of widgets that have to be used in this layout
+            optional_widgets (`set`): strings with the names of widgets that may or may not be used in this layout
 
 
         Layout must have all self.placeable_widgets (leaves of the tree, as `str`) and only allowed properties
@@ -220,7 +219,7 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         while next_visits:
             w_desc = next_visits.popleft()
             if type(w_desc) is str:
-                if w_desc not in expected_widgets:
+                if w_desc not in expected_widgets and w_desc not in optional_widgets:
                     raise ValueError('Unrecognized widget "{}", pick one of: {}'.format(w_desc, ', '.join(expected_widgets)))
                 elif w_desc in widget_seen:
                     raise ValueError('Duplicate widget "{}", all expected_widgets can only appear once'.format(w_desc))
@@ -251,23 +250,24 @@ class Config(configparser.ConfigParser, object): # python 2 fix
     def load_window_layouts(self):
         """ Parse and validate layouts loaded from config, with fallbacks if needed.
         """
-        default_notes_layout = '{"resizeable":true, "orientation":"horizontal", "children":["notes", {"resizeable":false, "children":["current", "next"], "orientation":"vertical"}], "proportions": [0.60, 0.40]}'
-        default_plain_layout = '{"resizeable":true, "orientation":"horizontal", "children":["current", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}'
+        default_layout = {
+            'notes':     '{"resizeable":true, "orientation":"horizontal", "children":["notes", {"resizeable":false, "children":["current", "next"], "orientation":"vertical"}], "proportions": [0.60, 0.40]}',
+            'plain':     '{"resizeable":true, "orientation":"horizontal", "children":["current", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}',
+        }
 
-        # Log error and keep default layout
-        try:
-            self.notes_layout = layout_from_json(self.get('layout', 'notes'))
-            self.validate_layout(self.notes_layout, self.placeable_widgets - {"annotations"})
-        except ValueError as e:
-            logger.exception('Invalid layout')
-            self.notes_layout = layout_from_json(default_notes_layout)
+        widget_reqs = {
+            'notes':     (self.placeable_widgets.keys() - {"annotations"},),
+            'plain':     (self.placeable_widgets.keys() - {"notes"},),
+        }
 
-        try:
-            self.plain_layout = layout_from_json(self.get('layout', 'plain'))
-            self.validate_layout(self.plain_layout, self.placeable_widgets - {"notes"})
-        except ValueError as e:
-            logger.exception('Invalid layout')
-            self.plain_layout = layout_from_json(default_plain_layout)
+        for layout_name in default_layout:
+            # Log error and keep default layout
+            try:
+                self.layout[layout_name] = layout_from_json(self.get('layout', layout_name))
+                self.validate_layout(self.layout[layout_name] , *widget_reqs[layout_name])
+            except ValueError as e:
+                logger.exception('Invalid layout')
+                self.layout[layout_name] = layout_from_json(default_layout[layout_name])
 
 
     def widget_layout_to_tree(self, widget, pane_handle_pos):
@@ -283,9 +283,16 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         """
         orientation_names = {Gtk.Orientation.HORIZONTAL:'horizontal', Gtk.Orientation.VERTICAL:'vertical'}
 
-        if issubclass(type(widget), Gtk.Box):
-            node = {'resizeable': False, 'children': [self.widget_layout_to_tree(c, pane_handle_pos) for c in widget.get_children()],
+        name = widget.get_name()
+        matching_widget_names = [k for k, v in self.placeable_widgets.items() if v == name]
+
+        if matching_widget_names:
+            return matching_widget_names[0]
+
+        elif issubclass(type(widget), Gtk.Box):
+            return {'resizeable': False, 'children': [self.widget_layout_to_tree(c, pane_handle_pos) for c in widget.get_children()],
                     'orientation': orientation_names[widget.get_orientation()]}
+
         elif issubclass(type(widget), Gtk.Paned):
             proportions = [1]
             reverse_children = []
@@ -312,48 +319,24 @@ class Config(configparser.ConfigParser, object): # python 2 fix
 
             reverse_children.append(left_pane)
 
-            node = {'resizeable': True, 'children': [self.widget_layout_to_tree(c, pane_handle_pos) for c in reversed(reverse_children)],
+            return {'resizeable': True, 'children': [self.widget_layout_to_tree(c, pane_handle_pos) for c in reversed(reverse_children)],
                     'proportions': proportions, 'orientation': orientation_names[orientation]}
 
-        else:
-            name = widget.get_name()
-            if name.startswith('p_frame_') and name[len('p_frame_'):] in self.placeable_widgets:
-                node = name[len('p_frame_'):]
-            else:
-                raise ValueError('Error serializing layout: widget of type {} is not an expected container or named widget: {}'.format(type(widget), widget))
-
-        return node
+        raise ValueError('Error serializing layout: widget of type {} is not an expected container or named widget: "{}"'.format(type(widget), name))
 
 
-    def get_notes_layout(self):
-        """ Getter for the notes layout.
+    def get_layout(self, layout_name):
+        """ Getter for the `~layout_name` layout.
         """
-        return self.notes_layout
+        return self.layout[layout_name]
 
 
-    def get_plain_layout(self):
-        """ Getter for the plain layout.
-        """
-        return self.plain_layout
-
-
-    def update_notes_layout(self, widget, pane_handle_pos):
+    def update_layout(self, layout_name, widget, pane_handle_pos):
         """ Setter for the notes layout.
 
         Args:
+            layout_name (`str`): the name of the layout to update
             widget (:class:`~Gtk.Widget`): the widget that will contain the layout.
             pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative position (float between 0 and 1) of its handle
         """
-        self.notes_layout = self.widget_layout_to_tree(widget, pane_handle_pos)
-
-
-    def update_plain_layout(self, widget, pane_handle_pos):
-        """ Setter for the plain layout.
-
-        Args:
-            widget (:class:`~Gtk.Widget`): the widget that will contain the layout.
-            pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative position (float between 0 and 1) of its handle
-        """
-        self.plain_layout = self.widget_layout_to_tree(widget, pane_handle_pos)
-
-
+        self.layout[layout_name] = self.widget_layout_to_tree(widget, pane_handle_pos)
