@@ -45,6 +45,7 @@ except:
 
 import ctypes
 import sys, os
+from collections import defaultdict
 
 from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 from pympress import builder
@@ -109,8 +110,11 @@ class VideoOverlay(builder.Builder):
     #: `int` holding the max time in ms
     maxval = 1
 
-    #: `type` of a class inheriting from :class:`~VideoOverlay`
-    _backend = None
+    #: `dict` of mime type as `str` to the `type` of a class inheriting from :class:`~VideoOverlay`
+    _backends = {}
+
+    # `list` of info on backend versions
+    _backend_versions = []
 
     def __init__(self, container, show_controls, relative_margins, callback_getter):
         super(VideoOverlay, self).__init__()
@@ -130,15 +134,25 @@ class VideoOverlay(builder.Builder):
         self.connect_signals(self)
 
 
-    def __def__(self):
+    def __del__(self):
         self.relative_margins.free()
-        super(VLCVideo, self).__init__()
+        #super(VideoOverlay, self).__del__()
 
 
     def handle_embed(self, mapped_widget):
         """ Handler to embed the video player in the correct window, connected to the :attr:`~.Gtk.Widget.signals.map` signal
         """
         return False
+
+
+    def format_millis(self, sc, val):
+        """ Callback to format the current timestamp (in milliseconds) as minutes:seconds
+
+        Args:
+            sc (:class:`~Gtk.Scale`): The scale whose position we are formatting
+            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video
+        """
+        return self.time_format.format(*divmod(int(val // 1000), 60))
 
 
     def progress_moved(self, rng, sc, val):
@@ -300,17 +314,20 @@ class VideoOverlay(builder.Builder):
 
 
     @classmethod
-    def factory(cls, *args):
-        """ Instantiates and returns a class of type :attr:`~_backend`
+    def get_factory(cls, mime_type):
+        """ Returns a class of type :attr:`~_backend`
         """
-        return cls._backend(*args)
+        try: # NB don't get(mime_type, None) so that a default can be set
+            return cls._backends[mime_type]
+        except KeyError:
+            return None
 
 
     @classmethod
     def backend_version(cls):
         """ Gets the used version of the backend
         """
-        return cls._backend.version()
+        return ', '.join(cls._backend_versions)
 
 
 class VLCVideo(VideoOverlay):
@@ -321,8 +338,6 @@ class VLCVideo(VideoOverlay):
 
     #: A single vlc.Instance() to be shared by (possible) multiple players.
     _instance = None
-    #: A `str` indicating which backend this VideoOverlay uses, to which we will append the version
-    _version = 'VLC'
 
     def __init__(self, *args, **kwargs):
         self.player = self._instance.media_player_new() # before loading UI, needed to connect "map" signal
@@ -333,16 +348,6 @@ class VLCVideo(VideoOverlay):
         event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.hide))
         event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged, self.update_range)
         event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged, self.update_progress)
-
-
-    def format_millis(self, sc, val):
-        """ Callback to format the current timestamp (in milliseconds) as minutes:seconds
-
-        Args:
-            sc (:class:`~Gtk.Scale`): The scale whose position we are formatting
-            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video
-        """
-        return self.time_format.format(*divmod(int(val // 1000), 60))
 
 
     def handle_embed(self, mapped_widget):
@@ -448,11 +453,80 @@ class VLCVideo(VideoOverlay):
         return False
 
 
-    @classmethod
-    def version(cls):
-        """ Gets the used version of the backend
+
+class GifOverlay(VideoOverlay):
+    """ A simple overlay mimicking the functionality of showing videos, but showing gifs instead.
+    """
+    def __init__(self, container, show_controls, relative_margins, callback_getter):
+        # override: no toolbar or interactive stuff for a gif, replace the whole widget area with a Gtk.Image
+        super(GifOverlay, self).__init__(container, False, relative_margins, lambda n: lambda *a: None)
+        self.media_overlay = Gtk.Image()
+
+
+    def __def__(self):
+        self.relative_margins.free()
+        super(GifOverlay, self).__init__()
+
+
+    def mute(self, *args):
+        pass
+
+
+    def is_playing(self):
+        """ Returns whether the media is currently playing (and not paused).
+
+        Returns:
+            `bool`: `True` iff the media is playing.
         """
-        return cls._version
+        return True
+
+
+    def do_stop(self):
+        """ Stops playing in the backend player.
+        """
+        pass
+
+
+    def set_file(self, filepath):
+        """ Sets the media file to be played by the widget.
+
+        Args:
+            filepath (`str`): The path to the media file path
+        """
+        self.media_overlay.set_from_file(filepath)
+        # automatically show
+        self.show()
+
+
+    def do_play(self):
+        """ Do nothing, for gifs.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+        """
+        return False
+
+
+    def do_play_pause(self):
+        """ Do nothing, for gifs.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+        """
+        return False
+
+
+    def do_set_time(self, *args):
+        """ Do nothing, for gifs.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+        """
+        return False
+
+
+VideoOverlay._backends['image/gif'] = GifOverlay
+VideoOverlay._backend_versions.append('GtkImage-based gif player')
 
 try:
     import vlc
@@ -466,7 +540,8 @@ try:
 
     VLCVideo._instance = vlc.Instance(vlc_opts)
 
-    VLCVideo._version += ' '+str(vlc.libvlc_get_version())
-    VideoOverlay._backend = VLCVideo
+    # make VLCvideo the fallback
+    VideoOverlay._backends = defaultdict(lambda: VLCVideo, VideoOverlay._backends)
+    VideoOverlay._backend_versions.append('VLC {}'.format(vlc.libvlc_get_version().decode('ascii')))
 except:
     raise

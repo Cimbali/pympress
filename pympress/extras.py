@@ -35,11 +35,11 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib, Pango
 
+import mimetypes
+
 try:
     from pympress import media_overlay
-    media_backend = media_overlay.VideoOverlay.backend_version()
 except Exception as e:
-    media_backend = None
     logger.exception(_("video support is disabled"))
     raise
 
@@ -166,7 +166,7 @@ class Media(object):
             current_page (:class:`~pympress.document.Page`): The page for twhich to prepare medias
             page_type (`int`): The page type: one of PDF_REGULAR, PDF_CONTENT_PAGE, or PDF_NOTES_PAGE
         """
-        if not media_backend or page_type == PDF_NOTES_PAGE:
+        if page_type == PDF_NOTES_PAGE:
             return
 
         self.remove_media_overlays()
@@ -175,11 +175,17 @@ class Media(object):
             media_id = hash((relative_margins, filename, show_controls))
 
             if media_id not in self._media_overlays:
+                mime_type, enc = mimetypes.guess_type(filename)
+                factory = media_overlay.VideoOverlay.get_factory(mime_type)
+
+                if not factory:
+                    continue
+
                 def get_curryfied_callback(name):
                     return lambda *args: media_overlay.VideoOverlay.find_callback_handler(self, name)(media_id, *args)
 
-                v_da_c = media_overlay.VLCVideo(self.c_overlay, show_controls, relative_margins, get_curryfied_callback)
-                v_da_p = media_overlay.VLCVideo(self.p_overlay, True, relative_margins, get_curryfied_callback)
+                v_da_c = factory(self.c_overlay, show_controls, relative_margins, get_curryfied_callback)
+                v_da_p = factory(self.p_overlay, True, relative_margins, get_curryfied_callback)
 
                 if page_type == PDF_CONTENT_PAGE:
                     v_da_p.relative_margins.x2 = 2 * v_da_p.relative_margins.x2 - 1
@@ -199,9 +205,6 @@ class Media(object):
     def resize(self, which = None):
         """ Resize all media overlays that are a child of an overlay
         """
-        if not media_backend:
-            return
-
         needs_resizing = (which == 'content', which == 'presenter') if which is not None else (True, True)
         for media_id in self._media_overlays:
             for widget in (w for w, r in zip(self._media_overlays[media_id], needs_resizing) if r and w.is_shown()):
@@ -217,9 +220,6 @@ class Media(object):
         Args:
             enable_notes (`bool`): Whether to enable note, thus transition from PDF_REGULAR to PDF_CONTENT_PAGE, or the opposite
         """
-        if not media_backend:
-            return
-
         if enable_notes:
             for media_id in self._media_overlays:
                 for widget in self._media_overlays[media_id]:
@@ -283,17 +283,7 @@ class Media(object):
         Returns:
             `str`: The name and version of the backend.
         """
-        return media_backend
-
-
-    @staticmethod
-    def support_enabled():
-        """ Check whether the video support is enabled or not.
-
-        Returns:
-            `bool`: whether video support is enabled
-        """
-        return media_backend is not None
+        return media_overlay.VideoOverlay.backend_version()
 
 
 class Cursor(object):
