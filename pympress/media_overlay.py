@@ -34,8 +34,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 import gi
+import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject, GLib
+from gi.repository import Gtk, Gdk, GObject, GLib, GdkPixbuf
 
 try:
     gi.require_version('GdkX11', '3.0')
@@ -457,34 +458,20 @@ class VLCVideo(VideoOverlay):
 class GifOverlay(VideoOverlay):
     """ A simple overlay mimicking the functionality of showing videos, but showing gifs instead.
     """
+    #: A :class:`~GdkPixbuf.PixbufAnimation` containing all the frames and their timing for the displayed gif
+    anim = None
+    #: A `tuple` of (`int`, `int`) indicating the size of the bounding box of the gif
+    base_size = None
+    #: The :class:`~cairo.Matrix` defining the zoom & shift to scale the gif
+    transform = None
+
     def __init__(self, container, show_controls, relative_margins, callback_getter):
         # override: no toolbar or interactive stuff for a gif, replace the whole widget area with a Gtk.Image
         super(GifOverlay, self).__init__(container, False, relative_margins, lambda n: lambda *a: None)
-        self.media_overlay = Gtk.Image()
 
-
-    def __def__(self):
-        self.relative_margins.free()
-        super(GifOverlay, self).__init__()
-
-
-    def mute(self, *args):
-        pass
-
-
-    def is_playing(self):
-        """ Returns whether the media is currently playing (and not paused).
-
-        Returns:
-            `bool`: `True` iff the media is playing.
-        """
-        return True
-
-
-    def do_stop(self):
-        """ Stops playing in the backend player.
-        """
-        pass
+        # we'll manually draw on the movie zone
+        self.movie_zone.connect('draw', self.draw)
+        self.movie_zone.connect('configure-event', self.set_transform)
 
 
     def set_file(self, filepath):
@@ -493,36 +480,53 @@ class GifOverlay(VideoOverlay):
         Args:
             filepath (`str`): The path to the media file path
         """
-        self.media_overlay.set_from_file(filepath)
+        anim = GdkPixbuf.PixbufAnimation.new_from_file(filepath)
+        self.base_size = (anim.get_width(), anim.get_height())
+        self.anim = anim.get_iter(None)
+
         # automatically show
+        self.set_transform()
         self.show()
+        self.advance_gif()
 
 
-    def do_play(self):
-        """ Do nothing, for gifs.
-
-        Returns:
-            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+    def set_transform(self, *args):
+        """ Compute the transform to scale (not stretch nor crop) the gif
         """
-        return False
+        widget_size = (self.movie_zone.get_allocated_width(), self.movie_zone.get_allocated_height())
+        scale = min(widget_size[0] / self.base_size[0], widget_size[1] / self.base_size[1])
+        dx = widget_size[0] - scale * self.base_size[0]
+        dy = widget_size[1] - scale * self.base_size[1]
+
+        self.transform = cairo.Matrix(xx = scale, yy = scale, x0 = dx / 2, y0 = dy /2)
 
 
-    def do_play_pause(self):
-        """ Do nothing, for gifs.
-
-        Returns:
-            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+    def draw(self, widget, ctx):
+        """ Simple resized drawing: get the pixbuf, set the transform, draw the image.
         """
-        return False
+        if self.anim is None: return False
+
+        ctx.transform(self.transform)
+        Gdk.cairo_set_source_pixbuf(ctx, self.anim.get_pixbuf(), 0, 0)
+        ctx.paint()
 
 
-    def do_set_time(self, *args):
-        """ Do nothing, for gifs.
-
-        Returns:
-            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
+    def advance_gif(self):
+        """ Advance the gif,  queue redrawing if the frame changed, and schedule the next frame.
         """
-        return False
+        if self.anim.advance():
+            self.movie_zone.queue_draw()
+
+        GLib.timeout_add(self.anim.get_delay_time(), self.advance_gif)
+
+
+    # a bunch of inherited functions that do nothing for gifs
+    def mute(self, *args): pass
+    def is_playing(self): return True
+    def do_stop(self): pass
+    def do_play(self): return False
+    def do_play_pause(self): return False
+    def do_set_time(self, *args): return False
 
 
 VideoOverlay._backends['image/gif'] = GifOverlay
