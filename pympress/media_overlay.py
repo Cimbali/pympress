@@ -548,4 +548,4 @@ try:
     VideoOverlay._backends = defaultdict(lambda: VLCVideo, VideoOverlay._backends)
     VideoOverlay._backend_versions.append('VLC {}'.format(vlc.libvlc_get_version().decode('ascii')))
 except:
-    raise
+    logger.exception(_("VLC video support is disabled"))

@@ -37,12 +37,7 @@ from gi.repository import Gtk, Gdk, GLib, Pango
 
 import mimetypes
 
-try:
-    from pympress import media_overlay
-except Exception as e:
-    logger.exception(_("video support is disabled"))
-    raise
-
+from pympress import media_overlay
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
 
