@@ -92,6 +92,8 @@ class VideoOverlay(builder.Builder):
     movie_zone = None
     #: :class:`~Poppler.Rectangle` containing the left/right/bottom/top space around the drawing area
     relative_margins = None
+    #: `bool` that tracks whether we should play automatically
+    autoplay = False
 
     #: callback, to be connected to :meth:`~pympress.extras.Media.play`, curryfied with the correct media_id
     play = None
@@ -473,6 +475,9 @@ class GifOverlay(VideoOverlay):
         self.movie_zone.connect('draw', self.draw)
         self.movie_zone.connect('configure-event', self.set_transform)
 
+        # automatically show
+        self.autoplay = True
+
 
     def set_file(self, filepath):
         """ Sets the media file to be played by the widget.
@@ -484,9 +489,7 @@ class GifOverlay(VideoOverlay):
         self.base_size = (anim.get_width(), anim.get_height())
         self.anim = anim.get_iter(None)
 
-        # automatically show
         self.set_transform()
-        self.show()
         self.advance_gif()
 
 

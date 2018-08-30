@@ -196,6 +196,10 @@ class Media(object):
 
                 self._media_overlays[media_id] = (v_da_c, v_da_p)
 
+            for w in self._media_overlays[media_id]:
+                if w.autoplay:
+                    w.show()
+
 
     def resize(self, which = None):
         """ Resize all media overlays that are a child of an overlay
