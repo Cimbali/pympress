@@ -1,0 +1,343 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Pympress v1.1.2\n"
+"Report-Msgid-Bugs-To: me@cimba.li\n"
+"POT-Creation-Date: 2016-10-24 15:50+0200\n"
+"PO-Revision-Date: 2018-08-30 18:10+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.6\n"
+"Last-Translator: Jaroslav Svoboda <multi.flexi@seznam.cz>\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Language: cs\n"
+
+msgid "(and optionally seconds)"
+msgstr "(a případně sekundy)"
+
+msgid "(paused)"
+msgstr "(pozastaveno)"
+
+msgid "Adjust alignment of slides in projector screen"
+msgstr "Upravit zarovnání snímků na obrazovce projektoru"
+
+msgid "All files"
+msgstr "Všechny soubory"
+
+msgid "Annotations"
+msgstr "Popis"
+
+msgid "Big buttons"
+msgstr "Velká tlačítka"
+
+msgid "Clock"
+msgstr "Hodiny"
+
+msgid ""
+"Content and presenter window must not be on the same monitor if you start "
+"full screen!"
+msgstr ""
+"Obsah a okno s prezentací musí být na stejném monitoru pokud zapnete "
+"zobrazení na celé obrazovce!"
+
+msgid "Content blanked"
+msgstr "Prázdno"
+
+msgid "Content fullscreen"
+msgstr "Obsah na celou obrazovku"
+
+msgid "Contributors:"
+msgstr "Přispěvatelé:"
+
+msgid "Could not disable DPMS screen blanking: got status "
+msgstr "Nelze vypnout DPMS vyprázdnění obrazovky: stav "
+
+msgid "Could not enable DPMS screen blanking: got status "
+msgstr "Nelze zapnout DPMS vyprázdnění obrazovky: stav "
+
+msgid "Could not find the file \"{}\""
+msgstr "Soubor \"{}\" nenalezen"
+
+msgid "Could not set screensaver status: got status "
+msgstr "Nelze nastavit stav spořiče obrazovky: stav "
+
+msgid "Current slide"
+msgstr "Aktuální snímek"
+
+msgid "ERROR Unknown widget to start fullscreen: {}"
+msgstr "CHYBA Neznámý widget začal zobrazení na celou obrazovku: {}"
+
+msgid "ERROR no action defined for this link!"
+msgstr "CHYBA pro tento odkaz nebyla definována žádná akce!"
+
+msgid "Error loading icon for about window"
+msgstr "Chyba při nahrávání ikony pro okno O programu"
+
+msgid "Error opening the file \"{}\""
+msgstr "Chyba při otevírání souboru \"{}\""
+
+msgid ""
+"Error: access denied when trying to access screen saver settings in registry!"
+msgstr ""
+"Chyba: přístup byl odepřen při pokusu o přístup k nastavení spořiče "
+"obrazovky v registru!"
+
+msgid "Highlight"
+msgstr "Zvýraznit"
+
+msgid "Invalid log level \"{}\", try one of {}"
+msgstr "Neplatná úroveň logu \"{}\", vyzkoušejte jednu z těchto: {}"
+
+msgid "Invalid time (mm or mm:ss expected), got \"{}\""
+msgstr "Neplatný čas (vyžadován tvar mm nebo mm:ss), zadáno \"{}\""
+
+msgid "Next slide"
+msgstr "Další snímek"
+
+msgid "No action was defined for this link"
+msgstr "Pro tento odkaz nebyla definována žádná akce"
+
+msgid ""
+"No file selected!\n"
+"\n"
+"You can specify the PDF file to open on the command line if you don't want "
+"to use the \"Open File\" dialog."
+msgstr ""
+"Žádný soubor není vybrán!\n"
+"\n"
+"Pokud nechcete použít dialog \"Otevřít soubor\", specifikujte PDF soubor v "
+"příkazové řádce."
+
+msgid ""
+"Not starting content or presenter window full screen because there is only "
+"one monitor"
+msgstr ""
+"Okno s obsahem nebo prezentací nebylo spuštěno na celou obrazovku, protože "
+"je dostupný pouze jeden monitor"
+
+msgid "Notes"
+msgstr "Poznámky"
+
+msgid "Open _Recent"
+msgstr "Otevřít _poslední"
+
+msgid "Open..."
+msgstr "Otevřít..."
+
+msgid "Options:"
+msgstr "Nastavení:"
+
+msgid "PDF files"
+msgstr "PDF soubory"
+
+msgid "Pause"
+msgstr "Pauza"
+
+msgid "Play"
+msgstr "Spustit"
+
+msgid "Pointer"
+msgstr "Ukazovátko"
+
+msgid "Presenter fullscreen"
+msgstr "Prezentace na celou obrazovku"
+
+msgid "Pympress Content"
+msgstr "Pympress Obsah"
+
+msgid "Pympress Presenter"
+msgstr "Pympress Prezentace"
+
+msgid "Pympress can not extract attached file"
+msgstr "Pympress nemůže extrahovat přiložený soubor"
+
+msgid "Pympress can not extract embedded media"
+msgstr "Pympress nemůže extrahovat vložená multimédia"
+
+msgid "Pympress can not find file "
+msgstr "Pympress nenašel soubor "
+
+msgid "Pympress can not interpret annotation of type:"
+msgstr "Pympress nemůže zobrazit popis typu:"
+
+msgid "Pympress does not recognize link type \"{}\""
+msgstr "Pympress nerozpoznal typ odkazu \"{}\""
+
+msgid "Pympress does not recognize link type \"{}\" to \"{}\""
+msgstr "Pympress nerozpoznal typ odkazu \"{}\" až \"{}\""
+
+msgid "Pympress does not yet support link type \"{}\""
+msgstr "Pympress zatím nepodporuje odkaz typu \"{}\""
+
+msgid "Pympress does not yet support link type \"{}\" to \"{}\""
+msgstr "Pympress zatím nepodporuje odkaz typu \"{}\" až \"{}\""
+
+msgid "Set level of verbosity in log file:"
+msgstr "Nastavit úroveň podrobnosti log souboru:"
+
+msgid "Set talk _Time"
+msgstr "Nastavit _Čas řeči"
+
+msgid "Slide number"
+msgstr "Snímek číslo"
+
+msgid "Some preferences are saved in "
+msgstr "Některé předvolby jsou uloženy v "
+
+msgid "Stop"
+msgstr "Zastavit"
+
+msgid "The estimated (intended) talk time in minutes"
+msgstr "Odhadovaná (plánovaná) doba prezentace v minutách"
+
+msgid "This help"
+msgstr "Tato pomoc"
+
+msgid "Time elapsed"
+msgstr "Uplynulý čas"
+
+msgid "Time estimation"
+msgstr "Odhad času"
+
+msgid "Unknow widget {} to be fullscreened, aborting."
+msgstr "Neznámý widget {} bude na maximalizován na celou obrazovku, ruším."
+
+msgid "Unknown event {}"
+msgstr "Neznámá událost {}"
+
+msgid "Unsupported OS: can't enable/disable screensaver"
+msgstr "Nepodporovaný OS: nelze zapnout/vypnout spořič obrazovky"
+
+msgid "Usage: {} [options] <presentation_file>"
+msgstr "Použití: {} [options] <presentation_file>"
+
+msgid "Video support using VLC is disabled."
+msgstr "Podpora videa přes VLC je vypnuta."
+
+msgid "Video support using VLC is enabled."
+msgstr "Podpora videa přes VLC je zapnuta."
+
+msgid ""
+"Warning: Content and presenter window must not be on the same monitor if you "
+"start full screen!"
+msgstr ""
+"Upozornění: Okno obsahu a prezentace nesmí být na stejném monitoru při "
+"zobrazení na celou obrazovku!"
+
+msgid "Warning: Could not disable DPMS screen blanking: got status "
+msgstr "Upozornění: Nelze vypnout DPMS vyprázdnění obrazovky: stav "
+
+msgid "Warning: Could not enable DPMS screen blanking: got status "
+msgstr "Upozornění: Nelze zapnout DPMS vyprázdnění obrazovky: stav "
+
+msgid "Warning: Could not set screensaver status: got status "
+msgstr "Upozornění: Nelze nastavit stav spořiče obrazovky: stav "
+
+msgid "Warning: Unsupported OS: can't enable/disable screensaver"
+msgstr "Upozornění: Nepodporovaný OS: nelze zapnout/vypnout spořič obrazovky"
+
+msgid "Warning: video support is disabled"
+msgstr "Upozornění: podpora videa je vypnuta"
+
+msgid "_About"
+msgstr "_O programu"
+
+msgid "_Align content"
+msgstr "_Zarovnat obsah"
+
+msgid "_Annotations"
+msgstr "_Poznámky"
+
+msgid "_Blank screen"
+msgstr "_Prázdné plátno"
+
+msgid "_Blue"
+msgstr "_Modré"
+
+msgid "_Close File"
+msgstr "_Zavřít soubor"
+
+msgid "_Disabled"
+msgstr "_Vypnuto"
+
+msgid "_File"
+msgstr "_Soubor"
+
+msgid "_First"
+msgstr "_První"
+
+msgid "_Fullscreen"
+msgstr "_Celá obrazovka"
+
+msgid "_Go to..."
+msgstr "_Jít na..."
+
+msgid "_Green"
+msgstr "_Zelené"
+
+msgid "_Help"
+msgstr "_Nápověda"
+
+msgid "_Highlight"
+msgstr "_Zvýraznění"
+
+msgid "_Last"
+msgstr "_Poslední"
+
+msgid "_Navigation"
+msgstr "_Navigace"
+
+msgid "_Next"
+msgstr "_Další"
+
+msgid "_Notes mode"
+msgstr "_Mód s poznámkami"
+
+msgid "_Open"
+msgstr "_Otevřít"
+
+msgid "_Pause timer"
+msgstr "_Pozastavit stopky"
+
+msgid "_Presentation"
+msgstr "_Prezentace"
+
+msgid "_Previous"
+msgstr "_Předchozí"
+
+msgid "_Quit"
+msgstr "_Ukončit"
+
+msgid "_Red"
+msgstr "_Červené"
+
+msgid "_Reset timer"
+msgstr "_Resetovat stopky"
+
+msgid "_Starting Configuration"
+msgstr "_Počáteční nastavení"
+
+msgid "_Swap screens"
+msgstr "_Prohodit obrazovky"
+
+msgid "access denied when trying to access screen saver settings in registry!"
+msgstr ""
+"přístup byl odepřen při pokusu o přístup k nastavení spořiče obrazovky v "
+"registru!"
+
+msgid "no action defined for this link!"
+msgstr "žádná akce není definována pro tento odkaz!"
+
+msgid ""
+"pympress is a little PDF reader written in Python using Poppler for PDF "
+"rendering and GTK for the GUI.\n"
+msgstr ""
+"pympress je malý prohlížeč PDF napsaný v Pythonu používající Poppler k "
+"zobrazení PDF a GTK pro GUI.\n"
+
+msgid "video support is disabled"
+msgstr "podpora videa je vypnuta"
+
+msgid "{}, {}, {}, {}, or {}"
+msgstr "{}, {}, {}, {}, nebo {}"
