@@ -74,6 +74,9 @@ msgstr ""
 msgid "Error: access denied when trying to access screen saver settings in registry!"
 msgstr ""
 
+msgid "GtkImage gif player"
+msgstr ""
+
 msgid "Highlight"
 msgstr ""
 
@@ -81,6 +84,9 @@ msgid "Invalid log level \"{}\", try one of {}"
 msgstr ""
 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
+msgstr ""
+
+msgid "Media support uses {}."
 msgstr ""
 
 msgid "Next slide"
@@ -297,6 +303,12 @@ msgid "_Starting Configuration"
 msgstr ""
 
 msgid "_Swap screens"
+msgstr ""
+
+msgid "_Undo zoom"
+msgstr ""
+
+msgid "_Zoom in"
 msgstr ""
 
 msgid "access denied when trying to access screen saver settings in registry!"

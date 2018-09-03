@@ -77,6 +77,9 @@ msgstr "Błąd podczas otwierania pliku \"{}\""
 msgid "Error: access denied when trying to access screen saver settings in registry!"
 msgstr "Błąd: odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"
 
+msgid "GtkImage gif player"
+msgstr ""
+
 msgid "Highlight"
 msgstr "Zakreślacz"
 
@@ -85,6 +88,9 @@ msgstr "Nieprawidłowy poziom dziennikowania \"{}\", wypróbuj jeden z {}"
 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Nieprawidłowy czas (oczekiwano min lub min:sek), podano (wprowadzono) \"{}\""
+
+msgid "Media support uses {}."
+msgstr ""
 
 msgid "Next slide"
 msgstr "Następny slajd"
@@ -304,6 +310,12 @@ msgstr "_Konfiguracja startowa"
 
 msgid "_Swap screens"
 msgstr "_Zamień ekrany"
+
+msgid "_Undo zoom"
+msgstr ""
+
+msgid "_Zoom in"
+msgstr ""
 
 msgid "access denied when trying to access screen saver settings in registry!"
 msgstr "odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"

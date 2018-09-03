@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Pympress v1.1.2\n"
-"Report-Msgid-Bugs-To: susocomesanha@lavabit.com\n"
-"POT-Creation-Date: 2018-02-10 15:50+0200\n"
+"Report-Msgid-Bugs-To: me@cimba.li\n"
+"POT-Creation-Date: 2016-10-24 15:50+0200\n"
 "PO-Revision-Date: 2018-02-10 19:34+0200\n"
 "Last-Translator: Suso Comesaña <susocomesanha@lavabit.com>\n"
 "Language: Spanish\n"
@@ -77,6 +77,9 @@ msgstr "No se puede abrir el archivo \"{}\""
 msgid "Error: access denied when trying to access screen saver settings in registry!"
 msgstr "Error: Acceso denegado al cambiar la configuración del protector de pantalla durante el registro. !"
 
+msgid "GtkImage gif player"
+msgstr "lector de gif GtkImage"
+
 msgid "Highlight"
 msgstr "Resaltar"
 
@@ -85,6 +88,9 @@ msgstr "Nivel de registro incorrecto \"{}\", seleccione una de las siguientes op
 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Tiempo no válido (mm ou mm:ss de espera), obtenido \"{}\""
+
+msgid "Media support uses {}."
+msgstr "Vídeo soportadas con {}"
 
 msgid "Next slide"
 msgstr "Siguiente diapo"
@@ -304,6 +310,12 @@ msgstr "Configuración del _inicio"
 msgid "_Swap screens"
 msgstr "_Intercambio de pantallass"
 
+msgid "_Undo zoom"
+msgstr "Deshacer zoom"
+
+msgid "_Zoom in"
+msgstr "Hacer zoom"
+
 msgid "access denied when trying to access screen saver settings in registry!"
 msgstr "acceso denegado al cambiar la configuración del protector de pantalla durante el registro !"
 
@@ -318,5 +330,3 @@ msgstr "El soporte de vídeo está desactivado"
 
 msgid "{}, {}, {}, {}, or {}"
 msgstr "{}, {}, {}, {}, o {}"
-
-

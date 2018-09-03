@@ -533,7 +533,7 @@ class GifOverlay(VideoOverlay):
 
 
 VideoOverlay._backends['image/gif'] = GifOverlay
-VideoOverlay._backend_versions.append('GtkImage-based gif player')
+VideoOverlay._backend_versions.append(_('GtkImage gif player'))
 
 try:
     import vlc
@@ -551,4 +551,4 @@ try:
     VideoOverlay._backends = defaultdict(lambda: VLCVideo, VideoOverlay._backends)
     VideoOverlay._backend_versions.append('VLC {}'.format(vlc.libvlc_get_version().decode('ascii')))
 except:
-    logger.exception(_("VLC video support is disabled"))
+    logger.exception(_("Video support using VLC is disabled."))

@@ -77,6 +77,9 @@ msgstr "Impossible d'ouvrir le fichier \"{}\""
 msgid "Error: access denied when trying to access screen saver settings in registry!"
 msgstr "Erreur: accès refusé lors de la modification des paramètres d'économiseur d'écran dans le registre !"
 
+msgid "GtkImage gif player"
+msgstr "lecteur de gif GtkImage"
+
 msgid "Highlight"
 msgstr "Feutre"
 
@@ -85,6 +88,9 @@ msgstr "Mauvais niveau de log \"{}\", choisissez l'un de {}"
 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Templs invalude (mm ou mm:ss attendu), \"{}\" reçu"
+
+msgid "Media support uses {}."
+msgstr "Les vidéos sont prises en charge par {}"
 
 msgid "Next slide"
 msgstr "Prochaine diapo"
@@ -303,6 +309,12 @@ msgstr "Configuration de démarrage"
 
 msgid "_Swap screens"
 msgstr "Échanger les écran_s"
+
+msgid "_Undo zoom"
+msgstr "Ann_uler le zoom"
+
+msgid "_Zoom in"
+msgstr "_Zoomer"
 
 msgid "access denied when trying to access screen saver settings in registry!"
 msgstr "accès refusé lors de la modification des paramètres d'économiseur d'écran dans le registre !"
