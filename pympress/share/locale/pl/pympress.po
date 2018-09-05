@@ -167,6 +167,12 @@ msgstr "Pympress jeszcze nie obsługuje odsyłacza typu \"{}\""
 msgid "Pympress does not yet support link type \"{}\" to \"{}\""
 msgstr "Pympress jeszcze nie obsługuje odsyłacza typu \"{}\" do \"{}\""
 
+msgid "Python version {}"
+msgstr ""
+
+msgid "Resources are loaded from "
+msgstr ""
+
 msgid "Set level of verbosity in log file:"
 msgstr "Ustaw poziom szczegółowości pliku dziennika:"
 

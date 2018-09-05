@@ -37,7 +37,7 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
-import os.path
+import os.path, sys
 
 import pkg_resources
 
@@ -454,8 +454,10 @@ class UI(builder.Builder):
         about.set_version(pympress.__version__)
         about.set_copyright(_('Contributors:') + '\n' + pympress.__copyright__)
         about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n')
-                         + _('Some preferences are saved in ') + self.config.path_to_config() + '\n\n'
-                         + (_('Media support uses {}.').format(self.medias.backend_version())))
+                         + _('Some preferences are saved in ') + self.config.path_to_config() + '\n'
+                         + _('Resources are loaded from ') + os.path.dirname(util.get_locale_dir()) + '\n\n'
+                         + (_('Media support uses {}.').format(self.medias.backend_version())) + '\n'
+                         + _('Python version {}').format(sys.version))
         about.set_website('http://www.pympress.xyz/')
         try:
             about.set_logo(util.get_icon_pixbuf('pympress-128.png'))

@@ -166,6 +166,12 @@ msgstr "Pympress ne prend pas encore en charge les liens de type \"{}\""
 msgid "Pympress does not yet support link type \"{}\" to \"{}\""
 msgstr "Pympress ne prend pas encore en charge les liens de type \"{}\" vers \"{}\""
 
+msgid "Python version {}"
+msgstr "Python version {}"
+
+msgid "Resources are loaded from "
+msgstr "Ressources chargées depuis "
+
 msgid "Set level of verbosity in log file:"
 msgstr "Niveau de détails dans les logs:"
 

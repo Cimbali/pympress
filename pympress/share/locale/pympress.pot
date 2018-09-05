@@ -161,6 +161,12 @@ msgstr ""
 msgid "Pympress does not yet support link type \"{}\" to \"{}\""
 msgstr ""
 
+msgid "Python version {}"
+msgstr ""
+
+msgid "Resources are loaded from "
+msgstr ""
+
 msgid "Set level of verbosity in log file:"
 msgstr ""
 
