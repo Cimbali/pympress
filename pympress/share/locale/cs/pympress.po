@@ -77,7 +77,7 @@ msgid "Error: access denied when trying to access screen saver settings in regis
 msgstr "Chyba: přístup byl odepřen při pokusu o přístup k nastavení spořiče obrazovky v registru!"
 
 msgid "GtkImage gif player"
-msgstr ""
+msgstr "GtkImage přehrávač gifů"
 
 msgid "Highlight"
 msgstr "Zvýraznit"
@@ -89,7 +89,7 @@ msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Neplatný čas (vyžadován tvar mm nebo mm:ss), zadáno \"{}\""
 
 msgid "Media support uses {}."
-msgstr ""
+msgstr "Podpora médií využívá {}."
 
 msgid "Next slide"
 msgstr "Další snímek"
@@ -317,10 +317,10 @@ msgid "_Swap screens"
 msgstr "_Prohodit obrazovky"
 
 msgid "_Undo zoom"
-msgstr ""
+msgstr "_Oddálit"
 
 msgid "_Zoom in"
-msgstr ""
+msgstr "_Přiblížit"
 
 msgid "access denied when trying to access screen saver settings in registry!"
 msgstr "přístup byl odepřen při pokusu o přístup k nastavení spořiče obrazovky v registru!"
