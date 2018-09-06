@@ -78,7 +78,7 @@ msgid "Error: access denied when trying to access screen saver settings in regis
 msgstr "Error: Acceso denegado al cambiar la configuración del protector de pantalla durante el registro. !"
 
 msgid "GtkImage gif player"
-msgstr "lector de gif GtkImage"
+msgstr "Reproductor de gif GtkImage"
 
 msgid "Highlight"
 msgstr "Resaltar"
@@ -90,7 +90,7 @@ msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Tiempo no válido (mm ou mm:ss de espera), obtenido \"{}\""
 
 msgid "Media support uses {}."
-msgstr "Vídeo soportadas con {}"
+msgstr "Los medios se soportan con {}"
 
 msgid "Next slide"
 msgstr "Siguiente diapo"
@@ -170,7 +170,7 @@ msgid "Python version {}"
 msgstr "Versión de python {}"
 
 msgid "Resources are loaded from "
-msgstr "Recursos cargados desde "
+msgstr "Los recursos se cargan desde "
 
 msgid "Set level of verbosity in log file:"
 msgstr "Nivel de detalle en los logs:"

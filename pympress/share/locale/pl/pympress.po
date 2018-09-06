@@ -78,7 +78,7 @@ msgid "Error: access denied when trying to access screen saver settings in regis
 msgstr "Błąd: odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"
 
 msgid "GtkImage gif player"
-msgstr ""
+msgstr "Odtwarzacz gifa GtkImage"
 
 msgid "Highlight"
 msgstr "Zakreślacz"
@@ -90,7 +90,7 @@ msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Nieprawidłowy czas (oczekiwano min lub min:sek), podano (wprowadzono) \"{}\""
 
 msgid "Media support uses {}."
-msgstr ""
+msgstr "Obsługa multimediów używa {}"
 
 msgid "Next slide"
 msgstr "Następny slajd"
@@ -168,10 +168,10 @@ msgid "Pympress does not yet support link type \"{}\" to \"{}\""
 msgstr "Pympress jeszcze nie obsługuje odsyłacza typu \"{}\" do \"{}\""
 
 msgid "Python version {}"
-msgstr ""
+msgstr "Python wersja {}"
 
 msgid "Resources are loaded from "
-msgstr ""
+msgstr "Zasoby są ładowane z "
 
 msgid "Set level of verbosity in log file:"
 msgstr "Ustaw poziom szczegółowości pliku dziennika:"
@@ -318,10 +318,10 @@ msgid "_Swap screens"
 msgstr "_Zamień ekrany"
 
 msgid "_Undo zoom"
-msgstr ""
+msgstr "Cofnij zbliżenie"
 
 msgid "_Zoom in"
-msgstr ""
+msgstr "_Zbliżenie"
 
 msgid "access denied when trying to access screen saver settings in registry!"
 msgstr "odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"

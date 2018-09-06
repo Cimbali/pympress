@@ -80,7 +80,7 @@ msgid "Error: access denied when trying to access screen saver settings in regis
 msgstr "Fehler: Zugriff auf die Bildschirmschoner-Einstellungen der Registry nicht erlaubt!"
 
 msgid "GtkImage gif player"
-msgstr "GtkImage gif Spieler"
+msgstr "Gif-Wiedergabe mit GtkImage"
 
 msgid "Highlight"
 msgstr "Hervorheben"
@@ -92,7 +92,7 @@ msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Ungültige Zeit (mm oder mm:ss erwartet), habe \"{}\""
 
 msgid "Media support uses {}."
-msgstr "Videounterstützung verwendet {}"
+msgstr "Videounterstützung verwendet {}."
 
 msgid "Next slide"
 msgstr "Nächste Folie"
@@ -173,7 +173,7 @@ msgid "Python version {}"
 msgstr "Python Version {}"
 
 msgid "Resources are loaded from "
-msgstr "Datei werden geladen von "
+msgstr "Daten werden geladen von "
 
 msgid "Set level of verbosity in log file:"
 msgstr "Verbositäts-Level für die Logdatei setzen:"
@@ -320,7 +320,7 @@ msgid "_Swap screens"
 msgstr "Bildschirme _tauschen"
 
 msgid "_Undo zoom"
-msgstr "Z_urücksetzen Zoom"
+msgstr "Zoom z_urücksetzen"
 
 msgid "_Zoom in"
 msgstr "Hinein_zoomen"
