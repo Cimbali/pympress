@@ -167,10 +167,10 @@ msgid "Pympress does not yet support link type \"{}\" to \"{}\""
 msgstr "Pympress zatím nepodporuje odkaz typu \"{}\" až \"{}\""
 
 msgid "Python version {}"
-msgstr ""
+msgstr "Python verze {}"
 
 msgid "Resources are loaded from "
-msgstr ""
+msgstr "Prostředky jsou nahrány z "
 
 msgid "Set level of verbosity in log file:"
 msgstr "Nastavit úroveň podrobnosti log souboru:"
