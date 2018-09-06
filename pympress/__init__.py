@@ -23,11 +23,11 @@
 # DON'T IMPORT ANYTHING HERE (OR YOU WILL BREAK setup.py)
 #
 
-__version__ = '1.1.2'
+__version__ = '1.2.0'
 __copyright__= """2009, 2010 Thomas Jost <thomas.jost@gmail.com>
 2015-2017 Cimbali <me@cimba.li>
 2016 Christoph Rath <christof.rath@iaik.tugraz.at>
 2016 Epithumia <endless@airelle.info>
 """
 
-__all__ = ['builder', 'config', 'document', 'editable_label', 'extras', 'pointer', 'scribble', 'surfacecache', 'talk_time', 'ui', 'util', 'vlcvideo']
+__all__ = ['builder', 'config', 'document', 'editable_label', 'extras', 'media_overlay', 'pointer', 'scribble', 'surfacecache', 'talk_time', 'ui', 'util']

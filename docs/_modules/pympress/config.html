@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.2
+		v1.2.0
 	</div>
 
 	
@@ -83,6 +83,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#dependencies">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#contributing">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
 </ul>
@@ -191,6 +192,7 @@
 
 <span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">configparser</span>
@@ -244,13 +246,11 @@
 <div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span> <span class="c1"># python 2 fix</span>
     <span class="sd">&quot;&quot;&quot; Manage configuration :Get the configuration from its file and store its back.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#: `dict`-tree of presenter layout for the notes mode</span>
-    <span class="n">notes_layout</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="c1">#: `dict`-tree of presenter layout for the non-notes mode</span>
-    <span class="n">plain_layout</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1">#: `dict`-tree of presenter layouts for various modes</span>
+    <span class="n">layout</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="c1">#: Set of strings that are the valid names of widgets from the presenter window that can be dynamically rearranged</span>
-    <span class="n">placeable_widgets</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;current&quot;</span><span class="p">,</span> <span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">}</span>
+    <span class="c1">#: Map of strings that are the valid representations of widgets from the presenter window that can be dynamically rearranged, mapping to their names</span>
+    <span class="n">placeable_widgets</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="s2">&quot;p_frame_notes&quot;</span><span class="p">,</span> <span class="s2">&quot;current&quot;</span><span class="p">:</span> <span class="s2">&quot;p_frame_cur&quot;</span><span class="p">,</span> <span class="s2">&quot;next&quot;</span><span class="p">:</span> <span class="s2">&quot;p_frame_next&quot;</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">:</span> <span class="s2">&quot;p_frame_annot&quot;</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">:</span> <span class="s2">&quot;scribble_overlay&quot;</span><span class="p">}</span>
 
 <div class="viewcode-block" id="Config.path_to_config"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.path_to_config">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">path_to_config</span><span class="p">():</span>
@@ -324,6 +324,9 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">):</span>
             <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;highlight&#39;</span><span class="p">):</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;highlight&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">):</span>
             <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">RGBA</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
 
@@ -337,8 +340,8 @@
         <span class="sd">&quot;&quot;&quot; Save the configuration to its file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># serialize the layouts</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes_layout</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plain_layout</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">layout_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="n">layout_name</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">],</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_config</span><span class="p">(),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">configfile</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">configfile</span><span class="p">)</span></div>
@@ -354,12 +357,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">start_conf</span><span class="p">,</span> <span class="s1">&#39;on&#39;</span> <span class="k">if</span> <span class="n">check_item</span><span class="o">.</span><span class="n">get_active</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Config.validate_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.validate_layout">[docs]</a>    <span class="k">def</span> <span class="nf">validate_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">expected_widgets</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.validate_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.validate_layout">[docs]</a>    <span class="k">def</span> <span class="nf">validate_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">,</span> <span class="n">expected_widgets</span><span class="p">,</span> <span class="n">optional_widgets</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()):</span>
         <span class="sd">&quot;&quot;&quot; Validate layout: check whether the layout of widgets built from the config string is valid.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            layout (`dict`): the json-parsed config string</span>
-<span class="sd">            expected_widgets (`set`): strings with the names of widgets for this layout</span>
+<span class="sd">            expected_widgets (`set`): strings with the names of widgets that have to be used in this layout</span>
+<span class="sd">            optional_widgets (`set`): strings with the names of widgets that may or may not be used in this layout</span>
 
 
 <span class="sd">        Layout must have all self.placeable_widgets (leaves of the tree, as `str`) and only allowed properties</span>
@@ -373,12 +377,12 @@
 <span class="sd">        of all the resizeable items (if and only if resizeable).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">next_visits</span> <span class="o">=</span> <span class="p">[</span><span class="n">layout</span><span class="p">]</span>
+        <span class="n">next_visits</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([</span><span class="n">layout</span><span class="p">])</span>
         <span class="n">widget_seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">while</span> <span class="n">next_visits</span><span class="p">:</span>
-            <span class="n">w_desc</span> <span class="o">=</span> <span class="n">next_visits</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">w_desc</span> <span class="o">=</span> <span class="n">next_visits</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">w_desc</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">w_desc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expected_widgets</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">w_desc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expected_widgets</span> <span class="ow">and</span> <span class="n">w_desc</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">optional_widgets</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unrecognized widget &quot;</span><span class="si">{}</span><span class="s1">&quot;, pick one of: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">w_desc</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">expected_widgets</span><span class="p">)))</span>
                 <span class="k">elif</span> <span class="n">w_desc</span> <span class="ow">in</span> <span class="n">widget_seen</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Duplicate widget &quot;</span><span class="si">{}</span><span class="s1">&quot;, all expected_widgets can only appear once&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">w_desc</span><span class="p">))</span>
@@ -398,7 +402,7 @@
                     <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;proportions&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">float</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;proportions&#39;</span><span class="p">])</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;proportions&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">])</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;proportions&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-10</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;proportions&quot; must be a list of floats (one per separator), between 0 and 1, at node </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">w_desc</span><span class="p">))</span>
 
-                <span class="n">next_visits</span> <span class="o">+=</span> <span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">]</span>
+                <span class="n">next_visits</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unexpected type </span><span class="si">{}</span><span class="s1">, nodes must be dicts or strings, at node </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">w_desc</span><span class="p">),</span> <span class="n">w_desc</span><span class="p">))</span>
         <span class="n">widget_missing</span> <span class="o">=</span> <span class="n">expected_widgets</span> <span class="o">-</span> <span class="n">widget_seen</span>
@@ -409,23 +413,26 @@
 <div class="viewcode-block" id="Config.load_window_layouts"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.load_window_layouts">[docs]</a>    <span class="k">def</span> <span class="nf">load_window_layouts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parse and validate layouts loaded from config, with fallbacks if needed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">default_notes_layout</span> <span class="o">=</span> <span class="s1">&#39;{&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;horizontal&quot;, &quot;children&quot;:[&quot;notes&quot;, {&quot;resizeable&quot;:false, &quot;children&quot;:[&quot;current&quot;, &quot;next&quot;], &quot;orientation&quot;:&quot;vertical&quot;}], &quot;proportions&quot;: [0.60, 0.40]}&#39;</span>
-        <span class="n">default_plain_layout</span> <span class="o">=</span> <span class="s1">&#39;{&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;horizontal&quot;, &quot;children&quot;:[&quot;current&quot;, {&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;vertical&quot;, &quot;children&quot;:[&quot;next&quot;, &quot;annotations&quot;], &quot;proportions&quot;:[0.55, 0.45]}], &quot;proportions&quot;:[0.67, 0.33]}&#39;</span>
+        <span class="n">default_layout</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;notes&#39;</span><span class="p">:</span>     <span class="s1">&#39;{&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;horizontal&quot;, &quot;children&quot;:[&quot;notes&quot;, {&quot;resizeable&quot;:false, &quot;children&quot;:[&quot;current&quot;, &quot;next&quot;], &quot;orientation&quot;:&quot;vertical&quot;}], &quot;proportions&quot;: [0.60, 0.40]}&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;plain&#39;</span><span class="p">:</span>     <span class="s1">&#39;{&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;horizontal&quot;, &quot;children&quot;:[&quot;current&quot;, {&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;vertical&quot;, &quot;children&quot;:[&quot;next&quot;, &quot;annotations&quot;], &quot;proportions&quot;:[0.55, 0.45]}], &quot;proportions&quot;:[0.67, 0.33]}&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;highlight&#39;</span><span class="p">:</span> <span class="s1">&#39;{&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;horizontal&quot;, &quot;children&quot;:[&quot;highlight&quot;, {&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;vertical&quot;, &quot;children&quot;:[&quot;next&quot;, &quot;annotations&quot;], &quot;proportions&quot;:[0.55, 0.45]}], &quot;proportions&quot;:[0.67, 0.33]}&#39;</span>
+        <span class="p">}</span>
 
-        <span class="c1"># Log error and keep default layout</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">notes_layout</span> <span class="o">=</span> <span class="n">layout_from_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;notes&#39;</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">validate_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes_layout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;annotations&quot;</span><span class="p">})</span>
-        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Invalid layout&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">notes_layout</span> <span class="o">=</span> <span class="n">layout_from_json</span><span class="p">(</span><span class="n">default_notes_layout</span><span class="p">)</span>
+        <span class="n">widget_reqs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;notes&#39;</span><span class="p">:</span>     <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">},),</span>
+            <span class="s1">&#39;plain&#39;</span><span class="p">:</span>     <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">},),</span>
+            <span class="s1">&#39;highlight&#39;</span><span class="p">:</span> <span class="p">({</span><span class="s2">&quot;highlight&quot;</span><span class="p">},</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;highlight&quot;</span><span class="p">})</span>
+        <span class="p">}</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">plain_layout</span> <span class="o">=</span> <span class="n">layout_from_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">validate_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plain_layout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;notes&quot;</span><span class="p">})</span>
-        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Invalid layout&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">plain_layout</span> <span class="o">=</span> <span class="n">layout_from_json</span><span class="p">(</span><span class="n">default_plain_layout</span><span class="p">)</span></div>
+        <span class="k">for</span> <span class="n">layout_name</span> <span class="ow">in</span> <span class="n">default_layout</span><span class="p">:</span>
+            <span class="c1"># Log error and keep default layout</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">layout_from_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="n">layout_name</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">validate_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">]</span> <span class="p">,</span> <span class="o">*</span><span class="n">widget_reqs</span><span class="p">[</span><span class="n">layout_name</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Invalid layout&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">layout_from_json</span><span class="p">(</span><span class="n">default_layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="Config.widget_layout_to_tree"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.widget_layout_to_tree">[docs]</a>    <span class="k">def</span> <span class="nf">widget_layout_to_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">):</span>
@@ -441,9 +448,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">orientation_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">HORIZONTAL</span><span class="p">:</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">VERTICAL</span><span class="p">:</span><span class="s1">&#39;vertical&#39;</span><span class="p">}</span>
 
-        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="p">):</span>
-            <span class="n">node</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;resizeable&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">widget_layout_to_tree</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_children</span><span class="p">()],</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+        <span class="n">matching_widget_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">name</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">matching_widget_names</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">matching_widget_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resizeable&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">widget_layout_to_tree</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_children</span><span class="p">()],</span>
                     <span class="s1">&#39;orientation&#39;</span><span class="p">:</span> <span class="n">orientation_names</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">get_orientation</span><span class="p">()]}</span>
+
         <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Paned</span><span class="p">):</span>
             <span class="n">proportions</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">reverse_children</span> <span class="o">=</span> <span class="p">[]</span>
@@ -470,51 +484,27 @@
 
             <span class="n">reverse_children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">left_pane</span><span class="p">)</span>
 
-            <span class="n">node</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;resizeable&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">widget_layout_to_tree</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">reverse_children</span><span class="p">)],</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;resizeable&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">widget_layout_to_tree</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">reverse_children</span><span class="p">)],</span>
                     <span class="s1">&#39;proportions&#39;</span><span class="p">:</span> <span class="n">proportions</span><span class="p">,</span> <span class="s1">&#39;orientation&#39;</span><span class="p">:</span> <span class="n">orientation_names</span><span class="p">[</span><span class="n">orientation</span><span class="p">]}</span>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;p_frame_&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;p_frame_&#39;</span><span class="p">):]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span><span class="p">:</span>
-                <span class="n">node</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;p_frame_&#39;</span><span class="p">):]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Error serializing layout: widget of type </span><span class="si">{}</span><span class="s1"> is not an expected container or named widget: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">widget</span><span class="p">))</span>
-
-        <span class="k">return</span> <span class="n">node</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Error serializing layout: widget of type </span><span class="si">{}</span><span class="s1"> is not an expected container or named widget: &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">name</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Config.get_notes_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.get_notes_layout">[docs]</a>    <span class="k">def</span> <span class="nf">get_notes_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Getter for the notes layout.</span>
+<div class="viewcode-block" id="Config.get_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.get_layout">[docs]</a>    <span class="k">def</span> <span class="nf">get_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Getter for the `~layout_name` layout.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_layout</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="Config.get_plain_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.get_plain_layout">[docs]</a>    <span class="k">def</span> <span class="nf">get_plain_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Getter for the plain layout.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plain_layout</span></div>
-
-
-<div class="viewcode-block" id="Config.update_notes_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.update_notes_layout">[docs]</a>    <span class="k">def</span> <span class="nf">update_notes_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">):</span>
+<div class="viewcode-block" id="Config.update_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.update_layout">[docs]</a>    <span class="k">def</span> <span class="nf">update_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout_name</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Setter for the notes layout.</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            layout_name (`str`): the name of the layout to update</span>
 <span class="sd">            widget (:class:`~Gtk.Widget`): the widget that will contain the layout.</span>
 <span class="sd">            pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative position (float between 0 and 1) of its handle</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">notes_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget_layout_to_tree</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Config.update_plain_layout"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.update_plain_layout">[docs]</a>    <span class="k">def</span> <span class="nf">update_plain_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Setter for the plain layout.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            widget (:class:`~Gtk.Widget`): the widget that will contain the layout.</span>
-<span class="sd">            pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative position (float between 0 and 1) of its handle</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plain_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget_layout_to_tree</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">)</span></div></div>
-
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget_layout_to_tree</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>
@@ -551,7 +541,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-254-g5c52a70&#39;',
+            VERSION:'b&#39;0.6-303-gd03398a&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.2
+		v1.2.0
 	</div>
 
 	
@@ -83,6 +83,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#dependencies">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#contributing">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
 </ul>
@@ -274,7 +275,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_pointer</span> <span class="o">==</span> <span class="n">POINTER_SHOW</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">ww</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointer_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span>
             <span class="n">y</span> <span class="o">=</span> <span class="n">wh</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointer_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span>
-            <span class="n">Gdk</span><span class="o">.</span><span class="n">cairo_set_source_pixbuf</span><span class="p">(</span><span class="n">cairo_context</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">cairo_set_source_pixbuf</span><span class="p">(</span><span class="n">cairo_context</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">cairo_context</span><span class="o">.</span><span class="n">paint</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Pointer.track_pointer"><a class="viewcode-back" href="../../pympress.html#pympress.pointer.Pointer.track_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">track_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
@@ -366,7 +368,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-254-g5c52a70&#39;',
+            VERSION:'b&#39;0.6-303-gd03398a&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

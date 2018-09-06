@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.2
+		v1.2.0
 	</div>
 
 	
@@ -83,6 +83,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#dependencies">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#contributing">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
 </ul>
@@ -192,9 +193,11 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
+
 <span class="kn">import</span> <span class="nn">gi</span>
 <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">GObject</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">GLib</span>
 
 <span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">util</span>
 
@@ -204,6 +207,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: `set` of :class:`~Gtk.Widget`s that have been built by the builder, and translated</span>
     <span class="n">__built_widgets</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="c1">#: `dict` mapping :class:`~Gtk.Paned` names to the handler ids of their size-allocate signal</span>
+    <span class="n">pending_pane_resizes</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Builder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -267,7 +272,6 @@
                 <span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="n">target</span></div>
-
 
 
 <div class="viewcode-block" id="Builder.find_callback_handler"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.find_callback_handler">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -407,7 +411,9 @@
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">widgets</span><span class="p">):</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">widgets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Paned</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Paned</span><span class="p">):</span>
                 <span class="n">widgets</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">get_children</span><span class="p">())</span>
                 <span class="n">containers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
             <span class="n">w</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
@@ -417,20 +423,21 @@
         <span class="k">del</span> <span class="n">widgets</span><span class="p">[:]</span>
         <span class="k">while</span> <span class="n">containers</span><span class="p">:</span>
             <span class="n">containers</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pending_pane_resizes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
         <span class="c1"># iterate over new layout to build it, using a BFS</span>
-        <span class="n">widgets_to_add</span> <span class="o">=</span> <span class="p">[(</span><span class="n">top_widget</span><span class="p">,</span> <span class="n">layout</span><span class="p">)]</span>
+        <span class="n">widgets_to_add</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([(</span><span class="n">top_widget</span><span class="p">,</span> <span class="n">layout</span><span class="p">)])</span>
         <span class="n">pane_resize</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">pane_handle_pos</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">while</span> <span class="n">widgets_to_add</span><span class="p">:</span>
-            <span class="n">parent</span><span class="p">,</span> <span class="n">w_desc</span> <span class="o">=</span> <span class="n">widgets_to_add</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">parent</span><span class="p">,</span> <span class="n">w_desc</span> <span class="o">=</span> <span class="n">widgets_to_add</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">w_desc</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
                 <span class="n">w</span> <span class="o">=</span> <span class="n">leaf_widgets</span><span class="p">[</span><span class="n">w_desc</span><span class="p">]</span>
 
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># get new container widget, attempt to recycle the containers we removed</span>
+                <span class="c1"># get new container widget</span>
                 <span class="k">if</span> <span class="s1">&#39;resizeable&#39;</span> <span class="ow">in</span> <span class="n">w_desc</span> <span class="ow">and</span> <span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;resizeable&#39;</span><span class="p">]:</span>
                     <span class="n">orientation</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Orientation</span><span class="p">,</span> <span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
                     <span class="n">w</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Paned</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">orientation</span><span class="p">)</span>
@@ -454,6 +461,11 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">pane_handle_pos</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
 
+                    <span class="n">hid</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;size-allocate&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resize_paned</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">[</span><span class="n">w</span><span class="p">])</span>
+
+                    <span class="n">w</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s1">&#39;GtkPaned</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pending_pane_resizes</span><span class="p">)))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pending_pane_resizes</span><span class="p">[</span><span class="n">w</span><span class="o">.</span><span class="n">get_name</span><span class="p">()]</span> <span class="o">=</span> <span class="n">hid</span>
+
                     <span class="c1"># if more than 2 children are to be added, add the 2+ from the right side in a new child Gtk.Paned</span>
                     <span class="n">widgets_to_add</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">w</span><span class="p">,</span> <span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">w_desc</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -461,7 +473,7 @@
                     <span class="n">w</span><span class="o">.</span><span class="n">set_homogeneous</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">w</span><span class="o">.</span><span class="n">set_spacing</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 
-                    <span class="n">widgets_to_add</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">]]</span>
+                    <span class="n">widgets_to_add</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">w_desc</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">])</span>
 
             <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">parent</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="p">):</span>
                 <span class="n">parent</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -479,26 +491,27 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">w</span><span class="o">.</span><span class="n">set_margin_bottom</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
 
-            <span class="c1"># hierarchichally ordered list of widgets</span>
-            <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pane_handle_pos</span></div>
 
-        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">:</span>
-            <span class="n">w</span><span class="o">.</span><span class="n">queue_resize</span><span class="p">()</span>
-            <span class="n">w</span><span class="o">.</span><span class="n">show_now</span><span class="p">()</span>
-            <span class="n">w</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span><span class="o">.</span><span class="n">check_resize</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">(</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">widgets</span> <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Paned</span><span class="p">)):</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">check_resize</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pane_resize</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">get_orientation</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">HORIZONTAL</span><span class="p">:</span>
-                    <span class="n">pane_pos</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Widget</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="n">pane_handle_pos</span><span class="p">[</span><span class="n">p</span><span class="p">]))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">pane_pos</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Widget</span><span class="o">.</span><span class="n">get_allocated_height</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="n">pane_handle_pos</span><span class="p">[</span><span class="n">p</span><span class="p">]))</span>
+<div class="viewcode-block" id="Builder.resize_paned"><a class="viewcode-back" href="../../pympress.html#pympress.builder.Builder.resize_paned">[docs]</a>    <span class="k">def</span> <span class="nf">resize_paned</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paned</span><span class="p">,</span> <span class="n">rect</span><span class="p">,</span> <span class="n">relpos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Resize `~paned` to have its handle at `~relpos`, then disconnect this signal handler.</span>
+<span class="sd">        Called from the :func:`Gtk.Widget.signals.size_allocate` signal.</span>
 
-                <span class="n">p</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">pane_pos</span><span class="p">)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            paned (:class:`~Gtk.Paned`): Panel whose size has just been allocated, and whose handle needs initial placement.</span>
+<span class="sd">            rect (:class:`~Gdk.Rectangle`): The rectangle specifying the size that has just been allocated to `~paned`</span>
+<span class="sd">            relpos (`float`): A number between `0.` and `1.` that specifies the handle position</span>
 
-        <span class="k">return</span> <span class="n">pane_handle_pos</span></div></div>
+<span class="sd">        Returns:</span>
+<span class="sd">            `True`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="k">if</span> <span class="n">paned</span><span class="o">.</span><span class="n">get_orientation</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">HORIZONTAL</span> <span class="k">else</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span>
+        <span class="n">handle_pos</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">relpos</span> <span class="o">*</span> <span class="n">size</span><span class="p">))</span>
+        <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="n">paned</span><span class="o">.</span><span class="n">set_position</span><span class="p">,</span> <span class="n">handle_pos</span><span class="p">)</span>
 
+        <span class="n">paned</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pending_pane_resizes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">paned</span><span class="o">.</span><span class="n">get_name</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
 
 </pre></div>
 
@@ -536,7 +549,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-254-g5c52a70&#39;',
+            VERSION:'b&#39;0.6-303-gd03398a&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

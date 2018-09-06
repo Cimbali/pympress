@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.2
+		v1.2.0
 	</div>
 
 	
@@ -83,6 +83,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#dependencies">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#contributing">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
 </ul>
@@ -268,7 +269,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">doc_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="SurfaceCache.add_widget"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.add_widget">[docs]</a>    <span class="k">def</span> <span class="nf">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">wtype</span><span class="p">,</span> <span class="n">start_enabled</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="SurfaceCache.add_widget"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.add_widget">[docs]</a>    <span class="k">def</span> <span class="nf">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">wtype</span><span class="p">,</span> <span class="n">prerender_enabled</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">zoomed</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Add a widget to the list of widgets that have to be managed (for caching and prerendering).</span>
 
 <span class="sd">        This creates new entries for ``widget_name`` in the needed internal data</span>
@@ -277,16 +278,16 @@
 <span class="sd">        Args:</span>
 <span class="sd">            widget (:class:`~Gtk.Widget`):  The widget for which we need to cache</span>
 <span class="sd">            wtype (`int`):  type of document handled by the widget (see :attr:`surface_type`)</span>
-<span class="sd">            start_enabled (`bool`):  whether this widget is initially in the list of widgets to prerender</span>
+<span class="sd">            prerender_enabled (`bool`):  whether this widget is initially in the list of widgets to prerender</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">widget_name</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">surface_cache</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">surface_size</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">surface_type</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">wtype</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">surface_factory</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_window</span><span class="p">()</span><span class="o">.</span><span class="n">create_similar_surface</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">start_enabled</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">enable_prerender</span><span class="p">(</span><span class="n">widget_name</span><span class="p">)</span></div>
+        <span class="n">widget_name</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;_zoomed&#39;</span> <span class="k">if</span> <span class="n">zoomed</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">widget_name</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">surface_cache</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">surface_size</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">surface_type</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">wtype</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">surface_factory</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_window</span><span class="p">()</span><span class="o">.</span><span class="n">create_similar_surface</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">prerender_enabled</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">zoomed</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">enable_prerender</span><span class="p">(</span><span class="n">widget_name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SurfaceCache.swap_document"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.swap_document">[docs]</a>    <span class="k">def</span> <span class="nf">swap_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_doc</span><span class="p">):</span>
@@ -347,6 +348,16 @@
 <span class="sd">            `int`: type of document handled by the widget (see :attr:`surface_type`)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_type</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SurfaceCache.clear_cache"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.clear_cache">[docs]</a>    <span class="k">def</span> <span class="nf">clear_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Remove all cached values for a given widget. Useful for zoomed views.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            widget_name (`str`):  name of the widget that is resized</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">surface_cache</span><span class="p">[</span><span class="n">widget_name</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SurfaceCache.resize_widget"><a class="viewcode-back" href="../../pympress.html#pympress.surfacecache.SurfaceCache.resize_widget">[docs]</a>    <span class="k">def</span> <span class="nf">resize_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_name</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
@@ -509,7 +520,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-254-g5c52a70&#39;',
+            VERSION:'b&#39;0.6-303-gd03398a&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.1.2
+		v1.2.0
 	</div>
 
 	
@@ -83,6 +83,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#dependencies">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#contributing">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pympress.html">Pympress package</a></li>
 </ul>
@@ -244,7 +245,7 @@
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">),</span> <span class="o">*</span><span class="n">path_parts</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">Requirement</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">path_parts</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">&#39;pympress&#39;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">path_parts</span><span class="p">))</span>
 
 
 <span class="k">def</span> <span class="nf">__get_resource_list</span><span class="p">(</span><span class="o">*</span><span class="n">path_parts</span><span class="p">):</span>
@@ -262,7 +263,7 @@
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">),</span> <span class="o">*</span><span class="n">path_parts</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">Requirement</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_listdir</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">path_parts</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_listdir</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">&#39;pympress&#39;</span><span class="p">,)</span> <span class="o">+</span> <span class="n">path_parts</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="get_locale_dir"><a class="viewcode-back" href="../../pympress.html#pympress.util.get_locale_dir">[docs]</a><span class="k">def</span> <span class="nf">get_locale_dir</span><span class="p">():</span>
@@ -459,7 +460,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-254-g5c52a70&#39;',
+            VERSION:'b&#39;0.6-303-gd03398a&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
