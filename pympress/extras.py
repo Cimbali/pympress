@@ -191,10 +191,10 @@ class Media(object):
                 v_da_c.set_file(filename)
                 v_da_p.set_file(filename)
 
-                v_da_c.mute(True)
-                v_da_p.mute(False)
-
                 self._media_overlays[media_id] = (v_da_c, v_da_p)
+
+            self._media_overlays[media_id][0].mute(True)
+            self._media_overlays[media_id][1].mute(False)
 
             for w in self._media_overlays[media_id]:
                 if w.autoplay:
