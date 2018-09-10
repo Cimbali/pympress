@@ -317,7 +317,7 @@ class Page(object):
             fun = lambda: logger.warning(_("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.OCG_STATE:
             fun = lambda: logger.warning(_("Pympress does not yet support link type \"{}\"").format(link_type))
-        elif link_type == Poppler.ActionType.JAVSCRIPT:
+        elif link_type == Poppler.ActionType.JAVASCRIPT:
             fun = lambda: logger.warning(_("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.UNKNOWN:
             fun = lambda: logger.warning(_("Pympress does not yet support link type \"{}\"").format(link_type))
