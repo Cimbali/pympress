@@ -201,6 +201,7 @@ class Media(object):
 
             for w in self._media_overlays[media_id]:
                 if w.autoplay:
+                    w.set_time(0)
                     w.show()
 
 
