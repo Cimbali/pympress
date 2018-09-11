@@ -138,8 +138,9 @@ class VideoOverlay(builder.Builder):
 
 
     def __del__(self):
-        self.relative_margins.free()
-        #super(VideoOverlay, self).__del__()
+        if self.relative_margins:
+            self.relative_margins.free()
+        super(VideoOverlay, self).__del__()
 
 
     def handle_embed(self, mapped_widget):
@@ -469,7 +470,7 @@ class GifOverlay(VideoOverlay):
 
     def __init__(self, container, show_controls, relative_margins, callback_getter):
         # override: no toolbar or interactive stuff for a gif, replace the whole widget area with a Gtk.Image
-        super(GifOverlay, self).__init__(container, False, relative_margins, lambda n: lambda *a: None)
+        super(GifOverlay, self).__init__(container, False, relative_margins, callback_getter)
 
         # we'll manually draw on the movie zone
         self.movie_zone.connect('draw', self.draw)
