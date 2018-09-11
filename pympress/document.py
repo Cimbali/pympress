@@ -40,9 +40,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 import os
-import sys
-import shutil
-import subprocess
 import tempfile
 import mimetypes
 import webbrowser
@@ -58,14 +55,9 @@ except ImportError:
     from urlparse import urljoin, scheme_chars
     from urllib import pathname2url
 
-# find the right function to open files
-if os.name == 'nt':
-    fileopen = os.startfile
-else:
-    opener = "open" if sys.platform == "darwin" else "xdg-open"
-    fileopen = lambda f: subprocess.call([opener, f])
 
 from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
+from pympress.util import fileopen
 
 
 def get_extension(mime_type):

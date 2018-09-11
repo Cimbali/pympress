@@ -184,6 +184,20 @@ def load_icons():
     return icons
 
 
+def fileopen(f):
+    """ Call the right function to open files, based on the platform.
+
+    Args:
+        f (`str`): path to the file to open
+    """
+    if IS_WINDOWS:
+        os.startfile(f)
+    elif IS_MAC_OS:
+        subprocess.call(['open', f])
+    else:
+        subprocess.call(['xdg-open', f])
+
+
 def set_screensaver(must_disable, window):
     """ Enable or disable the screensaver.
 
