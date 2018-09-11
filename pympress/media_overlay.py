@@ -148,14 +148,14 @@ class VideoOverlay(builder.Builder):
         return False
 
 
-    def format_millis(self, sc, val):
+    def format_millis(self, sc, prog):
         """ Callback to format the current timestamp (in milliseconds) as minutes:seconds
 
         Args:
             sc (:class:`~Gtk.Scale`): The scale whose position we are formatting
-            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video
+            prog (`float`): The position of the :class:`~Gtk.Scale`, as a float between 0. and 1.
         """
-        return self.time_format.format(*divmod(int(val // 1000), 60))
+        return self.time_format.format(*divmod(int(self.maxval * prog) // 1000, 60))
 
 
     def progress_moved(self, rng, sc, val):
@@ -391,7 +391,7 @@ class VLCVideo(VideoOverlay):
         """
         self.maxval = self.player.get_length() or 1.
         sec = round(self.maxval / 1000) if self.maxval > 500 else 1
-        self.time_format = '{{:01}}:{{:02}} / {:01}:{:02}'.format(*divmod(sec, 60))
+        self.time_format = '{{:01}}:{{:02}} / {:01}:{:02}'.format(*divmod(int(sec), 60))
 
 
     def update_progress(self, *args):
