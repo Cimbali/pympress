@@ -84,7 +84,7 @@ class Link(object):
         y1 (`float`):  first y coordinate of the link rectangle
         x2 (`float`):  second x coordinate of the link rectangle
         y2 (`float`):  second y coordinate of the link rectangle
-        action (function):  action to perform when the link is clicked
+        action (`function`):  action to perform when the link is clicked
     """
 
     #: `float`, first x coordinate of the link rectangle
@@ -120,6 +120,20 @@ class Link(object):
         """ Follow the link to its destination.
         This is overriden by the function to perform the actual action in the constructor.
         """
+
+
+    @staticmethod
+    def build_closure(fun, *args, **kwargs):
+        """ Return a lambda that calls fun(*args, **kwargs), with the current value of args and kwargs.
+        By creating the lambda in a new scope, we bind the arguments, thus creating a closure and remember the arguments.
+
+        Args:
+            fun (`function`): The function to be called
+            args (`tuple`): non-keyworded variable-length argument list to pass to fun()
+            kwargs (`dict`): keyworded variable-length argument dict to pass to fun()
+        """
+        return lambda *a, **k: fun(*(tuple(args) + tuple(a)), **dict(kwargs, **k))
+
 
 
 class Page(object):
@@ -190,7 +204,7 @@ class Page(object):
                     relative_margins.y2 = 1.0 - annotation.area.y2 / self.ph # top
                     media = (relative_margins, filepath, movie.show_controls())
                     self.medias.append(media)
-                    action = lambda: self.parent.play_media(hash(media))
+                    action = Link.build_closure(self.parent.play_media, hash(media))
                 else:
                     logger.error(_("Pympress can not find file ") + movie.get_filename())
                     continue
@@ -209,7 +223,7 @@ class Page(object):
                 if not attachment.save(filename):
                     logger.error(_("Pympress can not extract attached file"))
                     continue
-                action = lambda: fileopen(filename)
+                action = Link.build_closure(fileopen, filename)
             elif annot_type in {Poppler.AnnotType.TEXT, Poppler.AnnotType.POPUP,
                                 Poppler.AnnotType.FREE_TEXT}:
                 # text-only annotations, hide them from screen
@@ -245,7 +259,7 @@ class Page(object):
         # Poppler.ActionType.RENDITION should only appear in annotations, right? Otherwise how do we know
         # where to render it? Any documentation on which action types are admissible in links vs in annots
         # is very welcome. For now, link is fallback to annot so contains all action types.
-        fun = lambda: logger.warning(_("No action was defined for this link"))
+        fun = Link.build_closure(logger.warning, _("No action was defined for this link"))
 
         if link_type == Poppler.ActionType.NONE:
             fun = None
@@ -254,38 +268,38 @@ class Page(object):
             dest_type = action.goto_dest.dest.type
             if dest_type == Poppler.DestType.NAMED:
                 dest = self.parent.doc.find_dest(action.goto_dest.dest.named_dest)
-                fun = lambda: self.parent.goto(dest.page_num - 1)
+                fun = Link.build_closure(self.parent.goto, dest.page_num - 1)
             elif dest_type != Poppler.DestType.UNKNOWN:
-                fun = lambda: self.parent.goto(action.goto_dest.dest.page_num - 1)
+                fun = Link.build_closure(self.parent.goto, action.goto_dest.dest.page_num - 1)
 
         elif link_type == Poppler.ActionType.NAMED:
             dest_name = action.named.named_dest
             dest = self.parent.doc.find_dest(dest_name)
 
             if dest:
-                fun = lambda: self.parent.goto(dest.page_num)
+                fun = Link.build_closure(self.parent.goto, dest.page_num)
             elif dest_name == "GoBack":
                 fun = self.parent.hist_prev
             elif dest_name == "GoForward":
                 fun = self.parent.hist_next
             elif dest_name == "FirstPage":
-                fun = lambda: self.parent.goto(0)
+                fun = Link.build_closure(self.parent.goto, 0)
             elif dest_name == "PrevPage":
-                fun = lambda: self.parent.goto(self.page_nb - 1)
+                fun = Link.build_closure(self.parent.goto, self.page_nb - 1)
             elif dest_name == "NextPage":
-                fun = lambda: self.parent.goto(self.page_nb + 1)
+                fun = Link.build_closure(self.parent.goto, self.page_nb + 1)
             elif dest_name == "LastPage":
-                fun = lambda: self.parent.goto(self.parent.pages_number() - 1)
+                fun = Link.build_closure(self.parent.goto, self.parent.pages_number() - 1)
             elif dest_name == "GoToPage":
                 # Same as the 'G' action which allows to pick a page to jump to
-                fun = lambda: self.parent.start_editing_page_number()
+                fun = Link.build_closure(self.parent.start_editing_page_number, )
             elif dest_name == "Find":
                 #TODO popup a text box and search results with Page.find_text
                 # http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text
-                fun = lambda: logger.warning(_("Pympress does not yet support link type \"{}\" to \"{}\"").format(link_type, dest_name))
+                fun = Link.build_closure(logger.warning, _("Pympress does not yet support link type \"{}\" to \"{}\"").format(link_type, dest_name))
             else:
                 #TODO find out other possible named actions?
-                fun = lambda: logger.warning(_("Pympress does not recognize link type \"{}\" to \"{}\"").format(link_type, dest_name))
+                fun = Link.build_closure(logger.warning, _("Pympress does not recognize link type \"{}\" to \"{}\"").format(link_type, dest_name))
 
         elif link_type == Poppler.ActionType.LAUNCH:
             launch = action.launch
@@ -297,24 +311,24 @@ class Page(object):
                 logger.error("can not find file " + launch.file_name)
 
             else:
-                fun = lambda: fileopen(filepath)
+                fun = Link.build_closure(fileopen, filepath)
 
         elif link_type == Poppler.ActionType.RENDITION: # Poppler 0.22
-            fun = lambda: logger.warning(_("Pympress does not yet support link type \"{}\"").format(link_type))
+            fun = Link.build_closure(logger.warning, _("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.MOVIE: # Poppler 0.20
-            fun = lambda: logger.warning(_("Pympress does not yet support link type \"{}\"").format(link_type))
+            fun = Link.build_closure(logger.warning, _("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.URI:
-            fun = lambda: webbrowser.open_new_tab(action.uri.uri)
+            fun = Link.build_closure(webbrowser.open_new_tab, action.uri.uri)
         elif link_type == Poppler.ActionType.GOTO_REMOTE:
-            fun = lambda: logger.warning(_("Pympress does not yet support link type \"{}\"").format(link_type))
+            fun = Link.build_closure(logger.warning, _("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.OCG_STATE:
-            fun = lambda: logger.warning(_("Pympress does not yet support link type \"{}\"").format(link_type))
+            fun = Link.build_closure(logger.warning, _("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.JAVASCRIPT:
-            fun = lambda: logger.warning(_("Pympress does not yet support link type \"{}\"").format(link_type))
+            fun = Link.build_closure(logger.warning, _("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.UNKNOWN:
-            fun = lambda: logger.warning(_("Pympress does not yet support link type \"{}\"").format(link_type))
+            fun = Link.build_closure(logger.warning, _("Pympress does not yet support link type \"{}\"").format(link_type))
         else:
-            fun = lambda: logger.warning(_("Pympress does not recognize link type \"{}\"").format(link_type))
+            fun = Link.build_closure(logger.warning, _("Pympress does not recognize link type \"{}\"").format(link_type))
 
         return fun
 
@@ -356,7 +370,7 @@ class Page(object):
 
             media = (relative_margins, filename, False)
             self.medias.append(media)
-            return lambda: self.parent.play_media(hash(media))
+            return Link.build_closure(self.parent.play_media, hash(media))
 
         else:
             return self.get_link_action(link_type, action)

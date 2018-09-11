@@ -174,9 +174,12 @@ class Media(object):
                 factory = media_overlay.VideoOverlay.get_factory(mime_type)
 
                 if not factory:
+                    logger.warning('No available overlay for mime type {}, ignoring media {}'.format(mime_type, filename))
                     continue
 
-                def get_curryfied_callback(name):
+                def get_curryfied_callback(name, media_id = media_id):
+                    """ Return a callback for signal 'name' that has the value 'media_id' pre-set, and remembered by this closure.
+                    """
                     return lambda *args: media_overlay.VideoOverlay.find_callback_handler(self, name)(media_id, *args)
 
                 v_da_c = factory(self.c_overlay, show_controls, relative_margins, get_curryfied_callback)
