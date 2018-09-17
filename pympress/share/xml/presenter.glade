@@ -461,7 +461,6 @@
                 <property name="position_set">True</property>
                 <signal name="notify::position" handler="on_pane_event" swapped="no"/>
                 <signal name="button-release-event" handler="on_pane_event" swapped="no"/>
-                <property name="wide_handle">True</property>
                 <child>
                   <object class="GtkAspectFrame" id="p_frame_notes">
                     <property name="name">p_frame_notes</property>
@@ -506,7 +505,6 @@
                     <property name="orientation">vertical</property>
                     <property name="position">11</property>
                     <property name="position_set">True</property>
-                    <property name="wide_handle">True</property>
                     <signal name="button-release-event" handler="on_pane_event" swapped="no"/>
                     <signal name="notify::position" handler="on_pane_event" swapped="no"/>
                     <child>
