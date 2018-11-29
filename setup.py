@@ -67,7 +67,7 @@ setup(name='pympress',
       },
       license='GPLv2',
       install_requires=[
-          'python-vlc',
+          'python-vlc', 'watchdog'
       ],
       package_data={
         'pympress': [os.path.join('share', 'xml', '*.glade'), os.path.join('share', 'css', '*.css'), os.path.join('share', 'pixmaps', '*.png')]

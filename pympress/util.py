@@ -34,9 +34,13 @@ import gi
 import subprocess
 import importlib
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
+from gi.repository import Gtk, Gdk, GObject, GdkPixbuf, GLib
 import pkg_resources
 import os, os.path, sys
+
+
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 
 IS_POSIX = os.name == 'posix'
@@ -269,6 +273,92 @@ def set_screensaver(must_disable, window):
 
 #: remember DPMS setting before we change it
 set_screensaver.dpms_was_enabled = None
+
+
+class FileWatcher(object):
+    """ A class with only static methods that wraps object watchdogs, to trigger callbacks when a file changes.
+    """
+    #: A :class:`~watchdog.observers.Observer` to watch when the file changes
+    observer = Observer()
+
+    #: A :class:`~watchdog.events.FileSystemEventHandler` to get notified when the file changes
+    monitor = FileSystemEventHandler()
+
+    # `int` that is a GLib timeout id to delay the callback
+    timeout = 0
+
+    @classmethod
+    def watch_file(cls, path, callback, *args, **kwargs):
+        """ Watches a new file with a new callback. Removes any precedent watched files.
+
+        Args:
+            path (`str`): full path to the file to watch
+            callback (`function`): callback to call with all the further arguments when the file changes
+        """
+        cls.start_daemon()
+        cls.stop_watching()
+
+        directory = os.path.dirname(path)
+        cls.monitor.on_modified = lambda evt: cls.enqueue(callback, *args, **kwargs) if evt.src_path == path else None
+        try:
+            cls.observer.schedule(cls.monitor, directory)
+        except OSError:
+            print('Impossible to open dir at {}'.format(directory))
+
+    @classmethod
+    def enqueue(cls, callback, *args, **kwargs):
+        """ Do not call callback directly, instead delay as to avoid repeated calls in short periods of time.
+
+        Args:
+            callback (`function`): callback to call with all the further arguments
+        """
+        if cls.timeout:
+            GLib.Source.remove(cls.timeout)
+        cls.timeout = GLib.timeout_add(200, cls.call, callback, *args, **kwargs)
+
+
+    @classmethod
+    def call(cls, callback, *args, **kwargs):
+        """ Call the callback
+
+        Args:
+            callback (`function`): callback to call with all the further arguments
+        """
+        if cls.timeout:
+            cls.timeout = 0
+        callback(*args, **kwargs)
+
+
+    @classmethod
+    def stop_watching(cls):
+        """ Remove all files that are being watched
+        """
+        cls.observer.unschedule_all()
+
+
+    @classmethod
+    def start_daemon(cls):
+        """ Start the watchdog observer thread
+        """
+        if not cls.observer.is_alive():
+            cls.observer.start()
+
+
+    @classmethod
+    def stop_daemon(cls, wait = False):
+        """ Stop the watchdog observer thread.
+
+        Args:
+            wait (`bool`): whether to wait for the thread to have joined before returning
+        """
+        cls.observer.unschedule_all()
+        if cls.observer.is_alive():
+            cls.observer.stop()
+
+        while wait and cls.observer.is_alive():
+            cls.observer.join()
+
+
 
 
 ##

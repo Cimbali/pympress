@@ -217,6 +217,8 @@ class UI(builder.Builder):
         self.c_win.show_all()
         self.p_win.show_all()
 
+        util.FileWatcher.start_daemon()
+
         # Queue some redraws
         self.c_da.queue_draw()
         self.redraw_panes()
@@ -424,6 +426,7 @@ class UI(builder.Builder):
         """
         self.scribbler.disable_scribbling()
 
+        util.FileWatcher.stop_daemon()
         self.doc.cleanup_media_files()
 
         self.config.update_layout('notes' if self.notes_mode else 'plain',
@@ -461,7 +464,7 @@ class UI(builder.Builder):
     ############################ Document manangement ############################
     ##############################################################################
 
-    def swap_document(self, docpath):
+    def swap_document(self, docpath, page = 0, reloading = False):
         """ Replace the currently open document with a new one
 
         The new document is possibly and EmptyDocument if docpath is None.
@@ -469,26 +472,42 @@ class UI(builder.Builder):
 
         Args:
             docpath (`str`): the absolute path to the new document
+            page (`int`): the page at which to start the presentation
+            reloading (`bool`): whether we are reloading or detecting stuff from the document
         """
         try:
             self.doc = document.Document.create(self, docpath)
+
+            if not reloading and docpath:
+                util.FileWatcher.watch_file(docpath, self.reload_document)
+
         except GLib.Error:
+            if reloading: return
             self.doc = document.Document.create(self, None)
             self.error_opening_file(docpath)
+            util.FileWatcher.stop_watching()
 
         # Use notes mode by default if the document has notes
-        if self.notes_mode != self.doc.has_notes():
+        if not reloading and self.notes_mode != self.doc.has_notes():
             self.switch_mode('swap_document', docpath)
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
         self.page_number.set_last(self.doc.pages_number())
+        self.doc.goto(page)
         self.medias.purge_media_overlays()
 
         # Draw the new page(s)
-        self.talk_time.pause()
-        self.talk_time.reset_timer()
+        if not reloading:
+            self.talk_time.pause()
+            self.talk_time.reset_timer()
         self.on_page_change(False)
+
+
+    def reload_document(self):
+        """ Reload the current document.
+        """
+        self.swap_document(self.doc.path, page = self.doc.cur_page, reloading = True)
 
 
     def recent_document(self, recent_menu):
