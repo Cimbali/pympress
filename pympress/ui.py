@@ -59,10 +59,6 @@ from pympress import __main__, document, surfacecache, util, pointer, scribble, 
 
 class UI(builder.Builder):
     """ Pympress GUI management.
-
-    Args:
-        ett (`int`):  the estimated (intended) talk time
-        docpath (`str`): path to the file passed on the command line
     """
     #: Content window, as a :class:`~Gtk.Window` instance.
     c_win = None
@@ -164,7 +160,7 @@ class UI(builder.Builder):
     #############################      UI setup      #############################
     ##############################################################################
 
-    def __init__(self, ett = 0, docpath = None):
+    def __init__(self):
         super(UI, self).__init__()
         self.blanked = self.config.getboolean('content', 'start_blanked')
 
@@ -188,7 +184,7 @@ class UI(builder.Builder):
         self.annotations = extras.Annotations(self)
         self.medias = extras.Media(self)
         self.laser = pointer.Pointer(self.config, self)
-        self.est_time = editable_label.EstimatedTalkTime(self, ett)
+        self.est_time = editable_label.EstimatedTalkTime(self)
         self.page_number = editable_label.PageNumber(self)
         self.talk_time = talk_time.TimeCounter(self, self.est_time)
 
@@ -220,12 +216,6 @@ class UI(builder.Builder):
         # Show all windows
         self.c_win.show_all()
         self.p_win.show_all()
-
-        # Initialize doc last. Use notes mode by default if the document has notes
-        if docpath:
-            self.swap_document(docpath)
-        else:
-            GLib.idle_add(self.pick_file)
 
         # Queue some redraws
         self.c_da.queue_draw()

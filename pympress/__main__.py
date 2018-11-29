@@ -105,12 +105,14 @@ def main(argv = sys.argv[1:]):
     pympress_meta = util.get_pympress_meta()
     logger.info('\n  '.join(['Pympress version {} by:'.format(pympress_meta.__version__)] + pympress_meta.__copyright__.split('\n')))
 
-    # PDF file to open passed on command line?
-    name = os.path.abspath(args[0]) if len(args) > 0 else None
-
     # Create windows
     from pympress import ui
-    gui = ui.UI(ett, name)
+    gui = ui.UI()
+
+    # pass command line args
+    if ett: gui.est_time.set_time(ett)
+
+    gui.swap_document(os.path.abspath(args[0])) if args else gui.pick_file()
     gui.run()
 
 

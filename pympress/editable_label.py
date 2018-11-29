@@ -332,8 +332,7 @@ class EstimatedTalkTime(EditableLabel):
 
         builder.load_widgets(self)
 
-        self.est_time = ett
-        self.label_ett.set_text("{:02}:{:02}".format(*divmod(ett, 60)))
+        self.set_time(ett)
 
         self.shortcut_key = 'T'
         self.event_box = self.eb_ett
@@ -364,7 +363,16 @@ class EstimatedTalkTime(EditableLabel):
         except IndexError:
             s = 0
 
-        self.est_time = m * 60 + s;
+        self.set_time(m * 60 + s)
+
+
+    def set_time(self, time):
+        """ Set the talk time.
+
+        Args:
+            time (`int`): the estimated time for the talk, in seconds.
+        """
+        self.est_time = time
         self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
         # TODO a callback for timer?
 
