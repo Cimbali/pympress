@@ -82,9 +82,7 @@ class SurfaceCache(object):
     surface_size = {}
 
     #: Type of document handled by each widget. It is a `dict`: its keys are
-    #: widget names and its values are document types
-    #: (:const:`~pympress.ui.PDF_REGULAR`, :const:`~pympress.ui.PDF_CONTENT_PAGE`
-    #: or :const:`~pympress.ui.PDF_NOTES_PAGE`).
+    #: widget names and its values are document types from ui.
     surface_type = {}
 
     #: Dictionary of :class:`~threading.Lock` used for managing conccurent

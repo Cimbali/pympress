@@ -35,7 +35,6 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
 from pympress import builder, surfacecache, document, extras
-from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 
 
 class Scribbler(builder.Builder):
