@@ -1195,8 +1195,8 @@ class UI(builder.Builder):
 
         c_bounds = screen.get_monitor_geometry(c_monitor)
         p_bounds = screen.get_monitor_geometry(p_monitor)
-        self.c_win.move(c_bounds.x + (c_bounds.width - cw) / 2, c_bounds.y + (c_bounds.height - ch) / 2)
-        self.p_win.move(p_bounds.x + (p_bounds.width - pw) / 2, p_bounds.y + (p_bounds.height - ph) / 2)
+        self.c_win.move(c_bounds.x + max(0, c_bounds.width - cw) / 2, c_bounds.y + max(0, c_bounds.height - ch) / 2)
+        self.p_win.move(p_bounds.x + max(0, p_bounds.width - pw) / 2, p_bounds.y + max(0, p_bounds.height - ph) / 2)
 
         if (c_win_state & Gdk.WindowState.MAXIMIZED) != 0:
             self.c_win.maximize()
