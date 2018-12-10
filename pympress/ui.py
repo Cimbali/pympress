@@ -266,6 +266,12 @@ class UI(builder.Builder):
         for n in init_checkstates:
             self.get_object(n).set_active(init_checkstates[n])
 
+        default = 'notes_' + self.chosen_notes_mode.name.lower()
+        for radio_name in ['notes_right', 'notes_left', 'notes_top', 'notes_bottom']:
+            radio = self.get_object(radio_name)
+            radio.set_name(radio_name)
+            radio.set_active(radio_name == default)
+
         slide_type = self.notes_mode.complement()
         self.cache.add_widget(self.p_da_cur, slide_type)
         self.cache.add_widget(self.p_da_cur, slide_type, zoomed = True)
@@ -1216,6 +1222,39 @@ class UI(builder.Builder):
         # queue visibility of all newly added widgets, make sure visibility is right
         self.p_central.show_all()
         self.p_frame_annot.set_visible(self.show_annotations)
+
+
+    def change_notes_pos(self, widget, event = None, force_change = False):
+        """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
+
+        Returns:
+            `bool`: whether the mode has been toggled.
+        """
+
+        if issubclass(type(widget), Gtk.CheckMenuItem):
+            # if this widget is not the active one do nothing
+            if not widget.get_active():
+                return False
+            target_mode = document.PdfPage[widget.get_name()[len('notes_'):].upper()]
+        elif issubclass(type(widget), document.PdfPage):
+            target_mode = widget
+        else:
+            return False
+
+        # Redundant toggle, do nothing
+        if target_mode == self.chosen_notes_mode:
+            return False
+
+        # Update the choice, except for NONE
+        if target_mode:
+            self.chosen_notes_mode = target_mode
+            self.get_object('notes_' + target_mode.name.lower()).set_active(True)
+
+        # Change the notes arrangement if they are enabled or if we are forced to
+        if self.notes_mode or force_change:
+            self.switch_mode('changed notes position', target_mode = target_mode)
+
+        return True
 
 
     def switch_mode(self, widget, event = None, target_mode = None):

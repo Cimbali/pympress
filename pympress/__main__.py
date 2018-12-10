@@ -36,7 +36,7 @@ import gettext
 import ctypes
 import tempfile
 
-from pympress import util
+from pympress import util, document
 
 if util.IS_WINDOWS:
     if os.getenv('LANG') is None:
@@ -60,25 +60,34 @@ def usage():
     print("    -h, --help                       " + _("This help"))
     print("    -t mm[:ss], --talk-time=mm[:ss]  " + _("The estimated (intended) talk time in minutes"))
     print("                                       " + _("(and optionally seconds)"))
-    print("    --log=level:                     " + _("Set level of verbosity in log file:"))
+    print("    -n position, --notes=position    " + _("Set the position of notes on the pdf page (none, left, right, top, or bottom)."))
+    print("                                       " + _("Overrides the detection from the file."))
+    print("    --log=level                      " + _("Set level of verbosity in log file:"))
     print("                                       " + _("{}, {}, {}, {}, or {}").format("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"))
     print("")
 
 def main(argv = sys.argv[1:]):
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     try:
-        opts, args = getopt.getopt(argv, "ht:", ["help", "talk-time=", "log="])
+        opts, args = getopt.getopt(argv, "hn:t:", ["help", "notes=", "talk-time=", "log="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
 
     ett = 0
     log_level = logging.ERROR
+    notes_pos = None
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             usage()
             sys.exit()
+        if opt in ("-n", "--notes"):
+            if arg.lower()[0] == 'n': notes_pos = document.PdfPage.NONE
+            if arg.lower()[0] == 'l': notes_pos = document.PdfPage.LEFT
+            if arg.lower()[0] == 'r': notes_pos = document.PdfPage.RIGHT
+            if arg.lower()[0] == 't': notes_pos = document.PdfPage.TOP
+            if arg.lower()[0] == 'b': notes_pos = document.PdfPage.BOTTOM
         elif opt in ("-t", "--talk-time"):
             t = ["0" + n.strip() for n in arg.split(':')]
             try:
@@ -113,6 +122,10 @@ def main(argv = sys.argv[1:]):
     if ett: gui.est_time.set_time(ett)
 
     gui.swap_document(os.path.abspath(args[0])) if args else gui.pick_file()
+
+    if notes_pos is not None:
+        gui.change_notes_pos(notes_pos, force_change = True)
+
     gui.run()
 
 
