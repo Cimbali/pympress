@@ -178,6 +178,8 @@ class PageNumber(EditableLabel):
 
     #: `int` holding the maximum page number in the document
     max_page_number = 1
+    #: `bool` holding whether we display or ignore page labels
+    page_labels = True
 
     #: callback, to be connected to :func:`~pympress.document.Document.goto`
     goto_page = lambda p: None
@@ -223,10 +225,19 @@ class PageNumber(EditableLabel):
         self.spin_cur.set_max_length(len(str(num_pages)) + 1)
 
 
+    def enable_labels(self, enable):
+        """ Allow to use or ignore labels.
+
+        Args:
+            enable (`bool`): Whether to enable labels
+        """
+        self.page_labels = enable
+
+
     def changed_page_label(self, *args):
         """ Get the page number from the spinner and go to that page
         """
-        if not self.edit_label.is_focus() or not self.edit_label.get_text():
+        if not self.page_labels or not self.edit_label.is_focus() or not self.edit_label.get_text():
             return
 
         page_nb = self.find_label(self.edit_label.get_text(), prefix_unique = True)
@@ -241,7 +252,7 @@ class PageNumber(EditableLabel):
         """ Get the page number from the spinner and go to that page
         """
         page_nb = None
-        if self.edit_label.is_focus():
+        if self.page_labels and self.edit_label.is_focus():
             page_nb = self.find_label(self.edit_label.get_text(), prefix_unique = False)
 
         if not page_nb:
@@ -270,7 +281,7 @@ class PageNumber(EditableLabel):
             self.spin_cur.set_value(self.spin_cur.get_value() - 1)
         elif name == 'right':
             self.spin_cur.set_value(self.spin_cur.get_value() + 1)
-        elif self.edit_label.is_focus():
+        elif self.page_labels and self.edit_label.is_focus():
             Gtk.Entry.do_key_press_event(self.edit_label, event)
         else:
             return Gtk.SpinButton.do_key_press_event(self.spin_cur, event)
@@ -299,20 +310,30 @@ class PageNumber(EditableLabel):
         """
         self.stop_editing_est_time()
 
+        label, sep, cur = self.label_cur.get_text().rpartition('(')
+
         # Replace label with entry
         self.spin_cur.show()
         self.hb_cur.pack_start(self.spin_cur, True, True, 0)
-        self.hb_cur.pack_start(self.edit_label, True, True, 0)
-        self.hb_cur.reorder_child(self.edit_label, 0)
-        self.hb_cur.reorder_child(self.spin_cur, 2)
+        self.hb_cur.reorder_child(self.spin_cur, 1)
 
-        label, sep, cur = self.label_cur.get_text().rpartition('(')
-        self.edit_label.set_text(label.strip())
+        if self.page_labels:
+            self.hb_cur.pack_start(self.edit_label, True, True, 0)
+            self.hb_cur.reorder_child(self.edit_label, 0)
+            self.edit_label.set_text(label.strip())
+            self.label_cur.set_text(' (')
+            self.hb_cur.set_homogeneous(False)
+        else:
+            self.hb_cur.remove(self.label_cur)
+            self.hb_cur.set_homogeneous(True)
 
-        self.label_cur.set_text(' (')
-        self.spin_cur.set_value(int(cur.strip()))
+        try:
+            cur_nb = int(cur.strip())
+        except ValueError:
+            cur_nb = -1
+        self.spin_cur.set_value(cur_nb)
 
-        if hint == 'J' or hint == 'nav_jump':
+        if self.page_labels and (hint == 'J' or hint == 'nav_jump'):
             self.edit_label.grab_focus()
             self.edit_label.select_region(0, -1)
         else:
@@ -328,7 +349,11 @@ class PageNumber(EditableLabel):
         """
         if self.spin_cur in self.hb_cur:
             self.hb_cur.remove(self.spin_cur)
-            self.hb_cur.remove(self.edit_label)
+            if self.page_labels:
+                self.hb_cur.remove(self.edit_label)
+            else:
+                self.hb_cur.pack_start(self.label_cur, True, True, 0)
+                self.hb_cur.reorder_child(self.label_cur, 0)
 
         self.editing = False
 
@@ -350,7 +375,7 @@ class PageNumber(EditableLabel):
         """
         cur = str(cur_nb + 1)
 
-        if label and label.strip() != cur:
+        if self.page_labels and label and label.strip() != cur:
             self.label_cur.set_text('{} ({}'.format(label, cur))
             self.label_last.set_text('/{})'.format(self.max_page_number))
         else:

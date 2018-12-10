@@ -502,6 +502,7 @@ class UI(builder.Builder):
         # Some things that need updating
         self.cache.swap_document(self.doc)
         self.page_number.set_last(self.doc.pages_number())
+        self.page_number.enable_labels(self.doc.has_labels())
         self.doc.goto(page)
         self.medias.purge_media_overlays()
 

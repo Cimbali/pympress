@@ -759,6 +759,15 @@ class Document(object):
         self.page_change()
 
 
+    def has_labels(self):
+        """ Return whether this document has useful labels.
+
+        Returns:
+            `bool`: False iff there are no labels or they are just the page numbers
+        """
+        return self.page_labels != [str(v) for v in range(1, self.nb_pages + 1)]
+
+
     def lookup_label(self, label, prefix_unique = True):
         """ Find a page from its label
 
