@@ -652,6 +652,8 @@ class UI(builder.Builder):
 
         self.annotations.add_annotations(page_cur.get_annotations())
 
+        # Update display
+        self.page_number.update_jump_label(page_cur.label())
 
         # Prerender the 4 next pages and the 2 previous ones
         cur = page_cur.number()
@@ -710,7 +712,7 @@ class UI(builder.Builder):
             self.talk_time.unpause()
 
         # Update display
-        self.page_number.update_page_numbers(self.doc.current_page().number())
+        self.page_number.update_page_numbers(self.page_preview_nb, page_cur.label())
 
         # Prerender the 4 next pages and the 2 previous ones
         page_max = min(self.doc.pages_number(), self.page_preview_nb + 5)

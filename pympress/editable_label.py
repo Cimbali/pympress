@@ -36,8 +36,8 @@ import time
 
 
 class EditableLabel(object):
-    #: single uppercase character `str` containing the key used as a shortcut for editing this button
-    shortcut_key = ''
+    #: uppercase `str` of characters containing the keys used as shortcuts for editing this button
+    shortcut_keys = ''
     #: :class:`~Gtk.EventBox` around the label, used to sense clicks
     event_box = None
 
@@ -57,20 +57,23 @@ class EditableLabel(object):
         Returns:
             `bool`: whether the event was consumed
         """
-
+        hint = None
         if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.editing:
             # Checking the checkbox conforming to current situation: do nothing
             return False
 
-        elif issubclass(type(widget), Gtk.Actionable):
+        elif issubclass(type(widget), Gtk.MenuItem):
             # A button or menu item, etc. directly connected to this action
+            hint = widget.get_name()
             pass
 
         elif event.type == Gdk.EventType.KEY_PRESS:
             if name is None:
                 name = Gdk.keyval_name(event.keyval)
-            if name.upper() != self.shortcut_key:
+            if name.upper() not in self.shortcut_keys:
                 return False
+            else:
+                hint = name.upper()
 
         elif event.type == Gdk.EventType.BUTTON_PRESS:
             # If we clicked on the Event Box then don't toggle, just enable.
@@ -82,9 +85,9 @@ class EditableLabel(object):
         # Perform the state toggle
 
         if not self.editing:
-            self.swap_label_for_entry()
+            self.swap_label_for_entry(hint)
         else:
-            self.restore_current_label()
+            self.restore_label()
 
         return True
 
@@ -170,12 +173,16 @@ class PageNumber(EditableLabel):
     hb_cur = None
     #: :class:`~Gtk.SpinButton` used to switch to another slide by typing its number.
     spin_cur = None
+    #: :class:`~Gtk.Entry` used to switch to another slide by typing its label.
+    edit_label = None
 
     #: `int` holding the maximum page number in the document
     max_page_number = 1
 
     #: callback, to be connected to :func:`~pympress.document.Document.goto`
     goto_page = lambda p: None
+    #: callback, to be connected to :func:`~pympress.document.Document.lookup_label`
+    find_label = lambda p: None
     #: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`
     page_change = lambda b: None
     #: callback, to be connected to :func:`~pympress.editable_label.EstimatedTalkTime.stop_editing`
@@ -192,13 +199,15 @@ class PageNumber(EditableLabel):
         builder.load_widgets(self)
 
         self.goto_page             = builder.get_callback_handler('doc.goto')
+        self.find_label            = builder.get_callback_handler('doc.lookup_label')
         self.page_change           = builder.get_callback_handler('on_page_change')
         self.stop_editing_est_time = builder.get_callback_handler('est_time.stop_editing')
 
         # Initially (from XML) both the spinner and the current page label are visible.
         self.hb_cur.remove(self.spin_cur)
+        self.hb_cur.remove(self.edit_label)
 
-        self.shortcut_key = 'G'
+        self.shortcut_keys = 'GJ'
         self.event_box = self.eb_cur
 
 
@@ -211,15 +220,36 @@ class PageNumber(EditableLabel):
         self.max_page_number = num_pages
         self.label_last.set_text("/{}".format(num_pages))
         self.spin_cur.set_range(1, num_pages)
+        self.spin_cur.set_max_length(len(str(num_pages)) + 1)
+
+
+    def changed_page_label(self, *args):
+        """ Get the page number from the spinner and go to that page
+        """
+        if not self.edit_label.is_focus() or not self.edit_label.get_text():
+            return
+
+        page_nb = self.find_label(self.edit_label.get_text(), prefix_unique = True)
+        if not page_nb:
+            return
+
+        # use the spinner's mechanism
+        self.spin_cur.set_text(str(page_nb + 1))
 
 
     def validate(self):
         """ Get the page number from the spinner and go to that page
         """
-        try:
-            page_nb = int(self.spin_cur.get_buffer().get_text()) - 1
-        except:
-            page_nb = int(self.spin_cur.get_value()) - 1
+        page_nb = None
+        if self.edit_label.is_focus():
+            page_nb = self.find_label(self.edit_label.get_text(), prefix_unique = False)
+
+        if not page_nb:
+            try:
+                page_nb = int(self.spin_cur.get_buffer().get_text()) - 1
+            except:
+                page_nb = int(self.spin_cur.get_value()) - 1
+
         self.goto_page(page_nb)
 
 
@@ -240,6 +270,8 @@ class PageNumber(EditableLabel):
             self.spin_cur.set_value(self.spin_cur.get_value() - 1)
         elif name == 'right':
             self.spin_cur.set_value(self.spin_cur.get_value() + 1)
+        elif self.edit_label.is_focus():
+            Gtk.Entry.do_key_press_event(self.edit_label, event)
         else:
             return Gtk.SpinButton.do_key_press_event(self.spin_cur, event)
 
@@ -262,20 +294,30 @@ class PageNumber(EditableLabel):
             return Gtk.SpinButton.do_scroll_event(self.spin_cur, event)
 
 
-    def swap_label_for_entry(self):
+    def swap_label_for_entry(self, hint = None):
         """ Perform the actual work of starting the editing.
         """
         self.stop_editing_est_time()
 
         # Replace label with entry
-        self.hb_cur.remove(self.label_cur)
         self.spin_cur.show()
-        self.hb_cur.add(self.spin_cur)
-        self.hb_cur.reorder_child(self.spin_cur, 0)
-        self.spin_cur.grab_focus()
+        self.hb_cur.pack_start(self.spin_cur, True, True, 0)
+        self.hb_cur.pack_start(self.edit_label, True, True, 0)
+        self.hb_cur.reorder_child(self.edit_label, 0)
+        self.hb_cur.reorder_child(self.spin_cur, 2)
 
-        self.spin_cur.set_value(int(self.label_cur.get_text()))
-        self.spin_cur.select_region(0, -1)
+        label, sep, cur = self.label_cur.get_text().rpartition('(')
+        self.edit_label.set_text(label.strip())
+
+        self.label_cur.set_text(' (')
+        self.spin_cur.set_value(int(cur.strip()))
+
+        if hint == 'J' or hint == 'nav_jump':
+            self.edit_label.grab_focus()
+            self.edit_label.select_region(0, -1)
+        else:
+            self.spin_cur.grab_focus()
+            self.spin_cur.select_region(0, -1)
 
         self.editing = True
 
@@ -284,23 +326,37 @@ class PageNumber(EditableLabel):
         """ Make sure that the current page number is displayed in a label and not in an entry.
         If it is an entry, then replace it with the label.
         """
-        if self.label_cur not in self.hb_cur:
+        if self.spin_cur in self.hb_cur:
             self.hb_cur.remove(self.spin_cur)
-            self.hb_cur.pack_start(self.label_cur, True, True, 0)
-            self.hb_cur.reorder_child(self.label_cur, 0)
+            self.hb_cur.remove(self.edit_label)
 
         self.editing = False
 
 
-    def update_page_numbers(self, cur_nb):
+    def update_jump_label(self, label):
+        """ Update the displayed page label.
+
+        Args:
+            label (`str`): The current page label
+        """
+        self.edit_label.set_text(label)
+
+
+    def update_page_numbers(self, cur_nb, label):
         """ Update the displayed page numbers.
 
         Args:
             cur_nb (`int`): The current page number, in documentation numbering (range [0..max - 1])
         """
-        cur = str(cur_nb+1)
+        cur = str(cur_nb + 1)
 
-        self.label_cur.set_text(cur)
+        if label and label.strip() != cur:
+            self.label_cur.set_text('{} ({}'.format(label, cur))
+            self.label_last.set_text('/{})'.format(self.max_page_number))
+        else:
+            self.label_cur.set_text(cur)
+            self.label_last.set_text('/{}'.format(self.max_page_number))
+
         self.restore_label()
 
 
@@ -331,10 +387,12 @@ class EstimatedTalkTime(EditableLabel):
         super(EstimatedTalkTime, self).__init__()
 
         builder.load_widgets(self)
+        builder.get_object('nav_goto').set_name('nav_goto')
+        builder.get_object('nav_jump').set_name('nav_jump')
 
         self.set_time(ett)
 
-        self.shortcut_key = 'T'
+        self.shortcut_keys = 'T'
         self.event_box = self.eb_ett
 
 

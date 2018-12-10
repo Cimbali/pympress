@@ -418,6 +418,16 @@
                         <accelerator key="g" signal="activate"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkMenuItem" id="nav_jump">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Jump to label</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="page_number.on_label_event" swapped="no"/>
+                        <accelerator key="j" signal="activate"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -778,21 +788,13 @@
                       <object class="GtkBox" id="hb_cur">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="homogeneous">True</property>
+                        <property name="homogeneous">False</property>
                         <child>
-                          <object class="GtkSpinButton" id="spin_cur">
+                          <object class="GtkEntry" id="edit_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="xalign">1</property>
-                            <property name="adjustment">spin_adjust</property>
-                            <property name="climb_rate">1</property>
-                            <property name="snap_to_ticks">True</property>
-                            <property name="numeric">True</property>
-                            <property name="update_policy">if-valid</property>
-                            <signal name="changed" handler="page_preview" swapped="no"/>
-                            <signal name="insert-text" handler="page_preview" swapped="no"/>
-                            <signal name="key-press-event" handler="page_number.on_keypress" swapped="no"/>
-                            <signal name="key-release-event" handler="page_number.on_keypress" swapped="no"/>
+                            <property name="can_focus">True</property>
+                            <property name="placeholder_text" translatable="yes">page label</property>
+                            <signal name="changed" handler="page_number.changed_page_label" swapped="no"/>
                             <style>
                               <class name="big-info-label"/>
                             </style>
@@ -823,6 +825,30 @@
                           </packing>
                         </child>
                         <child>
+                          <object class="GtkSpinButton" id="spin_cur">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">1</property>
+                            <property name="adjustment">spin_adjust</property>
+                            <property name="climb_rate">1</property>
+                            <property name="snap_to_ticks">True</property>
+                            <property name="numeric">True</property>
+                            <property name="update_policy">if-valid</property>
+                            <signal name="changed" handler="page_preview" swapped="no"/>
+                            <signal name="insert-text" handler="page_preview" swapped="no"/>
+                            <signal name="key-press-event" handler="page_number.on_keypress" swapped="no"/>
+                            <signal name="key-release-event" handler="page_number.on_keypress" swapped="no"/>
+                            <style>
+                              <class name="big-info-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
                           <object class="GtkLabel" id="label_last">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -836,7 +862,7 @@
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">3</property>
                           </packing>
                         </child>
                       </object>

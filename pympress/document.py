@@ -238,6 +238,8 @@ class Page(object):
     page = None
     #: `int`, number of the current page (starting from 0)
     page_nb = -1
+    #: `str` representing the page label
+    page_label = None
     #: All the links in the page, as a `list` of :class:`~pympress.document.Link` instances
     links = []
     #: All the media in the page, as a `list` of tuples of (area, filename)
@@ -255,6 +257,7 @@ class Page(object):
         self.page = page
         self.page_nb = number
         self.parent = parent
+        self.page_label = self.page.get_label()
         self.links = []
         self.medias = []
         self.annotations = []
@@ -468,6 +471,12 @@ class Page(object):
         return self.page_nb
 
 
+    def label(self):
+        """ Get the page label.
+        """
+        return self.page_label
+
+
     def get_link_at(self, x, y, dtype=PdfPage.FULL):
         """ Get the :class:`~pympress.document.Link` corresponding to the given
         position, or `None` if there is no link at this position.
@@ -610,6 +619,8 @@ class Document(object):
     history = []
     #: Our position in the history
     hist_pos = -1
+    #: `list` of all the page labels
+    page_labels = []
 
     #: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`
     page_change = lambda p: None
@@ -626,6 +637,7 @@ class Document(object):
 
         # Pages number
         self.nb_pages = self.doc.get_n_pages()
+        self.page_labels = [self.doc.get_page(n).get_label() for n in range(self.nb_pages)]
 
         # Number of the current page
         self.cur_page = page
@@ -747,6 +759,41 @@ class Document(object):
         self.page_change()
 
 
+    def lookup_label(self, label, prefix_unique = True):
+        """ Find a page from its label
+
+        Args:
+            label (`str`): the label we are searching for
+            prefix_unique (`bool`): whether a prefix match should be unique, e.g. when the user is still typing
+
+        Returns:
+            `int`: the page
+        """
+        # somehow this always returns None
+        #page = self.doc.get_page_by_label(label).get_index()
+
+        # try exact match
+        try: return self.page_labels.index(label)
+        except ValueError: pass
+
+        # try case-insensitive match
+        label_low = label.lower()
+        try: return next(n for n, v in enumerate(self.page_labels) if v.lower() == label_low)
+        except StopIteration: pass
+
+        # try prefix case-sensitive match
+        opts = [n for n, v in enumerate(self.page_labels) if v[:len(label)] == label]
+        if opts and (len(opts) == 1 or not prefix_unique):
+            return opts[0]
+
+        # try prefix case-insensitive match
+        opts = [n for n, v in enumerate(self.page_labels) if v[:len(label)] == label]
+        if opts and (len(opts) == 1 or not prefix_unique):
+            return opts[0]
+
+        return None
+
+
     def goto(self, number):
         """ Switch to another page.
 
@@ -759,13 +806,13 @@ class Document(object):
             number = self.nb_pages - 1
 
         if number != self.cur_page:
-            self._do_page_change(number)
-
             # chop off history where we were and go to end
             self.hist_pos += 1
             if self.hist_pos < len(self.history):
                 self.history = self.history[:self.hist_pos]
             self.history.append(number)
+
+        self._do_page_change(number)
 
 
     def goto_next(self, *args):
@@ -860,6 +907,7 @@ class EmptyPage(Page):
         self.page = None
         self.page_nb = -1
         self.parent = None
+        self.page_label = None
         self.links = []
         self.medias = []
         self.annotations = []
