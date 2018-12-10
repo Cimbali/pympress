@@ -137,7 +137,7 @@ class Builder(Gtk.Builder):
 
             # Dynamically resolved handler for 'doc' (only) since target.doc may change
             if 'doc' in attr_list:
-                return lambda *args: Builder.signal_resolver(target, attr_list)(*args)
+                return lambda *args, **kwargs: Builder.signal_resolver(target, attr_list)(*args, **kwargs)
             else:
                 return  Builder.signal_resolver(target, attr_list)
 
