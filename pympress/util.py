@@ -303,7 +303,7 @@ class FileWatcher(object):
         try:
             cls.observer.schedule(cls.monitor, directory)
         except OSError:
-            print('Impossible to open dir at {}'.format(directory))
+            logger.error('Impossible to open dir at {}'.format(directory), exc_info = True)
 
     @classmethod
     def enqueue(cls, callback, *args, **kwargs):
