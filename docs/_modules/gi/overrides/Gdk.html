@@ -337,8 +337,9 @@
     <span class="n">Window</span> <span class="o">=</span> <span class="n">override</span><span class="p">(</span><span class="n">Window</span><span class="p">)</span>
     <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Window&#39;</span><span class="p">)</span>
 
-<span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_2BUTTON_PRESS</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="p">,</span> <span class="s2">&quot;2BUTTON_PRESS&quot;</span><span class="p">)</span>
-<span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_3BUTTON_PRESS</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="p">,</span> <span class="s2">&quot;3BUTTON_PRESS&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span> <span class="s2">&quot;3.0&quot;</span><span class="p">):</span>
+    <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_2BUTTON_PRESS</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="p">,</span> <span class="s2">&quot;2BUTTON_PRESS&quot;</span><span class="p">)</span>
+    <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_3BUTTON_PRESS</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="p">,</span> <span class="s2">&quot;3BUTTON_PRESS&quot;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">Event</span><span class="p">):</span>
@@ -348,8 +349,6 @@
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">EXPOSE</span><span class="p">:</span> <span class="s1">&#39;expose&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">MOTION_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;motion&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_PRESS</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_2BUTTON_PRESS</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_3BUTTON_PRESS</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_RELEASE</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">KEY_PRESS</span><span class="p">:</span> <span class="s1">&#39;key&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">KEY_RELEASE</span><span class="p">:</span> <span class="s1">&#39;key&#39;</span><span class="p">,</span>
@@ -359,21 +358,27 @@
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">CONFIGURE</span><span class="p">:</span> <span class="s1">&#39;configure&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">MAP</span><span class="p">:</span> <span class="s1">&#39;any&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">UNMAP</span><span class="p">:</span> <span class="s1">&#39;any&#39;</span><span class="p">,</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">PROPERTY_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;property&#39;</span><span class="p">,</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">SELECTION_CLEAR</span><span class="p">:</span> <span class="s1">&#39;selection&#39;</span><span class="p">,</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">SELECTION_REQUEST</span><span class="p">:</span> <span class="s1">&#39;selection&#39;</span><span class="p">,</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">SELECTION_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;selection&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">PROXIMITY_IN</span><span class="p">:</span> <span class="s1">&#39;proximity&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">PROXIMITY_OUT</span><span class="p">:</span> <span class="s1">&#39;proximity&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DRAG_ENTER</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DRAG_LEAVE</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DRAG_MOTION</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DRAG_STATUS</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
         <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DROP_START</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DROP_FINISHED</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">CLIENT_EVENT</span><span class="p">:</span> <span class="s1">&#39;client&#39;</span><span class="p">,</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">VISIBILITY_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;visibility&#39;</span><span class="p">,</span>
     <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span> <span class="s2">&quot;3.0&quot;</span><span class="p">):</span>
+        <span class="n">_UNION_MEMBERS</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_2BUTTON_PRESS</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">_3BUTTON_PRESS</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">PROPERTY_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;property&#39;</span><span class="p">,</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">SELECTION_CLEAR</span><span class="p">:</span> <span class="s1">&#39;selection&#39;</span><span class="p">,</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">SELECTION_REQUEST</span><span class="p">:</span> <span class="s1">&#39;selection&#39;</span><span class="p">,</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">SELECTION_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;selection&#39;</span><span class="p">,</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DRAG_STATUS</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">DROP_FINISHED</span><span class="p">:</span> <span class="s1">&#39;dnd&#39;</span><span class="p">,</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">CLIENT_EVENT</span><span class="p">:</span> <span class="s1">&#39;client&#39;</span><span class="p">,</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">VISIBILITY_NOTIFY</span><span class="p">:</span> <span class="s1">&#39;visibility&#39;</span><span class="p">,</span>
+        <span class="p">})</span>
 
     <span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="s1">&#39;2.0&#39;</span><span class="p">:</span>
         <span class="n">_UNION_MEMBERS</span><span class="p">[</span><span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">NO_EXPOSE</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;no_expose&#39;</span>
@@ -418,7 +423,6 @@
 <span class="c1"># field info so manually list the class names</span>
 <span class="n">event_member_classes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EventAny&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;EventExpose&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;EventVisibility&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;EventMotion&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;EventButton&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;EventScroll&#39;</span><span class="p">,</span>
@@ -426,14 +430,20 @@
                         <span class="s1">&#39;EventCrossing&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;EventFocus&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;EventConfigure&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;EventProperty&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;EventSelection&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;EventOwnerChange&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;EventProximity&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;EventDND&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;EventWindowState&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;EventSetting&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;EventGrabBroken&#39;</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span> <span class="s2">&quot;3.0&quot;</span><span class="p">):</span>
+    <span class="n">event_member_classes</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+        <span class="s1">&#39;EventVisibility&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;EventProperty&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;EventSelection&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;EventOwnerChange&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;EventWindowState&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;EventVisibility&#39;</span><span class="p">,</span>
+    <span class="p">])</span>
 
 <span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="s1">&#39;2.0&#39;</span><span class="p">:</span>
     <span class="n">event_member_classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;EventNoExpose&#39;</span><span class="p">)</span>
@@ -551,12 +561,13 @@
     <span class="k">return</span> <span class="s1">&#39;&lt;Gdk.Atom(</span><span class="si">%i</span><span class="s1">)&gt;&#39;</span> <span class="o">%</span> <span class="nb">hash</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
 
 
-<span class="n">Gdk</span><span class="o">.</span><span class="n">Atom</span><span class="o">.</span><span class="fm">__str__</span> <span class="o">=</span> <span class="n">_gdk_atom_str</span>
-<span class="n">Gdk</span><span class="o">.</span><span class="n">Atom</span><span class="o">.</span><span class="fm">__repr__</span> <span class="o">=</span> <span class="n">_gdk_atom_repr</span>
+<span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span> <span class="s2">&quot;3.0&quot;</span><span class="p">):</span>
+    <span class="n">Gdk</span><span class="o">.</span><span class="n">Atom</span><span class="o">.</span><span class="fm">__str__</span> <span class="o">=</span> <span class="n">_gdk_atom_str</span>
+    <span class="n">Gdk</span><span class="o">.</span><span class="n">Atom</span><span class="o">.</span><span class="fm">__repr__</span> <span class="o">=</span> <span class="n">_gdk_atom_repr</span>
 
 
 <span class="c1"># constants</span>
-<span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="o">&gt;=</span> <span class="s1">&#39;3.0&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="s1">&#39;3.0&#39;</span><span class="p">:</span>
     <span class="n">SELECTION_PRIMARY</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">atom_intern</span><span class="p">(</span><span class="s1">&#39;PRIMARY&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="n">__all__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;SELECTION_PRIMARY&#39;</span><span class="p">)</span>
 
@@ -644,7 +655,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'b&#39;0.6-303-gd03398a&#39;',
+            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

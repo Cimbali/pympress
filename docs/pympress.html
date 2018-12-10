@@ -186,41 +186,11 @@ made of two separate windows: the Content window, which displays only the
 current page in full size, and the Presenter window, which displays both the
 current and the next page, as well as a time counter and a clock.</p>
 <p>Both windows are managed by the <a class="reference internal" href="#pympress.ui.UI" title="pympress.ui.UI"><code class="xref py py-class docutils literal notranslate"><span class="pre">UI</span></code></a> class.</p>
-<dl class="data">
-<dt id="pympress.ui.PDF_CONTENT_PAGE">
-<code class="descclassname">pympress.ui.</code><code class="descname">PDF_CONTENT_PAGE</code><em class="property"> = 1</em><a class="headerlink" href="#pympress.ui.PDF_CONTENT_PAGE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Content page (left side) of a PDF file with notes</p>
-</dd></dl>
-
-<dl class="data">
-<dt id="pympress.ui.PDF_NOTES_PAGE">
-<code class="descclassname">pympress.ui.</code><code class="descname">PDF_NOTES_PAGE</code><em class="property"> = 2</em><a class="headerlink" href="#pympress.ui.PDF_NOTES_PAGE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Notes page (right side) of a PDF file with notes</p>
-</dd></dl>
-
-<dl class="data">
-<dt id="pympress.ui.PDF_REGULAR">
-<code class="descclassname">pympress.ui.</code><code class="descname">PDF_REGULAR</code><em class="property"> = 0</em><a class="headerlink" href="#pympress.ui.PDF_REGULAR" title="Permalink to this definition">¶</a></dt>
-<dd><p>“Regular” PDF file (without notes)</p>
-</dd></dl>
-
 <dl class="class">
 <dt id="pympress.ui.UI">
-<em class="property">class </em><code class="descclassname">pympress.ui.</code><code class="descname">UI</code><span class="sig-paren">(</span><em>ett=0</em>, <em>docpath=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.ui.</code><code class="descname">UI</code><a class="reference internal" href="_modules/pympress/ui.html#UI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pympress.builder.Builder" title="pympress.builder.Builder"><code class="xref py py-class docutils literal notranslate"><span class="pre">pympress.builder.Builder</span></code></a></p>
 <p>Pympress GUI management.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>ett</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – the estimated (intended) talk time</li>
-<li><strong>docpath</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – path to the file passed on the command line</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 <dl class="method">
 <dt id="pympress.ui.UI.adjust_frame_position">
 <code class="descname">adjust_frame_position</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.adjust_frame_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.adjust_frame_position" title="Permalink to this definition">¶</a></dt>
@@ -261,6 +231,28 @@ current and the next page, as well as a time counter and a clock.</p>
 <dt id="pympress.ui.UI.cache">
 <code class="descname">cache</code><em class="property"> = None</em><a class="headerlink" href="#pympress.ui.UI.cache" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#pympress.surfacecache.SurfaceCache" title="pympress.surfacecache.SurfaceCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfaceCache</span></code></a> instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.ui.UI.change_notes_pos">
+<code class="descname">change_notes_pos</code><span class="sig-paren">(</span><em>widget</em>, <em>event=None</em>, <em>force_change=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.change_notes_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.change_notes_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch the display mode to “Notes mode” or “Normal mode” (without notes).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">whether the mode has been toggled.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.ui.UI.chosen_notes_mode">
+<code class="descname">chosen_notes_mode</code><em class="property"> = 4</em><a class="headerlink" href="#pympress.ui.UI.chosen_notes_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current choice of mode to toggle notes</p>
 </dd></dl>
 
 <dl class="method">
@@ -329,8 +321,8 @@ Handles a click on a slide.</p>
 <code class="descname">get_notes_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.get_notes_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.get_notes_mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simple getter.</p>
 <dl class="docutils">
-<dt>Returns (bool):</dt>
-<dd>Whether we split slides in content + notes</dd>
+<dt>Returns (<a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a>):</dt>
+<dd>Truthy when we split slides in content + notes</dd>
 </dl>
 </dd></dl>
 
@@ -396,30 +388,6 @@ the hovered region is clickable.</p>
 <p>Handles clicks on the “about” menu.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="pympress.ui.UI.mouse_pos_in_page">
-<code class="descname">mouse_pos_in_page</code><span class="sig-paren">(</span><em>widget</em>, <em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.mouse_pos_in_page"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.mouse_pos_in_page" title="Permalink to this definition">¶</a></dt>
-<dd><p>Normalize event coordinates from widget size and notes mode</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>widget</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Widget.html#Gtk.Widget" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Widget</span></code></a>) – the widget that received the click</li>
-<li><strong>event</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gdk-3.0/classes/Event.html#Gdk.Event" title="(in Gdk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a>) – the GTK event containing the click position</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the relative position in the full slide</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-obj docutils literal notranslate"><span class="pre">(float,</span> <span class="pre">float)</span></code></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <dl class="attribute">
 <dt id="pympress.ui.UI.next_button">
 <code class="descname">next_button</code><em class="property"> = None</em><a class="headerlink" href="#pympress.ui.UI.next_button" title="Permalink to this definition">¶</a></dt>
@@ -428,7 +396,7 @@ the hovered region is clickable.</p>
 
 <dl class="attribute">
 <dt id="pympress.ui.UI.notes_mode">
-<code class="descname">notes_mode</code><em class="property"> = False</em><a class="headerlink" href="#pympress.ui.UI.notes_mode" title="Permalink to this definition">¶</a></dt>
+<code class="descname">notes_mode</code><em class="property"> = 0</em><a class="headerlink" href="#pympress.ui.UI.notes_mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to use notes mode or not</p>
 </dd></dl>
 
@@ -788,6 +756,12 @@ This is very useful on windows where resizing gets sluggish if we try to redraw 
 <dd><p>Tracks return values of GLib.timeout_add to cancel gtk.paned’s redraw callbacks</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="pympress.ui.UI.reload_document">
+<code class="descname">reload_document</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.reload_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.reload_document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reload the current document.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="pympress.ui.UI.resize_panes">
 <code class="descname">resize_panes</code><em class="property"> = False</em><a class="headerlink" href="#pympress.ui.UI.resize_panes" title="Permalink to this definition">¶</a></dt>
@@ -832,7 +806,7 @@ This is very useful on windows where resizing gets sluggish if we try to redraw 
 
 <dl class="method">
 <dt id="pympress.ui.UI.swap_document">
-<code class="descname">swap_document</code><span class="sig-paren">(</span><em>docpath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.swap_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.swap_document" title="Permalink to this definition">¶</a></dt>
+<code class="descname">swap_document</code><span class="sig-paren">(</span><em>docpath</em>, <em>page=0</em>, <em>reloading=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.swap_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.swap_document" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace the currently open document with a new one</p>
 <p>The new document is possibly and EmptyDocument if docpath is None.
 The state of the ui and cache are updated accordingly.</p>
@@ -840,7 +814,12 @@ The state of the ui and cache are updated accordingly.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>docpath</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – the absolute path to the new document</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>docpath</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – the absolute path to the new document</li>
+<li><strong>page</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – the page at which to start the presentation</li>
+<li><strong>reloading</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – whether we are reloading or detecting stuff from the document</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -931,7 +910,7 @@ when leaving fullscreen mode.</p>
 
 <dl class="method">
 <dt id="pympress.ui.UI.switch_mode">
-<code class="descname">switch_mode</code><span class="sig-paren">(</span><em>widget</em>, <em>event=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_mode" title="Permalink to this definition">¶</a></dt>
+<code class="descname">switch_mode</code><span class="sig-paren">(</span><em>widget</em>, <em>event=None</em>, <em>target_mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.switch_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.switch_mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Switch the display mode to “Notes mode” or “Normal mode” (without notes).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1177,16 +1156,16 @@ or to the current directory.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pympress.document.Document.has_notes">
-<code class="descname">has_notes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.has_notes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.has_notes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the document mode.</p>
+<dt id="pympress.document.Document.guess_notes">
+<code class="descname">guess_notes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.guess_notes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.guess_notes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get our best guess for the document mode.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a> if the document has notes, <a class="reference external" href="https://docs.python.org/3.4/library/constants.html#False" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a> otherwise</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the notes mode</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -1240,8 +1219,8 @@ or to the current directory.</p>
 
 <dl class="attribute">
 <dt id="pympress.document.Document.notes">
-<code class="descname">notes</code><em class="property"> = False</em><a class="headerlink" href="#pympress.document.Document.notes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Document with notes or not</p>
+<code class="descname">notes</code><em class="property"> = 0</em><a class="headerlink" href="#pympress.document.Document.notes" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a> representing our best guess for the notes position in this document</p>
 </dd></dl>
 
 <dl class="method">
@@ -1382,7 +1361,7 @@ Also, it has no “rendering” capability, and is made harmless by overriding i
 
 <dl class="method">
 <dt id="pympress.document.EmptyPage.render_cairo">
-<code class="descname">render_cairo</code><span class="sig-paren">(</span><em>cr</em>, <em>ww</em>, <em>wh</em>, <em>dtype=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#EmptyPage.render_cairo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.EmptyPage.render_cairo" title="Permalink to this definition">¶</a></dt>
+<code class="descname">render_cairo</code><span class="sig-paren">(</span><em>cr</em>, <em>ww</em>, <em>wh</em>, <em>dtype=&lt;PdfPage.FULL: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#EmptyPage.render_cairo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.EmptyPage.render_cairo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overriding this purely for safety: make sure we do not accidentally try to render</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1392,7 +1371,7 @@ Also, it has no “rendering” capability, and is made harmless by overriding i
 <li><strong>cr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">CairoContext</span></code>) – target surface</li>
 <li><strong>ww</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – target width in pixels</li>
 <li><strong>wh</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – target height in pixels</li>
-<li><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – the type of document that should be rendered</li>
+<li><strong>dtype</strong> (<a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a>) – the type of document that should be rendered</li>
 </ul>
 </td>
 </tr>
@@ -1416,12 +1395,32 @@ Also, it has no “rendering” capability, and is made harmless by overriding i
 <li><strong>y1</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – first y coordinate of the link rectangle</li>
 <li><strong>x2</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – second x coordinate of the link rectangle</li>
 <li><strong>y2</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – second y coordinate of the link rectangle</li>
-<li><strong>action</strong> (<em>function</em>) – action to perform when the link is clicked</li>
+<li><strong>action</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">function</span></code>) – action to perform when the link is clicked</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="staticmethod">
+<dt id="pympress.document.Link.build_closure">
+<em class="property">static </em><code class="descname">build_closure</code><span class="sig-paren">(</span><em>fun</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Link.build_closure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Link.build_closure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a lambda that calls fun(<a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs), with the current value of args and kwargs.
+By creating the lambda in a new scope, we bind the arguments, thus creating a closure and remember the arguments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fun</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">function</span></code>) – The function to be called</li>
+<li><strong>args</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#tuple" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>) – non-keyworded variable-length argument list to pass to fun()</li>
+<li><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) – keyworded variable-length argument dict to pass to fun()</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="pympress.document.Link.follow">
 <code class="descname">follow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Link.follow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Link.follow" title="Permalink to this definition">¶</a></dt>
@@ -1563,13 +1562,13 @@ displaying pages, managing hyperlinks, etc.</p>
 
 <dl class="method">
 <dt id="pympress.document.Page.get_aspect_ratio">
-<code class="descname">get_aspect_ratio</code><span class="sig-paren">(</span><em>dtype=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Page.get_aspect_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Page.get_aspect_ratio" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_aspect_ratio</code><span class="sig-paren">(</span><em>dtype=&lt;PdfPage.FULL: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Page.get_aspect_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Page.get_aspect_ratio" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the page aspect ratio.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – the type of document to consider</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dtype</strong> (<a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a>) – the type of document to consider</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">page aspect ratio</td>
 </tr>
@@ -1605,7 +1604,7 @@ displaying pages, managing hyperlinks, etc.</p>
 
 <dl class="method">
 <dt id="pympress.document.Page.get_link_at">
-<code class="descname">get_link_at</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Page.get_link_at"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Page.get_link_at" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_link_at</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>dtype=&lt;PdfPage.FULL: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Page.get_link_at"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Page.get_link_at" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the <a class="reference internal" href="#pympress.document.Link" title="pympress.document.Link"><code class="xref py py-class docutils literal notranslate"><span class="pre">Link</span></code></a> corresponding to the given
 position, or <a class="reference external" href="https://docs.python.org/3.4/library/constants.html#None" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> if there is no link at this position.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1615,6 +1614,7 @@ position, or <a class="reference external" href="https://docs.python.org/3.4/lib
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – horizontal coordinate</li>
 <li><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – vertical coordinate</li>
+<li><strong>dtype</strong> (<a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a>) – the type of document to consider</li>
 </ul>
 </td>
 </tr>
@@ -1647,13 +1647,13 @@ if one exists, <a class="reference external" href="https://docs.python.org/3.4/l
 
 <dl class="method">
 <dt id="pympress.document.Page.get_size">
-<code class="descname">get_size</code><span class="sig-paren">(</span><em>dtype=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Page.get_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Page.get_size" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_size</code><span class="sig-paren">(</span><em>dtype=&lt;PdfPage.FULL: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Page.get_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Page.get_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the page size.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – the type of document to consider</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dtype</strong> (<a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a>) – the type of document to consider</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">page size</td>
 </tr>
@@ -1713,7 +1713,7 @@ if one exists, <a class="reference external" href="https://docs.python.org/3.4/l
 
 <dl class="method">
 <dt id="pympress.document.Page.render_cairo">
-<code class="descname">render_cairo</code><span class="sig-paren">(</span><em>cr</em>, <em>ww</em>, <em>wh</em>, <em>dtype=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Page.render_cairo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Page.render_cairo" title="Permalink to this definition">¶</a></dt>
+<code class="descname">render_cairo</code><span class="sig-paren">(</span><em>cr</em>, <em>ww</em>, <em>wh</em>, <em>dtype=&lt;PdfPage.FULL: 1&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Page.render_cairo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Page.render_cairo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render the page on a Cairo surface.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1723,7 +1723,7 @@ if one exists, <a class="reference external" href="https://docs.python.org/3.4/l
 <li><strong>cr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">CairoContext</span></code>) – target surface</li>
 <li><strong>ww</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – target width in pixels</li>
 <li><strong>wh</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – target height in pixels</li>
-<li><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – the type of document that should be rendered</li>
+<li><strong>dtype</strong> (<a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a>) – the type of document that should be rendered</li>
 </ul>
 </td>
 </tr>
@@ -1733,10 +1733,48 @@ if one exists, <a class="reference external" href="https://docs.python.org/3.4/l
 
 </dd></dl>
 
-<dl class="function">
-<dt id="pympress.document.fileopen">
-<code class="descclassname">pympress.document.</code><code class="descname">fileopen</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="headerlink" href="#pympress.document.fileopen" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="class">
+<dt id="pympress.document.PdfPage">
+<em class="property">class </em><code class="descclassname">pympress.document.</code><code class="descname">PdfPage</code><a class="reference internal" href="_modules/pympress/document.html#PdfPage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.PdfPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.4/library/enum.html#enum.IntEnum" title="(in Python v3.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></a></p>
+<p>Represents the part of a PDF page that we want to draw.</p>
+<dl class="attribute">
+<dt id="pympress.document.PdfPage.BOTTOM">
+<code class="descname">BOTTOM</code><em class="property"> = 2</em><a class="headerlink" href="#pympress.document.PdfPage.BOTTOM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bottom half of PDF page</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.document.PdfPage.FULL">
+<code class="descname">FULL</code><em class="property"> = 1</em><a class="headerlink" href="#pympress.document.PdfPage.FULL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full PDF page (without notes)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.document.PdfPage.LEFT">
+<code class="descname">LEFT</code><em class="property"> = 5</em><a class="headerlink" href="#pympress.document.PdfPage.LEFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Left half of PDF page</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.document.PdfPage.NONE">
+<code class="descname">NONE</code><em class="property"> = 0</em><a class="headerlink" href="#pympress.document.PdfPage.NONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>No notes on PDF page, only falsy value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.document.PdfPage.RIGHT">
+<code class="descname">RIGHT</code><em class="property"> = 4</em><a class="headerlink" href="#pympress.document.PdfPage.RIGHT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Right half of PDF page</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.document.PdfPage.TOP">
+<code class="descname">TOP</code><em class="property"> = 3</em><a class="headerlink" href="#pympress.document.PdfPage.TOP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Top half of PDF page</p>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="function">
 <dt id="pympress.document.get_extension">
@@ -2270,9 +2308,7 @@ see <a class="reference external" href="https://www.cairographics.org/documentat
 <dt id="pympress.surfacecache.SurfaceCache.surface_type">
 <code class="descname">surface_type</code><em class="property"> = {}</em><a class="headerlink" href="#pympress.surfacecache.SurfaceCache.surface_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Type of document handled by each widget. It is a <a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> – its keys are
-widget names and its values are document types
-(<a class="reference internal" href="#pympress.ui.PDF_REGULAR" title="pympress.ui.PDF_REGULAR"><code class="xref py py-const docutils literal notranslate"><span class="pre">PDF_REGULAR</span></code></a>, <a class="reference internal" href="#pympress.ui.PDF_CONTENT_PAGE" title="pympress.ui.PDF_CONTENT_PAGE"><code class="xref py py-const docutils literal notranslate"><span class="pre">PDF_CONTENT_PAGE</span></code></a>
-or <a class="reference internal" href="#pympress.ui.PDF_NOTES_PAGE" title="pympress.ui.PDF_NOTES_PAGE"><code class="xref py py-const docutils literal notranslate"><span class="pre">PDF_NOTES_PAGE</span></code></a>).</p>
+widget names and its values are document types from ui.</p>
 </dd></dl>
 
 <dl class="method">
@@ -2710,7 +2746,7 @@ or <a class="reference internal" href="#pympress.ui.PDF_NOTES_PAGE" title="pympr
 
 <dl class="attribute">
 <dt id="pympress.pointer.Pointer.pointer">
-<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7fa3a5d58798 (GdkPixbuf at 0x56339512a700)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7f62163afaf8 (GdkPixbuf at 0x55a6d2a4ad80)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/GdkPixbuf-2.0/classes/Pixbuf.html#GdkPixbuf.Pixbuf" title="(in GdkPixbuf 2.0 v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pixbuf</span></code></a> to read XML descriptions of GUIs and load them.</p>
 </dd></dl>
 
@@ -2947,7 +2983,7 @@ Call this when the page_number module is initialized, but before needing the cal
 
 <dl class="attribute">
 <dt id="pympress.editable_label.EstimatedTalkTime.entry_ett">
-<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7fa3a5d6b3a8 (GtkEntry at 0x563395376420)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
+<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f62162ffee8 (GtkEntry at 0x55a6d2b42480)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Entry.html#Gtk.Entry" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code></a> used to set the estimated talk time.</p>
 </dd></dl>
 
@@ -2980,6 +3016,20 @@ Call this when the page_number module is initialized, but before needing the cal
 <code class="descname">restore_label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#EstimatedTalkTime.restore_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.restore_label" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make sure that the current page number is displayed in a label and not in an entry.
 If it is an entry, then replace it with the label.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.editable_label.EstimatedTalkTime.set_time">
+<code class="descname">set_time</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#EstimatedTalkTime.set_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.set_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the talk time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – the estimated time for the talk, in seconds.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -3373,7 +3423,7 @@ Times are given in seconds. In between timestamps the color will interpolated li
 
 <dl class="attribute">
 <dt id="pympress.config.Config.layout">
-<code class="descname">layout</code><em class="property"> = {'highlight': {'resizeable': True, 'children': ['highlight', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.5497787610619469, 0.4502212389380531], 'orientation': 'vertical'}], 'proportions': [0.6697916666666667, 0.3302083333333333], 'orientation': 'horizontal'}, 'notes': {'resizeable': True, 'children': ['notes', {'resizeable': False, 'children': ['current', 'next'], 'orientation': 'vertical'}], 'proportions': [0.47291666666666665, 0.5270833333333333], 'orientation': 'horizontal'}, 'plain': {'resizeable': True, 'children': ['current', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.5387168141592921, 0.46128318584070793], 'orientation': 'vertical'}], 'proportions': [0.6119791666666666, 0.38802083333333337], 'orientation': 'horizontal'}}</em><a class="headerlink" href="#pympress.config.Config.layout" title="Permalink to this definition">¶</a></dt>
+<code class="descname">layout</code><em class="property"> = {'highlight': {'resizeable': True, 'children': ['highlight', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.5508849557522124, 0.4491150442477876], 'orientation': 'vertical'}], 'proportions': [0.6708333333333333, 0.3291666666666667], 'orientation': 'horizontal'}, 'notes': {'resizeable': True, 'children': ['notes', {'resizeable': False, 'children': ['current', 'next'], 'orientation': 'vertical'}], 'proportions': [0.6, 0.4], 'orientation': 'horizontal'}, 'plain': {'resizeable': True, 'children': ['current', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.4944690265486726, 0.5055309734513274], 'orientation': 'vertical'}], 'proportions': [0.5833333333333334, 0.41666666666666663], 'orientation': 'horizontal'}}</em><a class="headerlink" href="#pympress.config.Config.layout" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>-tree of presenter layouts for various modes</p>
 </dd></dl>
 
@@ -3506,17 +3556,7 @@ Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on 
 <dl class="function">
 <dt id="pympress.config.recursive_unicode_to_str">
 <code class="descclassname">pympress.config.</code><code class="descname">recursive_unicode_to_str</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/config.html#recursive_unicode_to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.config.recursive_unicode_to_str" title="Permalink to this definition">¶</a></dt>
-<dd><p>Recursively convert unicode to str (for python2)
-Raises NameError in python3 as ‘unicode’ is undefined</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>obj</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">unicode</span></code> or <a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#list" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) – A unicode string to transform, or a container whose children to transform</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
+<dd></dd></dl>
 
 </div>
 <span class="target" id="module-pympress.extras"></span><div class="section" id="pympress-extras-manages-the-display-of-fancy-extras-such-as-annotations-videos-and-cursors">
@@ -3541,7 +3581,7 @@ Raises NameError in python3 as ‘unicode’ is undefined</p>
 
 <dl class="attribute">
 <dt id="pympress.extras.Annotations.annotation_renderer">
-<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7fa3a5df1dc8 (GtkCellRendererText at 0x56339511c110)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7f62162d5bd0 (GtkCellRendererText at 0x55a6d2b31150)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CellRendererText.html#Gtk.CellRendererText" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CellRendererText</span></code></a> Text renderer for the annotations</p>
 </dd></dl>
 
@@ -3631,15 +3671,13 @@ Raises NameError in python3 as ‘unicode’ is undefined</p>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.4/library/functions.html#object" title="(in Python v3.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="pympress.extras.Media.adjust_margins_for_mode">
-<code class="descname">adjust_margins_for_mode</code><span class="sig-paren">(</span><em>enable_notes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.adjust_margins_for_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.adjust_margins_for_mode" title="Permalink to this definition">¶</a></dt>
+<code class="descname">adjust_margins_for_mode</code><span class="sig-paren">(</span><em>page_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/extras.html#Media.adjust_margins_for_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.extras.Media.adjust_margins_for_mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adjust the relative margins of child widgets for notes mode update.</p>
-<p>Note that we apply the changes regular -&gt; content and content -&gt; regular without checking the
-initial state, as we do not store it. So take care to call this function appropriately.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>enable_notes</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Whether to enable note, thus transition from PDF_REGULAR to PDF_CONTENT_PAGE, or the opposite</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>page_type</strong> (<a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a>) – The part of the page to display</td>
 </tr>
 </tbody>
 </table>
@@ -3736,8 +3774,8 @@ initial state, as we do not store it. So take care to call this function appropr
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>current_page</strong> (<a class="reference internal" href="#pympress.document.Page" title="pympress.document.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>) – The page for twhich to prepare medias</li>
-<li><strong>page_type</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – The page type: one of PDF_REGULAR, PDF_CONTENT_PAGE, or PDF_NOTES_PAGE</li>
+<li><strong>current_page</strong> (<a class="reference internal" href="#pympress.document.Page" title="pympress.document.Page"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>) – The page for which to prepare medias</li>
+<li><strong>page_type</strong> (<a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a>) – The part of the page to consider</li>
 </ul>
 </td>
 </tr>
@@ -3998,6 +4036,116 @@ Call this when the page_number module is initialized, but before needing the cal
 </div>
 <span class="target" id="module-pympress.util"></span><div class="section" id="pympress-util-various-utility-functions">
 <h3><a class="reference internal" href="#module-pympress.util" title="pympress.util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pympress.util</span></code></a> – various utility functions<a class="headerlink" href="#pympress-util-various-utility-functions" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pympress.util.FileWatcher">
+<em class="property">class </em><code class="descclassname">pympress.util.</code><code class="descname">FileWatcher</code><a class="reference internal" href="_modules/pympress/util.html#FileWatcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.FileWatcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.4/library/functions.html#object" title="(in Python v3.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A class with only static methods that wraps object watchdogs, to trigger callbacks when a file changes.</p>
+<dl class="classmethod">
+<dt id="pympress.util.FileWatcher.call">
+<em class="property">classmethod </em><code class="descname">call</code><span class="sig-paren">(</span><em>callback</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#FileWatcher.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.FileWatcher.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the callback</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>callback</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">function</span></code>) – callback to call with all the further arguments</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pympress.util.FileWatcher.enqueue">
+<em class="property">classmethod </em><code class="descname">enqueue</code><span class="sig-paren">(</span><em>callback</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#FileWatcher.enqueue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.FileWatcher.enqueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do not call callback directly, instead delay as to avoid repeated calls in short periods of time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>callback</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">function</span></code>) – callback to call with all the further arguments</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.util.FileWatcher.monitor">
+<code class="descname">monitor</code><em class="property"> = &lt;watchdog.events.FileSystemEventHandler object&gt;</em><a class="headerlink" href="#pympress.util.FileWatcher.monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">FileSystemEventHandler</span></code> to get notified when the file changes</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.util.FileWatcher.observer">
+<code class="descname">observer</code><em class="property"> = &lt;InotifyObserver(Thread-1, initial daemon)&gt;</em><a class="headerlink" href="#pympress.util.FileWatcher.observer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">Observer</span></code> to watch when the file changes</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pympress.util.FileWatcher.start_daemon">
+<em class="property">classmethod </em><code class="descname">start_daemon</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#FileWatcher.start_daemon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.FileWatcher.start_daemon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the watchdog observer thread</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pympress.util.FileWatcher.stop_daemon">
+<em class="property">classmethod </em><code class="descname">stop_daemon</code><span class="sig-paren">(</span><em>wait=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#FileWatcher.stop_daemon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.FileWatcher.stop_daemon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the watchdog observer thread.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wait</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – whether to wait for the thread to have joined before returning</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="pympress.util.FileWatcher.stop_watching">
+<em class="property">classmethod </em><code class="descname">stop_watching</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#FileWatcher.stop_watching"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.FileWatcher.stop_watching" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all files that are being watched</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.util.FileWatcher.timeout">
+<code class="descname">timeout</code><em class="property"> = 0</em><a class="headerlink" href="#pympress.util.FileWatcher.timeout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="pympress.util.FileWatcher.watch_file">
+<em class="property">classmethod </em><code class="descname">watch_file</code><span class="sig-paren">(</span><em>path</em>, <em>callback</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#FileWatcher.watch_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.FileWatcher.watch_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Watches a new file with a new callback. Removes any precedent watched files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – full path to the file to watch</li>
+<li><strong>callback</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">function</span></code>) – callback to call with all the further arguments when the file changes</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pympress.util.fileopen">
+<code class="descclassname">pympress.util.</code><code class="descname">fileopen</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#fileopen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.fileopen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the right function to open files, based on the platform.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>f</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – path to the file to open</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="function">
 <dt id="pympress.util.get_icon_pixbuf">
 <code class="descclassname">pympress.util.</code><code class="descname">get_icon_pixbuf</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/util.html#get_icon_pixbuf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.util.get_icon_pixbuf" title="Permalink to this definition">¶</a></dt>
@@ -4128,7 +4276,7 @@ Call this when the page_number module is initialized, but before needing the cal
 <h3><a class="reference internal" href="#module-pympress.media_overlay" title="pympress.media_overlay"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pympress.media_overlay</span></code></a> – widget to play videos with a backend like VLC<a class="headerlink" href="#pympress-media-overlay-widget-to-play-videos-with-a-backend-like-vlc" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pympress.media_overlay.GifOverlay">
-<em class="property">class </em><code class="descclassname">pympress.media_overlay.</code><code class="descname">GifOverlay</code><span class="sig-paren">(</span><em>container</em>, <em>show_controls</em>, <em>relative_margins</em>, <em>callback_getter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#GifOverlay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.GifOverlay" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.media_overlay.</code><code class="descname">GifOverlay</code><span class="sig-paren">(</span><em>container</em>, <em>show_controls</em>, <em>relative_margins</em>, <em>page_type</em>, <em>callback_getter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#GifOverlay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.GifOverlay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pympress.media_overlay.VideoOverlay" title="pympress.media_overlay.VideoOverlay"><code class="xref py py-class docutils literal notranslate"><span class="pre">pympress.media_overlay.VideoOverlay</span></code></a></p>
 <p>A simple overlay mimicking the functionality of showing videos, but showing gifs instead.</p>
 <dl class="method">
@@ -4185,7 +4333,7 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 
 <dl class="method">
 <dt id="pympress.media_overlay.GifOverlay.do_set_time">
-<code class="descname">do_set_time</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#GifOverlay.do_set_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.GifOverlay.do_set_time" title="Permalink to this definition">¶</a></dt>
+<code class="descname">do_set_time</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#GifOverlay.do_set_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.GifOverlay.do_set_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the player at time t.
 Should run on the main thread to ensure we avoid vlc plugins’ reentrency problems.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -4228,6 +4376,12 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.media_overlay.GifOverlay.iter">
+<code class="descname">iter</code><em class="property"> = None</em><a class="headerlink" href="#pympress.media_overlay.GifOverlay.iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference external" href="https://lazka.github.io/pgi-docs/GdkPixbuf-2.0/classes/PixbufAnimationIter.html#GdkPixbuf.PixbufAnimationIter" title="(in GdkPixbuf 2.0 v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PixbufAnimationIter</span></code></a> which will provide the timely access to the frames in <a class="reference internal" href="#pympress.media_overlay.GifOverlay.anim" title="pympress.media_overlay.GifOverlay.anim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">anim</span></code></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -4410,7 +4564,7 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 
 <dl class="class">
 <dt id="pympress.media_overlay.VideoOverlay">
-<em class="property">class </em><code class="descclassname">pympress.media_overlay.</code><code class="descname">VideoOverlay</code><span class="sig-paren">(</span><em>container</em>, <em>show_controls</em>, <em>relative_margins</em>, <em>callback_getter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#VideoOverlay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.VideoOverlay" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.media_overlay.</code><code class="descname">VideoOverlay</code><span class="sig-paren">(</span><em>container</em>, <em>show_controls</em>, <em>relative_margins</em>, <em>page_type</em>, <em>callback_getter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#VideoOverlay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.VideoOverlay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pympress.builder.Builder" title="pympress.builder.Builder"><code class="xref py py-class docutils literal notranslate"><span class="pre">pympress.builder.Builder</span></code></a></p>
 <p>Simple Video widget.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -4420,6 +4574,7 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>container</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Overlay.html#Gtk.Overlay" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Overlay</span></code></a>) – The container with the slide, at the top of which we add the movie area</li>
 <li><strong>show_controls</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – whether to display controls on the video player</li>
+<li><strong>page_type</strong> (<a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a>) – the part of the page to display</li>
 <li><strong>relative_margins</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Poppler-0.18/classes/Rectangle.html#Poppler.Rectangle" title="(in Poppler 0.18 v0.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rectangle</span></code></a>) – the margins defining the position of the video in the frame.</li>
 </ul>
 </td>
@@ -4527,7 +4682,7 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 
 <dl class="method">
 <dt id="pympress.media_overlay.VideoOverlay.format_millis">
-<code class="descname">format_millis</code><span class="sig-paren">(</span><em>sc</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#VideoOverlay.format_millis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.format_millis" title="Permalink to this definition">¶</a></dt>
+<code class="descname">format_millis</code><span class="sig-paren">(</span><em>sc</em>, <em>prog</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#VideoOverlay.format_millis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.format_millis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback to format the current timestamp (in milliseconds) as minutes:seconds</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -4535,7 +4690,7 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>sc</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code></a>) – The scale whose position we are formatting</li>
-<li><strong>val</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – The position of the <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code></a>, which is the number of milliseconds elapsed in the video</li>
+<li><strong>prog</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – The position of the <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code></a>, as a float between 0. and 1.</li>
 </ul>
 </td>
 </tr>
@@ -4693,7 +4848,13 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <dl class="attribute">
 <dt id="pympress.media_overlay.VideoOverlay.relative_margins">
 <code class="descname">relative_margins</code><em class="property"> = None</em><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.relative_margins" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Poppler-0.18/classes/Rectangle.html#Poppler.Rectangle" title="(in Poppler 0.18 v0.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rectangle</span></code></a> containing the left/right/bottom/top space around the drawing area</p>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#tuple" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> containing the left/top/right/bottom space around the drawing area in the visible slide</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.media_overlay.VideoOverlay.relative_page_margins">
+<code class="descname">relative_page_margins</code><em class="property"> = None</em><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.relative_page_margins" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#tuple" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> containing the left/top/right/bottom space around the drawing area in the PDF page</p>
 </dd></dl>
 
 <dl class="method">
@@ -4731,13 +4892,26 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <dl class="attribute">
 <dt id="pympress.media_overlay.VideoOverlay.time_format">
 <code class="descname">time_format</code><em class="property"> = '{:01}:{:02}'</em><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.time_format" title="Permalink to this definition">¶</a></dt>
-<dd><p><a href="#id1"><span class="problematic" id="id2">**</span></a>Format of the video time, defaults to m* – ss, changed to m* – ss / m:ss when the max time is known</p>
+<dd><p><a href="#id5"><span class="problematic" id="id6">**</span></a>Format of the video time, defaults to m* – ss, changed to m* – ss / m:ss when the max time is known</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pympress.media_overlay.VideoOverlay.toolbar">
 <code class="descname">toolbar</code><em class="property"> = None</em><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.toolbar" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/HBox.html#Gtk.HBox" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">HBox</span></code></a> containing a toolbar with buttons and <a class="reference internal" href="#pympress.media_overlay.VideoOverlay.progress" title="pympress.media_overlay.VideoOverlay.progress"><code class="xref py py-attr docutils literal notranslate"><span class="pre">progress</span></code></a> the progress bar</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.media_overlay.VideoOverlay.update_margins_for_page">
+<code class="descname">update_margins_for_page</code><span class="sig-paren">(</span><em>page_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#VideoOverlay.update_margins_for_page"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.update_margins_for_page" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>page_type</strong> (<a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a>) – the part of the page to display</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -4806,7 +4980,7 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-303-gd03398a&#39;',
+            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -197,8 +197,7 @@
 
 <span class="kn">import</span> <span class="nn">mimetypes</span>
 
-<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">media_overlay</span>
-<span class="kn">from</span> <span class="nn">pympress.ui</span> <span class="k">import</span> <span class="n">PDF_REGULAR</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">,</span> <span class="n">PDF_NOTES_PAGE</span>
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">media_overlay</span><span class="p">,</span> <span class="n">document</span>
 
 
 <div class="viewcode-block" id="Annotations"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Annotations">[docs]</a><span class="k">class</span> <span class="nc">Annotations</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -318,10 +317,10 @@
         <span class="sd">&quot;&quot;&quot; Remove current media overlays, add new ones if page contains media.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            current_page (:class:`~pympress.document.Page`): The page for twhich to prepare medias</span>
-<span class="sd">            page_type (`int`): The page type: one of PDF_REGULAR, PDF_CONTENT_PAGE, or PDF_NOTES_PAGE</span>
+<span class="sd">            current_page (:class:`~pympress.document.Page`): The page for which to prepare medias</span>
+<span class="sd">            page_type (:class:`~pympress.document.PdfPage`): The part of the page to consider</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">page_type</span> <span class="o">==</span> <span class="n">PDF_NOTES_PAGE</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">page_type</span> <span class="o">==</span> <span class="n">document</span><span class="o">.</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">NONE</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">remove_media_overlays</span><span class="p">()</span>
@@ -334,30 +333,28 @@
                 <span class="n">factory</span> <span class="o">=</span> <span class="n">media_overlay</span><span class="o">.</span><span class="n">VideoOverlay</span><span class="o">.</span><span class="n">get_factory</span><span class="p">(</span><span class="n">mime_type</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">factory</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No available overlay for mime type </span><span class="si">{}</span><span class="s1">, ignoring media </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mime_type</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
                     <span class="k">continue</span>
 
-                <span class="k">def</span> <span class="nf">get_curryfied_callback</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+                <span class="k">def</span> <span class="nf">get_curryfied_callback</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">media_id</span> <span class="o">=</span> <span class="n">media_id</span><span class="p">):</span>
+                    <span class="sd">&quot;&quot;&quot; Return a callback for signal &#39;name&#39; that has the value &#39;media_id&#39; pre-set, and remembered by this closure.</span>
+<span class="sd">                    &quot;&quot;&quot;</span>
                     <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">media_overlay</span><span class="o">.</span><span class="n">VideoOverlay</span><span class="o">.</span><span class="n">find_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="n">media_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
-                <span class="n">v_da_c</span> <span class="o">=</span> <span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">get_curryfied_callback</span><span class="p">)</span>
-                <span class="n">v_da_p</span> <span class="o">=</span> <span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_overlay</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">get_curryfied_callback</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">page_type</span> <span class="o">==</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">:</span>
-                    <span class="n">v_da_p</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v_da_p</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x2</span> <span class="o">-</span> <span class="mi">1</span>
-                    <span class="n">v_da_c</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v_da_c</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x2</span> <span class="o">-</span> <span class="mi">1</span>
-                    <span class="n">v_da_p</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x1</span> <span class="o">*=</span> <span class="mi">2</span>
-                    <span class="n">v_da_c</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x1</span> <span class="o">*=</span> <span class="mi">2</span>
+                <span class="n">v_da_c</span> <span class="o">=</span> <span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">page_type</span><span class="p">,</span> <span class="n">get_curryfied_callback</span><span class="p">)</span>
+                <span class="n">v_da_p</span> <span class="o">=</span> <span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_overlay</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">page_type</span><span class="p">,</span> <span class="n">get_curryfied_callback</span><span class="p">)</span>
 
                 <span class="n">v_da_c</span><span class="o">.</span><span class="n">set_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
                 <span class="n">v_da_p</span><span class="o">.</span><span class="n">set_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
-                <span class="n">v_da_c</span><span class="o">.</span><span class="n">mute</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">v_da_p</span><span class="o">.</span><span class="n">mute</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-
                 <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v_da_c</span><span class="p">,</span> <span class="n">v_da_p</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mute</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mute</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="n">w</span><span class="o">.</span><span class="n">autoplay</span><span class="p">:</span>
+                    <span class="n">w</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
                     <span class="n">w</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
@@ -370,25 +367,15 @@
                 <span class="n">widget</span><span class="o">.</span><span class="n">resize</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Media.adjust_margins_for_mode"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.adjust_margins_for_mode">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_margins_for_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable_notes</span><span class="p">):</span>
+<div class="viewcode-block" id="Media.adjust_margins_for_mode"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.adjust_margins_for_mode">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_margins_for_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Adjust the relative margins of child widgets for notes mode update.</span>
 
-<span class="sd">        Note that we apply the changes regular -&gt; content and content -&gt; regular without checking the</span>
-<span class="sd">        initial state, as we do not store it. So take care to call this function appropriately.</span>
-
 <span class="sd">        Args:</span>
-<span class="sd">            enable_notes (`bool`): Whether to enable note, thus transition from PDF_REGULAR to PDF_CONTENT_PAGE, or the opposite</span>
+<span class="sd">            page_type (:class:`~pympress.document.PdfPage`): The part of the page to display</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">enable_notes</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]:</span>
-                    <span class="n">widget</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">widget</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x2</span> <span class="o">-</span> <span class="mi">1</span>
-                    <span class="n">widget</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x1</span> <span class="o">*=</span> <span class="mi">2</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]:</span>
-                    <span class="n">widget</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x2</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x2</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">0.5</span>
-                    <span class="n">widget</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x1</span> <span class="o">/=</span> <span class="mi">2</span></div>
+        <span class="k">for</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]:</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">update_margins_for_page</span><span class="p">(</span><span class="n">page_type</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Media.play"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.play">[docs]</a>    <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">media_id</span><span class="p">,</span> <span class="n">button</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -716,7 +703,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-303-gd03398a&#39;',
+            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

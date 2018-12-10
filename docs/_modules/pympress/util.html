@@ -194,9 +194,13 @@
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">GdkPixbuf</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">GdkPixbuf</span><span class="p">,</span> <span class="n">GLib</span>
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">sys</span>
+
+
+<span class="kn">from</span> <span class="nn">watchdog.observers</span> <span class="k">import</span> <span class="n">Observer</span>
+<span class="kn">from</span> <span class="nn">watchdog.events</span> <span class="k">import</span> <span class="n">FileSystemEventHandler</span>
 
 
 <span class="n">IS_POSIX</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;posix&#39;</span>
@@ -344,6 +348,20 @@
     <span class="k">return</span> <span class="n">icons</span></div>
 
 
+<div class="viewcode-block" id="fileopen"><a class="viewcode-back" href="../../pympress.html#pympress.util.fileopen">[docs]</a><span class="k">def</span> <span class="nf">fileopen</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Call the right function to open files, based on the platform.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        f (`str`): path to the file to open</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">IS_WINDOWS</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">startfile</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">IS_MAC_OS</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s1">&#39;xdg-open&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">])</span></div>
+
+
 <div class="viewcode-block" id="set_screensaver"><a class="viewcode-back" href="../../pympress.html#pympress.util.set_screensaver">[docs]</a><span class="k">def</span> <span class="nf">set_screensaver</span><span class="p">(</span><span class="n">must_disable</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Enable or disable the screensaver.</span>
 
@@ -417,6 +435,92 @@
 <span class="n">set_screensaver</span><span class="o">.</span><span class="n">dpms_was_enabled</span> <span class="o">=</span> <span class="kc">None</span>
 
 
+<div class="viewcode-block" id="FileWatcher"><a class="viewcode-back" href="../../pympress.html#pympress.util.FileWatcher">[docs]</a><span class="k">class</span> <span class="nc">FileWatcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A class with only static methods that wraps object watchdogs, to trigger callbacks when a file changes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#: A :class:`~watchdog.observers.Observer` to watch when the file changes</span>
+    <span class="n">observer</span> <span class="o">=</span> <span class="n">Observer</span><span class="p">()</span>
+
+    <span class="c1">#: A :class:`~watchdog.events.FileSystemEventHandler` to get notified when the file changes</span>
+    <span class="n">monitor</span> <span class="o">=</span> <span class="n">FileSystemEventHandler</span><span class="p">()</span>
+
+    <span class="c1"># `int` that is a GLib timeout id to delay the callback</span>
+    <span class="n">timeout</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="FileWatcher.watch_file"><a class="viewcode-back" href="../../pympress.html#pympress.util.FileWatcher.watch_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">watch_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Watches a new file with a new callback. Removes any precedent watched files.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (`str`): full path to the file to watch</span>
+<span class="sd">            callback (`function`): callback to call with all the further arguments when the file changes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">start_daemon</span><span class="p">()</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">stop_watching</span><span class="p">()</span>
+
+        <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">on_modified</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">evt</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">src_path</span> <span class="o">==</span> <span class="n">path</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">monitor</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Impossible to open dir at </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">directory</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="FileWatcher.enqueue"><a class="viewcode-back" href="../../pympress.html#pympress.util.FileWatcher.enqueue">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">enqueue</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Do not call callback directly, instead delay as to avoid repeated calls in short periods of time.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            callback (`function`): callback to call with all the further arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+            <span class="n">GLib</span><span class="o">.</span><span class="n">Source</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">GLib</span><span class="o">.</span><span class="n">timeout_add</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FileWatcher.call"><a class="viewcode-back" href="../../pympress.html#pympress.util.FileWatcher.call">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Call the callback</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            callback (`function`): callback to call with all the further arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FileWatcher.stop_watching"><a class="viewcode-back" href="../../pympress.html#pympress.util.FileWatcher.stop_watching">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">stop_watching</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Remove all files that are being watched</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">unschedule_all</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FileWatcher.start_daemon"><a class="viewcode-back" href="../../pympress.html#pympress.util.FileWatcher.start_daemon">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">start_daemon</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Start the watchdog observer thread</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FileWatcher.stop_daemon"><a class="viewcode-back" href="../../pympress.html#pympress.util.FileWatcher.stop_daemon">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">stop_daemon</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">wait</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stop the watchdog observer thread.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            wait (`bool`): whether to wait for the thread to have joined before returning</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">unschedule_all</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="n">wait</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">join</span><span class="p">()</span></div></div>
+
+
+
+
 <span class="c1">##</span>
 <span class="c1"># Local Variables:</span>
 <span class="c1"># mode: python</span>
@@ -460,7 +564,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-303-gd03398a&#39;',
+            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

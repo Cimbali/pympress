@@ -209,7 +209,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">from</span> <span class="nn">pympress.util</span> <span class="k">import</span> <span class="n">IS_POSIX</span><span class="p">,</span> <span class="n">IS_MAC_OS</span><span class="p">,</span> <span class="n">IS_WINDOWS</span>
-<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">builder</span>
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">builder</span><span class="p">,</span> <span class="n">document</span>
 
 
 <div class="viewcode-block" id="get_window_handle"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.get_window_handle">[docs]</a><span class="k">def</span> <span class="nf">get_window_handle</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
@@ -238,6 +238,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        container (:class:`~Gtk.Overlay`): The container with the slide, at the top of which we add the movie area</span>
 <span class="sd">        show_controls (`bool`): whether to display controls on the video player</span>
+<span class="sd">        page_type (:class:`~pympress.document.PdfPage`): the part of the page to display</span>
 <span class="sd">        relative_margins (:class:`~Poppler.Rectangle`): the margins defining the position of the video in the frame.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: :class:`~Gtk.Overlay` that is the parent of the VLCVideo widget.</span>
@@ -250,7 +251,9 @@
     <span class="n">progress</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1">#: :class:`~Gtk.DrawingArea` where the media is rendered.</span>
     <span class="n">movie_zone</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="c1">#: :class:`~Poppler.Rectangle` containing the left/right/bottom/top space around the drawing area</span>
+    <span class="c1">#: `tuple` containing the left/top/right/bottom space around the drawing area in the PDF page</span>
+    <span class="n">relative_page_margins</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: `tuple` containing the left/top/right/bottom space around the drawing area in the visible slide</span>
     <span class="n">relative_margins</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1">#: `bool` that tracks whether we should play automatically</span>
     <span class="n">autoplay</span> <span class="o">=</span> <span class="kc">False</span>
@@ -279,11 +282,12 @@
     <span class="c1"># `list` of info on backend versions</span>
     <span class="n">_backend_versions</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">callback_getter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">page_type</span><span class="p">,</span> <span class="n">callback_getter</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">VideoOverlay</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">container</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span> <span class="o">=</span> <span class="n">relative_margins</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_page_margins</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">relative_margins</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">,</span> <span class="s1">&#39;y2&#39;</span><span class="p">,</span> <span class="s1">&#39;x2&#39;</span><span class="p">,</span> <span class="s1">&#39;y1&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_margins_for_page</span><span class="p">(</span><span class="n">page_type</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">load_ui</span><span class="p">(</span><span class="s1">&#39;media_overlay&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="n">show_controls</span><span class="p">)</span>
@@ -297,25 +301,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">connect_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">free</span><span class="p">()</span>
-        <span class="c1">#super(VideoOverlay, self).__del__()</span>
-
-
 <div class="viewcode-block" id="VideoOverlay.handle_embed"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.handle_embed">[docs]</a>    <span class="k">def</span> <span class="nf">handle_embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped_widget</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Handler to embed the video player in the correct window, connected to the :attr:`~.Gtk.Widget.signals.map` signal</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="VideoOverlay.format_millis"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.format_millis">[docs]</a>    <span class="k">def</span> <span class="nf">format_millis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sc</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<div class="viewcode-block" id="VideoOverlay.format_millis"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.format_millis">[docs]</a>    <span class="k">def</span> <span class="nf">format_millis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sc</span><span class="p">,</span> <span class="n">prog</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Callback to format the current timestamp (in milliseconds) as minutes:seconds</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sc (:class:`~Gtk.Scale`): The scale whose position we are formatting</span>
-<span class="sd">            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video</span>
+<span class="sd">            prog (`float`): The position of the :class:`~Gtk.Scale`, as a float between 0. and 1.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">val</span> <span class="o">//</span> <span class="mi">1000</span><span class="p">),</span> <span class="mi">60</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">*</span> <span class="n">prog</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="VideoOverlay.progress_moved"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.progress_moved">[docs]</a>    <span class="k">def</span> <span class="nf">progress_moved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">sc</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
@@ -372,6 +371,14 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
+<div class="viewcode-block" id="VideoOverlay.update_margins_for_page"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.update_margins_for_page">[docs]</a>    <span class="k">def</span> <span class="nf">update_margins_for_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            page_type (:class:`~pympress.document.PdfPage`): the part of the page to display</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span> <span class="o">=</span> <span class="n">page_type</span><span class="o">.</span><span class="n">to_screen</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">relative_page_margins</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="VideoOverlay.resize"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.resize">[docs]</a>    <span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Adjust the position and size of the media overlay.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -379,10 +386,10 @@
             <span class="k">return</span>
 
         <span class="n">pw</span><span class="p">,</span> <span class="n">ph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">get_allocated_width</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">get_allocated_height</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">media_overlay</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">margin_left</span>   <span class="o">=</span> <span class="n">pw</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">media_overlay</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">margin_right</span>  <span class="o">=</span> <span class="n">pw</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">x2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">media_overlay</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">margin_bottom</span> <span class="o">=</span> <span class="n">ph</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">y1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">media_overlay</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">margin_top</span>    <span class="o">=</span> <span class="n">ph</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="o">.</span><span class="n">y2</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">media_overlay</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">margin_left</span>   <span class="o">=</span> <span class="n">pw</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">media_overlay</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">margin_right</span>  <span class="o">=</span> <span class="n">pw</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">media_overlay</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">margin_bottom</span> <span class="o">=</span> <span class="n">ph</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">media_overlay</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">margin_top</span>    <span class="o">=</span> <span class="n">ph</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="VideoOverlay.is_shown"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.is_shown">[docs]</a>    <span class="k">def</span> <span class="nf">is_shown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -421,6 +428,10 @@
 <div class="viewcode-block" id="VideoOverlay.show"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Bring the widget to the top of the overlays if necessary.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Not showing media with (some) negative margin(s): LTRB = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relative_margins</span><span class="p">))</span>
+            <span class="k">return</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">media_overlay</span><span class="o">.</span><span class="n">get_parent</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">add_overlay</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">media_overlay</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">reorder_overlay</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">media_overlay</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -551,7 +562,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">get_length</span><span class="p">()</span> <span class="ow">or</span> <span class="mf">1.</span>
         <span class="n">sec</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">&gt;</span> <span class="mi">500</span> <span class="k">else</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_format</span> <span class="o">=</span> <span class="s1">&#39;{{:01}}:{{:02}} / </span><span class="si">{:01}</span><span class="s1">:</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_format</span> <span class="o">=</span> <span class="s1">&#39;{{:01}}:{{:02}} / </span><span class="si">{:01}</span><span class="s1">:</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">sec</span><span class="p">),</span> <span class="mi">60</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="VLCVideo.update_progress"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VLCVideo.update_progress">[docs]</a>    <span class="k">def</span> <span class="nf">update_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -622,14 +633,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: A :class:`~GdkPixbuf.PixbufAnimation` containing all the frames and their timing for the displayed gif</span>
     <span class="n">anim</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: A :class:`~GdkPixbuf.PixbufAnimationIter` which will provide the timely access to the frames in `~anim`</span>
+    <span class="nb">iter</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1">#: A `tuple` of (`int`, `int`) indicating the size of the bounding box of the gif</span>
     <span class="n">base_size</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1">#: The :class:`~cairo.Matrix` defining the zoom &amp; shift to scale the gif</span>
     <span class="n">transform</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">callback_getter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">page_type</span><span class="p">,</span> <span class="n">callback_getter</span><span class="p">):</span>
         <span class="c1"># override: no toolbar or interactive stuff for a gif, replace the whole widget area with a Gtk.Image</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">GifOverlay</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">a</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GifOverlay</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">container</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">page_type</span><span class="p">,</span> <span class="n">callback_getter</span><span class="p">)</span>
 
         <span class="c1"># we&#39;ll manually draw on the movie zone</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">movie_zone</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;draw&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">)</span>
@@ -645,9 +658,9 @@
 <span class="sd">        Args:</span>
 <span class="sd">            filepath (`str`): The path to the media file path</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">anim</span> <span class="o">=</span> <span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">PixbufAnimation</span><span class="o">.</span><span class="n">new_from_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">base_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">anim</span><span class="o">.</span><span class="n">get_width</span><span class="p">(),</span> <span class="n">anim</span><span class="o">.</span><span class="n">get_height</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">anim</span> <span class="o">=</span> <span class="n">anim</span><span class="o">.</span><span class="n">get_iter</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anim</span> <span class="o">=</span> <span class="n">GdkPixbuf</span><span class="o">.</span><span class="n">PixbufAnimation</span><span class="o">.</span><span class="n">new_from_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_size</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">anim</span><span class="o">.</span><span class="n">get_width</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">anim</span><span class="o">.</span><span class="n">get_height</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">anim</span><span class="o">.</span><span class="n">get_iter</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_transform</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">advance_gif</span><span class="p">()</span></div>
@@ -667,20 +680,38 @@
 <div class="viewcode-block" id="GifOverlay.draw"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.GifOverlay.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Simple resized drawing: get the pixbuf, set the transform, draw the image.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">anim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">ctx</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">)</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">cairo_set_source_pixbuf</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">anim</span><span class="o">.</span><span class="n">get_pixbuf</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">Gdk</span><span class="o">.</span><span class="n">cairo_set_source_pixbuf</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="o">.</span><span class="n">get_pixbuf</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">paint</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="GifOverlay.advance_gif"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.GifOverlay.advance_gif">[docs]</a>    <span class="k">def</span> <span class="nf">advance_gif</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Advance the gif,  queue redrawing if the frame changed, and schedule the next frame.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">anim</span><span class="o">.</span><span class="n">advance</span><span class="p">():</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="o">.</span><span class="n">advance</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">movie_zone</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
 
-        <span class="n">GLib</span><span class="o">.</span><span class="n">timeout_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">anim</span><span class="o">.</span><span class="n">get_delay_time</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">advance_gif</span><span class="p">)</span></div>
+        <span class="n">GLib</span><span class="o">.</span><span class="n">timeout_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="o">.</span><span class="n">get_delay_time</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">advance_gif</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GifOverlay.do_set_time"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.GifOverlay.do_set_time">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set the player at time t.</span>
+<span class="sd">        Should run on the main thread to ensure we avoid vlc plugins&#39; reentrency problems.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            t (`int`): the timestamp, in ms</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">GLib</span><span class="o">.</span><span class="n">TimeVal</span><span class="p">()</span>
+        <span class="n">GLib</span><span class="o">.</span><span class="n">DateTime</span><span class="o">.</span><span class="n">new_now_local</span><span class="p">()</span><span class="o">.</span><span class="n">to_timeval</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="n">start</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">anim</span><span class="o">.</span><span class="n">get_iter</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">advance_gif</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
 
     <span class="c1"># a bunch of inherited functions that do nothing for gifs</span>
@@ -688,8 +719,7 @@
 <div class="viewcode-block" id="GifOverlay.is_playing"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.GifOverlay.is_playing">[docs]</a>    <span class="k">def</span> <span class="nf">is_playing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="kc">True</span></div>
 <div class="viewcode-block" id="GifOverlay.do_stop"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.GifOverlay.do_stop">[docs]</a>    <span class="k">def</span> <span class="nf">do_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">pass</span></div>
 <div class="viewcode-block" id="GifOverlay.do_play"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.GifOverlay.do_play">[docs]</a>    <span class="k">def</span> <span class="nf">do_play</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span></div>
-<div class="viewcode-block" id="GifOverlay.do_play_pause"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.GifOverlay.do_play_pause">[docs]</a>    <span class="k">def</span> <span class="nf">do_play_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span></div>
-<div class="viewcode-block" id="GifOverlay.do_set_time"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.GifOverlay.do_set_time">[docs]</a>    <span class="k">def</span> <span class="nf">do_set_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span></div></div>
+<div class="viewcode-block" id="GifOverlay.do_play_pause"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.GifOverlay.do_play_pause">[docs]</a>    <span class="k">def</span> <span class="nf">do_play_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span></div></div>
 
 
 <span class="n">VideoOverlay</span><span class="o">.</span><span class="n">_backends</span><span class="p">[</span><span class="s1">&#39;image/gif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">GifOverlay</span>
@@ -748,7 +778,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-303-gd03398a&#39;',
+            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

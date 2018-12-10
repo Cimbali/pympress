@@ -206,23 +206,13 @@
 <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GLib</span>
 
-<span class="c1">#: &quot;Regular&quot; PDF file (without notes)</span>
-<span class="n">PDF_REGULAR</span>      <span class="o">=</span> <span class="mi">0</span>
-<span class="c1">#: Content page (left side) of a PDF file with notes</span>
-<span class="n">PDF_CONTENT_PAGE</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="c1">#: Notes page (right side) of a PDF file with notes</span>
-<span class="n">PDF_NOTES_PAGE</span>   <span class="o">=</span> <span class="mi">2</span>
-
 
 <span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">__main__</span><span class="p">,</span> <span class="n">document</span><span class="p">,</span> <span class="n">surfacecache</span><span class="p">,</span> <span class="n">util</span><span class="p">,</span> <span class="n">pointer</span><span class="p">,</span> <span class="n">scribble</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">builder</span><span class="p">,</span> <span class="n">talk_time</span><span class="p">,</span> <span class="n">extras</span><span class="p">,</span> <span class="n">editable_label</span>
 
 
+
 <div class="viewcode-block" id="UI"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI">[docs]</a><span class="k">class</span> <span class="nc">UI</span><span class="p">(</span><span class="n">builder</span><span class="o">.</span><span class="n">Builder</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Pympress GUI management.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        ett (`int`):  the estimated (intended) talk time</span>
-<span class="sd">        docpath (`str`): path to the file passed on the command line</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: Content window, as a :class:`~Gtk.Window` instance.</span>
     <span class="n">c_win</span> <span class="o">=</span> <span class="kc">None</span>
@@ -262,7 +252,9 @@
     <span class="n">redraw_timeout</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="c1">#: Whether to use notes mode or not</span>
-    <span class="n">notes_mode</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">notes_mode</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">NONE</span>
+    <span class="c1">#: Current choice of mode to toggle notes</span>
+    <span class="n">chosen_notes_mode</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">RIGHT</span>
     <span class="c1">#: :class:`~Gtk.CheckMenuItem` that shows whether the annotations are toggled</span>
     <span class="n">pres_notes</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -324,7 +316,7 @@
     <span class="c1">#############################      UI setup      #############################</span>
     <span class="c1">##############################################################################</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ett</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">docpath</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">UI</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">blanked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_blanked&#39;</span><span class="p">)</span>
 
@@ -348,7 +340,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">extras</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">medias</span> <span class="o">=</span> <span class="n">extras</span><span class="o">.</span><span class="n">Media</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">laser</span> <span class="o">=</span> <span class="n">pointer</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span> <span class="o">=</span> <span class="n">editable_label</span><span class="o">.</span><span class="n">EstimatedTalkTime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ett</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span> <span class="o">=</span> <span class="n">editable_label</span><span class="o">.</span><span class="n">EstimatedTalkTime</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span> <span class="o">=</span> <span class="n">editable_label</span><span class="o">.</span><span class="n">PageNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span> <span class="o">=</span> <span class="n">talk_time</span><span class="o">.</span><span class="n">TimeCounter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span><span class="p">)</span>
 
@@ -381,11 +373,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
 
-        <span class="c1"># Initialize doc last. Use notes mode by default if the document has notes</span>
-        <span class="k">if</span> <span class="n">docpath</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="n">docpath</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pick_file</span><span class="p">)</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">FileWatcher</span><span class="o">.</span><span class="n">start_daemon</span><span class="p">()</span>
 
         <span class="c1"># Queue some redraws</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_da</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
@@ -404,10 +392,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_frame</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s2">&quot;yalign&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;yalign&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_frame</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s2">&quot;xalign&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;xalign&#39;</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
-            <span class="n">page_type</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PDF_CONTENT_PAGE</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">page_type</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PDF_REGULAR</span>
+
+        <span class="n">page_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_da</span><span class="p">,</span> <span class="n">page_type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_da</span><span class="p">,</span> <span class="n">page_type</span><span class="p">,</span> <span class="n">zoomed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
@@ -426,7 +412,7 @@
         <span class="n">init_checkstates</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;pres_pause&#39;</span><span class="p">:</span>      <span class="kc">True</span><span class="p">,</span>
             <span class="s1">&#39;pres_fullscreen&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">get_window</span><span class="p">()</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">WindowState</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">),</span>
-            <span class="s1">&#39;pres_notes&#39;</span><span class="p">:</span>      <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">,</span>
+            <span class="s1">&#39;pres_notes&#39;</span><span class="p">:</span>      <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">),</span>
             <span class="s1">&#39;pres_blank&#39;</span><span class="p">:</span>      <span class="bp">self</span><span class="o">.</span><span class="n">blanked</span><span class="p">,</span>
             <span class="s1">&#39;pres_annot&#39;</span><span class="p">:</span>      <span class="bp">self</span><span class="o">.</span><span class="n">show_annotations</span><span class="p">,</span>
             <span class="s1">&#39;pres_buttons&#39;</span><span class="p">:</span>    <span class="bp">self</span><span class="o">.</span><span class="n">show_bigbuttons</span><span class="p">,</span>
@@ -440,12 +426,17 @@
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">init_checkstates</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="n">init_checkstates</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
 
-        <span class="n">slide_type</span> <span class="o">=</span> <span class="n">PDF_CONTENT_PAGE</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="k">else</span> <span class="n">PDF_REGULAR</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;notes_&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">chosen_notes_mode</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">radio_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;notes_right&#39;</span><span class="p">,</span> <span class="s1">&#39;notes_left&#39;</span><span class="p">,</span> <span class="s1">&#39;notes_top&#39;</span><span class="p">,</span> <span class="s1">&#39;notes_bottom&#39;</span><span class="p">]:</span>
+            <span class="n">radio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">radio_name</span><span class="p">)</span>
+            <span class="n">radio</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="n">radio_name</span><span class="p">)</span>
+            <span class="n">radio</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="n">radio_name</span> <span class="o">==</span> <span class="n">default</span><span class="p">)</span>
+
+        <span class="n">slide_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_da_cur</span><span class="p">,</span> <span class="n">slide_type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_da_cur</span><span class="p">,</span> <span class="n">slide_type</span><span class="p">,</span> <span class="n">zoomed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_da_next</span><span class="p">,</span> <span class="n">slide_type</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_da_notes</span><span class="p">,</span> <span class="n">PDF_NOTES_PAGE</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="k">else</span> <span class="n">PDF_REGULAR</span><span class="p">,</span>
-                                               <span class="n">prerender_enabled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_da_notes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">,</span> <span class="n">prerender_enabled</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">scribble_p_da</span><span class="p">,</span> <span class="n">slide_type</span><span class="p">,</span> <span class="n">prerender_enabled</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">scribble_p_da</span><span class="p">,</span> <span class="n">slide_type</span><span class="p">,</span> <span class="n">zoomed</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
@@ -594,6 +585,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">disable_scribbling</span><span class="p">()</span>
 
+        <span class="n">util</span><span class="o">.</span><span class="n">FileWatcher</span><span class="o">.</span><span class="n">stop_daemon</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">cleanup_media_files</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="k">else</span> <span class="s1">&#39;plain&#39;</span><span class="p">,</span>
@@ -631,7 +623,7 @@
     <span class="c1">############################ Document manangement ############################</span>
     <span class="c1">##############################################################################</span>
 
-<div class="viewcode-block" id="UI.swap_document"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.swap_document">[docs]</a>    <span class="k">def</span> <span class="nf">swap_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpath</span><span class="p">):</span>
+<div class="viewcode-block" id="UI.swap_document"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.swap_document">[docs]</a>    <span class="k">def</span> <span class="nf">swap_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpath</span><span class="p">,</span> <span class="n">page</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">reloading</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Replace the currently open document with a new one</span>
 
 <span class="sd">        The new document is possibly and EmptyDocument if docpath is None.</span>
@@ -639,26 +631,51 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            docpath (`str`): the absolute path to the new document</span>
+<span class="sd">            page (`int`): the page at which to start the presentation</span>
+<span class="sd">            reloading (`bool`): whether we are reloading or detecting stuff from the document</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpath</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">reloading</span> <span class="ow">and</span> <span class="n">docpath</span><span class="p">:</span>
+                <span class="n">util</span><span class="o">.</span><span class="n">FileWatcher</span><span class="o">.</span><span class="n">watch_file</span><span class="p">(</span><span class="n">docpath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reload_document</span><span class="p">)</span>
+
         <span class="k">except</span> <span class="n">GLib</span><span class="o">.</span><span class="n">Error</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">reloading</span><span class="p">:</span> <span class="k">return</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error_opening_file</span><span class="p">(</span><span class="n">docpath</span><span class="p">)</span>
+            <span class="n">util</span><span class="o">.</span><span class="n">FileWatcher</span><span class="o">.</span><span class="n">stop_watching</span><span class="p">()</span>
 
-        <span class="c1"># Use notes mode by default if the document has notes</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">has_notes</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">switch_mode</span><span class="p">(</span><span class="s1">&#39;swap_document&#39;</span><span class="p">,</span> <span class="n">docpath</span><span class="p">)</span>
+        <span class="c1"># Guess notes mode by default if the document has notes</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reloading</span><span class="p">:</span>
+            <span class="n">target_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chosen_notes_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">guess_notes</span><span class="p">()</span>
+
+            <span class="c1"># Special cases: don&#39;t let us toggle with NONE, give A4 documents the benefit of the doubt?</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chosen_notes_mode</span> <span class="o">==</span> <span class="n">document</span><span class="o">.</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">NONE</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chosen_notes_mode</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">RIGHT</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">chosen_notes_mode</span> <span class="o">==</span> <span class="n">document</span><span class="o">.</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">BOTTOM</span><span class="p">:</span>
+                <span class="n">target_mode</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">NONE</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="o">!=</span> <span class="n">target_mode</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">switch_mode</span><span class="p">(</span><span class="s1">&#39;swap_document&#39;</span><span class="p">,</span> <span class="n">docpath</span><span class="p">,</span> <span class="n">target_mode</span> <span class="o">=</span> <span class="n">target_mode</span><span class="p">)</span>
 
         <span class="c1"># Some things that need updating</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">set_last</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">page</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">purge_media_overlays</span><span class="p">()</span>
 
         <span class="c1"># Draw the new page(s)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">reset_timer</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reloading</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">reset_timer</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UI.reload_document"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.reload_document">[docs]</a>    <span class="k">def</span> <span class="nf">reload_document</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Reload the current document.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">cur_page</span><span class="p">,</span> <span class="n">reloading</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UI.recent_document"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.recent_document">[docs]</a>    <span class="k">def</span> <span class="nf">recent_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recent_menu</span><span class="p">):</span>
@@ -747,8 +764,8 @@
 <div class="viewcode-block" id="UI.get_notes_mode"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.get_notes_mode">[docs]</a>    <span class="k">def</span> <span class="nf">get_notes_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Simple getter.</span>
 
-<span class="sd">        Returns (bool):</span>
-<span class="sd">            Whether we split slides in content + notes</span>
+<span class="sd">        Returns (:class:`~pympress.document.PdfPage`):</span>
+<span class="sd">            Truthy when we split slides in content + notes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span></div>
 
@@ -779,14 +796,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">page_preview_nb</span> <span class="o">=</span> <span class="n">page_nb</span>
 
         <span class="c1"># Aspect ratios and queue redraws</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
-            <span class="n">page_type</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PDF_REGULAR</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">page_type</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PDF_CONTENT_PAGE</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_notes</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;ratio&#39;</span><span class="p">,</span> <span class="n">page_cur</span><span class="o">.</span><span class="n">get_aspect_ratio</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">PDF_NOTES_PAGE</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_notes</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;ratio&#39;</span><span class="p">,</span> <span class="n">page_cur</span><span class="o">.</span><span class="n">get_aspect_ratio</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">p_da_notes</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
 
+        <span class="n">page_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_cur</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;ratio&#39;</span><span class="p">,</span> <span class="n">page_cur</span><span class="o">.</span><span class="n">get_aspect_ratio</span><span class="p">(</span><span class="n">page_type</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p_da_cur</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
 
@@ -825,15 +839,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">page_preview_nb</span> <span class="o">=</span> <span class="n">page_cur</span><span class="o">.</span><span class="n">number</span><span class="p">()</span>
 
         <span class="c1"># Aspect ratios and queue redraws</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
-            <span class="n">notes_type</span> <span class="o">=</span> <span class="n">page_type</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PDF_REGULAR</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">page_type</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PDF_CONTENT_PAGE</span>
-            <span class="n">notes_type</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PDF_NOTES_PAGE</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_notes</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;ratio&#39;</span><span class="p">,</span> <span class="n">page_cur</span><span class="o">.</span><span class="n">get_aspect_ratio</span><span class="p">(</span><span class="n">notes_type</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_notes</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;ratio&#39;</span><span class="p">,</span> <span class="n">page_cur</span><span class="o">.</span><span class="n">get_aspect_ratio</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p_da_notes</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
 
+        <span class="n">page_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span>
         <span class="n">pr</span> <span class="o">=</span> <span class="n">page_cur</span><span class="o">.</span><span class="n">get_aspect_ratio</span><span class="p">(</span><span class="n">page_type</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">c_frame</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;ratio&#39;</span><span class="p">,</span> <span class="n">pr</span><span class="p">)</span>
@@ -1125,28 +1134,6 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">click_link</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="UI.mouse_pos_in_page"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.mouse_pos_in_page">[docs]</a>    <span class="k">def</span> <span class="nf">mouse_pos_in_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Normalize event coordinates from widget size and notes mode</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            widget (:class:`~Gtk.Widget`):  the widget that received the click</span>
-<span class="sd">            event (:class:`~Gdk.Event`):  the GTK event containing the click position</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            `(float, float)`: the relative position in the full slide</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="o">.</span><span class="n">get_slide_point</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
-        <span class="k">elif</span> <span class="n">widget</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_da_notes</span><span class="p">:</span>
-            <span class="c1"># PDF_NOTES_PAGE, the allocated size is the right half of the page</span>
-            <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">,</span> <span class="n">y</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># PDF_CONTENT_PAGE, the allocated size is left half of the page</span>
-            <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">,</span> <span class="n">y</span></div>
-
-
 <div class="viewcode-block" id="UI.click_link"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.click_link">[docs]</a>    <span class="k">def</span> <span class="nf">click_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Check whether a link was clicked and follow it.</span>
 <span class="sd">        Handles a click on a slide.</span>
@@ -1170,8 +1157,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">current_page</span><span class="p">()</span>
 
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mouse_pos_in_page</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
-        <span class="n">link</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">get_link_at</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="o">.</span><span class="n">get_slide_point</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="n">page_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_da_notes</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span>
+        <span class="n">link</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">get_link_at</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">page_mode</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_PRESS</span> <span class="ow">and</span> <span class="n">link</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">link</span><span class="o">.</span><span class="n">follow</span><span class="p">()</span>
@@ -1203,9 +1191,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">current_page</span><span class="p">()</span>
 
-        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mouse_pos_in_page</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="o">.</span><span class="n">get_slide_point</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="n">page_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_da_notes</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">get_link_at</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">get_link_at</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">page_mode</span><span class="p">):</span>
             <span class="n">extras</span><span class="o">.</span><span class="n">Cursor</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="s1">&#39;pointer&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1346,8 +1335,8 @@
 
         <span class="n">c_bounds</span> <span class="o">=</span> <span class="n">screen</span><span class="o">.</span><span class="n">get_monitor_geometry</span><span class="p">(</span><span class="n">c_monitor</span><span class="p">)</span>
         <span class="n">p_bounds</span> <span class="o">=</span> <span class="n">screen</span><span class="o">.</span><span class="n">get_monitor_geometry</span><span class="p">(</span><span class="n">p_monitor</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">c_bounds</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">c_bounds</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">cw</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">c_bounds</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="p">(</span><span class="n">c_bounds</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">ch</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">p_bounds</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">p_bounds</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">pw</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">p_bounds</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="p">(</span><span class="n">p_bounds</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">ph</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">c_bounds</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">c_bounds</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">cw</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">c_bounds</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">c_bounds</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">ch</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">p_bounds</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p_bounds</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">pw</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">p_bounds</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">p_bounds</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">ph</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">c_win_state</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">WindowState</span><span class="o">.</span><span class="n">MAXIMIZED</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">maximize</span><span class="p">()</span>
@@ -1395,46 +1384,82 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">p_frame_annot</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_annotations</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="UI.switch_mode"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.switch_mode">[docs]</a>    <span class="k">def</span> <span class="nf">switch_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="UI.change_notes_pos"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.change_notes_pos">[docs]</a>    <span class="k">def</span> <span class="nf">change_notes_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">force_change</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch the display mode to &quot;Notes mode&quot; or &quot;Normal mode&quot; (without notes).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            `bool`: whether the mode has been toggled.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CheckMenuItem</span><span class="p">)</span> <span class="ow">and</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_active</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CheckMenuItem</span><span class="p">):</span>
+            <span class="c1"># if this widget is not the active one do nothing</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_active</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">target_mode</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PdfPage</span><span class="p">[</span><span class="n">widget</span><span class="o">.</span><span class="n">get_name</span><span class="p">()[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;notes_&#39;</span><span class="p">):]</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">document</span><span class="o">.</span><span class="n">PdfPage</span><span class="p">):</span>
+            <span class="n">target_mode</span> <span class="o">=</span> <span class="n">widget</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Redundant toggle, do nothing</span>
+        <span class="k">if</span> <span class="n">target_mode</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">chosen_notes_mode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Update the choice, except for NONE</span>
+        <span class="k">if</span> <span class="n">target_mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chosen_notes_mode</span> <span class="o">=</span> <span class="n">target_mode</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s1">&#39;notes_&#39;</span> <span class="o">+</span> <span class="n">target_mode</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Change the notes arrangement if they are enabled or if we are forced to</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="ow">or</span> <span class="n">force_change</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switch_mode</span><span class="p">(</span><span class="s1">&#39;changed notes position&#39;</span><span class="p">,</span> <span class="n">target_mode</span> <span class="o">=</span> <span class="n">target_mode</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="UI.switch_mode"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.switch_mode">[docs]</a>    <span class="k">def</span> <span class="nf">switch_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">target_mode</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Switch the display mode to &quot;Notes mode&quot; or &quot;Normal mode&quot; (without notes).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: whether the mode has been toggled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CheckMenuItem</span><span class="p">)</span> <span class="ow">and</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_active</span><span class="p">()</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">):</span>
+            <span class="c1"># We toggle the menu item which brings us here, but it is somehow already in sync with notes mode.</span>
+            <span class="c1"># Exit to not risk double-toggling. Button is now in sync and can be toggled again correctly.</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target_mode</span><span class="p">:</span>
+            <span class="n">target_mode</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">NONE</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">chosen_notes_mode</span>
+
+        <span class="k">if</span> <span class="n">target_mode</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">disable_scribbling</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;c_da&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;c_da_zoomed&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_next&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_cur&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_cur_zoomed&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;scribble_p_da&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">disable_prerender</span><span class="p">(</span><span class="s2">&quot;p_da_cur&quot;</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_notes&quot;</span><span class="p">,</span> <span class="n">PDF_REGULAR</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">enable_prerender</span><span class="p">(</span><span class="s2">&quot;p_da_notes&quot;</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">swap_layout</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;c_da&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;c_da_zoomed&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_next&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_cur&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_cur_zoomed&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;scribble_p_da&quot;</span><span class="p">,</span> <span class="n">PDF_CONTENT_PAGE</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">enable_prerender</span><span class="p">(</span><span class="s2">&quot;p_da_cur&quot;</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s2">&quot;p_da_notes&quot;</span><span class="p">,</span> <span class="n">PDF_NOTES_PAGE</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">enable_prerender</span><span class="p">(</span><span class="s2">&quot;p_da_notes&quot;</span><span class="p">)</span>
-
+        <span class="k">if</span> <span class="n">target_mode</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">swap_layout</span><span class="p">(</span><span class="s1">&#39;plain&#39;</span><span class="p">,</span> <span class="s1">&#39;notes&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">target_mode</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">swap_layout</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">adjust_margins_for_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="o">=</span> <span class="n">target_mode</span>
+        <span class="n">page_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s1">&#39;c_da&#39;</span><span class="p">,</span> <span class="n">page_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s1">&#39;c_da_zoomed&#39;</span><span class="p">,</span> <span class="n">page_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s1">&#39;p_da_next&#39;</span><span class="p">,</span> <span class="n">page_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s1">&#39;p_da_cur&#39;</span><span class="p">,</span> <span class="n">page_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s1">&#39;p_da_cur_zoomed&#39;</span><span class="p">,</span> <span class="n">page_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s1">&#39;scribble_p_da&#39;</span><span class="p">,</span> <span class="n">page_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_widget_type</span><span class="p">(</span><span class="s1">&#39;p_da_notes&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">enable_prerender</span><span class="p">(</span><span class="s1">&#39;p_da_notes&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">disable_prerender</span><span class="p">(</span><span class="s1">&#39;p_da_cur&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">disable_prerender</span><span class="p">(</span><span class="s1">&#39;p_da_notes&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">enable_prerender</span><span class="p">(</span><span class="s1">&#39;p_da_cur&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">adjust_margins_for_mode</span><span class="p">(</span><span class="n">page_type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_page_change</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pres_notes</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">)</span>
 
@@ -1524,7 +1549,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-303-gd03398a&#39;',
+            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

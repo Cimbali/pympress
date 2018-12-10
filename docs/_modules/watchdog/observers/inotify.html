@@ -1,0 +1,443 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>watchdog.observers.inotify &mdash; Pympress developer documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Pympress developer documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
+	<br />
+	<a href="../../../index.html" class="icon icon-home"> Docs home</a>
+	<div class="version">
+		v1.2.0
+	</div>
+
+	
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+	
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html#installing">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html#dependencies">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html#contributing">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pympress.html">Pympress package</a></li>
+</ul>
+
+            
+          
+	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
+	<a href="../../../genindex.html">Index</a>
+	<a href="../../../py-modindex.html">Module index</a>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Pympress</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>watchdog.observers.inotify</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/Cimbali/pympress/blob/master/docs/source/_modules/watchdog/observers/inotify" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for watchdog.observers.inotify</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2011 Yesudeep Mangalapilly &lt;yesudeep@gmail.com&gt;</span>
+<span class="c1"># Copyright 2012 Google, Inc.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:module: watchdog.observers.inotify</span>
+<span class="sd">:synopsis: ``inotify(7)`` based emitter implementation.</span>
+<span class="sd">:author: Sebastien Martini &lt;seb@dbzteam.org&gt;</span>
+<span class="sd">:author: Luke McCarthy &lt;luke@iogopro.co.uk&gt;</span>
+<span class="sd">:author: yesudeep@google.com (Yesudeep Mangalapilly)</span>
+<span class="sd">:author: Tim Cuthbertson &lt;tim+github@gfxmonk.net&gt;</span>
+<span class="sd">:platforms: Linux 2.6.13+.</span>
+
+<span class="sd">.. ADMONITION:: About system requirements</span>
+
+<span class="sd">    Recommended minimum kernel version: 2.6.25.</span>
+
+<span class="sd">    Quote from the inotify(7) man page:</span>
+
+<span class="sd">        &quot;Inotify was merged into the 2.6.13 Linux kernel. The required library</span>
+<span class="sd">        interfaces were added to glibc in version 2.4. (IN_DONT_FOLLOW,</span>
+<span class="sd">        IN_MASK_ADD, and IN_ONLYDIR were only added in version 2.5.)&quot;</span>
+
+<span class="sd">    Therefore, you must ensure the system is running at least these versions</span>
+<span class="sd">    appropriate libraries and the kernel.</span>
+
+<span class="sd">.. ADMONITION:: About recursiveness, event order, and event coalescing</span>
+
+<span class="sd">    Quote from the inotify(7) man page:</span>
+
+<span class="sd">        If successive output inotify events produced on the inotify file</span>
+<span class="sd">        descriptor are identical (same wd, mask, cookie, and name) then they</span>
+<span class="sd">        are coalesced into a single event if the older event has not yet been</span>
+<span class="sd">        read (but see BUGS).</span>
+
+<span class="sd">        The events returned by reading from an inotify file descriptor form</span>
+<span class="sd">        an ordered queue. Thus, for example, it is guaranteed that when</span>
+<span class="sd">        renaming from one directory to another, events will be produced in</span>
+<span class="sd">        the correct order on the inotify file descriptor.</span>
+
+<span class="sd">        ...</span>
+
+<span class="sd">        Inotify monitoring of directories is not recursive: to monitor</span>
+<span class="sd">        subdirectories under a directory, additional watches must be created.</span>
+
+<span class="sd">    This emitter implementation therefore automatically adds watches for</span>
+<span class="sd">    sub-directories if running in recursive mode.</span>
+
+<span class="sd">Some extremely useful articles and documentation:</span>
+
+<span class="sd">.. _inotify FAQ: http://inotify.aiken.cz/?section=inotify&amp;page=faq&amp;lang=en</span>
+<span class="sd">.. _intro to inotify: http://www.linuxjournal.com/article/8478</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">with_statement</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">.inotify_buffer</span> <span class="k">import</span> <span class="n">InotifyBuffer</span>
+
+<span class="kn">from</span> <span class="nn">watchdog.observers.api</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">EventEmitter</span><span class="p">,</span>
+    <span class="n">BaseObserver</span><span class="p">,</span>
+    <span class="n">DEFAULT_EMITTER_TIMEOUT</span><span class="p">,</span>
+    <span class="n">DEFAULT_OBSERVER_TIMEOUT</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">watchdog.events</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">DirDeletedEvent</span><span class="p">,</span>
+    <span class="n">DirModifiedEvent</span><span class="p">,</span>
+    <span class="n">DirMovedEvent</span><span class="p">,</span>
+    <span class="n">DirCreatedEvent</span><span class="p">,</span>
+    <span class="n">FileDeletedEvent</span><span class="p">,</span>
+    <span class="n">FileModifiedEvent</span><span class="p">,</span>
+    <span class="n">FileMovedEvent</span><span class="p">,</span>
+    <span class="n">FileCreatedEvent</span><span class="p">,</span>
+    <span class="n">generate_sub_moved_events</span><span class="p">,</span>
+    <span class="n">generate_sub_created_events</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">watchdog.utils</span> <span class="k">import</span> <span class="n">unicode_paths</span>
+
+
+<span class="k">class</span> <span class="nc">InotifyEmitter</span><span class="p">(</span><span class="n">EventEmitter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    inotify(7)-based event emitter.</span>
+
+<span class="sd">    :param event_queue:</span>
+<span class="sd">        The event queue to fill with events.</span>
+<span class="sd">    :param watch:</span>
+<span class="sd">        A watch object representing the directory to monitor.</span>
+<span class="sd">    :type watch:</span>
+<span class="sd">        :class:`watchdog.observers.api.ObservedWatch`</span>
+<span class="sd">    :param timeout:</span>
+<span class="sd">        Read events blocking timeout (in seconds).</span>
+<span class="sd">    :type timeout:</span>
+<span class="sd">        ``float``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_queue</span><span class="p">,</span> <span class="n">watch</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">DEFAULT_EMITTER_TIMEOUT</span><span class="p">):</span>
+        <span class="n">EventEmitter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_queue</span><span class="p">,</span> <span class="n">watch</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inotify</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">on_thread_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">unicode_paths</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">watch</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_inotify</span> <span class="o">=</span> <span class="n">InotifyBuffer</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">watch</span><span class="o">.</span><span class="n">is_recursive</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_thread_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inotify</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_inotify</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">queue_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">full_events</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1">#If &quot;full_events&quot; is true, then the method will report unmatched move events as seperate events</span>
+        <span class="c1">#This behavior is by default only called by a InotifyFullEmitter</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inotify</span><span class="o">.</span><span class="n">read_event</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">move_from</span><span class="p">,</span> <span class="n">move_to</span> <span class="o">=</span> <span class="n">event</span>
+                <span class="n">src_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decode_path</span><span class="p">(</span><span class="n">move_from</span><span class="o">.</span><span class="n">src_path</span><span class="p">)</span>
+                <span class="n">dest_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decode_path</span><span class="p">(</span><span class="n">move_to</span><span class="o">.</span><span class="n">src_path</span><span class="p">)</span>
+                <span class="bp">cls</span> <span class="o">=</span> <span class="n">DirMovedEvent</span> <span class="k">if</span> <span class="n">move_from</span><span class="o">.</span><span class="n">is_directory</span> <span class="k">else</span> <span class="n">FileMovedEvent</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="n">DirModifiedEvent</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">src_path</span><span class="p">)))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="n">DirModifiedEvent</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dest_path</span><span class="p">)))</span>
+                <span class="k">if</span> <span class="n">move_from</span><span class="o">.</span><span class="n">is_directory</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">watch</span><span class="o">.</span><span class="n">is_recursive</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">sub_event</span> <span class="ow">in</span> <span class="n">generate_sub_moved_events</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dest_path</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="n">sub_event</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="n">src_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decode_path</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">is_moved_to</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">full_events</span><span class="p">):</span>
+                    <span class="bp">cls</span> <span class="o">=</span> <span class="n">DirMovedEvent</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">is_directory</span> <span class="k">else</span> <span class="n">FileMovedEvent</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">src_path</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">cls</span> <span class="o">=</span> <span class="n">DirCreatedEvent</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">is_directory</span> <span class="k">else</span> <span class="n">FileCreatedEvent</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">src_path</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="n">DirModifiedEvent</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">src_path</span><span class="p">)))</span>
+                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">is_directory</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">watch</span><span class="o">.</span><span class="n">is_recursive</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">sub_event</span> <span class="ow">in</span> <span class="n">generate_sub_created_events</span><span class="p">(</span><span class="n">src_path</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="n">sub_event</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">is_attrib</span><span class="p">:</span>
+                <span class="bp">cls</span> <span class="o">=</span> <span class="n">DirModifiedEvent</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">is_directory</span> <span class="k">else</span> <span class="n">FileModifiedEvent</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">src_path</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">is_modify</span><span class="p">:</span>
+                <span class="bp">cls</span> <span class="o">=</span> <span class="n">DirModifiedEvent</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">is_directory</span> <span class="k">else</span> <span class="n">FileModifiedEvent</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">src_path</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">is_delete</span> <span class="ow">or</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">is_moved_from</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">full_events</span><span class="p">):</span>
+                <span class="bp">cls</span> <span class="o">=</span> <span class="n">DirDeletedEvent</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">is_directory</span> <span class="k">else</span> <span class="n">FileDeletedEvent</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">src_path</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="n">DirModifiedEvent</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">src_path</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">is_moved_from</span> <span class="ow">and</span> <span class="n">full_events</span><span class="p">:</span>
+                <span class="bp">cls</span> <span class="o">=</span> <span class="n">DirMovedEvent</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">is_directory</span> <span class="k">else</span> <span class="n">FileMovedEvent</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="n">DirModifiedEvent</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">src_path</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">is_create</span><span class="p">:</span>
+                <span class="bp">cls</span> <span class="o">=</span> <span class="n">DirCreatedEvent</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">is_directory</span> <span class="k">else</span> <span class="n">FileCreatedEvent</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">(</span><span class="n">src_path</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue_event</span><span class="p">(</span><span class="n">DirModifiedEvent</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">src_path</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">_decode_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Decode path only if unicode string was passed to this emitter. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">watch</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">path</span>
+        <span class="k">return</span> <span class="n">unicode_paths</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">InotifyFullEmitter</span><span class="p">(</span><span class="n">InotifyEmitter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    inotify(7)-based event emitter. By default this class produces move events even if they are not matched</span>
+<span class="sd">    Such move events will have a ``None`` value for the unmatched part.</span>
+
+<span class="sd">    :param event_queue:</span>
+<span class="sd">        The event queue to fill with events.</span>
+<span class="sd">    :param watch:</span>
+<span class="sd">        A watch object representing the directory to monitor.</span>
+<span class="sd">    :type watch:</span>
+<span class="sd">        :class:`watchdog.observers.api.ObservedWatch`</span>
+<span class="sd">    :param timeout:</span>
+<span class="sd">        Read events blocking timeout (in seconds).</span>
+<span class="sd">    :type timeout:</span>
+<span class="sd">        ``float``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_queue</span><span class="p">,</span> <span class="n">watch</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">DEFAULT_EMITTER_TIMEOUT</span><span class="p">):</span>
+        <span class="n">InotifyEmitter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_queue</span><span class="p">,</span> <span class="n">watch</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">queue_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">InotifyEmitter</span><span class="o">.</span><span class="n">queue_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">full_events</span><span class="o">=</span><span class="n">events</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">InotifyObserver</span><span class="p">(</span><span class="n">BaseObserver</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Observer thread that schedules watching directories and dispatches</span>
+<span class="sd">    calls to event handlers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">DEFAULT_OBSERVER_TIMEOUT</span><span class="p">,</span> <span class="n">generate_full_events</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">generate_full_events</span><span class="p">):</span>
+            <span class="n">BaseObserver</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emitter_class</span><span class="o">=</span><span class="n">InotifyFullEmitter</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">BaseObserver</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emitter_class</span><span class="o">=</span><span class="n">InotifyEmitter</span><span class="p">,</span>
+                              <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
