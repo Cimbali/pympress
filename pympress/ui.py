@@ -46,15 +46,9 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import GObject, Gtk, Gdk, GLib
 
-#: "Regular" PDF file (without notes)
-PDF_REGULAR      = 0
-#: Content page (left side) of a PDF file with notes
-PDF_CONTENT_PAGE = 1
-#: Notes page (right side) of a PDF file with notes
-PDF_NOTES_PAGE   = 2
-
 
 from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, editable_label
+
 
 
 class UI(builder.Builder):
@@ -98,7 +92,9 @@ class UI(builder.Builder):
     redraw_timeout = 0
 
     #: Whether to use notes mode or not
-    notes_mode = False
+    notes_mode = document.PdfPage.NONE
+    #: Current choice of mode to toggle notes
+    chosen_notes_mode = document.PdfPage.RIGHT
     #: :class:`~Gtk.CheckMenuItem` that shows whether the annotations are toggled
     pres_notes = None
 
@@ -236,10 +232,8 @@ class UI(builder.Builder):
         """
         self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
         self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
-        if self.notes_mode:
-            page_type = document.PDF_CONTENT_PAGE
-        else:
-            page_type = document.PDF_REGULAR
+
+        page_type = self.notes_mode.complement()
 
         self.cache.add_widget(self.c_da, page_type)
         self.cache.add_widget(self.c_da, page_type, zoomed = True)
@@ -258,7 +252,7 @@ class UI(builder.Builder):
         init_checkstates = {
             'pres_pause':      True,
             'pres_fullscreen': bool(self.c_win.get_window().get_state() & Gdk.WindowState.FULLSCREEN),
-            'pres_notes':      self.notes_mode,
+            'pres_notes':      bool(self.notes_mode),
             'pres_blank':      self.blanked,
             'pres_annot':      self.show_annotations,
             'pres_buttons':    self.show_bigbuttons,
@@ -272,12 +266,11 @@ class UI(builder.Builder):
         for n in init_checkstates:
             self.get_object(n).set_active(init_checkstates[n])
 
-        slide_type = PDF_CONTENT_PAGE if self.notes_mode else PDF_REGULAR
+        slide_type = self.notes_mode.complement()
         self.cache.add_widget(self.p_da_cur, slide_type)
         self.cache.add_widget(self.p_da_cur, slide_type, zoomed = True)
         self.cache.add_widget(self.p_da_next, slide_type)
-        self.cache.add_widget(self.p_da_notes, PDF_NOTES_PAGE if self.notes_mode else PDF_REGULAR,
-                                               prerender_enabled = self.notes_mode)
+        self.cache.add_widget(self.p_da_notes, self.notes_mode, prerender_enabled = bool(self.notes_mode))
         self.cache.add_widget(self.scribbler.scribble_p_da, slide_type, prerender_enabled = False)
         self.cache.add_widget(self.scribbler.scribble_p_da, slide_type, zoomed = True)
 
@@ -487,9 +480,18 @@ class UI(builder.Builder):
             self.error_opening_file(docpath)
             util.FileWatcher.stop_watching()
 
-        # Use notes mode by default if the document has notes
-        if not reloading and self.notes_mode != self.doc.has_notes():
-            self.switch_mode('swap_document', docpath)
+        # Guess notes mode by default if the document has notes
+        if not reloading:
+            target_mode = self.chosen_notes_mode = self.doc.guess_notes()
+
+            # Special cases: don't let us toggle with NONE, give A4 documents the benefit of the doubt?
+            if self.chosen_notes_mode == document.PdfPage.NONE:
+                self.chosen_notes_mode = document.PdfPage.RIGHT
+            elif self.chosen_notes_mode == document.PdfPage.BOTTOM:
+                target_mode = document.PdfPage.NONE
+
+            if self.notes_mode != target_mode:
+                self.switch_mode('swap_document', docpath, target_mode = target_mode)
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
@@ -596,8 +598,8 @@ class UI(builder.Builder):
     def get_notes_mode(self):
         """ Simple getter.
 
-        Returns (bool):
-            Whether we split slides in content + notes
+        Returns (:class:`~pympress.document.PdfPage`):
+            Truthy when we split slides in content + notes
         """
         return self.notes_mode
 
@@ -628,14 +630,11 @@ class UI(builder.Builder):
         self.page_preview_nb = page_nb
 
         # Aspect ratios and queue redraws
-        if not self.notes_mode:
-            page_type = document.PDF_REGULAR
-        else:
-            page_type = document.PDF_CONTENT_PAGE
-
-            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(document.PDF_NOTES_PAGE))
+        if self.notes_mode:
+            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(self.notes_mode))
             self.p_da_notes.queue_draw()
 
+        page_type = self.notes_mode.complement()
         self.p_frame_cur.set_property('ratio', page_cur.get_aspect_ratio(page_type))
         self.p_da_cur.queue_draw()
 
@@ -674,15 +673,10 @@ class UI(builder.Builder):
         self.page_preview_nb = page_cur.number()
 
         # Aspect ratios and queue redraws
-        if not self.notes_mode:
-            notes_type = page_type = document.PDF_REGULAR
-        else:
-            page_type = document.PDF_CONTENT_PAGE
-            notes_type = document.PDF_NOTES_PAGE
-
-        self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(notes_type))
+        self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(self.notes_mode))
         self.p_da_notes.queue_draw()
 
+        page_type = self.notes_mode.complement()
         pr = page_cur.get_aspect_ratio(page_type)
 
         self.c_frame.set_property('ratio', pr)
@@ -974,28 +968,6 @@ class UI(builder.Builder):
             return self.click_link(widget, event)
 
 
-    def mouse_pos_in_page(self, widget, event):
-        """ Normalize event coordinates from widget size and notes mode
-
-        Args:
-            widget (:class:`~Gtk.Widget`):  the widget that received the click
-            event (:class:`~Gdk.Event`):  the GTK event containing the click position
-
-        Returns:
-            `(float, float)`: the relative position in the full slide
-        """
-        x, y = self.zoom.get_slide_point(widget, event)
-
-        if not self.notes_mode:
-            return x, y
-        elif widget is self.p_da_notes:
-            # PDF_NOTES_PAGE, the allocated size is the right half of the page
-            return (1 + x) / 2., y
-        else:
-            # PDF_CONTENT_PAGE, the allocated size is left half of the page
-            return x / 2., y
-
-
     def click_link(self, widget, event):
         """ Check whether a link was clicked and follow it.
         Handles a click on a slide.
@@ -1019,8 +991,9 @@ class UI(builder.Builder):
         else:
             page = self.doc.current_page()
 
-        x, y = self.mouse_pos_in_page(widget, event)
-        link = page.get_link_at(x, y)
+        x, y = self.zoom.get_slide_point(widget, event)
+        page_mode = self.notes_mode if widget is self.p_da_notes else self.notes_mode.complement()
+        link = page.get_link_at(x, y, page_mode)
 
         if event.type == Gdk.EventType.BUTTON_PRESS and link is not None:
             link.follow()
@@ -1052,9 +1025,10 @@ class UI(builder.Builder):
         else:
             page = self.doc.current_page()
 
-        x, y = self.mouse_pos_in_page(widget, event)
+        x, y = self.zoom.get_slide_point(widget, event)
+        page_mode = self.notes_mode if widget is self.p_da_notes else self.notes_mode.complement()
 
-        if page.get_link_at(x, y):
+        if page.get_link_at(x, y, page_mode):
             extras.Cursor.set_cursor(widget, 'pointer')
             return False
         else:
@@ -1244,46 +1218,49 @@ class UI(builder.Builder):
         self.p_frame_annot.set_visible(self.show_annotations)
 
 
-    def switch_mode(self, widget, event = None):
+    def switch_mode(self, widget, event = None, target_mode = None):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
 
         Returns:
             `bool`: whether the mode has been toggled.
         """
-        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.notes_mode:
+        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == bool(self.notes_mode):
+            # We toggle the menu item which brings us here, but it is somehow already in sync with notes mode.
+            # Exit to not risk double-toggling. Button is now in sync and can be toggled again correctly.
+            return False
+
+        if not target_mode:
+            target_mode = document.PdfPage.NONE if self.notes_mode else self.chosen_notes_mode
+
+        if target_mode == self.notes_mode:
             return False
 
         self.scribbler.disable_scribbling()
 
-        if self.notes_mode:
-            self.cache.set_widget_type("c_da", PDF_REGULAR)
-            self.cache.set_widget_type("c_da_zoomed", PDF_REGULAR)
-            self.cache.set_widget_type("p_da_next", PDF_REGULAR)
-            self.cache.set_widget_type("p_da_cur", PDF_REGULAR)
-            self.cache.set_widget_type("p_da_cur_zoomed", PDF_REGULAR)
-            self.cache.set_widget_type("scribble_p_da", PDF_REGULAR)
-            self.cache.disable_prerender("p_da_cur")
-
-            self.cache.set_widget_type("p_da_notes", PDF_REGULAR)
-            self.cache.enable_prerender("p_da_notes")
-
-            self.swap_layout('notes', 'plain')
-        else:
-            self.cache.set_widget_type("c_da", PDF_CONTENT_PAGE)
-            self.cache.set_widget_type("c_da_zoomed", PDF_CONTENT_PAGE)
-            self.cache.set_widget_type("p_da_next", PDF_CONTENT_PAGE)
-            self.cache.set_widget_type("p_da_cur", PDF_CONTENT_PAGE)
-            self.cache.set_widget_type("p_da_cur_zoomed", PDF_CONTENT_PAGE)
-            self.cache.set_widget_type("scribble_p_da", PDF_CONTENT_PAGE)
-            self.cache.enable_prerender("p_da_cur")
-
-            self.cache.set_widget_type("p_da_notes", PDF_NOTES_PAGE)
-            self.cache.enable_prerender("p_da_notes")
-
+        if target_mode and not self.notes_mode:
             self.swap_layout('plain', 'notes')
+        elif not target_mode and self.notes_mode:
+            self.swap_layout('notes', 'plain')
 
-        self.notes_mode = not self.notes_mode
-        self.medias.adjust_margins_for_mode(self.notes_mode)
+        self.notes_mode = target_mode
+        page_type = self.notes_mode.complement()
+
+        self.cache.set_widget_type('c_da', page_type)
+        self.cache.set_widget_type('c_da_zoomed', page_type)
+        self.cache.set_widget_type('p_da_next', page_type)
+        self.cache.set_widget_type('p_da_cur', page_type)
+        self.cache.set_widget_type('p_da_cur_zoomed', page_type)
+        self.cache.set_widget_type('scribble_p_da', page_type)
+        self.cache.set_widget_type('p_da_notes', self.notes_mode)
+
+        if self.notes_mode:
+            self.cache.enable_prerender('p_da_notes')
+            self.cache.disable_prerender('p_da_cur')
+        else:
+            self.cache.disable_prerender('p_da_notes')
+            self.cache.enable_prerender('p_da_cur')
+
+        self.medias.adjust_margins_for_mode(page_type)
         self.on_page_change(False)
         self.pres_notes.set_active(self.notes_mode)
 

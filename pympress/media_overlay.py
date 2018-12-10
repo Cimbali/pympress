@@ -49,7 +49,7 @@ import sys, os
 from collections import defaultdict
 
 from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
-from pympress import builder
+from pympress import builder, document
 
 
 def get_window_handle(window):
@@ -78,6 +78,7 @@ class VideoOverlay(builder.Builder):
     Args:
         container (:class:`~Gtk.Overlay`): The container with the slide, at the top of which we add the movie area
         show_controls (`bool`): whether to display controls on the video player
+        page_type (:class:`~pympress.document.PdfPage`): the part of the page to display
         relative_margins (:class:`~Poppler.Rectangle`): the margins defining the position of the video in the frame.
     """
     #: :class:`~Gtk.Overlay` that is the parent of the VLCVideo widget.
@@ -90,7 +91,9 @@ class VideoOverlay(builder.Builder):
     progress = None
     #: :class:`~Gtk.DrawingArea` where the media is rendered.
     movie_zone = None
-    #: :class:`~Poppler.Rectangle` containing the left/right/bottom/top space around the drawing area
+    #: `tuple` containing the left/top/right/bottom space around the drawing area in the PDF page
+    relative_page_margins = None
+    #: `tuple` containing the left/top/right/bottom space around the drawing area in the visible slide
     relative_margins = None
     #: `bool` that tracks whether we should play automatically
     autoplay = False
@@ -119,11 +122,12 @@ class VideoOverlay(builder.Builder):
     # `list` of info on backend versions
     _backend_versions = []
 
-    def __init__(self, container, show_controls, relative_margins, callback_getter):
+    def __init__(self, container, show_controls, relative_margins, page_type, callback_getter):
         super(VideoOverlay, self).__init__()
 
         self.parent = container
-        self.relative_margins = relative_margins.copy()
+        self.relative_page_margins = tuple(getattr(relative_margins, v) for v in ('x1', 'y2', 'x2', 'y1'))
+        self.update_margins_for_page(page_type)
 
         self.load_ui('media_overlay')
         self.toolbar.set_visible(show_controls)
@@ -135,12 +139,6 @@ class VideoOverlay(builder.Builder):
         self.play_pause = callback_getter('play_pause')
         self.set_time = callback_getter('set_time')
         self.connect_signals(self)
-
-
-    def __del__(self):
-        if self.relative_margins:
-            self.relative_margins.free()
-        super(VideoOverlay, self).__del__()
 
 
     def handle_embed(self, mapped_widget):
@@ -213,6 +211,14 @@ class VideoOverlay(builder.Builder):
         return True
 
 
+    def update_margins_for_page(self, page_type):
+        """
+        Arguments:
+            page_type (:class:`~pympress.document.PdfPage`): the part of the page to display
+        """
+        self.relative_margins = page_type.to_screen(*self.relative_page_margins)
+
+
     def resize(self):
         """ Adjust the position and size of the media overlay.
         """
@@ -220,10 +226,10 @@ class VideoOverlay(builder.Builder):
             return
 
         pw, ph = self.parent.get_allocated_width(), self.parent.get_allocated_height()
-        self.media_overlay.props.margin_left   = pw * self.relative_margins.x1
-        self.media_overlay.props.margin_right  = pw * self.relative_margins.x2
-        self.media_overlay.props.margin_bottom = ph * self.relative_margins.y1
-        self.media_overlay.props.margin_top    = ph * self.relative_margins.y2
+        self.media_overlay.props.margin_left   = pw * self.relative_margins[0]
+        self.media_overlay.props.margin_right  = pw * self.relative_margins[2]
+        self.media_overlay.props.margin_bottom = ph * self.relative_margins[3]
+        self.media_overlay.props.margin_top    = ph * self.relative_margins[1]
 
 
     def is_shown(self):
@@ -262,6 +268,10 @@ class VideoOverlay(builder.Builder):
     def show(self):
         """ Bring the widget to the top of the overlays if necessary.
         """
+        if min(self.relative_margins) < 0:
+            logger.warning('Not showing media with (some) negative margin(s): LTRB = {}'.format(self.relative_margins))
+            return
+
         if not self.media_overlay.get_parent():
             self.parent.add_overlay(self.media_overlay)
             self.parent.reorder_overlay(self.media_overlay, 2)
@@ -470,9 +480,9 @@ class GifOverlay(VideoOverlay):
     #: The :class:`~cairo.Matrix` defining the zoom & shift to scale the gif
     transform = None
 
-    def __init__(self, container, show_controls, relative_margins, callback_getter):
+    def __init__(self, container, show_controls, relative_margins, page_type, callback_getter):
         # override: no toolbar or interactive stuff for a gif, replace the whole widget area with a Gtk.Image
-        super(GifOverlay, self).__init__(container, False, relative_margins, callback_getter)
+        super(GifOverlay, self).__init__(container, False, relative_margins, page_type, callback_getter)
 
         # we'll manually draw on the movie zone
         self.movie_zone.connect('draw', self.draw)

@@ -37,8 +37,7 @@ from gi.repository import Gtk, Gdk, GLib, Pango
 
 import mimetypes
 
-from pympress import media_overlay
-from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
+from pympress import media_overlay, document
 
 
 class Annotations(object):
@@ -158,10 +157,10 @@ class Media(object):
         """ Remove current media overlays, add new ones if page contains media.
 
         Args:
-            current_page (:class:`~pympress.document.Page`): The page for twhich to prepare medias
-            page_type (`int`): The page type: one of PDF_REGULAR, PDF_CONTENT_PAGE, or PDF_NOTES_PAGE
+            current_page (:class:`~pympress.document.Page`): The page for which to prepare medias
+            page_type (:class:`~pympress.document.PdfPage`): The part of the page to consider
         """
-        if page_type == PDF_NOTES_PAGE:
+        if page_type == document.PdfPage.NONE:
             return
 
         self.remove_media_overlays()
@@ -182,14 +181,8 @@ class Media(object):
                     """
                     return lambda *args: media_overlay.VideoOverlay.find_callback_handler(self, name)(media_id, *args)
 
-                v_da_c = factory(self.c_overlay, show_controls, relative_margins, get_curryfied_callback)
-                v_da_p = factory(self.p_overlay, True, relative_margins, get_curryfied_callback)
-
-                if page_type == PDF_CONTENT_PAGE:
-                    v_da_p.relative_margins.x2 = 2 * v_da_p.relative_margins.x2 - 1
-                    v_da_c.relative_margins.x2 = 2 * v_da_c.relative_margins.x2 - 1
-                    v_da_p.relative_margins.x1 *= 2
-                    v_da_c.relative_margins.x1 *= 2
+                v_da_c = factory(self.c_overlay, show_controls, relative_margins, page_type, get_curryfied_callback)
+                v_da_p = factory(self.p_overlay, True, relative_margins, page_type, get_curryfied_callback)
 
                 v_da_c.set_file(filename)
                 v_da_p.set_file(filename)
@@ -214,25 +207,15 @@ class Media(object):
                 widget.resize()
 
 
-    def adjust_margins_for_mode(self, enable_notes):
+    def adjust_margins_for_mode(self, page_type):
         """ Adjust the relative margins of child widgets for notes mode update.
 
-        Note that we apply the changes regular -> content and content -> regular without checking the
-        initial state, as we do not store it. So take care to call this function appropriately.
-
         Args:
-            enable_notes (`bool`): Whether to enable note, thus transition from PDF_REGULAR to PDF_CONTENT_PAGE, or the opposite
+            page_type (:class:`~pympress.document.PdfPage`): The part of the page to display
         """
-        if enable_notes:
-            for media_id in self._media_overlays:
-                for widget in self._media_overlays[media_id]:
-                    widget.relative_margins.x2 = 2 * widget.relative_margins.x2 - 1
-                    widget.relative_margins.x1 *= 2
-        else:
-            for media_id in self._media_overlays:
-                for widget in self._media_overlays[media_id]:
-                    widget.relative_margins.x2 = widget.relative_margins.x2 / 2 + 0.5
-                    widget.relative_margins.x1 /= 2
+        for media_id in self._media_overlays:
+            for widget in self._media_overlays[media_id]:
+                widget.update_margins_for_page(page_type)
 
 
     def play(self, media_id, button = None):

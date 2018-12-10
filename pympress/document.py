@@ -40,6 +40,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import os
+import enum
 import tempfile
 import mimetypes
 import webbrowser
@@ -56,7 +57,6 @@ except ImportError:
     from urllib import pathname2url
 
 
-from pympress.ui import PDF_REGULAR, PDF_CONTENT_PAGE, PDF_NOTES_PAGE
 from pympress.util import fileopen
 
 
@@ -74,6 +74,92 @@ def get_extension(mime_type):
     for ext in mimetypes.types_map:
         if mimetypes.types_map[ext] == mime_type:
             return ext
+
+
+class PdfPage(enum.IntEnum):
+    """ Represents the part of a PDF page that we want to draw.
+    """
+    #: No notes on PDF page, only falsy value
+    NONE    = 0
+    #: Full PDF page (without notes)
+    FULL    = 1
+    #: Bottom half of PDF page
+    BOTTOM  = 2
+    #: Top half of PDF page
+    TOP     = 3
+    #: Right half of PDF page
+    RIGHT   = 4
+    #: Left half of PDF page
+    LEFT    = 5
+
+    def complement(val):
+        """ Return the enum value for the other part of the page.
+        """
+        return PdfPage(val ^ 1)
+
+
+    def scale(val):
+        """ Return the enum value that does only scaling not shifting
+        """
+        return PdfPage(val | 1)
+
+
+    def from_screen(val, x, y, x2 = None, y2 = None):
+        """ Transform visible part of the page coordinates to full page coordinates.
+
+        Pass 2 floats to transform coordinates, 4 to transform margins,
+        i.e. the second pair of coordinates is taken from the opposite corner.
+
+        Args:
+            x1 (`float`): x coordinate on the screen, on a scale 0..1
+            y1 (`float`): y coordinate on the screen, on a scale 0..1
+            x2 (`float`): second x coordinate on the screen, from the other side, on a scale 0..1
+            y2 (`float`): second y coordinate on the screen, from the other side, on a scale 0..1
+        """
+        if val == PdfPage.RIGHT:
+            page = ((1 + x) / 2., y)
+        elif val == PdfPage.LEFT:
+            page = (x / 2., y)
+        elif val == PdfPage.BOTTOM:
+            page = (x, (1 + y) / 2.)
+        elif val == PdfPage.TOP:
+            page = (x, y / 2.)
+        else:
+            page = (x, y)
+
+        if x2 is None or y2 is None:
+            return page
+        else:
+            return page + val.complement().from_screen(x2, y2)
+
+
+    def to_screen(val, x, y, x2 = None, y2 = None):
+        """ Transform full page coordinates to visible part coordinates.
+
+        Pass 2 floats to transform coordinates, 4 to transform margins,
+        i.e. the second pair of coordinates is taken from the opposite corner.
+
+        Args:
+            x1 (`float`): x coordinate on the page, on a scale 0..1
+            y1 (`float`): y coordinate on the page, on a scale 0..1
+            x2 (`float`): second x coordinate on the page, from the other side, on a scale 0..1
+            y2 (`float`): second y coordinate on the page, from the other side, on a scale 0..1
+        """
+        if val == PdfPage.RIGHT:
+            screen = (x * 2 - 1, y)
+        elif val == PdfPage.LEFT:
+            screen = (x * 2, y)
+        elif val == PdfPage.BOTTOM:
+            screen = (x, y * 2 - 1)
+        elif val == PdfPage.TOP:
+            screen = (x, y * 2)
+        else:
+            screen = (x, y)
+
+        if x2 is None or y2 is None:
+            return screen
+        else:
+            return screen + val.complement().to_screen(x2, y2)
 
 
 class Link(object):
@@ -382,18 +468,21 @@ class Page(object):
         return self.page_nb
 
 
-    def get_link_at(self, x, y):
+    def get_link_at(self, x, y, dtype=PdfPage.FULL):
         """ Get the :class:`~pympress.document.Link` corresponding to the given
         position, or `None` if there is no link at this position.
 
         Args:
             x (`float`):  horizontal coordinate
             y (`float`):  vertical coordinate
+            dtype (:class:`~pympress.document.PdfPage`):  the type of document to consider
 
         Returns:
             :class:`~pympress.document.Link`: the link at the given coordinates
             if one exists, `None` otherwise
         """
+        x, y = dtype.from_screen(x, y)
+
         xx = self.pw * x
         yy = self.ph * (1. - y)
 
@@ -404,34 +493,29 @@ class Page(object):
         return None
 
 
-    def get_size(self, dtype=PDF_REGULAR):
+    def get_size(self, dtype=PdfPage.FULL):
         """ Get the page size.
 
         Args:
-            dtype (`int`):  the type of document to consider
+            dtype (:class:`~pympress.document.PdfPage`):  the type of document to consider
 
         Returns:
             `(float, float)`: page size
         """
-        if dtype == PDF_REGULAR:
-            return (self.pw, self.ph)
-        else:
-            return (self.pw/2., self.ph)
+        return dtype.scale().from_screen(self.pw, self.ph)
 
 
-    def get_aspect_ratio(self, dtype=PDF_REGULAR):
+    def get_aspect_ratio(self, dtype=PdfPage.FULL):
         """ Get the page aspect ratio.
 
         Args:
-            dtype (`int`):  the type of document to consider
+            dtype (:class:`~pympress.document.PdfPage`):  the type of document to consider
 
         Returns:
             `float`: page aspect ratio
         """
-        if dtype == PDF_REGULAR:
-            return self.pw / self.ph
-        else:
-            return (self.pw/2.) / self.ph
+        w, h = self.get_size(dtype)
+        return w / h
 
 
     def get_annotations(self):
@@ -452,14 +536,14 @@ class Page(object):
         return self.medias
 
 
-    def render_cairo(self, cr, ww, wh, dtype=PDF_REGULAR):
+    def render_cairo(self, cr, ww, wh, dtype=PdfPage.FULL):
         """ Render the page on a Cairo surface.
 
         Args:
             cr (:class:`~Gdk.CairoContext`):  target surface
             ww (`int`):  target width in pixels
             wh (`int`):  target height in pixels
-            dtype (`int`):  the type of document that should be rendered
+            dtype (:class:`~pympress.document.PdfPage`):  the type of document that should be rendered
         """
 
         pw, ph = self.get_size(dtype)
@@ -474,12 +558,13 @@ class Page(object):
         cr.fill()
 
         # For "regular" pages, there is no problem: just render them.
-        # For "content" or "notes" pages (i.e. left or right half of a page),
-        # the widget already has correct dimensions so we don't need to deal
-        # with that. But for right halfs we must translate the output in order
-        # to only show the right half.
-        if dtype == PDF_NOTES_PAGE:
+        # For other pages (i.e. half of a page), the widget already has correct
+        # dimensions so we don't need to deal with that. But for right and bottom
+        # halfs we must translate the output in order to only show the correct half.
+        if dtype == PdfPage.RIGHT:
             cr.translate(-pw, 0)
+        elif dtype == PdfPage.BOTTOM:
+            cr.translate(0, -ph)
 
         self.page.render(cr)
 
@@ -513,8 +598,8 @@ class Document(object):
     nb_pages = -1
     #: Number of the current page
     cur_page = -1
-    #: Document with notes or not
-    notes = False
+    #: :class:`~pympress.document.PdfPage` representing our best guess for the notes position in this document
+    notes = PdfPage.NONE
     #: Pages cache (`dict` of :class:`~pympress.document.Page`). This makes
     #: navigation in the document faster by avoiding calls to Poppler when loading
     #: a page that has already been loaded.
@@ -557,7 +642,12 @@ class Document(object):
             # Full A4 pages will have an aspect ratio < 1.
             # So if the aspect ratio is >= 2, we can assume it is a document with notes.
             ar = page0.get_aspect_ratio()
-            self.notes = (ar >= 2)
+            if ar >= 2:
+                self.notes = PdfPage.RIGHT
+            elif ar < 1:
+                self.notes = PdfPage.BOTTOM
+            else:
+                self.notes = PdfPage.NONE
 
 
     @staticmethod
@@ -592,11 +682,11 @@ class Document(object):
         return doc
 
 
-    def has_notes(self):
-        """ Get the document mode.
+    def guess_notes(self):
+        """ Get our best guess for the document mode.
 
         Returns:
-            `bool`: `True` if the document has notes, `False` otherwise
+            :class:`~pympress.document.PdfPage`: the notes mode
         """
         return self.notes
 
@@ -778,14 +868,14 @@ class EmptyPage(Page):
         self.pw, self.ph = 1.3, 1.0
 
 
-    def render_cairo(self, cr, ww, wh, dtype=PDF_REGULAR):
+    def render_cairo(self, cr, ww, wh, dtype=PdfPage.FULL):
         """ Overriding this purely for safety: make sure we do not accidentally try to render
 
         Args:
             cr (:class:`~Gdk.CairoContext`):  target surface
             ww (`int`):  target width in pixels
             wh (`int`):  target height in pixels
-            dtype (`int`):  the type of document that should be rendered
+            dtype (:class:`~pympress.document.PdfPage`):  the type of document that should be rendered
         """
         pass
 
