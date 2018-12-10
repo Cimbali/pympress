@@ -522,9 +522,12 @@ class GifOverlay(VideoOverlay):
         """
         if self.iter is None: return False
 
-        ctx.transform(self.transform)
-        Gdk.cairo_set_source_pixbuf(ctx, self.iter.get_pixbuf(), 0, 0)
-        ctx.paint()
+        try:
+            ctx.transform(self.transform)
+            Gdk.cairo_set_source_pixbuf(ctx, self.iter.get_pixbuf(), 0, 0)
+            ctx.paint()
+        except cairo.Error:
+            logger.error(_('Cairo can not draw gif'), exc_info = True)
 
 
     def advance_gif(self):
