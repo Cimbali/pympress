@@ -46,20 +46,27 @@ from gi.repository import Gtk, Gdk
 from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 
 
-def recursive_unicode_to_str(obj):
-    """ Recursively convert unicode to str (for python2)
-    Raises NameError in python3 as 'unicode' is undefined
+try:
+    unicode # trigger NameError in python3
 
-    Args:
-        obj (`unicode` or `str` or `dict` or `list`): A unicode string to transform, or a container whose children to transform
-    """
-    if isinstance(obj, unicode):
-        return str(obj)
-    elif isinstance(obj, dict):
-        return {recursive_unicode_to_str(k):recursive_unicode_to_str(obj[k]) for k in obj}
-    elif isinstance(obj, list):
-        return [recursive_unicode_to_str(i) for i in obj]
-    else:
+    def recursive_unicode_to_str(obj):
+        """ Recursively convert unicode to str (for python2)
+        Raises NameError in python3 as 'unicode' is undefined
+
+        Args:
+            obj (`unicode` or `str` or `dict` or `list`): A unicode string to transform, or a container whose children to transform
+        """
+        if isinstance(obj, unicode):
+            return str(obj)
+        elif isinstance(obj, dict):
+            return {recursive_unicode_to_str(k):recursive_unicode_to_str(obj[k]) for k in obj}
+        elif isinstance(obj, list):
+            return [recursive_unicode_to_str(i) for i in obj]
+        else:
+            return obj
+
+except NameError:
+    def recursive_unicode_to_str(obj):
         return obj
 
 
@@ -73,14 +80,7 @@ def layout_from_json(layout_string):
     if not layout_string:
         raise ValueError('No layout string passed. Ignore this error if you just upgraded pympress or reset your configuration file.')
 
-    layout = json.loads(layout_string)
-
-    try:
-        layout = recursive_unicode_to_str(layout)
-    except NameError:
-        pass
-
-    return layout
+    return recursive_unicode_to_str(json.loads(layout_string))
 
 
 class Config(configparser.ConfigParser, object): # python 2 fix
@@ -333,7 +333,7 @@ class Config(configparser.ConfigParser, object): # python 2 fix
     def get_layout(self, layout_name):
         """ Getter for the `~layout_name` layout.
         """
-        return self.layout[layout_name]
+        return recursive_unicode_to_str(self.layout[layout_name])
 
 
     def update_layout(self, layout_name, widget, pane_handle_pos):
