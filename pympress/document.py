@@ -821,7 +821,7 @@ class Document(object):
                 self.history = self.history[:self.hist_pos]
             self.history.append(number)
 
-        self._do_page_change(number)
+            self._do_page_change(number)
 
 
     def goto_next(self, *args):

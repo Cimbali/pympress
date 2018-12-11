@@ -175,6 +175,8 @@ class PageNumber(EditableLabel):
     spin_cur = None
     #: :class:`~Gtk.Entry` used to switch to another slide by typing its label.
     edit_label = None
+    #: :class:`~Gtk.Label` separating `~spin_cur` and `~edit_label`
+    label_sep = None
 
     #: `int` holding the maximum page number in the document
     max_page_number = 1
@@ -208,6 +210,7 @@ class PageNumber(EditableLabel):
         # Initially (from XML) both the spinner and the current page label are visible.
         self.hb_cur.remove(self.spin_cur)
         self.hb_cur.remove(self.edit_label)
+        self.hb_cur.remove(self.label_sep)
 
         self.shortcut_keys = 'GJ'
         self.event_box = self.eb_cur
@@ -220,7 +223,7 @@ class PageNumber(EditableLabel):
             num_pages (`int`): The maximum page number
         """
         self.max_page_number = num_pages
-        self.label_last.set_text("/{}".format(num_pages))
+        self.label_last.set_text(('/{})' if self.page_labels else '/{}').format(num_pages))
         self.spin_cur.set_range(1, num_pages)
         self.spin_cur.set_max_length(len(str(num_pages)) + 1)
 
@@ -232,6 +235,7 @@ class PageNumber(EditableLabel):
             enable (`bool`): Whether to enable labels
         """
         self.page_labels = enable
+        self.label_last.set_text(('/{})' if enable else '/{}').format(self.max_page_number))
 
 
     def changed_page_label(self, *args):
@@ -261,7 +265,10 @@ class PageNumber(EditableLabel):
             except:
                 page_nb = int(self.spin_cur.get_value()) - 1
 
-        self.goto_page(page_nb)
+        if page_nb:
+            self.goto_page(page_nb)
+        else:
+            self.cancel()
 
 
     def cancel(self):
@@ -321,11 +328,14 @@ class PageNumber(EditableLabel):
             self.hb_cur.pack_start(self.edit_label, True, True, 0)
             self.hb_cur.reorder_child(self.edit_label, 0)
             self.edit_label.set_text(label.strip())
-            self.label_cur.set_text(' (')
+
+            self.hb_cur.pack_start(self.label_sep, True, True, 0)
+            self.hb_cur.reorder_child(self.label_sep, 1)
+            self.label_sep.set_text(' (')
+
             self.hb_cur.set_homogeneous(False)
-        else:
-            self.hb_cur.remove(self.label_cur)
-            self.hb_cur.set_homogeneous(True)
+
+        self.hb_cur.remove(self.label_cur)
 
         try:
             cur_nb = int(cur.strip())
@@ -348,12 +358,13 @@ class PageNumber(EditableLabel):
         If it is an entry, then replace it with the label.
         """
         if self.spin_cur in self.hb_cur:
-            self.hb_cur.remove(self.spin_cur)
             if self.page_labels:
+                self.hb_cur.set_homogeneous(True)
                 self.hb_cur.remove(self.edit_label)
-            else:
-                self.hb_cur.pack_start(self.label_cur, True, True, 0)
-                self.hb_cur.reorder_child(self.label_cur, 0)
+                self.hb_cur.remove(self.label_sep)
+            self.hb_cur.remove(self.spin_cur)
+            self.hb_cur.pack_start(self.label_cur, True, True, 0)
+            self.hb_cur.reorder_child(self.label_cur, 0)
 
         self.editing = False
 
@@ -375,12 +386,10 @@ class PageNumber(EditableLabel):
         """
         cur = str(cur_nb + 1)
 
-        if self.page_labels and label and label.strip() != cur:
+        if self.page_labels:
             self.label_cur.set_text('{} ({}'.format(label, cur))
-            self.label_last.set_text('/{})'.format(self.max_page_number))
         else:
             self.label_cur.set_text(cur)
-            self.label_last.set_text('/{}'.format(self.max_page_number))
 
         self.restore_label()
 
