@@ -854,7 +854,6 @@
                             <property name="numeric">True</property>
                             <property name="update_policy">if-valid</property>
                             <signal name="changed" handler="page_preview" swapped="no"/>
-                            <signal name="insert-text" handler="page_preview" swapped="no"/>
                             <signal name="key-press-event" handler="page_number.on_keypress" swapped="no"/>
                             <signal name="key-release-event" handler="page_number.on_keypress" swapped="no"/>
                             <style>

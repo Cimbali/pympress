@@ -249,7 +249,7 @@ class PageNumber(EditableLabel):
             return
 
         # use the spinner's mechanism
-        self.spin_cur.set_text(str(page_nb + 1))
+        self.spin_cur.set_value(page_nb + 1)
 
 
     def validate(self):
@@ -260,10 +260,7 @@ class PageNumber(EditableLabel):
             page_nb = self.find_label(self.edit_label.get_text(), prefix_unique = False)
 
         if not page_nb:
-            try:
-                page_nb = int(self.spin_cur.get_buffer().get_text()) - 1
-            except:
-                page_nb = int(self.spin_cur.get_value()) - 1
+            page_nb = self.spin_cur.get_value()
 
         if page_nb:
             self.goto_page(page_nb)
@@ -289,7 +286,7 @@ class PageNumber(EditableLabel):
         elif name == 'right':
             self.spin_cur.set_value(self.spin_cur.get_value() + 1)
         elif self.page_labels and self.edit_label.is_focus():
-            Gtk.Entry.do_key_press_event(self.edit_label, event)
+            return Gtk.Entry.do_key_press_event(self.edit_label, event)
         else:
             return Gtk.SpinButton.do_key_press_event(self.spin_cur, event)
 

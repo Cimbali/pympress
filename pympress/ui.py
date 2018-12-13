@@ -624,10 +624,11 @@ class UI(builder.Builder):
             widget (:class:`~Gtk.SpinButton`): The spinner button widget calling page_preview
         """
         try:
-            page_nb = int(widget.get_buffer().get_text()) - 1
+            widget.set_value(int(widget.get_buffer().get_text()))
         except:
-            return
+            pass
 
+        page_nb = int(widget.get_value()) - 1
         if page_nb >= self.doc.pages_number() or page_nb < 0:
             return
 
