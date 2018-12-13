@@ -281,9 +281,9 @@ class PageNumber(EditableLabel):
             self.spin_cur.set_value(1)
         elif name == 'end':
             self.spin_cur.set_value(self.max_page_number)
-        elif name == 'left':
+        elif name == 'up':
             self.spin_cur.set_value(self.spin_cur.get_value() - 1)
-        elif name == 'right':
+        elif name == 'down':
             self.spin_cur.set_value(self.spin_cur.get_value() + 1)
         elif self.page_labels and self.edit_label.is_focus():
             return Gtk.Entry.do_key_press_event(self.edit_label, event)
