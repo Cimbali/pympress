@@ -181,7 +181,7 @@ class UI(builder.Builder):
         self.medias = extras.Media(self)
         self.laser = pointer.Pointer(self.config, self)
         self.est_time = editable_label.EstimatedTalkTime(self)
-        self.page_number = editable_label.PageNumber(self)
+        self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))
         self.talk_time = talk_time.TimeCounter(self, self.est_time)
 
         # solve circular creation-time dependency

@@ -182,6 +182,8 @@ class PageNumber(EditableLabel):
     max_page_number = 1
     #: `bool` holding whether we display or ignore page labels
     page_labels = True
+    #: `bool` whether to scroll with the pages (True) or with the page numbers (False)
+    invert_scroll = True
 
     #: callback, to be connected to :func:`~pympress.document.Document.goto`
     goto_page = lambda p: None
@@ -192,13 +194,16 @@ class PageNumber(EditableLabel):
     #: callback, to be connected to :func:`~pympress.editable_label.EstimatedTalkTime.stop_editing`
     stop_editing_est_time = lambda: None
 
-    def __init__(self, builder):
+    def __init__(self, builder, page_num_scroll):
         """ Load all the widgets we need from the spinner.
 
         Args:
             builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
         """
         super(PageNumber, self).__init__()
+
+        # The spinner's scroll is with page numbers, invert to scroll with pages
+        self.invert_scroll = not page_num_scroll
 
         builder.load_widgets(self)
 
@@ -306,6 +311,12 @@ class PageNumber(EditableLabel):
         if not self.editing:
             return False
         else:
+            # flip scroll direction to get scroll down advancing slides
+            if self.invert_scroll and event.direction == Gdk.ScrollDirection.DOWN:
+                event.direction = Gdk.ScrollDirection.UP
+            elif self.invert_scroll and event.direction == Gdk.ScrollDirection.UP:
+                event.direction = Gdk.ScrollDirection.DOWN
+
             return Gtk.SpinButton.do_scroll_event(self.spin_cur, event)
 
 

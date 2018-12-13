@@ -158,6 +158,9 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         if not config.has_option('presenter', 'show_annotations'):
             config.set('presenter', 'show_annotations', 'off')
 
+        if not config.has_option('presenter', 'scroll_number'):
+            config.set('presenter', 'scroll_number', 'off')
+
         if not config.has_option('layout', 'notes'):
             config.set('layout', 'notes', '')
 
