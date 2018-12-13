@@ -619,8 +619,8 @@ class Document(object):
     history = []
     #: Our position in the history
     hist_pos = -1
-    #: `list` of all the page labels
-    page_labels = []
+    #: `dict` of all the page labels
+    page_labels = {}
 
     #: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`
     page_change = lambda p: None
@@ -637,7 +637,7 @@ class Document(object):
 
         # Pages number
         self.nb_pages = self.doc.get_n_pages()
-        self.page_labels = [self.doc.get_page(n).get_label() for n in range(self.nb_pages)]
+        self.page_labels = {self.doc.get_page(n).get_label(): n for n in range(self.nb_pages)}
 
         # Number of the current page
         self.cur_page = page
@@ -765,7 +765,7 @@ class Document(object):
         Returns:
             `bool`: False iff there are no labels or they are just the page numbers
         """
-        return self.page_labels != [str(v) for v in range(1, self.nb_pages + 1)]
+        return self.page_labels != {str(n+1): n for n in range(self.nb_pages)}
 
 
     def lookup_label(self, label, prefix_unique = True):
@@ -782,23 +782,30 @@ class Document(object):
         #page = self.doc.get_page_by_label(label).get_index()
 
         # try exact match
-        try: return self.page_labels.index(label)
-        except ValueError: pass
+        try: return self.page_labels[label]
+        except KeyError: pass
+
+        compatible_labels = {l for l in self.page_labels if l.lower().startswith(label.lower())}
+
+        if len(compatible_labels) == 1:
+            return self.page_labels[compatible_labels.pop()]
 
         # try case-insensitive match
-        label_low = label.lower()
-        try: return next(n for n, v in enumerate(self.page_labels) if v.lower() == label_low)
-        except StopIteration: pass
+        full = len(label)
+        full_nocasematch = {l for l in compatible_labels if len(l) == full}
+
+        if full_nocasematch:
+            return self.page_labels[full_nocasematch.pop()]
 
         # try prefix case-sensitive match
-        opts = [n for n, v in enumerate(self.page_labels) if v[:len(label)] == label]
-        if opts and (len(opts) == 1 or not prefix_unique):
-            return opts[0]
+        prefix_casematch = {l for l in compatible_labels if l.startswith(label)}
+
+        if prefix_casematch and (len(prefix_casematch) == 1 or not prefix_unique):
+            return self.page_labels[prefix_casematch.pop()]
 
         # try prefix case-insensitive match
-        opts = [n for n, v in enumerate(self.page_labels) if v[:len(label)] == label]
-        if opts and (len(opts) == 1 or not prefix_unique):
-            return opts[0]
+        if not prefix_unique:
+            return self.page_labels[compatible_labels.pop()]
 
         return None
 
