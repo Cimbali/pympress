@@ -36,7 +36,8 @@ logger = logging.getLogger(__name__)
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject, GLib, GdkPixbuf
+gi.require_version('GstPlayer', '1.0')
+from gi.repository import Gtk, Gdk, GObject, GLib, GdkPixbuf, GstPlayer
 
 try:
     gi.require_version('GdkX11', '3.0')
@@ -81,7 +82,7 @@ class VideoOverlay(builder.Builder):
         page_type (:class:`~pympress.document.PdfPage`): the part of the page to display
         relative_margins (:class:`~Poppler.Rectangle`): the margins defining the position of the video in the frame.
     """
-    #: :class:`~Gtk.Overlay` that is the parent of the VLCVideo widget.
+    #: :class:`~Gtk.Overlay` that is the parent of the VideoOverlay widget.
     parent = None
     #: :class:`~Gtk.VBox` that contains all the elements to be overlayed.
     media_overlay = None
@@ -424,6 +425,125 @@ class VLCVideo(VideoOverlay):
 
 
 
+class GstOverlay(VideoOverlay):
+    """ Simple Gstramer widget.
+
+    Its player can be controlled through the 'player' attribute, which is a :class:`~GstPlayer.Player` instance.
+    """
+
+    #: A :class:`~GstPlayer.Player` to be play videos
+    player = None
+
+    #: A :class:`~GstPlayer.PlayerVideoOverlayVideoRenderer` to be display the videos
+    player = None
+
+    # A :class:`~GstPlayer.PlayerState` representing the current state of the player
+    player_state = GstPlayer.PlayerState.STOPPED
+
+    def __init__(self, *args, **kwargs):
+        super(GstOverlay, self).__init__(*args, **kwargs)
+
+        self.renderer = GstPlayer.PlayerVideoOverlayVideoRenderer()
+        self.player = GstPlayer.Player.new(self.renderer)
+
+        self.player.connect('state-changed', self.track_state)
+        self.player.connect('duration-changed', lambda p, ns: self.update_range(ns / 1e9))
+        self.player.connect('position-updated', lambda p, ns: self.update_progress(ns / 1e9))
+        self.player.connect('end-of-stream', lambda e: GLib.idle_add(self.hide))
+
+
+    def track_state(self, player, state):
+        """ Update the current state of the player for easy reference
+
+        Args:
+            player (:class:`~GstPlayer.Player`): The player for which the position changed
+            duration (:class:`~GstPlayer.PlayerState`): The player's new state
+        """
+        assert player == self.player
+        self.player_state = state
+        if not self.is_playing():
+            self.renderer.expose()
+
+
+    def is_playing(self):
+        """ Returns whether the media is currently playing (and not paused).
+
+        Returns:
+            `bool`: `True` iff the media is playing.
+        """
+        return self.player_state == GstPlayer.PlayerState.PLAYING
+
+
+    def set_file(self, filepath):
+        """ Sets the media file to be played by the widget.
+
+        Args:
+            filepath (`str`): The path to the media file path
+        """
+        self.player.set_uri('file://' + filepath)
+
+
+    def mute(self, value):
+        """ Mutes the player.
+
+        Args:
+            value (`bool`): `True` iff this player should be muted
+        """
+        self.player.set_mute(value)
+        return False
+
+
+    def do_play(self):
+        """ Start playing the media file.
+        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
+        """
+        if self.renderer.get_window_handle():
+            pass
+        elif sys.platform == 'win32':
+            # TODO test in windows
+            self.renderer.set_window_handle(get_window_handle(self.movie_zone.get_window())) # get_property('window')
+        else:
+            self.renderer.set_window_handle(self.movie_zone.get_window().get_xid())
+
+        self.player.play()
+        return False
+
+
+    def do_play_pause(self):
+        """ Toggle pause mode of the media.
+        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
+        """
+        self.player.pause() if self.is_playing() else self.player.play()
+        return False
+
+
+    def do_stop(self):
+        """ Stops playing in the backend player.
+        """
+        self.player.stop()
+
+
+    def do_set_time(self, t):
+        """ Set the player at time t.
+        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+
+        Args:
+            t (`float`): the timestamp, in s
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
+        """
+        self.player.seek(int(t * 1e9))
+        return False
+
+
+
 class GifOverlay(VideoOverlay):
     """ A simple overlay mimicking the functionality of showing videos, but showing gifs instead.
     """
@@ -524,6 +644,21 @@ class GifOverlay(VideoOverlay):
 VideoOverlay._backends['image/gif'] = GifOverlay
 VideoOverlay._backend_versions.append(_('GtkImage gif player'))
 
+
+try:
+    gi.require_version('Gst', '1.0')
+    from gi.repository import Gst
+
+    gst_opts = []
+    Gst.init(gst_opts)
+
+    # make GstOverlay the default
+    VideoOverlay._backends = defaultdict(lambda: GstOverlay, VideoOverlay._backends)
+    VideoOverlay._backend_versions.append(Gst.version_string())
+except:
+    logger.exception(_('Video support using {} is disabled.').format('GStreamer'))
+
+
 try:
     import vlc
 
@@ -536,8 +671,8 @@ try:
 
     VLCVideo._instance = vlc.Instance(vlc_opts)
 
-    # make VLCvideo the fallback
+    # make VLCvideo the (new) default
     VideoOverlay._backends = defaultdict(lambda: VLCVideo, VideoOverlay._backends)
     VideoOverlay._backend_versions.append('VLC {}'.format(vlc.libvlc_get_version().decode('ascii')))
 except:
-    logger.exception(_("Video support using VLC is disabled."))
+    logger.exception(_("Video support using {} is disabled.").format('VLC'))
