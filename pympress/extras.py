@@ -257,7 +257,7 @@ class Media(object):
 
         Args:
             media_id (`int`): A unique idientifier of the media to start playing
-            t (`int`): the timestamp, in ms
+            t (`float`): the timestamp, in s
         """
         GLib.idle_add(lambda: any(p.do_set_time(t) for p in self._media_overlays[media_id]))
 

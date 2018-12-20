@@ -88,8 +88,6 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="value_pos">right</property>
-            <signal name="button-press-event" handler="mouse_click" swapped="no"/>
-            <signal name="button-release-event" handler="mouse_click" swapped="no"/>
             <signal name="change-value" handler="progress_moved" swapped="no"/>
             <signal name="format-value" handler="format_millis" swapped="no"/>
             <signal name="motion-notify-event" handler="mouse_motion" swapped="no"/>

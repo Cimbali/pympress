@@ -113,7 +113,7 @@ class VideoOverlay(builder.Builder):
     dragging_paused = False
     #: Format of the video time, defaults to m:ss, changed to m:ss / m:ss when the max time is known
     time_format = '{:01}:{:02}'
-    #: `int` holding the max time in ms
+    #: `float` holding the max time in s
     maxval = 1
 
     #: `dict` of mime type as `str` to the `type` of a class inheriting from :class:`~VideoOverlay`
@@ -131,8 +131,6 @@ class VideoOverlay(builder.Builder):
 
         self.load_ui('media_overlay')
         self.toolbar.set_visible(show_controls)
-
-        self.progress.set_adjustment(Gtk.Adjustment(value = 0., lower = 0., upper = 1., step_increment=0.01))
 
         self.play = callback_getter('play')
         self.hide = callback_getter('hide')
@@ -152,9 +150,31 @@ class VideoOverlay(builder.Builder):
 
         Args:
             sc (:class:`~Gtk.Scale`): The scale whose position we are formatting
-            prog (`float`): The position of the :class:`~Gtk.Scale`, as a float between 0. and 1.
+            prog (`float`): The position of the :class:`~Gtk.Scale`, i.e. the number of seconds elapsed
         """
-        return self.time_format.format(*divmod(int(self.maxval * prog) // 1000, 60))
+        return self.time_format.format(*divmod(int(round(prog)), 60))
+
+
+    def update_range(self, max_time):
+        """ Update the toolbar slider size.
+
+        Args:
+            max_time (`float`): The maximum time in this video in s
+        """
+        self.maxval = max_time
+        self.progress.set_range(0, self.maxval)
+        self.progress.set_increments(min(5., self.maxval / 10.), min(60., self.maxval / 10.))
+        sec = round(self.maxval) if self.maxval > .5 else 1.
+        self.time_format = '{{:01}}:{{:02}} / {:01}:{:02}'.format(*divmod(int(sec), 60))
+
+
+    def update_progress(self, time):
+        """ Update the toolbar slider to the current time.
+
+        Args:
+            time (`float`): The time in this video in s
+        """
+        self.progress.set_value(time)
 
 
     def progress_moved(self, rng, sc, val):
@@ -163,52 +183,9 @@ class VideoOverlay(builder.Builder):
         Args:
             rng (:class:`~Gtk.Range`): The range corresponding to the scale whose position we are formatting
             sc (:class:`~Gtk.Scale`): The scale whose position we are updating
-            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video
+            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of seconds elapsed in the video
         """
-        return self.set_time(int(val))
-
-
-    def mouse_click(self, widget, event):
-        """ Callback to update the position of the video when the user moved the progress bar.
-
-        Args:
-            widget (:class:`~Gtk.Scale`): The range that was clicked
-            event (:class:`~Gdk.EventButton`): The event corresponding to the mouse click release release
-        """
-        if not isinstance(event, Gdk.EventButton) or event.type not in (Gdk.EventType.BUTTON_PRESS, Gdk.EventType.BUTTON_RELEASE):
-            logger.warning('Unexpected widget or event type, expecting mouse release from Gtk.Scale: {}'.format((widget, event, event.type)))
-            return False
-
-        # immediate update on first click, otherwise set mouse_motion do the job
-        if not self.dragging_position and event.type == Gdk.EventType.BUTTON_PRESS:
-            pixel_range = (float(self.progress.get_range_rect().x), float(self.progress.get_range_rect().width))
-            self.set_time(int(self.maxval * (event.x - pixel_range[0]) / pixel_range[1]))
-
-        self.dragging_position = event.type == Gdk.EventType.BUTTON_PRESS
-
-        if self.dragging_position:
-            self.dragging_paused = self.is_playing()
-
-        return True
-
-
-    def mouse_motion(self, widget, event):
-        """ Callback to update the position of the video when the user moved the progress bar.
-
-        Args:
-            widget (:class:`~Gtk.Scale`): The range that was clicked
-            event (:class:`~Gdk.EventButton`): The event corresponding to the mouse click release release
-        """
-        if not isinstance(event, Gdk.EventMotion):
-            logger.warning('Unexpected widget or event type, expecting mouse release from Gtk.Scale: {}'.format((widget, event, event.type)))
-            return False
-        elif not self.dragging_position:
-            return False
-
-        # get both ranges as (min, size) tuples of floats
-        pixel_range = (float(self.progress.get_range_rect().x), float(self.progress.get_range_rect().width))
-        self.set_time(int(self.maxval * (event.x - pixel_range[0]) / pixel_range[1]))
-        return True
+        return self.set_time(val)
 
 
     def update_margins_for_page(self, page_type):
@@ -319,7 +296,7 @@ class VideoOverlay(builder.Builder):
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Args:
-            t (`int`): the timestamp, in ms
+            t (`float`): the timestamp, in s
 
         Returns:
             `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
@@ -360,8 +337,8 @@ class VLCVideo(VideoOverlay):
 
         event_manager = self.player.event_manager()
         event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.hide))
-        event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged, self.update_range)
-        event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged, self.update_progress)
+        event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged, lambda e: self.update_range(self.player.get_length() / 1000. or 1.))
+        event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged, lambda e: self.update_progress(self.player.get_time() / 1000. or 1.))
 
 
     def handle_embed(self, mapped_widget):
@@ -392,26 +369,6 @@ class VLCVideo(VideoOverlay):
             filepath (`str`): The path to the media file path
         """
         self.player.set_media(self._instance.media_new(filepath))
-
-
-    def update_range(self, vlc_evt = None):
-        """ Update the toolbar slider size.
-
-        Args:
-            vlc_evt (:class:`~vlc.Event`): The event that triggered the function call (if any)
-        """
-        self.maxval = self.player.get_length() or 1.
-        sec = round(self.maxval / 1000) if self.maxval > 500 else 1
-        self.time_format = '{{:01}}:{{:02}} / {:01}:{:02}'.format(*divmod(int(sec), 60))
-
-
-    def update_progress(self, *args):
-        """ Update the toolbar slider to the current time.
-
-        Args:
-            vlc_evt (:class:`~vlc.Event`): The event that triggered the function call (if any)
-        """
-        self.progress.set_value(self.player.get_position())
 
 
     def mute(self, value):
@@ -457,13 +414,12 @@ class VLCVideo(VideoOverlay):
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Args:
-            t (`int`): the timestamp, in ms
+            t (`float`): the timestamp, in s
 
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
-        self.player.set_time(t)
-        self.update_progress()
+        self.player.set_time(int(round(t * 1000.)))
         return False
 
 
