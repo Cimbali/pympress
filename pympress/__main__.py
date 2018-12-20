@@ -25,8 +25,6 @@
 from __future__ import print_function, unicode_literals
 
 import logging
-logger = logging.getLogger(__name__)
-
 import os.path
 import sys
 import getopt
@@ -35,8 +33,12 @@ import locale
 import gettext
 import ctypes
 import tempfile
+import platform
 
-from pympress import util, document
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename=os.path.join(tempfile.gettempdir(), 'pympress.log'), level=logging.DEBUG)
+
+from pympress import util
 
 if util.IS_WINDOWS:
     if os.getenv('LANG') is None:
@@ -45,6 +47,10 @@ if util.IS_WINDOWS:
 
 locale.setlocale(locale.LC_ALL, '')
 gettext.install('pympress', util.get_locale_dir())
+
+
+from pympress import media_overlay, document, ui
+
 
 # Catch all uncaught exceptions in the log file:
 def uncaught_handler(*exc_info):
@@ -109,13 +115,21 @@ def main(argv = sys.argv[1:]):
                     arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"
                 ))
 
-    logging.basicConfig(filename=os.path.join(tempfile.gettempdir(), 'pympress.log'), level=log_level)
 
     pympress_meta = util.get_pympress_meta()
-    logger.info('\n  '.join(['Pympress version {} by:'.format(pympress_meta.__version__)] + pympress_meta.__copyright__.split('\n')))
+    logger.info(' '.join(['Pympress:', pympress_meta.__version__,
+            '; Python:', platform.python_version(),
+            '; OS:', platform.system(), platform.release(), #platform.version(),
+            '; Gtk {}.{}.{}'.format(ui.Gtk.get_major_version(), ui.Gtk.get_minor_version(), ui.Gtk.get_micro_version()),
+            '; GLib ', '.'.join(map(str, ui.GLib.glib_version)),
+            '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
+            '; Cairo', ui.cairo.cairo_version_string(), ', pycairo', ui.cairo.version,
+            '; Media:', media_overlay.VideoOverlay.backend_version()
+        ]))
+
+    logger.setLevel(log_level)
 
     # Create windows
-    from pympress import ui
     gui = ui.UI()
 
     # pass command line args
