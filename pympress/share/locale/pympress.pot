@@ -312,7 +312,7 @@ msgstr ""
 msgid "Usage: {} [options] <presentation_file>"
 msgstr ""
 
-msgid "Video support using VLC is disabled."
+msgid "Video support using {} is disabled."
 msgstr ""
 
 msgctxt "shortcut window"

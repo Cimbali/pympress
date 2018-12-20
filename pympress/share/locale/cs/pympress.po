@@ -314,8 +314,8 @@ msgstr "Oddálit"
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Použití: {} [options] <presentation_file>"
 
-msgid "Video support using VLC is disabled."
-msgstr "Podpora videa přes VLC je vypnuta."
+msgid "Video support using {} is disabled."
+msgstr "Podpora videa přes {} je vypnuta."
 
 msgctxt "shortcut window"
 msgid "Windows"

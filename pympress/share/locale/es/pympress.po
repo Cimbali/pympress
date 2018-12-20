@@ -315,8 +315,8 @@ msgstr "Deshacer zoom"
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Uso: {} [opciones] <archivo_de_presentación>."
 
-msgid "Video support using VLC is disabled."
-msgstr "El soporte de vídeo con VLC está desactivado."
+msgid "Video support using {} is disabled."
+msgstr "El soporte de vídeo con {} está desactivado."
 
 msgctxt "shortcut window"
 msgid "Windows"

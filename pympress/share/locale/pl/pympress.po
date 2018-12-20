@@ -315,8 +315,8 @@ msgstr "Cofnij powiększanie"
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Sposób użycia: {} [opcje] <plik_z_prezentacją>"
 
-msgid "Video support using VLC is disabled."
-msgstr "Obsługa wideo przy użyciu VLC jest wyłączona."
+msgid "Video support using {} is disabled."
+msgstr "Obsługa wideo przy użyciu {} jest wyłączona."
 
 msgctxt "shortcut window"
 msgid "Windows"

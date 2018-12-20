@@ -315,8 +315,8 @@ msgstr "Annuler le zoom"
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Usage: {} [options] <fichier de présentation>"
 
-msgid "Video support using VLC is disabled."
-msgstr "La prise en charge vidéo grâce à VLC est désactivée"
+msgid "Video support using {} is disabled."
+msgstr "La prise en charge vidéo grâce à {} est désactivée"
 
 msgctxt "shortcut window"
 msgid "Windows"
