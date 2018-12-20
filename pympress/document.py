@@ -182,7 +182,7 @@ class Link(object):
     #: `float`, second y coordinate of the link rectangle
     y2 = None
     #: `function`, action to be perform to follow this link
-    follow = lambda *args: logger.error(_("no action defined for this link!"))
+    follow = lambda *args, **kwargs: logger.error(_("no action defined for this link!"))
 
     def __init__(self, x1, y1, x2, y2, action):
         self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
@@ -200,12 +200,6 @@ class Link(object):
             `bool`: `True` if the input coordinates are within the link rectangle, `False` otherwise
         """
         return ( (self.x1 <= x) and (x <= self.x2) and (self.y1 <= y) and (y <= self.y2) )
-
-
-    def follow(self):
-        """ Follow the link to its destination.
-        This is overriden by the function to perform the actual action in the constructor.
-        """
 
 
     @staticmethod
@@ -594,6 +588,7 @@ class Document(object):
        starts at 0.
 
     Args:
+        builder (:class:`pympress.builder.Builder`):  A builder to load callbacks
         pop_doc (:class:`~pympress.Poppler.Document`):  Instance of the Poppler document that this class will wrap
         path (`str`):  Absolute path to the PDF file to open
         page (`int`):  page number to which the file should be opened
@@ -629,10 +624,14 @@ class Document(object):
     #: callback, to be connected to :func:`~pympress.editable_label.PageNumber.start_editing`
     start_editing_page_number = lambda: None
 
-    def __init__(self, pop_doc, path, page=0):
-        self.path = path
+    def __init__(self, builder, pop_doc, path, page=0):
+        # Connect callbacks
+        self.play_media                = builder.get_callback_handler('medias.play')
+        self.page_change               = builder.get_callback_handler('on_page_change')
+        self.start_editing_page_number = builder.get_callback_handler('page_number.start_editing')
 
-        # Open PDF file
+        # Setup PDF file
+        self.path = path
         self.doc = pop_doc
 
         # Pages number
@@ -684,12 +683,7 @@ class Document(object):
             else:
                 uri = urljoin('file:', pathname2url(path))
             poppler_doc = Poppler.Document.new_from_file(uri, None)
-            doc = Document(poppler_doc, path, page)
-
-        # Connect callbacks
-        doc.play_media                = builder.get_callback_handler('medias.play')
-        doc.page_change               = builder.get_callback_handler('on_page_change')
-        doc.start_editing_page_number = builder.get_callback_handler('page_number.start_editing')
+            doc = Document(builder, poppler_doc, path, page)
 
         return doc
 
