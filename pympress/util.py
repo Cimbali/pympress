@@ -71,7 +71,26 @@ except NameError:
 def get_pympress_meta():
     """ Get metadata (version, etc) from pympress' __init__.py
     """
-    return importlib.import_module('pympress.__init__')
+    module = importlib.import_module('pympress.__init__')
+    try:
+        dist = pkg_resources.get_distribution('pympress')
+    except:
+        return module
+
+    module.__version__ = dist.version
+    command = [c.format(dir = dist.module_path) for c in 'git -C {dir} describe --tags --long --dirty'.split()]
+
+    try:
+        git_version = subprocess.check_output(command, stderr = subprocess.DEVNULL)
+    except:
+        return module
+
+    tag, count, sha, *dirty = git_version.decode('utf-8').strip().split('-')
+    if count == '0' and not len(dirty):
+        return tag
+    module.__version__ = '{}+{}@{}'.format(tag.lstrip('v'), count, sha.lstrip('g'))
+
+    return module
 
 
 def __get_resource_path(*path_parts):
