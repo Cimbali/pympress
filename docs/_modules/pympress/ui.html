@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.2.0
+		v1.2.1
 	</div>
 
 	
@@ -341,7 +341,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">medias</span> <span class="o">=</span> <span class="n">extras</span><span class="o">.</span><span class="n">Media</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">laser</span> <span class="o">=</span> <span class="n">pointer</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span> <span class="o">=</span> <span class="n">editable_label</span><span class="o">.</span><span class="n">EstimatedTalkTime</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span> <span class="o">=</span> <span class="n">editable_label</span><span class="o">.</span><span class="n">PageNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span> <span class="o">=</span> <span class="n">editable_label</span><span class="o">.</span><span class="n">PageNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;scroll_number&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span> <span class="o">=</span> <span class="n">talk_time</span><span class="o">.</span><span class="n">TimeCounter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span><span class="p">)</span>
 
         <span class="c1"># solve circular creation-time dependency</span>
@@ -604,7 +604,7 @@
         <span class="n">pympress</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">get_pympress_meta</span><span class="p">()</span>
         <span class="n">about</span><span class="o">.</span><span class="n">set_program_name</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">)</span>
         <span class="n">about</span><span class="o">.</span><span class="n">set_version</span><span class="p">(</span><span class="n">pympress</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
-        <span class="n">about</span><span class="o">.</span><span class="n">set_copyright</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Contributors:&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">pympress</span><span class="o">.</span><span class="n">__copyright__</span><span class="p">)</span>
+        <span class="n">about</span><span class="o">.</span><span class="n">set_copyright</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Contributors:&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">pympress</span><span class="o">.</span><span class="n">__author__</span><span class="p">)</span>
         <span class="n">about</span><span class="o">.</span><span class="n">set_comments</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
                          <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Some preferences are saved in &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_to_config</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
                          <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Resources are loaded from &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">get_locale_dir</span><span class="p">())</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
@@ -662,6 +662,7 @@
         <span class="c1"># Some things that need updating</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">swap_document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">set_last</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">enable_labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">has_labels</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="n">page</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">purge_media_overlays</span><span class="p">()</span>
 
@@ -783,10 +784,11 @@
 <span class="sd">            widget (:class:`~Gtk.SpinButton`): The spinner button widget calling page_preview</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">page_nb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">get_buffer</span><span class="p">()</span><span class="o">.</span><span class="n">get_text</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">get_buffer</span><span class="p">()</span><span class="o">.</span><span class="n">get_text</span><span class="p">()))</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">return</span>
+            <span class="k">pass</span>
 
+        <span class="n">page_nb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">page_nb</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">()</span> <span class="ow">or</span> <span class="n">page_nb</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -812,6 +814,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">add_annotations</span><span class="p">(</span><span class="n">page_cur</span><span class="o">.</span><span class="n">get_annotations</span><span class="p">())</span>
 
+        <span class="c1"># Update display</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">update_jump_label</span><span class="p">(</span><span class="n">page_cur</span><span class="o">.</span><span class="n">label</span><span class="p">())</span>
 
         <span class="c1"># Prerender the 4 next pages and the 2 previous ones</span>
         <span class="n">cur</span> <span class="o">=</span> <span class="n">page_cur</span><span class="o">.</span><span class="n">number</span><span class="p">()</span>
@@ -870,7 +874,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">unpause</span><span class="p">()</span>
 
         <span class="c1"># Update display</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">update_page_numbers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">current_page</span><span class="p">()</span><span class="o">.</span><span class="n">number</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">update_page_numbers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page_preview_nb</span><span class="p">,</span> <span class="n">page_cur</span><span class="o">.</span><span class="n">label</span><span class="p">())</span>
 
         <span class="c1"># Prerender the 4 next pages and the 2 previous ones</span>
         <span class="n">page_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">pages_number</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_preview_nb</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)</span>
@@ -1549,7 +1553,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
+            VERSION:'b&#39;0.6-336-gdf6dc5e&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

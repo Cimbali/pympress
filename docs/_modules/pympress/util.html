@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.2.0
+		v1.2.1
 	</div>
 
 	
@@ -231,7 +231,26 @@
 <div class="viewcode-block" id="get_pympress_meta"><a class="viewcode-back" href="../../pympress.html#pympress.util.get_pympress_meta">[docs]</a><span class="k">def</span> <span class="nf">get_pympress_meta</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; Get metadata (version, etc) from pympress&#39; __init__.py</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;pympress.__init__&#39;</span><span class="p">)</span></div>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;pympress.__init__&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s1">&#39;pympress&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">module</span>
+
+    <span class="n">module</span><span class="o">.</span><span class="n">__version__</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">version</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">dir</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">module_path</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="s1">&#39;git -C </span><span class="si">{dir}</span><span class="s1"> describe --tags --long --dirty&#39;</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">git_version</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">module</span>
+
+    <span class="n">tag</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">sha</span><span class="p">,</span> <span class="o">*</span><span class="n">dirty</span> <span class="o">=</span> <span class="n">git_version</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">dirty</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">tag</span>
+    <span class="n">module</span><span class="o">.</span><span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">+</span><span class="si">{}</span><span class="s1">@</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">),</span> <span class="n">count</span><span class="p">,</span> <span class="n">sha</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">module</span></div>
 
 
 <span class="k">def</span> <span class="nf">__get_resource_path</span><span class="p">(</span><span class="o">*</span><span class="n">path_parts</span><span class="p">):</span>
@@ -463,7 +482,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">monitor</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Impossible to open dir at </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">directory</span><span class="p">))</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Impossible to open dir at </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">directory</span><span class="p">),</span> <span class="n">exc_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FileWatcher.enqueue"><a class="viewcode-back" href="../../pympress.html#pympress.util.FileWatcher.enqueue">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">enqueue</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -564,7 +583,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
+            VERSION:'b&#39;0.6-336-gdf6dc5e&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

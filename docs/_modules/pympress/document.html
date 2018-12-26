@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.2.0
+		v1.2.1
 	</div>
 
 	
@@ -342,7 +342,7 @@
     <span class="c1">#: `float`, second y coordinate of the link rectangle</span>
     <span class="n">y2</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1">#: `function`, action to be perform to follow this link</span>
-    <span class="n">follow</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;no action defined for this link!&quot;</span><span class="p">))</span>
+    <span class="n">follow</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;no action defined for this link!&quot;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y2</span> <span class="o">=</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span>
@@ -362,15 +362,9 @@
         <span class="k">return</span> <span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y1</span> <span class="o">&lt;=</span> <span class="n">y</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y2</span><span class="p">)</span> <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Link.follow"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Link.follow">[docs]</a>    <span class="k">def</span> <span class="nf">follow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Follow the link to its destination.</span>
-<span class="sd">        This is overriden by the function to perform the actual action in the constructor.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-
-
 <div class="viewcode-block" id="Link.build_closure"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Link.build_closure">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">build_closure</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Return a lambda that calls fun(*args, **kwargs), with the current value of args and kwargs.</span>
+        <span class="sd">&quot;&quot;&quot; Return a lambda that calls fun(\*args, \**kwargs), with the current value of args and kwargs.</span>
 <span class="sd">        By creating the lambda in a new scope, we bind the arguments, thus creating a closure and remember the arguments.</span>
 
 <span class="sd">        Args:</span>
@@ -398,6 +392,8 @@
     <span class="n">page</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1">#: `int`, number of the current page (starting from 0)</span>
     <span class="n">page_nb</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="c1">#: `str` representing the page label</span>
+    <span class="n">page_label</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1">#: All the links in the page, as a `list` of :class:`~pympress.document.Link` instances</span>
     <span class="n">links</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1">#: All the media in the page, as a `list` of tuples of (area, filename)</span>
@@ -415,6 +411,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">page</span> <span class="o">=</span> <span class="n">page</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">page_nb</span> <span class="o">=</span> <span class="n">number</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">links</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">medias</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="p">[]</span>
@@ -628,6 +625,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_nb</span></div>
 
 
+<div class="viewcode-block" id="Page.label"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.label">[docs]</a>    <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get the page label.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_label</span></div>
+
+
 <div class="viewcode-block" id="Page.get_link_at"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.get_link_at">[docs]</a>    <span class="k">def</span> <span class="nf">get_link_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">FULL</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the :class:`~pympress.document.Link` corresponding to the given</span>
 <span class="sd">        position, or `None` if there is no link at this position.</span>
@@ -745,6 +748,7 @@
 <span class="sd">       starts at 0.</span>
 
 <span class="sd">    Args:</span>
+<span class="sd">        builder (:class:`pympress.builder.Builder`):  A builder to load callbacks</span>
 <span class="sd">        pop_doc (:class:`~pympress.Poppler.Document`):  Instance of the Poppler document that this class will wrap</span>
 <span class="sd">        path (`str`):  Absolute path to the PDF file to open</span>
 <span class="sd">        page (`int`):  page number to which the file should be opened</span>
@@ -770,6 +774,8 @@
     <span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1">#: Our position in the history</span>
     <span class="n">hist_pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="c1">#: `dict` of all the page labels</span>
+    <span class="n">page_labels</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1">#: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`</span>
     <span class="n">page_change</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="kc">None</span>
@@ -778,14 +784,19 @@
     <span class="c1">#: callback, to be connected to :func:`~pympress.editable_label.PageNumber.start_editing`</span>
     <span class="n">start_editing_page_number</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop_doc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">,</span> <span class="n">pop_doc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># Connect callbacks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">play_media</span>                <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;medias.play&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_change</span>               <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;on_page_change&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_editing_page_number</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;page_number.start_editing&#39;</span><span class="p">)</span>
 
-        <span class="c1"># Open PDF file</span>
+        <span class="c1"># Setup PDF file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">pop_doc</span>
 
         <span class="c1"># Pages number</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nb_pages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">get_n_pages</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">get_page</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">get_label</span><span class="p">():</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_pages</span><span class="p">)}</span>
 
         <span class="c1"># Number of the current page</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span> <span class="o">=</span> <span class="n">page</span>
@@ -832,12 +843,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">uri</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="s1">&#39;file:&#39;</span><span class="p">,</span> <span class="n">pathname2url</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
             <span class="n">poppler_doc</span> <span class="o">=</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">new_from_file</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">poppler_doc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
-
-        <span class="c1"># Connect callbacks</span>
-        <span class="n">doc</span><span class="o">.</span><span class="n">play_media</span>                <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;medias.play&#39;</span><span class="p">)</span>
-        <span class="n">doc</span><span class="o">.</span><span class="n">page_change</span>               <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;on_page_change&#39;</span><span class="p">)</span>
-        <span class="n">doc</span><span class="o">.</span><span class="n">start_editing_page_number</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;page_number.start_editing&#39;</span><span class="p">)</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">builder</span><span class="p">,</span> <span class="n">poppler_doc</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">doc</span></div>
 
@@ -907,6 +913,57 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">page_change</span><span class="p">()</span>
 
 
+<div class="viewcode-block" id="Document.has_labels"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.has_labels">[docs]</a>    <span class="k">def</span> <span class="nf">has_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return whether this document has useful labels.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: False iff there are no labels or they are just the page numbers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span> <span class="o">!=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_pages</span><span class="p">)}</span></div>
+
+
+<div class="viewcode-block" id="Document.lookup_label"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.lookup_label">[docs]</a>    <span class="k">def</span> <span class="nf">lookup_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">prefix_unique</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Find a page from its label</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            label (`str`): the label we are searching for</span>
+<span class="sd">            prefix_unique (`bool`): whether a prefix match should be unique, e.g. when the user is still typing</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `int`: the page</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># somehow this always returns None</span>
+        <span class="c1">#page = self.doc.get_page_by_label(label).get_index()</span>
+
+        <span class="c1"># try exact match</span>
+        <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span> <span class="k">pass</span>
+
+        <span class="n">compatible_labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">lower</span><span class="p">())}</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">compatible_labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span><span class="p">[</span><span class="n">compatible_labels</span><span class="o">.</span><span class="n">pop</span><span class="p">()]</span>
+
+        <span class="c1"># try case-insensitive match</span>
+        <span class="n">full</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">full_nocasematch</span> <span class="o">=</span> <span class="p">{</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">compatible_labels</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="n">full</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">full_nocasematch</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span><span class="p">[</span><span class="n">full_nocasematch</span><span class="o">.</span><span class="n">pop</span><span class="p">()]</span>
+
+        <span class="c1"># try prefix case-sensitive match</span>
+        <span class="n">prefix_casematch</span> <span class="o">=</span> <span class="p">{</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">compatible_labels</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">label</span><span class="p">)}</span>
+
+        <span class="k">if</span> <span class="n">prefix_casematch</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix_casematch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">prefix_unique</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span><span class="p">[</span><span class="n">prefix_casematch</span><span class="o">.</span><span class="n">pop</span><span class="p">()]</span>
+
+        <span class="c1"># try prefix case-insensitive match</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">prefix_unique</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span><span class="p">[</span><span class="n">compatible_labels</span><span class="o">.</span><span class="n">pop</span><span class="p">()]</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
 <div class="viewcode-block" id="Document.goto"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.goto">[docs]</a>    <span class="k">def</span> <span class="nf">goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to another page.</span>
 
@@ -919,13 +976,13 @@
             <span class="n">number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_pages</span> <span class="o">-</span> <span class="mi">1</span>
 
         <span class="k">if</span> <span class="n">number</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_do_page_change</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
-
             <span class="c1"># chop off history where we were and go to end</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_do_page_change</span><span class="p">(</span><span class="n">number</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Document.goto_next"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.goto_next">[docs]</a>    <span class="k">def</span> <span class="nf">goto_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -1020,6 +1077,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">page</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">page_nb</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_label</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">links</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">medias</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1117,7 +1175,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
+            VERSION:'b&#39;0.6-336-gdf6dc5e&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.2.0
+		v1.2.1
 	</div>
 
 	
@@ -271,9 +271,9 @@
     <span class="n">dragging_position</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="c1">#: `bool` that tracks whether the playback was paused when the user started dragging the position</span>
     <span class="n">dragging_paused</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="c1">#: Format of the video time, defaults to m:ss, changed to m:ss / m:ss when the max time is known</span>
+    <span class="c1">#: Format of the video time, defaults to m:ss, changed to &quot;m:ss / m:ss&quot; when the max time is known</span>
     <span class="n">time_format</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:01}</span><span class="s1">:</span><span class="si">{:02}</span><span class="s1">&#39;</span>
-    <span class="c1">#: `int` holding the max time in ms</span>
+    <span class="c1">#: `float` holding the max time in s</span>
     <span class="n">maxval</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="c1">#: `dict` of mime type as `str` to the `type` of a class inheriting from :class:`~VideoOverlay`</span>
@@ -291,8 +291,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">load_ui</span><span class="p">(</span><span class="s1">&#39;media_overlay&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="n">show_controls</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">set_adjustment</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Adjustment</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">lower</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">step_increment</span><span class="o">=</span><span class="mf">0.01</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">play</span> <span class="o">=</span> <span class="n">callback_getter</span><span class="p">(</span><span class="s1">&#39;play&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hide</span> <span class="o">=</span> <span class="n">callback_getter</span><span class="p">(</span><span class="s1">&#39;hide&#39;</span><span class="p">)</span>
@@ -312,9 +310,31 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            sc (:class:`~Gtk.Scale`): The scale whose position we are formatting</span>
-<span class="sd">            prog (`float`): The position of the :class:`~Gtk.Scale`, as a float between 0. and 1.</span>
+<span class="sd">            prog (`float`): The position of the :class:`~Gtk.Scale`, i.e. the number of seconds elapsed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">*</span> <span class="n">prog</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">prog</span><span class="p">)),</span> <span class="mi">60</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="VideoOverlay.update_range"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.update_range">[docs]</a>    <span class="k">def</span> <span class="nf">update_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update the toolbar slider size.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            max_time (`float`): The maximum time in this video in s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">=</span> <span class="n">max_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">set_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">set_increments</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mf">5.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">/</span> <span class="mf">10.</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="mf">60.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">/</span> <span class="mf">10.</span><span class="p">))</span>
+        <span class="n">sec</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxval</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">&gt;</span> <span class="o">.</span><span class="mi">5</span> <span class="k">else</span> <span class="mf">1.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_format</span> <span class="o">=</span> <span class="s1">&#39;{{:01}}:{{:02}} / </span><span class="si">{:01}</span><span class="s1">:</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">sec</span><span class="p">),</span> <span class="mi">60</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="VideoOverlay.update_progress"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.update_progress">[docs]</a>    <span class="k">def</span> <span class="nf">update_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Update the toolbar slider to the current time.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time (`float`): The time in this video in s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">time</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="VideoOverlay.progress_moved"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.progress_moved">[docs]</a>    <span class="k">def</span> <span class="nf">progress_moved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">sc</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
@@ -323,52 +343,9 @@
 <span class="sd">        Args:</span>
 <span class="sd">            rng (:class:`~Gtk.Range`): The range corresponding to the scale whose position we are formatting</span>
 <span class="sd">            sc (:class:`~Gtk.Scale`): The scale whose position we are updating</span>
-<span class="sd">            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of milliseconds elapsed in the video</span>
+<span class="sd">            val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of seconds elapsed in the video</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">))</span></div>
-
-
-<div class="viewcode-block" id="VideoOverlay.mouse_click"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.mouse_click">[docs]</a>    <span class="k">def</span> <span class="nf">mouse_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Callback to update the position of the video when the user moved the progress bar.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            widget (:class:`~Gtk.Scale`): The range that was clicked</span>
-<span class="sd">            event (:class:`~Gdk.EventButton`): The event corresponding to the mouse click release release</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventButton</span><span class="p">)</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_PRESS</span><span class="p">,</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_RELEASE</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Unexpected widget or event type, expecting mouse release from Gtk.Scale: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">)))</span>
-            <span class="k">return</span> <span class="kc">False</span>
-
-        <span class="c1"># immediate update on first click, otherwise set mouse_motion do the job</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragging_position</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_PRESS</span><span class="p">:</span>
-            <span class="n">pixel_range</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">get_range_rect</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">get_range_rect</span><span class="p">()</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">*</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">pixel_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">pixel_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">dragging_position</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_PRESS</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragging_position</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dragging_paused</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_playing</span><span class="p">()</span>
-
-        <span class="k">return</span> <span class="kc">True</span></div>
-
-
-<div class="viewcode-block" id="VideoOverlay.mouse_motion"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.mouse_motion">[docs]</a>    <span class="k">def</span> <span class="nf">mouse_motion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Callback to update the position of the video when the user moved the progress bar.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            widget (:class:`~Gtk.Scale`): The range that was clicked</span>
-<span class="sd">            event (:class:`~Gdk.EventButton`): The event corresponding to the mouse click release release</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventMotion</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Unexpected widget or event type, expecting mouse release from Gtk.Scale: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">)))</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragging_position</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-
-        <span class="c1"># get both ranges as (min, size) tuples of floats</span>
-        <span class="n">pixel_range</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">get_range_rect</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">get_range_rect</span><span class="p">()</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">*</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">pixel_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">pixel_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="VideoOverlay.update_margins_for_page"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VideoOverlay.update_margins_for_page">[docs]</a>    <span class="k">def</span> <span class="nf">update_margins_for_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_type</span><span class="p">):</span>
@@ -479,7 +456,7 @@
 <span class="sd">        Should run on the main thread to ensure we avoid vlc plugins&#39; reentrency problems.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            t (`int`): the timestamp, in ms</span>
+<span class="sd">            t (`float`): the timestamp, in s</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)</span>
@@ -520,8 +497,8 @@
 
         <span class="n">event_manager</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">event_manager</span><span class="p">()</span>
         <span class="n">event_manager</span><span class="o">.</span><span class="n">event_attach</span><span class="p">(</span><span class="n">vlc</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">MediaPlayerEndReached</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide</span><span class="p">))</span>
-        <span class="n">event_manager</span><span class="o">.</span><span class="n">event_attach</span><span class="p">(</span><span class="n">vlc</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">MediaPlayerLengthChanged</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_range</span><span class="p">)</span>
-        <span class="n">event_manager</span><span class="o">.</span><span class="n">event_attach</span><span class="p">(</span><span class="n">vlc</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">MediaPlayerTimeChanged</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_progress</span><span class="p">)</span>
+        <span class="n">event_manager</span><span class="o">.</span><span class="n">event_attach</span><span class="p">(</span><span class="n">vlc</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">MediaPlayerLengthChanged</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">get_length</span><span class="p">()</span> <span class="o">/</span> <span class="mf">1000.</span> <span class="ow">or</span> <span class="mf">1.</span><span class="p">))</span>
+        <span class="n">event_manager</span><span class="o">.</span><span class="n">event_attach</span><span class="p">(</span><span class="n">vlc</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">MediaPlayerTimeChanged</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_progress</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span> <span class="o">/</span> <span class="mf">1000.</span> <span class="ow">or</span> <span class="mf">1.</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="VLCVideo.handle_embed"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VLCVideo.handle_embed">[docs]</a>    <span class="k">def</span> <span class="nf">handle_embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped_widget</span><span class="p">):</span>
@@ -552,26 +529,6 @@
 <span class="sd">            filepath (`str`): The path to the media file path</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">set_media</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_instance</span><span class="o">.</span><span class="n">media_new</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span></div>
-
-
-<div class="viewcode-block" id="VLCVideo.update_range"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VLCVideo.update_range">[docs]</a>    <span class="k">def</span> <span class="nf">update_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vlc_evt</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Update the toolbar slider size.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            vlc_evt (:class:`~vlc.Event`): The event that triggered the function call (if any)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">get_length</span><span class="p">()</span> <span class="ow">or</span> <span class="mf">1.</span>
-        <span class="n">sec</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxval</span> <span class="o">&gt;</span> <span class="mi">500</span> <span class="k">else</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_format</span> <span class="o">=</span> <span class="s1">&#39;{{:01}}:{{:02}} / </span><span class="si">{:01}</span><span class="s1">:</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">sec</span><span class="p">),</span> <span class="mi">60</span><span class="p">))</span></div>
-
-
-<div class="viewcode-block" id="VLCVideo.update_progress"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VLCVideo.update_progress">[docs]</a>    <span class="k">def</span> <span class="nf">update_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Update the toolbar slider to the current time.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            vlc_evt (:class:`~vlc.Event`): The event that triggered the function call (if any)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">get_position</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="VLCVideo.mute"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.VLCVideo.mute">[docs]</a>    <span class="k">def</span> <span class="nf">mute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -617,13 +574,12 @@
 <span class="sd">        Should run on the main thread to ensure we avoid vlc plugins&#39; reentrency problems.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            t (`int`): the timestamp, in ms</span>
+<span class="sd">            t (`float`): the timestamp, in s</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_progress</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="mf">1000.</span><span class="p">)))</span>
         <span class="k">return</span> <span class="kc">False</span></div></div>
 
 
@@ -682,9 +638,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="n">ctx</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">)</span>
-        <span class="n">Gdk</span><span class="o">.</span><span class="n">cairo_set_source_pixbuf</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="o">.</span><span class="n">get_pixbuf</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="n">paint</span><span class="p">()</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">)</span>
+            <span class="n">Gdk</span><span class="o">.</span><span class="n">cairo_set_source_pixbuf</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="o">.</span><span class="n">get_pixbuf</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">paint</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">cairo</span><span class="o">.</span><span class="n">Error</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Cairo can not draw gif&#39;</span><span class="p">),</span> <span class="n">exc_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GifOverlay.advance_gif"><a class="viewcode-back" href="../../pympress.html#pympress.media_overlay.GifOverlay.advance_gif">[docs]</a>    <span class="k">def</span> <span class="nf">advance_gif</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -778,7 +737,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
+            VERSION:'b&#39;0.6-336-gdf6dc5e&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

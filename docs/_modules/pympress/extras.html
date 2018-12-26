@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.2.0
+		v1.2.1
 	</div>
 
 	
@@ -417,7 +417,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            media_id (`int`): A unique idientifier of the media to start playing</span>
-<span class="sd">            t (`int`): the timestamp, in ms</span>
+<span class="sd">            t (`float`): the timestamp, in s</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">do_set_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]))</span></div>
 
@@ -703,7 +703,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
+            VERSION:'b&#39;0.6-336-gdf6dc5e&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

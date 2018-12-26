@@ -204,7 +204,7 @@ class Link(object):
 
     @staticmethod
     def build_closure(fun, *args, **kwargs):
-        """ Return a lambda that calls fun(*args, **kwargs), with the current value of args and kwargs.
+        """ Return a lambda that calls fun(\*args, \**kwargs), with the current value of args and kwargs.
         By creating the lambda in a new scope, we bind the arguments, thus creating a closure and remember the arguments.
 
         Args:

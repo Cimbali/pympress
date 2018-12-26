@@ -57,7 +57,7 @@
 	<br />
 	<a href="index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.2.0
+		v1.2.1
 	</div>
 
 	
@@ -1018,7 +1018,7 @@ only rendering itself: the preparation of the target surface must be done
 elsewhere).</p>
 <dl class="class">
 <dt id="pympress.document.Document">
-<em class="property">class </em><code class="descclassname">pympress.document.</code><code class="descname">Document</code><span class="sig-paren">(</span><em>pop_doc</em>, <em>path</em>, <em>page=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.document.</code><code class="descname">Document</code><span class="sig-paren">(</span><em>builder</em>, <em>pop_doc</em>, <em>path</em>, <em>page=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.4/library/functions.html#object" title="(in Python v3.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>This is the main document handling class.</p>
 <div class="admonition note">
@@ -1031,6 +1031,7 @@ starts at 0.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>builder</strong> (<a class="reference internal" href="#pympress.builder.Builder" title="pympress.builder.Builder"><code class="xref py py-class docutils literal notranslate"><span class="pre">pympress.builder.Builder</span></code></a>) – A builder to load callbacks</li>
 <li><strong>pop_doc</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code>) – Instance of the Poppler document that this class will wrap</li>
 <li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – Absolute path to the PDF file to open</li>
 <li><strong>page</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – page number to which the file should be opened</li>
@@ -1172,6 +1173,22 @@ or to the current directory.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pympress.document.Document.has_labels">
+<code class="descname">has_labels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.has_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.has_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether this document has useful labels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">False iff there are no labels or they are just the page numbers</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="pympress.document.Document.hist_next">
 <code class="descname">hist_next</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.hist_next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.hist_next" title="Permalink to this definition">¶</a></dt>
 <dd><p>Switch to the page we viewed next</p>
@@ -1193,6 +1210,30 @@ or to the current directory.</p>
 <dt id="pympress.document.Document.history">
 <code class="descname">history</code><em class="property"> = []</em><a class="headerlink" href="#pympress.document.Document.history" title="Permalink to this definition">¶</a></dt>
 <dd><p>History of pages we have visited</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.document.Document.lookup_label">
+<code class="descname">lookup_label</code><span class="sig-paren">(</span><em>label</em>, <em>prefix_unique=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.lookup_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.lookup_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a page from its label</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – the label we are searching for</li>
+<li><strong>prefix_unique</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – whether a prefix match should be unique, e.g. when the user is still typing</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the page</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -1245,6 +1286,12 @@ or to the current directory.</p>
 <dt id="pympress.document.Document.page_change">
 <code class="descname">page_change</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pympress.document.Document.page_change" title="Permalink to this definition">¶</a></dt>
 <dd><p>callback, to be connected to <a class="reference internal" href="#pympress.ui.UI.on_page_change" title="pympress.ui.UI.on_page_change"><code class="xref py py-func docutils literal notranslate"><span class="pre">on_page_change()</span></code></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.document.Document.page_labels">
+<code class="descname">page_labels</code><em class="property"> = {}</em><a class="headerlink" href="#pympress.document.Document.page_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of all the page labels</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1404,7 +1451,7 @@ Also, it has no “rendering” capability, and is made harmless by overriding i
 <dl class="staticmethod">
 <dt id="pympress.document.Link.build_closure">
 <em class="property">static </em><code class="descname">build_closure</code><span class="sig-paren">(</span><em>fun</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Link.build_closure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Link.build_closure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a lambda that calls fun(<a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs), with the current value of args and kwargs.
+<dd><p>Return a lambda that calls fun(*args, **kwargs), with the current value of args and kwargs.
 By creating the lambda in a new scope, we bind the arguments, thus creating a closure and remember the arguments.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1423,7 +1470,7 @@ By creating the lambda in a new scope, we bind the arguments, thus creating a cl
 
 <dl class="method">
 <dt id="pympress.document.Link.follow">
-<code class="descname">follow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Link.follow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Link.follow" title="Permalink to this definition">¶</a></dt>
+<code class="descname">follow</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pympress.document.Link.follow" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">function</span></code>, action to be perform to follow this link</p>
 </dd></dl>
 
@@ -1663,6 +1710,12 @@ if one exists, <a class="reference external" href="https://docs.python.org/3.4/l
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="pympress.document.Page.label">
+<code class="descname">label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Page.label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Page.label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the page label.</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="pympress.document.Page.links">
 <code class="descname">links</code><em class="property"> = []</em><a class="headerlink" href="#pympress.document.Page.links" title="Permalink to this definition">¶</a></dt>
@@ -1685,6 +1738,12 @@ if one exists, <a class="reference external" href="https://docs.python.org/3.4/l
 <dt id="pympress.document.Page.page">
 <code class="descname">page</code><em class="property"> = None</em><a class="headerlink" href="#pympress.document.Page.page" title="Permalink to this definition">¶</a></dt>
 <dd><p>Page handled by this class (instance of <a class="reference external" href="https://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page" title="(in Poppler 0.18 v0.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Page</span></code></a>)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.document.Page.page_label">
+<code class="descname">page_label</code><em class="property"> = None</em><a class="headerlink" href="#pympress.document.Page.page_label" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> representing the page label</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -2746,7 +2805,7 @@ widget names and its values are document types from ui.</p>
 
 <dl class="attribute">
 <dt id="pympress.pointer.Pointer.pointer">
-<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7f62163afaf8 (GdkPixbuf at 0x55a6d2a4ad80)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7f6b4831ce10 (GdkPixbuf at 0x55bd5daa2580)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/GdkPixbuf-2.0/classes/Pixbuf.html#GdkPixbuf.Pixbuf" title="(in GdkPixbuf 2.0 v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pixbuf</span></code></a> to read XML descriptions of GUIs and load them.</p>
 </dd></dl>
 
@@ -2926,9 +2985,9 @@ If it is an entry, then replace it with the label.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pympress.editable_label.EditableLabel.shortcut_key">
-<code class="descname">shortcut_key</code><em class="property"> = ''</em><a class="headerlink" href="#pympress.editable_label.EditableLabel.shortcut_key" title="Permalink to this definition">¶</a></dt>
-<dd><p>single uppercase character <a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> containing the key used as a shortcut for editing this button</p>
+<dt id="pympress.editable_label.EditableLabel.shortcut_keys">
+<code class="descname">shortcut_keys</code><em class="property"> = ''</em><a class="headerlink" href="#pympress.editable_label.EditableLabel.shortcut_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>uppercase <a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> of characters containing the keys used as shortcuts for editing this button</p>
 </dd></dl>
 
 <dl class="method">
@@ -2983,7 +3042,7 @@ Call this when the page_number module is initialized, but before needing the cal
 
 <dl class="attribute">
 <dt id="pympress.editable_label.EstimatedTalkTime.entry_ett">
-<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f62162ffee8 (GtkEntry at 0x55a6d2b42480)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
+<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f6b483599d8 (GtkEntry at 0x55bd5dba4480)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Entry.html#Gtk.Entry" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code></a> used to set the estimated talk time.</p>
 </dd></dl>
 
@@ -3054,7 +3113,7 @@ If it is an entry, then replace it with the label.</p>
 
 <dl class="class">
 <dt id="pympress.editable_label.PageNumber">
-<em class="property">class </em><code class="descclassname">pympress.editable_label.</code><code class="descname">PageNumber</code><span class="sig-paren">(</span><em>builder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#PageNumber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.PageNumber" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pympress.editable_label.</code><code class="descname">PageNumber</code><span class="sig-paren">(</span><em>builder</em>, <em>page_num_scroll</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#PageNumber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.PageNumber" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pympress.editable_label.EditableLabel" title="pympress.editable_label.EditableLabel"><code class="xref py py-class docutils literal notranslate"><span class="pre">pympress.editable_label.EditableLabel</span></code></a></p>
 <dl class="method">
 <dt id="pympress.editable_label.PageNumber.cancel">
@@ -3062,10 +3121,42 @@ If it is an entry, then replace it with the label.</p>
 <dd><p>Make the UI re-display the pages from before editing the current page.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="pympress.editable_label.PageNumber.changed_page_label">
+<code class="descname">changed_page_label</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#PageNumber.changed_page_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.PageNumber.changed_page_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the page number from the spinner and go to that page</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="pympress.editable_label.PageNumber.eb_cur">
 <code class="descname">eb_cur</code><em class="property"> = None</em><a class="headerlink" href="#pympress.editable_label.PageNumber.eb_cur" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/EventBox.html#Gtk.EventBox" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventBox</span></code></a> associated with the slide counter label in the Presenter window.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.editable_label.PageNumber.edit_label">
+<code class="descname">edit_label</code><em class="property"> = None</em><a class="headerlink" href="#pympress.editable_label.PageNumber.edit_label" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Entry.html#Gtk.Entry" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code></a> used to switch to another slide by typing its label.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.editable_label.PageNumber.enable_labels">
+<code class="descname">enable_labels</code><span class="sig-paren">(</span><em>enable</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#PageNumber.enable_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.PageNumber.enable_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow to use or ignore labels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>enable</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>) – Whether to enable labels</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.editable_label.PageNumber.find_label">
+<code class="descname">find_label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pympress.editable_label.PageNumber.find_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>callback, to be connected to <a class="reference internal" href="#pympress.document.Document.lookup_label" title="pympress.document.Document.lookup_label"><code class="xref py py-func docutils literal notranslate"><span class="pre">lookup_label()</span></code></a></p>
 </dd></dl>
 
 <dl class="method">
@@ -3081,6 +3172,12 @@ If it is an entry, then replace it with the label.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="pympress.editable_label.PageNumber.invert_scroll">
+<code class="descname">invert_scroll</code><em class="property"> = True</em><a class="headerlink" href="#pympress.editable_label.PageNumber.invert_scroll" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a> whether to scroll with the pages (True) or with the page numbers (False)</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pympress.editable_label.PageNumber.label_cur">
 <code class="descname">label_cur</code><em class="property"> = None</em><a class="headerlink" href="#pympress.editable_label.PageNumber.label_cur" title="Permalink to this definition">¶</a></dt>
 <dd><p>Slide counter <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Label.html#Gtk.Label" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a> for the current slide.</p>
@@ -3090,6 +3187,12 @@ If it is an entry, then replace it with the label.</p>
 <dt id="pympress.editable_label.PageNumber.label_last">
 <code class="descname">label_last</code><em class="property"> = None</em><a class="headerlink" href="#pympress.editable_label.PageNumber.label_last" title="Permalink to this definition">¶</a></dt>
 <dd><p>Slide counter <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Label.html#Gtk.Label" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a> for the last slide.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pympress.editable_label.PageNumber.label_sep">
+<code class="descname">label_sep</code><em class="property"> = None</em><a class="headerlink" href="#pympress.editable_label.PageNumber.label_sep" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Label.html#Gtk.Label" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a> separating <a class="reference internal" href="#pympress.editable_label.PageNumber.spin_cur" title="pympress.editable_label.PageNumber.spin_cur"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spin_cur</span></code></a> and <a class="reference internal" href="#pympress.editable_label.PageNumber.edit_label" title="pympress.editable_label.PageNumber.edit_label"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edit_label</span></code></a></p>
 </dd></dl>
 
 <dl class="attribute">
@@ -3134,6 +3237,12 @@ If it is an entry, then replace it with the label.</p>
 <dd><p>callback, to be connected to <a class="reference internal" href="#pympress.ui.UI.on_page_change" title="pympress.ui.UI.on_page_change"><code class="xref py py-func docutils literal notranslate"><span class="pre">on_page_change()</span></code></a></p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="pympress.editable_label.PageNumber.page_labels">
+<code class="descname">page_labels</code><em class="property"> = True</em><a class="headerlink" href="#pympress.editable_label.PageNumber.page_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a> holding whether we display or ignore page labels</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="pympress.editable_label.PageNumber.restore_label">
 <code class="descname">restore_label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#PageNumber.restore_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.PageNumber.restore_label" title="Permalink to this definition">¶</a></dt>
@@ -3169,13 +3278,27 @@ If it is an entry, then replace it with the label.</p>
 
 <dl class="method">
 <dt id="pympress.editable_label.PageNumber.swap_label_for_entry">
-<code class="descname">swap_label_for_entry</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#PageNumber.swap_label_for_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.PageNumber.swap_label_for_entry" title="Permalink to this definition">¶</a></dt>
+<code class="descname">swap_label_for_entry</code><span class="sig-paren">(</span><em>hint=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#PageNumber.swap_label_for_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.PageNumber.swap_label_for_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform the actual work of starting the editing.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pympress.editable_label.PageNumber.update_jump_label">
+<code class="descname">update_jump_label</code><span class="sig-paren">(</span><em>label</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#PageNumber.update_jump_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.PageNumber.update_jump_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the displayed page label.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The current page label</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="pympress.editable_label.PageNumber.update_page_numbers">
-<code class="descname">update_page_numbers</code><span class="sig-paren">(</span><em>cur_nb</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#PageNumber.update_page_numbers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.PageNumber.update_page_numbers" title="Permalink to this definition">¶</a></dt>
+<code class="descname">update_page_numbers</code><span class="sig-paren">(</span><em>cur_nb</em>, <em>label</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#PageNumber.update_page_numbers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.PageNumber.update_page_numbers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the displayed page numbers.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -3423,7 +3546,7 @@ Times are given in seconds. In between timestamps the color will interpolated li
 
 <dl class="attribute">
 <dt id="pympress.config.Config.layout">
-<code class="descname">layout</code><em class="property"> = {'highlight': {'resizeable': True, 'children': ['highlight', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.5508849557522124, 0.4491150442477876], 'orientation': 'vertical'}], 'proportions': [0.6708333333333333, 0.3291666666666667], 'orientation': 'horizontal'}, 'notes': {'resizeable': True, 'children': ['notes', {'resizeable': False, 'children': ['current', 'next'], 'orientation': 'vertical'}], 'proportions': [0.6, 0.4], 'orientation': 'horizontal'}, 'plain': {'resizeable': True, 'children': ['current', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.4944690265486726, 0.5055309734513274], 'orientation': 'vertical'}], 'proportions': [0.5833333333333334, 0.41666666666666663], 'orientation': 'horizontal'}}</em><a class="headerlink" href="#pympress.config.Config.layout" title="Permalink to this definition">¶</a></dt>
+<code class="descname">layout</code><em class="property"> = {'highlight': {'resizeable': True, 'children': ['highlight', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.5502857142857143, 0.44971428571428573], 'orientation': 'vertical'}], 'proportions': [0.6712962962962963, 0.3287037037037037], 'orientation': 'horizontal'}, 'notes': {'resizeable': True, 'children': ['notes', {'resizeable': False, 'children': ['current', 'next'], 'orientation': 'vertical'}], 'proportions': [0.6, 0.4], 'orientation': 'horizontal'}, 'plain': {'resizeable': True, 'children': ['current', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.5221238938053098, 0.47787610619469023], 'orientation': 'vertical'}], 'proportions': [0.5989583333333334, 0.40104166666666663], 'orientation': 'horizontal'}}</em><a class="headerlink" href="#pympress.config.Config.layout" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>-tree of presenter layouts for various modes</p>
 </dd></dl>
 
@@ -3581,7 +3704,7 @@ Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on 
 
 <dl class="attribute">
 <dt id="pympress.extras.Annotations.annotation_renderer">
-<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7f62162d5bd0 (GtkCellRendererText at 0x55a6d2b31150)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7f6b4833b5a0 (GtkCellRendererText at 0x55bd5db84150)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CellRendererText.html#Gtk.CellRendererText" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CellRendererText</span></code></a> Text renderer for the annotations</p>
 </dd></dl>
 
@@ -3799,7 +3922,7 @@ Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on 
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>media_id</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – A unique idientifier of the media to start playing</li>
-<li><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – the timestamp, in ms</li>
+<li><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – the timestamp, in s</li>
 </ul>
 </td>
 </tr>
@@ -4466,7 +4589,7 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – the timestamp, in ms</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – the timestamp, in s</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a> iff this function should be run again (<a class="reference external" href="https://lazka.github.io/pgi-docs/GLib-2.0/functions.html#GLib.idle_add" title="(in GLib 2.0 v2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">idle_add()</span></code></a> convention)</td>
 </tr>
@@ -4527,34 +4650,6 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filepath</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The path to the media file path</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pympress.media_overlay.VLCVideo.update_progress">
-<code class="descname">update_progress</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#VLCVideo.update_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.VLCVideo.update_progress" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the toolbar slider to the current time.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vlc_evt</strong> (<a class="reference external" href="https://www.olivieraubert.net/vlc/python-ctypes/doc/vlc.Event-class.html" title="(in python-vlc 2.2 v2.2.0-git-14816-gda488a7751100)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a>) – The event that triggered the function call (if any)</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pympress.media_overlay.VLCVideo.update_range">
-<code class="descname">update_range</code><span class="sig-paren">(</span><em>vlc_evt=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#VLCVideo.update_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.VLCVideo.update_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the toolbar slider size.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vlc_evt</strong> (<a class="reference external" href="https://www.olivieraubert.net/vlc/python-ctypes/doc/vlc.Event-class.html" title="(in python-vlc 2.2 v2.2.0-git-14816-gda488a7751100)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code></a>) – The event that triggered the function call (if any)</td>
 </tr>
 </tbody>
 </table>
@@ -4652,7 +4747,7 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>) – the timestamp, in ms</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – the timestamp, in s</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/constants.html#True" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a> iff this function should be run again (<code class="xref py py-meth docutils literal notranslate"><span class="pre">idle_add()</span></code> convention)</td>
 </tr>
@@ -4690,7 +4785,7 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>sc</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code></a>) – The scale whose position we are formatting</li>
-<li><strong>prog</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – The position of the <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code></a>, as a float between 0. and 1.</li>
+<li><strong>prog</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – The position of the <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code></a>, i.e. the number of seconds elapsed</li>
 </ul>
 </td>
 </tr>
@@ -4751,49 +4846,13 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <dl class="attribute">
 <dt id="pympress.media_overlay.VideoOverlay.maxval">
 <code class="descname">maxval</code><em class="property"> = 1</em><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.maxval" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#int" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a> holding the max time in ms</p>
+<dd><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a> holding the max time in s</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pympress.media_overlay.VideoOverlay.media_overlay">
 <code class="descname">media_overlay</code><em class="property"> = None</em><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.media_overlay" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/VBox.html#Gtk.VBox" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">VBox</span></code></a> that contains all the elements to be overlayed.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pympress.media_overlay.VideoOverlay.mouse_click">
-<code class="descname">mouse_click</code><span class="sig-paren">(</span><em>widget</em>, <em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#VideoOverlay.mouse_click"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.mouse_click" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callback to update the position of the video when the user moved the progress bar.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>widget</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code></a>) – The range that was clicked</li>
-<li><strong>event</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gdk-3.0/classes/EventButton.html#Gdk.EventButton" title="(in Gdk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventButton</span></code></a>) – The event corresponding to the mouse click release release</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pympress.media_overlay.VideoOverlay.mouse_motion">
-<code class="descname">mouse_motion</code><span class="sig-paren">(</span><em>widget</em>, <em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#VideoOverlay.mouse_motion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.mouse_motion" title="Permalink to this definition">¶</a></dt>
-<dd><p>Callback to update the position of the video when the user moved the progress bar.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>widget</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code></a>) – The range that was clicked</li>
-<li><strong>event</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gdk-3.0/classes/EventButton.html#Gdk.EventButton" title="(in Gdk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventButton</span></code></a>) – The event corresponding to the mouse click release release</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -4837,7 +4896,7 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>rng</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Range.html#Gtk.Range" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Range</span></code></a>) – The range corresponding to the scale whose position we are formatting</li>
 <li><strong>sc</strong> (<a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code></a>) – The scale whose position we are updating</li>
-<li><strong>val</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – The position of the <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code></a>, which is the number of milliseconds elapsed in the video</li>
+<li><strong>val</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – The position of the <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Scale.html#Gtk.Scale" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scale</span></code></a>, which is the number of seconds elapsed in the video</li>
 </ul>
 </td>
 </tr>
@@ -4892,7 +4951,7 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <dl class="attribute">
 <dt id="pympress.media_overlay.VideoOverlay.time_format">
 <code class="descname">time_format</code><em class="property"> = '{:01}:{:02}'</em><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.time_format" title="Permalink to this definition">¶</a></dt>
-<dd><p><a href="#id5"><span class="problematic" id="id6">**</span></a>Format of the video time, defaults to m* – ss, changed to m* – ss / m:ss when the max time is known</p>
+<dd><p><a href="#id1"><span class="problematic" id="id2">**</span></a>Format of the video time, defaults to m* – ss, changed to “m* – ss / m:ss” when the max time is known</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -4909,6 +4968,34 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>page_type</strong> (<a class="reference internal" href="#pympress.document.PdfPage" title="pympress.document.PdfPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">PdfPage</span></code></a>) – the part of the page to display</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.media_overlay.VideoOverlay.update_progress">
+<code class="descname">update_progress</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#VideoOverlay.update_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.update_progress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the toolbar slider to the current time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – The time in this video in s</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.media_overlay.VideoOverlay.update_range">
+<code class="descname">update_range</code><span class="sig-paren">(</span><em>max_time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/media_overlay.html#VideoOverlay.update_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.update_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the toolbar slider size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>max_time</strong> (<a class="reference external" href="https://docs.python.org/3.4/library/functions.html#float" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – The maximum time in this video in s</td>
 </tr>
 </tbody>
 </table>
@@ -4980,7 +5067,7 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-320-g0c50fde&#39;',
+            VERSION:'b&#39;0.6-336-gdf6dc5e&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
