@@ -32,12 +32,12 @@ except ImportError:
       def convert_file(filename, ext):
             copyfile(filename, os.path.splitext(filename)[0] + '.' + ext)
 
-#get version
+# Get version
 pkg_meta = importlib.import_module('pympress.__init__')
 
-setup(name='pympress',
+setup(name='Pympress',
       version=pkg_meta.__version__,
-      description='A simple dual-screen PDF reader designed for presentations',
+      description=pkg_meta.__doc__.split('\n')[0],
       long_description = convert_file('README.md', 'rst'),
       author='Cimbali, Thomas Jost, Christof Rath, Epithumia',
       author_email='me@cimba.li',

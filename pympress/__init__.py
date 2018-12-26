@@ -19,15 +19,18 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+''' A simple and powerful dual-screen PDF reader designed for presentations.
+'''
+
 #
 # DON'T IMPORT ANYTHING HERE (OR YOU WILL BREAK setup.py)
 #
 
 __version__ = '1.2.0'
-__copyright__= """2009, 2010 Thomas Jost <thomas.jost@gmail.com>
-2015-2017 Cimbali <me@cimba.li>
+__author__ = '''2009, 2010 Thomas Jost <thomas.jost@gmail.com>
+2015-2019 Cimbali <me@cimba.li>
 2016 Christoph Rath <christof.rath@iaik.tugraz.at>
 2016 Epithumia <endless@airelle.info>
-"""
+'''
 
 __all__ = ['builder', 'config', 'document', 'editable_label', 'extras', 'media_overlay', 'pointer', 'scribble', 'surfacecache', 'talk_time', 'ui', 'util']
