@@ -184,7 +184,7 @@ class UI(builder.Builder):
         self.zoom = extras.Zoom(self)
         self.scribbler = scribble.Scribbler(self.config, self, self.notes_mode)
         self.annotations = extras.Annotations(self)
-        self.medias = extras.Media(self)
+        self.medias = extras.Media(self, self.config)
         self.laser = pointer.Pointer(self.config, self)
         self.est_time = editable_label.EstimatedTalkTime(self)
         self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))

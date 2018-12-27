@@ -162,13 +162,12 @@ class GstOverlay(base.VideoOverlay):
 
 
     @classmethod
-    def setup_backend(cls):
+    def setup_backend(cls, gst_opts = []):
         """ Prepare/check the Gst backend
 
         Returns:
             `str`: the version of Gst used by the backend
         """
-        gst_opts = []
         Gst.init(gst_opts)
 
         return Gst.version_string()

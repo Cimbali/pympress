@@ -145,16 +145,16 @@ class VlcOverlay(base.VideoOverlay):
 
 
     @classmethod
-    def setup_backend(cls):
+    def setup_backend(cls, vlc_opts = ['--no-video-title-show']):
         """ Prepare/check the VLC backend
+
+        Args:
+            vlc_opts (`list`): the arguments for starting vlc
 
         Returns:
             `str`: the version of VLC used by the backend
         """
-        vlc_opts=['--no-video-title-show']
-        if IS_POSIX:
-            vlc_opts.append('--no-xlib')
-        elif IS_WINDOWS and vlc.plugin_path:
+        if IS_WINDOWS and vlc.plugin_path:
             # let python find the DLLs
             os.environ['PATH'] = vlc.plugin_path + ';' + os.environ['PATH']
 

@@ -89,7 +89,7 @@ class Config(configparser.ConfigParser, object): # python 2 fix
     #: `dict`-tree of presenter layouts for various modes
     layout = {}
 
-    #: Map of strings that are the valid representations of widgets from the presenter window that can be dynamically rearranged, mapping to their names
+    #: `dict` of strings that are the valid representations of widgets from the presenter window that can be dynamically rearranged, mapping to their names
     placeable_widgets = {"notes": "p_frame_notes", "current": "p_frame_cur", "next": "p_frame_next", "annotations": "p_frame_annot", "highlight": "scribble_overlay"}
 
     #: Map of (keyval, Gdk.ModifierType) to string, which representing the shortcuts for each command
@@ -168,6 +168,17 @@ class Config(configparser.ConfigParser, object): # python 2 fix
                 parsed.remove((0, 0))
 
             config.shortcuts.update({s: command for s in parsed})
+
+
+    def getlist(self, *args):
+        """ Parse a config value and return the list by splitting the value on commas.
+
+        i.e. bar = foo,qux  returns the list ['foo', 'qux']
+
+        Returns:
+            `list`: a config value split into a list.
+        """
+        return [t.strip() for t in self.get(*args).split(',') if t.strip()]
 
 
     def save_config(self):

@@ -41,7 +41,7 @@ from collections import defaultdict
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-from pympress import document, builder
+from pympress import document, builder, config
 from pympress.media_overlays.base import VideoOverlay
 
 
@@ -234,13 +234,15 @@ class Media(object):
     # `list` of info on backend versions
     _backend_versions = []
 
-    def __init__(self, builder):
+    def __init__(self, builder, conf):
         """ Set up the required widgets and queue an initial draw.
 
         Args:
             builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+            conf (:class:`~pympress.config.Config`): An object containing the preferences
         """
         super(Media, self).__init__()
+        self._setup_backends(conf)
         builder.load_widgets(self)
 
         self.c_overlay.queue_draw()
@@ -371,13 +373,15 @@ class Media(object):
 
 
     @classmethod
-    def _setup_backends(cls):
+    def _setup_backends(cls, conf = None):
         """ Load the backends for video overlays
         """
         if cls._backends_setup:
             return
 
         cls._backends_setup = True
+        if conf is None:
+            conf = config.Config()
 
         try:
             from pympress.media_overlays.gif_backend import GifOverlay
@@ -391,26 +395,35 @@ class Media(object):
 
 
         try:
-            from pympress.media_overlays.gst_backend import GstOverlay
+            if conf.getboolean('gst', 'enabled'):
+                from pympress.media_overlays.gst_backend import GstOverlay
 
-            version = GstOverlay.setup_backend()
+                version = GstOverlay.setup_backend(conf.getlist('gst', 'init_options'))
 
-            # make GstOverlay the default
-            cls._backends = defaultdict(lambda: GstOverlay, cls._backends)
-            cls._backend_versions.append(version)
+                types_list = conf.getlist('gst', 'mime_types')
+                cls._backends.update({mt: GstOverlay for mt in types_list})
+                cls._backend_versions.append(version)
+
+                # make GstOverlay the default
+                if not types_list:
+                    cls._backends = defaultdict(lambda: GstOverlay, cls._backends)
 
         except: logger.exception(_('Video support using {} is disabled.').format('GStreamer'))
 
 
-
         try:
-            from pympress.media_overlays.vlc_backend import VlcOverlay
+            if conf.getboolean('vlc', 'enabled'):
+                from pympress.media_overlays.vlc_backend import VlcOverlay
 
-            version = VlcOverlay.setup_backend()
+                version = VlcOverlay.setup_backend(conf.getlist('vlc', 'init_options'))
 
-            # make VlcOverlay the (new) default
-            cls._backends = defaultdict(lambda: VlcOverlay, cls._backends)
-            cls._backend_versions.append(version)
+                types_list = conf.getlist('vlc', 'mime_types')
+                cls._backends.update({mt: VlcOverlay for mt in types_list})
+                cls._backend_versions.append(version)
+
+                # make VlcOverlay the (new) default
+                if not types_list:
+                    cls._backends = defaultdict(lambda: VlcOverlay, cls._backends)
 
         except: logger.exception(_("Video support using {} is disabled.").format('VLC'))
 
