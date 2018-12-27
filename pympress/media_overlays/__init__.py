@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-#       __init__.py
+#       media_overlays/__init__.py
 #
-#       Copyright 2015 Cimbali <me@cimba.li>
+#       Copyright 2018 Cimbali <me@cimba.li>
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -19,18 +19,8 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-''' A simple and powerful dual-screen PDF reader designed for presentations.
+''' Backends for video overlay widgets
 '''
 
-#
-# DON'T IMPORT ANYTHING HERE (OR YOU WILL BREAK setup.py)
-#
+__all__ = ['base', 'gif_backend', 'gst_backend', 'vlc_backend']
 
-__version__ = '1.4.1'
-__author__ = '''2009, 2010 Thomas Jost <thomas.jost@gmail.com>
-2015-2019 Cimbali <me@cimba.li>
-2016 Christoph Rath <christof.rath@iaik.tugraz.at>
-2016 Epithumia <endless@airelle.info>
-'''
-
-__all__ = ['builder', 'config', 'document', 'editable_label', 'extras', 'media_overlays', 'pointer', 'scribble', 'surfacecache', 'talk_time', 'ui', 'util']

@@ -29,7 +29,6 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
-import sys
 import os.path
 import gi
 import cairo
@@ -37,11 +36,13 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib, Pango
 
 import mimetypes
+from collections import defaultdict
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-from pympress import media_overlay, document, builder
+from pympress import document, builder
+from pympress.media_overlays.base import VideoOverlay
 
 
 class TimingReport(builder.Builder):
@@ -218,13 +219,20 @@ class Annotations(object):
 
 
 class Media(object):
-    #: `dict` of :class:`~pympress.media_overlay.VideoOverlay` ready to be added on top of the slides
+    #: `dict` of :class:`~pympress.media_overlays.base.VideoOverlay` ready to be added on top of the slides
     _media_overlays = {}
 
     #: :class:`~Gtk.Overlay` for the Content window.
     c_overlay = None
     #: :class:`~Gtk.Overlay` for the Presenter window.
     p_overlay = None
+
+    #: static `bool` tracking whether we've already done the one-time setup
+    _backends_setup = False
+    #: `dict` of mime type as `str` to the `type` of a class inheriting from :class:`~pympress.media_overlays.base.VideoOverlay`
+    _backends = {}
+    # `list` of info on backend versions
+    _backend_versions = []
 
     def __init__(self, builder):
         """ Set up the required widgets and queue an initial draw.
@@ -270,7 +278,7 @@ class Media(object):
 
             if media_id not in self._media_overlays:
                 mime_type, enc = mimetypes.guess_type(filename)
-                factory = media_overlay.VideoOverlay.get_factory(mime_type)
+                factory = self.get_factory(mime_type)
 
                 if not factory:
                     logger.warning('No available overlay for mime type {}, ignoring media {}'.format(mime_type, filename))
@@ -279,7 +287,7 @@ class Media(object):
                 def get_curryfied_callback(name, media_id = media_id):
                     """ Return a callback for signal 'name' that has the value 'media_id' pre-set, and remembered by this closure.
                     """
-                    return lambda *args: media_overlay.VideoOverlay.find_callback_handler(self, name)(media_id, *args)
+                    return lambda *args: VideoOverlay.find_callback_handler(self, name)(media_id, *args)
 
                 v_da_c = factory(self.c_overlay, show_controls, relative_margins, page_type, get_curryfied_callback)
                 v_da_p = factory(self.p_overlay, True, relative_margins, page_type, get_curryfied_callback)
@@ -362,14 +370,72 @@ class Media(object):
         GLib.idle_add(lambda: any(p.do_set_time(t) for p in self._media_overlays[media_id]))
 
 
-    @staticmethod
-    def backend_version():
+    @classmethod
+    def _setup_backends(cls):
+        """ Load the backends for video overlays
+        """
+        if cls._backends_setup:
+            return
+
+        cls._backends_setup = True
+
+        try:
+            from pympress.media_overlays.gif_backend import GifOverlay
+
+            version = GifOverlay.setup_backend()
+
+            cls._backends['image/gif'] = GifOverlay
+            cls._backend_versions.append(version)
+
+        except: logger.exception(_('Video support using {} is disabled.').format('Overlay'))
+
+
+        try:
+            from pympress.media_overlays.gst_backend import GstOverlay
+
+            version = GstOverlay.setup_backend()
+
+            # make GstOverlay the default
+            cls._backends = defaultdict(lambda: GstOverlay, cls._backends)
+            cls._backend_versions.append(version)
+
+        except: logger.exception(_('Video support using {} is disabled.').format('GStreamer'))
+
+
+
+        try:
+            from pympress.media_overlays.vlc_backend import VlcOverlay
+
+            version = VlcOverlay.setup_backend()
+
+            # make VlcOverlay the (new) default
+            cls._backends = defaultdict(lambda: VlcOverlay, cls._backends)
+            cls._backend_versions.append(version)
+
+        except: logger.exception(_("Video support using {} is disabled.").format('VLC'))
+
+
+    @classmethod
+    def backend_version(cls):
         """ Returns which backend is used.
 
         Returns:
-            `str`: The name and version of the backend.
+            `str`: The name and version of the backend(s).
         """
-        return media_overlay.VideoOverlay.backend_version()
+        cls._setup_backends()
+        return ', '.join(cls._backend_versions)
+
+
+    @classmethod
+    def get_factory(cls, mime_type):
+        """ Returns a class of type :attr:`~_backend`
+        """
+        cls._setup_backends()
+        try: # NB don't get(mime_type, None) so that a default can be set
+            return cls._backends[mime_type]
+        except KeyError:
+            return None
+
 
 
 class Cursor(object):

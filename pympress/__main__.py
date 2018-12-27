@@ -80,7 +80,7 @@ except ModuleNotFoundError:
 
 
 # Finally the real deal: load pympress modules, handle command line args, and start up
-from pympress import media_overlay, document, ui
+from pympress import extras, document, ui
 
 
 def usage():
@@ -156,7 +156,7 @@ def main(argv = sys.argv[1:]):
             '; GLib {}.{}.{}'.format(GLib.MAJOR_VERSION, GLib.MINOR_VERSION, GLib.MICRO_VERSION),
             '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
             '; Cairo', ui.cairo.cairo_version_string(), ', pycairo', ui.cairo.version,
-            '; Media:', media_overlay.VideoOverlay.backend_version()
+            '; Media:', extras.Media.backend_version()
         ]))
 
     logger.setLevel(log_level)
