@@ -47,7 +47,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import GObject, Gtk, Gdk, GLib
 
 
-from pympress import __main__, document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, editable_label
+from pympress import document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, editable_label
 
 
 

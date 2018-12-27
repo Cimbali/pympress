@@ -38,6 +38,14 @@ import platform
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename=os.path.join(tempfile.gettempdir(), 'pympress.log'), level=logging.DEBUG)
 
+# Catch all uncaught exceptions in the log file:
+def uncaught_handler(*exc_info):
+    logger.critical('Uncaught exception:\n{}'.format(logging.Formatter().formatException(exc_info)))
+    sys.__excepthook__(*exc_info)
+
+sys.excepthook = uncaught_handler
+
+
 from pympress import util
 
 if util.IS_WINDOWS:
@@ -51,13 +59,6 @@ gettext.install('pympress', util.get_locale_dir())
 
 from pympress import media_overlay, document, ui
 
-
-# Catch all uncaught exceptions in the log file:
-def uncaught_handler(*exc_info):
-    logger.critical('Uncaught exception:\n{}'.format(logging.Formatter().formatException(exc_info)))
-    sys.__excepthook__(*exc_info)
-
-sys.excepthook = uncaught_handler
 
 def usage():
     print(_("Usage: {} [options] <presentation_file>").format(sys.argv[0]))
