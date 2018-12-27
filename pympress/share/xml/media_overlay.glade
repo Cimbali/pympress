@@ -90,7 +90,6 @@
             <property name="value_pos">right</property>
             <signal name="change-value" handler="progress_moved" swapped="no"/>
             <signal name="format-value" handler="format_millis" swapped="no"/>
-            <signal name="motion-notify-event" handler="mouse_motion" swapped="no"/>
           </object>
           <packing>
             <property name="expand">True</property>
