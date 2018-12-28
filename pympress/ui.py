@@ -199,6 +199,7 @@ class UI(builder.Builder):
 
         self.make_cwin()
         self.make_pwin()
+        self.shortcuts_window.set_transient_for(self.p_win)
 
         self.connect_signals(self)
 

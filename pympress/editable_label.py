@@ -483,7 +483,7 @@ class EstimatedTalkTime(EditableLabel):
         return Gtk.Entry.do_key_press_event(self.entry_ett, event)
 
 
-    def swap_label_for_entry(self):
+    def swap_label_for_entry(self, *args):
         """ Perform the actual work of starting the editing.
         """
         self.stop_editing_page_number()

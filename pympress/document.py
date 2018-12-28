@@ -351,7 +351,8 @@ class Page(object):
             dest_type = action.goto_dest.dest.type
             if dest_type == Poppler.DestType.NAMED:
                 dest = self.parent.doc.find_dest(action.goto_dest.dest.named_dest)
-                fun = Link.build_closure(self.parent.goto, dest.page_num - 1)
+                if dest:
+                    fun = Link.build_closure(self.parent.goto, dest.page_num - 1)
             elif dest_type != Poppler.DestType.UNKNOWN:
                 fun = Link.build_closure(self.parent.goto, action.goto_dest.dest.page_num - 1)
 
