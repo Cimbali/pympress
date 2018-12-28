@@ -476,6 +476,7 @@ class UI(builder.Builder):
             self.doc = document.Document.create(self, docpath)
 
             if not reloading and docpath:
+                Gtk.RecentManager.get_default().add_item(self.doc.get_uri())
                 util.FileWatcher.watch_file(docpath, self.reload_document)
 
         except GLib.Error:

@@ -662,6 +662,16 @@ class Document(object):
 
 
     @staticmethod
+    def path_to_uri(path):
+        # Do not trust urlsplit, manually check we have an URI
+        pos = path.index(':') if ':' in path else -1
+        if path[pos:pos+3] == '://' or (pos > 1 and set(path[:pos]) <= scheme_chars):
+            return path
+        else:
+            return urljoin('file:', pathname2url(path))
+
+
+    @staticmethod
     def create(builder, path, page=0):
         """ Initializes a Document by passing it a :class:`~Poppler.Document`
 
@@ -676,12 +686,7 @@ class Document(object):
         if path is None:
             doc = EmptyDocument()
         else:
-            # Do not trust urlsplit, manually check we have an URI
-            pos = path.index(':') if ':' in path else -1
-            if path[pos:pos+3] == '://' or (pos > 1 and set(path[:pos]) <= scheme_chars):
-                uri = path
-            else:
-                uri = urljoin('file:', pathname2url(path))
+            uri = Document.path_to_uri(path)
             poppler_doc = Poppler.Document.new_from_file(uri, None)
             doc = Document(builder, poppler_doc, path, page)
 
@@ -867,6 +872,15 @@ class Document(object):
 
         self.hist_pos -= 1
         self._do_page_change(self.history[self.hist_pos])
+
+
+    def get_uri(self):
+        """
+
+        Returns:
+            `str`: the URI to the file currently opened.
+        """
+        return self.path_to_uri(self.path)
 
 
     def get_full_path(self, filename):
