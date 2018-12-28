@@ -39,8 +39,6 @@ logger = logging.getLogger(__name__)
 
 import os.path, sys
 
-import pkg_resources
-
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
