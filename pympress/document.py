@@ -855,6 +855,28 @@ class Document(object):
         self.goto(self.nb_pages-1)
 
 
+    def label_next(self, *args):
+        """ Switch to the next page with different label
+        """
+        try:
+            dest = min(page for page in self.page_labels.values() if page > self.cur_page)
+        except ValueError:
+            pass
+        else:
+            self.goto(dest)
+
+
+    def label_prev(self, *args):
+        """ Switch to the previous page with different label
+        """
+        try:
+            dest = max(page for page in self.page_labels.values() if page < self.cur_page)
+        except ValueError:
+            pass
+        else:
+            self.goto(dest)
+
+
     def hist_next(self, *args):
         """ Switch to the page we viewed next
         """

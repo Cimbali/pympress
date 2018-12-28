@@ -874,10 +874,14 @@ class UI(builder.Builder):
         if name == 'space' and self.talk_time.unpause():
             # first space unpauses, next space(s) advance by one page
             pass
-        elif name in ['Right', 'Down', 'Page_Down', 'space']:
+        elif name in ['Right', 'Down', 'space']:
             self.doc.goto_next()
-        elif name in ['Left', 'Up', 'Page_Up', 'BackSpace']:
+        elif name in ['Left', 'Up', 'BackSpace']:
             self.doc.goto_prev()
+        elif name == 'Page_Down':
+            self.doc.label_next()
+        elif name == 'Page_Up':
+            self.doc.label_prev()
         elif name == 'Home':
             self.doc.goto_home()
         elif name == 'End':

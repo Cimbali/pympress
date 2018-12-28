@@ -132,6 +132,10 @@ msgctxt "shortcut window"
 msgid "Next slide"
 msgstr ""
 
+msgctxt "shortcut window"
+msgid "Next slide with different label"
+msgstr ""
+
 msgid "No action was defined for this link"
 msgstr "Pro tento odkaz nebyla definována žádná akce"
 
@@ -185,6 +189,10 @@ msgstr "Prezentace na celou obrazovku"
 
 msgctxt "shortcut window"
 msgid "Previous slide"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Previous slide with different label"
 msgstr ""
 
 msgid "Pympress Content"

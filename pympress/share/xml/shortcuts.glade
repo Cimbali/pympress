@@ -9,7 +9,7 @@
         <property name="visible">1</property>
         <property name="section-name">navigating</property>
         <property name="title" translatable="yes" context="shortcut window">Presentation</property>
-        <property name="max-height">15</property>
+        <property name="max-height">16</property>
 
         <child>
           <object class="GtkShortcutsGroup">
@@ -19,7 +19,7 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">Right Down space Page_Down</property>
+                <property name="accelerator">Right Down space</property>
                 <property name="title" translatable="yes" context="shortcut window">Next slide</property>
               </object>
             </child>
@@ -27,8 +27,24 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">Left Up BackSpace Page_Up</property>
+                <property name="accelerator">Left Up BackSpace</property>
                 <property name="title" translatable="yes" context="shortcut window">Previous slide</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">Page_Down</property>
+                <property name="title" translatable="yes" context="shortcut window">Next slide with different label</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">Page_Up</property>
+                <property name="title" translatable="yes" context="shortcut window">Previous slide with different label</property>
               </object>
             </child>
 
@@ -61,6 +77,38 @@
                 <property name="visible">1</property>
                 <property name="accelerator">j</property>
                 <property name="title" translatable="yes" context="shortcut window">Jump to page label</property>
+              </object>
+            </child>
+
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="visible">1</property>
+            <property name="title" translatable="yes" context="shortcut window">Timers</property>
+
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">p Pause</property>
+                <property name="title" translatable="yes" context="shortcut window">Play/pause timer</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">r</property>
+                <property name="title" translatable="yes" context="shortcut window">Reset timer</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">t</property>
+                <property name="title" translatable="yes" context="shortcut window">Set estimated talk time</property>
               </object>
             </child>
 
@@ -125,38 +173,6 @@
                 <property name="visible">1</property>
                 <property name="accelerator">Escape</property>
                 <property name="title" translatable="yes" context="shortcut window">Cancel goto/jump/highlighting/zooming</property>
-              </object>
-            </child>
-
-          </object>
-        </child>
-
-        <child>
-          <object class="GtkShortcutsGroup">
-            <property name="visible">1</property>
-            <property name="title" translatable="yes" context="shortcut window">Timers</property>
-
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="visible">1</property>
-                <property name="accelerator">p Pause</property>
-                <property name="title" translatable="yes" context="shortcut window">Play/pause timer</property>
-              </object>
-            </child>
-
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="visible">1</property>
-                <property name="accelerator">r</property>
-                <property name="title" translatable="yes" context="shortcut window">Reset timer</property>
-              </object>
-            </child>
-
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="visible">1</property>
-                <property name="accelerator">t</property>
-                <property name="title" translatable="yes" context="shortcut window">Set estimated talk time</property>
               </object>
             </child>
 

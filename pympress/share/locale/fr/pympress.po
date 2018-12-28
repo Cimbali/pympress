@@ -133,6 +133,10 @@ msgctxt "shortcut window"
 msgid "Next slide"
 msgstr "Prochaine diapo"
 
+msgctxt "shortcut window"
+msgid "Next slide with different label"
+msgstr "Prochaine diapo avec numéro de page différent"
+
 msgid "No action was defined for this link"
 msgstr "Pas d'action définie pour ce lien"
 
@@ -187,6 +191,10 @@ msgstr "Présenteur en plein écran"
 msgctxt "shortcut window"
 msgid "Previous slide"
 msgstr "Diapo précédente"
+
+msgctxt "shortcut window"
+msgid "Previous slide with different label"
+msgstr "Précédente diapo avec numéro de page différent"
 
 msgid "Pympress Content"
 msgstr "Pympress Contenu"

@@ -133,6 +133,10 @@ msgctxt "shortcut window"
 msgid "Next slide"
 msgstr ""
 
+msgctxt "shortcut window"
+msgid "Next slide with different label"
+msgstr ""
+
 msgid "No action was defined for this link"
 msgstr "Dla tego odnośnika nie zdefiniowano żadnych działań"
 
@@ -186,6 +190,10 @@ msgstr "Okno prelegenta w trybie pełnego ekranu"
 
 msgctxt "shortcut window"
 msgid "Previous slide"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Previous slide with different label"
 msgstr ""
 
 msgid "Pympress Content"
