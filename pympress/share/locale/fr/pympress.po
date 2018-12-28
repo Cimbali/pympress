@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Pympress v1.1.2\n"
+"Project-Id-Version: Pympress v1.2.1\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
 "POT-Creation-Date: 2016-10-24 15:50+0200\n"
 "PO-Revision-Date: 2016-07-30 19:34+0200\n"
@@ -20,6 +20,10 @@ msgstr "(et secondes, optionellement)"
 msgid "(paused)"
 msgstr "(en pause)"
 
+msgctxt "shortcut window"
+msgid "Additional features"
+msgstr "Fonctionnalités supplémentaires"
+
 msgid "Adjust alignment of slides in projector screen"
 msgstr "Ajuster l'alignement des diapos sur l'écran du projecteur"
 
@@ -32,8 +36,23 @@ msgstr "Notes"
 msgid "Big buttons"
 msgstr "Gros boutons"
 
+msgctxt "shortcut window"
+msgid "Blank screen"
+msgstr "Masquer l'écran"
+
+msgid "Cairo can not draw gif"
+msgstr "Cairo ne peut pas afficher le gif"
+
+msgctxt "shortcut window"
+msgid "Cancel goto/jump/highlighting/zooming"
+msgstr "Annuler modes aller à/feutre/zoom"
+
 msgid "Clock"
 msgstr "Horloge"
+
+msgctxt "shortcut window"
+msgid "Close file"
+msgstr "Fermer le fichier"
 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr "Attention: La fenêtre de contenu et de présenteur ne peuvent être sur le même écran pour démarrer en plein écran !"
@@ -62,20 +81,19 @@ msgstr "Attention: Impossible de récupérer l'état de l'économiseur d'écran:
 msgid "Current slide"
 msgstr "Diapo actuelle"
 
-msgid "ERROR Unknown widget to start fullscreen: {}"
-msgstr "ERREUR élement visuel inconnu à mettre en plein écran: {}"
-
-msgid "ERROR no action defined for this link!"
-msgstr "ERREUR pas d'action définie pour ce lien !"
-
 msgid "Error loading icon for about window"
 msgstr "Erreur de chargement des icônes"
 
 msgid "Error opening the file \"{}\""
 msgstr "Impossible d'ouvrir le fichier \"{}\""
 
-msgid "Error: access denied when trying to access screen saver settings in registry!"
-msgstr "Erreur: accès refusé lors de la modification des paramètres d'économiseur d'écran dans le registre !"
+msgctxt "shortcut window"
+msgid "First slide"
+msgstr "Première diapo"
+
+msgctxt "shortcut window"
+msgid "Go to page number"
+msgstr "Aller au numéro de page"
 
 msgid "GtkImage gif player"
 msgstr "lecteur de gif GtkImage"
@@ -89,22 +107,34 @@ msgstr "Mauvais niveau de log \"{}\", choisissez l'un de {}"
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Templs invalude (mm ou mm:ss attendu), \"{}\" reçu"
 
+msgctxt "shortcut window"
+msgid "Jump to page label"
+msgstr "Aller à la page"
+
+msgctxt "shortcut window"
+msgid "Last slide"
+msgstr "Prochaine diapo"
+
+msgctxt "shortcut window"
+msgid "Manage files"
+msgstr "Gestion des fichiers"
+
 msgid "Media support uses {}."
 msgstr "Les vidéos sont prises en charge par {}"
 
+msgctxt "shortcut window"
+msgid "Navigating"
+msgstr "Navigation"
+
+msgid "Next slide"
+msgstr "Prochaine diapo"
+
+msgctxt "shortcut window"
 msgid "Next slide"
 msgstr "Prochaine diapo"
 
 msgid "No action was defined for this link"
 msgstr "Pas d'action définie pour ce lien"
-
-msgid ""
-"No file selected!\n"
-"\n"
-"You can specify the PDF file to open on the command line if you don't want to use the \"Open File\" dialog."
-msgstr ""
-"Pas de fichier sélectionné !\n"
-"Vous pouvez indiquer le fichier PDF à ouvrir en ligne de commande si vous ne voulez pas utiliser la boîte de dialogue \"Ouvrir un fichier\""
 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
 msgstr "Impossible de mettre la fenêtre contenu ou présenteur en plein écran car il n'y a qu'un moniteur"
@@ -112,14 +142,24 @@ msgstr "Impossible de mettre la fenêtre contenu ou présenteur en plein écran 
 msgid "Notes"
 msgstr "Notes"
 
+msgid "Notes position"
+msgstr "Position des notes"
+
 msgid "Open _Recent"
 msgstr "_Récemment ouverts"
+
+msgctxt "shortcut window"
+msgid "Open file"
+msgstr "Ouvrir le fichier"
 
 msgid "Open..."
 msgstr "Ouvrir..."
 
 msgid "Options:"
 msgstr "Otions:"
+
+msgid "Overrides the detection from the file."
+msgstr "Ce paramètre l'emporte sur la détection automatique des notes."
 
 msgid "PDF files"
 msgstr "Fichiers PDF"
@@ -130,11 +170,23 @@ msgstr "Pause"
 msgid "Play"
 msgstr "Lire"
 
+msgctxt "shortcut window"
+msgid "Play/pause timer"
+msgstr "Mettre le minuteur en pause"
+
 msgid "Pointer"
 msgstr "Pointeur"
 
+msgctxt "shortcut window"
+msgid "Presentation"
+msgstr "Présentation"
+
 msgid "Presenter fullscreen"
 msgstr "Présenteur en plein écran"
+
+msgctxt "shortcut window"
+msgid "Previous slide"
+msgstr "Diapo précédente"
 
 msgid "Pympress Content"
 msgstr "Pympress Contenu"
@@ -169,14 +221,29 @@ msgstr "Pympress ne prend pas encore en charge les liens de type \"{}\" vers \"{
 msgid "Python version {}"
 msgstr "Python version {}"
 
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "Quitter"
+
+msgctxt "shortcut window"
+msgid "Reset timer"
+msgstr "Réinitialier le minuteur"
+
 msgid "Resources are loaded from "
 msgstr "Ressources chargées depuis "
+
+msgctxt "shortcut window"
+msgid "Set estimated talk time"
+msgstr "Paramétrer la durée de la présentation"
 
 msgid "Set level of verbosity in log file:"
 msgstr "Niveau de détails dans les logs:"
 
 msgid "Set talk _Time"
 msgstr "Paramé_trer la durée de la présentation"
+
+msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
+msgstr "Disposition des notes dans le pdf (désactivé, gauche, droit, haut, ou bas)"
 
 msgid "Slide number"
 msgstr "Diapo numéro"
@@ -186,6 +253,10 @@ msgstr "Certaines préférences sont sauvegardées dans"
 
 msgid "Stop"
 msgstr "Stop"
+
+msgctxt "shortcut window"
+msgid "Swap windows"
+msgstr "Intervertir les fenêtres"
 
 msgid "The estimated (intended) talk time in minutes"
 msgstr "Durée estimée (prévue) de la présentation, en minutes"
@@ -199,14 +270,39 @@ msgstr "Temps écoulé"
 msgid "Time estimation"
 msgstr "Temps estimé"
 
+msgctxt "shortcut window"
+msgid "Timers"
+msgstr "Minuteurs"
+
+msgctxt "shortcut window"
+msgid "Toggle annotations"
+msgstr "Mode annotations"
+
+msgctxt "shortcut window"
+msgid "Toggle fullscreen"
+msgstr "Contenu en plein écran"
+
+msgctxt "shortcut window"
+msgid "Toggle highlighting"
+msgstr "Mode feutre"
+
+msgctxt "shortcut window"
+msgid "Toggle notes mode"
+msgstr "Mode note"
+
+msgctxt "shortcut window"
+msgid "Undo highlight stroke"
+msgstr "Annuler trait de feutre"
+
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr "Élement visuel {} inconnu à mettre en plein écran, abandonnée."
 
-msgid "Unknown event {}"
-msgstr "Évément inconnu {}"
-
 msgid "Unsupported OS: can't enable/disable screensaver"
 msgstr "Système d'exploitation non pris en charge: impossible d'activer/désactiver l'économiseur d'écran"
+
+msgctxt "shortcut window"
+msgid "Unzoom"
+msgstr "Annuler le zoom"
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Usage: {} [options] <fichier de présentation>"
@@ -214,29 +310,13 @@ msgstr "Usage: {} [options] <fichier de présentation>"
 msgid "Video support using VLC is disabled."
 msgstr "La prise en charge vidéo grâce à VLC est désactivée"
 
-msgid "Video support using VLC is enabled."
-msgstr "La prise en charge vidéo grâce à VLC est activée"
+msgctxt "shortcut window"
+msgid "Windows"
+msgstr "Fenêtres"
 
-msgid "Warning: Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Attention: La fenêtre de contenu et de présenteur ne peuvent être sur le même écran pour démarrer en plein écran !"
-
-msgid "Warning: Could not disable DPMS screen blanking: got status "
-msgstr "Attention: Impossible de désactiver l'extinction d'écran DPMS: "
-
-msgid "Warning: Could not enable DPMS screen blanking: got status "
-msgstr "Attention: Impossible d'activer l'extinction d'écran DPMS: "
-
-msgid "Warning: Could not set screensaver status: got status "
-msgstr "Attention: Impossible de récupérer l'état de l'économiseur d'écran: "
-
-msgid "Warning: Unsupported OS: can't enable/disable screensaver"
-msgstr "Attention: Système d'exploitation non pris en charge: impossible d'activer/désactiver l'économiseur d'écran"
-
-msgid "Warning: video support is disabled"
-msgstr "Attention: la prise en charge vidéo est désactivée"
-
-msgid "_About"
-msgstr "_À propos"
+msgctxt "shortcut window"
+msgid "Zoom"
+msgstr "Zoomer"
 
 msgid "_Align content"
 msgstr "_Aligner le contenu"
@@ -250,8 +330,8 @@ msgstr "Masquer l'écran"
 msgid "_Blue"
 msgstr "_Bleu"
 
-msgid "_Close File"
-msgstr "Fi_chier"
+msgid "_Bottom"
+msgstr "_Bas"
 
 msgid "_Disabled"
 msgstr "_Désactivé"
@@ -266,7 +346,7 @@ msgid "_Fullscreen"
 msgstr "Plein écran"
 
 msgid "_Go to..."
-msgstr "_Aller à..."
+msgstr "Aller au numéro de page"
 
 msgid "_Green"
 msgstr "Vert"
@@ -277,8 +357,14 @@ msgstr "Aide"
 msgid "_Highlight"
 msgstr "Feutre"
 
+msgid "_Jump to label"
+msgstr "Aller à la page"
+
 msgid "_Last"
 msgstr "_Dernier"
+
+msgid "_Left"
+msgstr "Gauche"
 
 msgid "_Navigation"
 msgstr "_Navigation"
@@ -289,9 +375,6 @@ msgstr "_Suivant"
 msgid "_Notes mode"
 msgstr "Mode _note"
 
-msgid "_Open"
-msgstr "_Ouvrir..."
-
 msgid "_Pause timer"
 msgstr "Mettre le minuteur en _pause"
 
@@ -301,20 +384,26 @@ msgstr "_Présentation"
 msgid "_Previous"
 msgstr "_Précédent"
 
-msgid "_Quit"
-msgstr "_Quitter"
-
 msgid "_Red"
 msgstr "_Rouge"
 
 msgid "_Reset timer"
 msgstr "_Réinitialier le minuteur"
 
+msgid "_Right"
+msgstr "D_roite"
+
+msgid "_Shortcuts"
+msgstr "Raccourci_s"
+
 msgid "_Starting Configuration"
 msgstr "Configuration de démarrage"
 
 msgid "_Swap screens"
 msgstr "Échanger les écran_s"
+
+msgid "_Top"
+msgstr "Hau_t"
 
 msgid "_Undo zoom"
 msgstr "Ann_uler le zoom"
@@ -328,11 +417,11 @@ msgstr "accès refusé lors de la modification des paramètres d'économiseur d'
 msgid "no action defined for this link!"
 msgstr "pas d'action définie pour ce lien !"
 
+msgid "page label"
+msgstr "nom de page"
+
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress est un lecteur de PDF léger écrit en Python, utilisant Poppler pour afficher les PDF et GTK pour l'interface graphique.\n"
-
-msgid "video support is disabled"
-msgstr "la prise en charge vidéo est désactivée"
 
 msgid "{}, {}, {}, {}, or {}"
 msgstr "{}, {}, {}, {}, ou {}"

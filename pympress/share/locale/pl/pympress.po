@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Pympress v1.1.2\n"
+"Project-Id-Version: Pympress v1.2.1\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
 "POT-Creation-Date: 2016-10-24 15:50+0200\n"
 "PO-Revision-Date: 2017-04-23 15:22+0200\n"
@@ -20,6 +20,10 @@ msgstr "(oraz opcjonalnie w sekundach)"
 msgid "(paused)"
 msgstr "(wstrzymany)"
 
+msgctxt "shortcut window"
+msgid "Additional features"
+msgstr ""
+
 msgid "Adjust alignment of slides in projector screen"
 msgstr "Wyreguluj wyrównanie slajdów na ekranie rzutnika"
 
@@ -32,8 +36,23 @@ msgstr "Adnotacje"
 msgid "Big buttons"
 msgstr "Duże przyciski"
 
+msgctxt "shortcut window"
+msgid "Blank screen"
+msgstr ""
+
+msgid "Cairo can not draw gif"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Cancel goto/jump/highlighting/zooming"
+msgstr ""
+
 msgid "Clock"
 msgstr "Zegar"
+
+msgctxt "shortcut window"
+msgid "Close file"
+msgstr ""
 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr "okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnego ekranu!"
@@ -62,20 +81,19 @@ msgstr "nie można ustawić stanu wygaszacza ekranu: otrzymany status "
 msgid "Current slide"
 msgstr "Bieżący slajd"
 
-msgid "ERROR Unknown widget to start fullscreen: {}"
-msgstr "BŁĄD Nieznany widżet do uruchomienia w trybie pełnego ekranu: {}"
-
-msgid "ERROR no action defined for this link!"
-msgstr "BŁĄÐ nie określono działania dla tego odnośnika!"
-
 msgid "Error loading icon for about window"
 msgstr "Błąd ładowania ikony dla okna \"O\""
 
 msgid "Error opening the file \"{}\""
 msgstr "Błąd podczas otwierania pliku \"{}\""
 
-msgid "Error: access denied when trying to access screen saver settings in registry!"
-msgstr "Błąd: odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"
+msgctxt "shortcut window"
+msgid "First slide"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Go to page number"
+msgstr ""
 
 msgid "GtkImage gif player"
 msgstr "Odtwarzacz gifa GtkImage"
@@ -89,23 +107,34 @@ msgstr "Nieprawidłowy poziom dziennikowania \"{}\", wypróbuj jeden z {}"
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Nieprawidłowy czas (oczekiwano min lub min:sek), podano (wprowadzono) \"{}\""
 
+msgctxt "shortcut window"
+msgid "Jump to page label"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Last slide"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Manage files"
+msgstr ""
+
 msgid "Media support uses {}."
 msgstr "Obsługa multimediów używa {}"
+
+msgctxt "shortcut window"
+msgid "Navigating"
+msgstr ""
 
 msgid "Next slide"
 msgstr "Następny slajd"
 
+msgctxt "shortcut window"
+msgid "Next slide"
+msgstr ""
+
 msgid "No action was defined for this link"
 msgstr "Dla tego odnośnika nie zdefiniowano żadnych działań"
-
-msgid ""
-"No file selected!\n"
-"\n"
-"You can specify the PDF file to open on the command line if you don't want to use the \"Open File\" dialog."
-msgstr ""
-"Nie wybrano żadnego pliku!\n"
-"\n"
-"Jeśli nie chcesz używać okna dialogowego \"Otwórz plik\", to w wierszu poleceń możesz określić, który plik PDF ma zostać otwarty."
 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
 msgstr "Nie uruchomiono okna treści lub okna prezentera w trybie pełnego ekranu, ponieważ jest tylko jeden monitor"
@@ -113,14 +142,24 @@ msgstr "Nie uruchomiono okna treści lub okna prezentera w trybie pełnego ekran
 msgid "Notes"
 msgstr "Notatki"
 
+msgid "Notes position"
+msgstr ""
+
 msgid "Open _Recent"
 msgstr "Otwórz _Ostatni"
+
+msgctxt "shortcut window"
+msgid "Open file"
+msgstr ""
 
 msgid "Open..."
 msgstr "Otwórz..."
 
 msgid "Options:"
 msgstr "Opcje:"
+
+msgid "Overrides the detection from the file."
+msgstr ""
 
 msgid "PDF files"
 msgstr "Pliki PDF"
@@ -131,11 +170,23 @@ msgstr "Wstrzymaj"
 msgid "Play"
 msgstr "Odtwarzaj"
 
+msgctxt "shortcut window"
+msgid "Play/pause timer"
+msgstr ""
+
 msgid "Pointer"
 msgstr "Wskaźnik"
 
+msgctxt "shortcut window"
+msgid "Presentation"
+msgstr ""
+
 msgid "Presenter fullscreen"
 msgstr "Okno prelegenta w trybie pełnego ekranu"
+
+msgctxt "shortcut window"
+msgid "Previous slide"
+msgstr ""
 
 msgid "Pympress Content"
 msgstr "Okno treści Pympress"
@@ -170,14 +221,29 @@ msgstr "Pympress jeszcze nie obsługuje odsyłacza typu \"{}\" do \"{}\""
 msgid "Python version {}"
 msgstr "Python wersja {}"
 
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Reset timer"
+msgstr ""
+
 msgid "Resources are loaded from "
 msgstr "Zasoby są ładowane z "
+
+msgctxt "shortcut window"
+msgid "Set estimated talk time"
+msgstr ""
 
 msgid "Set level of verbosity in log file:"
 msgstr "Ustaw poziom szczegółowości pliku dziennika:"
 
 msgid "Set talk _Time"
 msgstr "Ustaw _czas trwania wystąpienia (prelekcji)"
+
+msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
+msgstr ""
 
 msgid "Slide number"
 msgstr "Numer slajdu"
@@ -187,6 +253,10 @@ msgstr "Niektóre ustawienia są zapisywane w "
 
 msgid "Stop"
 msgstr "Zatrzymaj"
+
+msgctxt "shortcut window"
+msgid "Swap windows"
+msgstr ""
 
 msgid "The estimated (intended) talk time in minutes"
 msgstr "Przewidywany (spodziewany) czas trwania wystąpienia (prelekcji) w minutach"
@@ -200,14 +270,39 @@ msgstr "Czas, który upłynął"
 msgid "Time estimation"
 msgstr "Przewidziany czas"
 
+msgctxt "shortcut window"
+msgid "Timers"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle annotations"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle fullscreen"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle highlighting"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle notes mode"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Undo highlight stroke"
+msgstr ""
+
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr "Nie mogę uruchomić w trybie pełnego ekranu, nieznanego widżetu {}, przerywam działanie."
 
-msgid "Unknown event {}"
-msgstr "Nieznane zdarzenie {}"
-
 msgid "Unsupported OS: can't enable/disable screensaver"
 msgstr "Nieobsługiwany system operacyjny: nie można włączyć/wyłączyć wygaszacza ekranu"
+
+msgctxt "shortcut window"
+msgid "Unzoom"
+msgstr ""
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Sposób użycia: {} [opcje] <plik_z_prezentacją>"
@@ -215,29 +310,13 @@ msgstr "Sposób użycia: {} [opcje] <plik_z_prezentacją>"
 msgid "Video support using VLC is disabled."
 msgstr "Obsługa wideo przy użyciu VLC jest wyłączona."
 
-msgid "Video support using VLC is enabled."
-msgstr "Obsługa wideo przy użyciu VLC jest włączona."
+msgctxt "shortcut window"
+msgid "Windows"
+msgstr ""
 
-msgid "Warning: Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Ostrzeżenie: okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnego ekranu!"
-
-msgid "Warning: Could not disable DPMS screen blanking: got status "
-msgstr "Ostrzeżenie: nie można wyłączyć wygaszania ekranu DPMS: otrzymany status "
-
-msgid "Warning: Could not enable DPMS screen blanking: got status "
-msgstr "Ostrzeżenie: nie można włączyć wygaszania ekranu DPMS: otrzymany status "
-
-msgid "Warning: Could not set screensaver status: got status "
-msgstr "Ostrzeżenie: nie można ustawić stanu wygaszacza ekranu: otrzymany status "
-
-msgid "Warning: Unsupported OS: can't enable/disable screensaver"
-msgstr "Ostrzeżenie: nieobsługiwany system operacyjny: nie można włączyć/wyłączyć wygaszacza ekranu"
-
-msgid "Warning: video support is disabled"
-msgstr "Ostrzeżenie: wyłączona obsługa wideo"
-
-msgid "_About"
-msgstr "_O"
+msgctxt "shortcut window"
+msgid "Zoom"
+msgstr ""
 
 msgid "_Align content"
 msgstr "_Wyrównaj treść"
@@ -251,8 +330,8 @@ msgstr "_Pusty ekran"
 msgid "_Blue"
 msgstr "_Niebieski"
 
-msgid "_Close File"
-msgstr "_Zamknij plik"
+msgid "_Bottom"
+msgstr ""
 
 msgid "_Disabled"
 msgstr "_Nieaktywny"
@@ -278,8 +357,14 @@ msgstr "_Pomoc"
 msgid "_Highlight"
 msgstr "_Zakreślacz"
 
+msgid "_Jump to label"
+msgstr ""
+
 msgid "_Last"
 msgstr "_Ostatni"
+
+msgid "_Left"
+msgstr ""
 
 msgid "_Navigation"
 msgstr "_Nawigacja"
@@ -290,9 +375,6 @@ msgstr "_Następny"
 msgid "_Notes mode"
 msgstr "_Tryb notatek"
 
-msgid "_Open"
-msgstr "_Otwórz"
-
 msgid "_Pause timer"
 msgstr "_Wstrzymaj timer"
 
@@ -302,20 +384,26 @@ msgstr "_Prezentacja"
 msgid "_Previous"
 msgstr "_Poprzedni"
 
-msgid "_Quit"
-msgstr "_Wyjdź"
-
 msgid "_Red"
 msgstr "_Czerwony"
 
 msgid "_Reset timer"
 msgstr "Zresetuj timer"
 
+msgid "_Right"
+msgstr ""
+
+msgid "_Shortcuts"
+msgstr ""
+
 msgid "_Starting Configuration"
 msgstr "_Konfiguracja startowa"
 
 msgid "_Swap screens"
 msgstr "_Zamień ekrany"
+
+msgid "_Top"
+msgstr ""
 
 msgid "_Undo zoom"
 msgstr "Cofnij zbliżenie"
@@ -329,11 +417,11 @@ msgstr "odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza 
 msgid "no action defined for this link!"
 msgstr "nie określono działania dla tego odnośnika!"
 
+msgid "page label"
+msgstr ""
+
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress jest małym czytnikiem PDF napisanym w Pythonie, używającym Popplera do renderowania plików PDF oraz GTK do tworzenia GUI.\n"
-
-msgid "video support is disabled"
-msgstr "wyłączona obsługa wideo"
 
 msgid "{}, {}, {}, {}, or {}"
 msgstr "{}, {}, {}, {} lub {}"

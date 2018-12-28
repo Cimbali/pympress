@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Pympress v1.1.2\n"
+"Project-Id-Version: Pympress v1.2.1\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
 "POT-Creation-Date: 2016-10-24 15:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -17,6 +17,10 @@ msgstr ""
 msgid "(paused)"
 msgstr ""
 
+msgctxt "shortcut window"
+msgid "Additional features"
+msgstr ""
+
 msgid "Adjust alignment of slides in projector screen"
 msgstr ""
 
@@ -29,7 +33,22 @@ msgstr ""
 msgid "Big buttons"
 msgstr ""
 
+msgctxt "shortcut window"
+msgid "Blank screen"
+msgstr ""
+
+msgid "Cairo can not draw gif"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Cancel goto/jump/highlighting/zooming"
+msgstr ""
+
 msgid "Clock"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Close file"
 msgstr ""
 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
@@ -59,19 +78,18 @@ msgstr ""
 msgid "Current slide"
 msgstr ""
 
-msgid "ERROR Unknown widget to start fullscreen: {}"
-msgstr ""
-
-msgid "ERROR no action defined for this link!"
-msgstr ""
-
 msgid "Error loading icon for about window"
 msgstr ""
 
 msgid "Error opening the file \"{}\""
 msgstr ""
 
-msgid "Error: access denied when trying to access screen saver settings in registry!"
+msgctxt "shortcut window"
+msgid "First slide"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Go to page number"
 msgstr ""
 
 msgid "GtkImage gif player"
@@ -86,19 +104,33 @@ msgstr ""
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr ""
 
+msgctxt "shortcut window"
+msgid "Jump to page label"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Last slide"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Manage files"
+msgstr ""
+
 msgid "Media support uses {}."
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Navigating"
 msgstr ""
 
 msgid "Next slide"
 msgstr ""
 
-msgid "No action was defined for this link"
+msgctxt "shortcut window"
+msgid "Next slide"
 msgstr ""
 
-msgid ""
-"No file selected!\n"
-"\n"
-"You can specify the PDF file to open on the command line if you don't want to use the \"Open File\" dialog."
+msgid "No action was defined for this link"
 msgstr ""
 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
@@ -107,13 +139,23 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
+msgid "Notes position"
+msgstr ""
+
 msgid "Open _Recent"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Open file"
 msgstr ""
 
 msgid "Open..."
 msgstr ""
 
 msgid "Options:"
+msgstr ""
+
+msgid "Overrides the detection from the file."
 msgstr ""
 
 msgid "PDF files"
@@ -125,10 +167,22 @@ msgstr ""
 msgid "Play"
 msgstr ""
 
+msgctxt "shortcut window"
+msgid "Play/pause timer"
+msgstr ""
+
 msgid "Pointer"
 msgstr ""
 
+msgctxt "shortcut window"
+msgid "Presentation"
+msgstr ""
+
 msgid "Presenter fullscreen"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Previous slide"
 msgstr ""
 
 msgid "Pympress Content"
@@ -164,13 +218,28 @@ msgstr ""
 msgid "Python version {}"
 msgstr ""
 
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Reset timer"
+msgstr ""
+
 msgid "Resources are loaded from "
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Set estimated talk time"
 msgstr ""
 
 msgid "Set level of verbosity in log file:"
 msgstr ""
 
 msgid "Set talk _Time"
+msgstr ""
+
+msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
 msgstr ""
 
 msgid "Slide number"
@@ -180,6 +249,10 @@ msgid "Some preferences are saved in "
 msgstr ""
 
 msgid "Stop"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Swap windows"
 msgstr ""
 
 msgid "The estimated (intended) talk time in minutes"
@@ -194,13 +267,38 @@ msgstr ""
 msgid "Time estimation"
 msgstr ""
 
+msgctxt "shortcut window"
+msgid "Timers"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle annotations"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle fullscreen"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle highlighting"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle notes mode"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Undo highlight stroke"
+msgstr ""
+
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr ""
 
-msgid "Unknown event {}"
+msgid "Unsupported OS: can't enable/disable screensaver"
 msgstr ""
 
-msgid "Unsupported OS: can't enable/disable screensaver"
+msgctxt "shortcut window"
+msgid "Unzoom"
 msgstr ""
 
 msgid "Usage: {} [options] <presentation_file>"
@@ -209,28 +307,12 @@ msgstr ""
 msgid "Video support using VLC is disabled."
 msgstr ""
 
-msgid "Video support using VLC is enabled."
+msgctxt "shortcut window"
+msgid "Windows"
 msgstr ""
 
-msgid "Warning: Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr ""
-
-msgid "Warning: Could not disable DPMS screen blanking: got status "
-msgstr ""
-
-msgid "Warning: Could not enable DPMS screen blanking: got status "
-msgstr ""
-
-msgid "Warning: Could not set screensaver status: got status "
-msgstr ""
-
-msgid "Warning: Unsupported OS: can't enable/disable screensaver"
-msgstr ""
-
-msgid "Warning: video support is disabled"
-msgstr ""
-
-msgid "_About"
+msgctxt "shortcut window"
+msgid "Zoom"
 msgstr ""
 
 msgid "_Align content"
@@ -245,7 +327,7 @@ msgstr ""
 msgid "_Blue"
 msgstr ""
 
-msgid "_Close File"
+msgid "_Bottom"
 msgstr ""
 
 msgid "_Disabled"
@@ -272,7 +354,13 @@ msgstr ""
 msgid "_Highlight"
 msgstr ""
 
+msgid "_Jump to label"
+msgstr ""
+
 msgid "_Last"
+msgstr ""
+
+msgid "_Left"
 msgstr ""
 
 msgid "_Navigation"
@@ -284,9 +372,6 @@ msgstr ""
 msgid "_Notes mode"
 msgstr ""
 
-msgid "_Open"
-msgstr ""
-
 msgid "_Pause timer"
 msgstr ""
 
@@ -296,19 +381,25 @@ msgstr ""
 msgid "_Previous"
 msgstr ""
 
-msgid "_Quit"
-msgstr ""
-
 msgid "_Red"
 msgstr ""
 
 msgid "_Reset timer"
 msgstr ""
 
+msgid "_Right"
+msgstr ""
+
+msgid "_Shortcuts"
+msgstr ""
+
 msgid "_Starting Configuration"
 msgstr ""
 
 msgid "_Swap screens"
+msgstr ""
+
+msgid "_Top"
 msgstr ""
 
 msgid "_Undo zoom"
@@ -323,10 +414,10 @@ msgstr ""
 msgid "no action defined for this link!"
 msgstr ""
 
-msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
+msgid "page label"
 msgstr ""
 
-msgid "video support is disabled"
+msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr ""
 
 msgid "{}, {}, {}, {}, or {}"

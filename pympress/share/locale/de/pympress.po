@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Pympress v1.1.2\n"
+"Project-Id-Version: Pympress v1.2.1\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
 "POT-Creation-Date: 2016-10-24 15:50+0200\n"
 "PO-Revision-Date: 2018-02-09 17:14+0100\n"
@@ -22,6 +22,10 @@ msgstr "(und optional Sekunden)"
 msgid "(paused)"
 msgstr "(pausiert)"
 
+msgctxt "shortcut window"
+msgid "Additional features"
+msgstr ""
+
 msgid "Adjust alignment of slides in projector screen"
 msgstr "Ausrichtung der Folien für den Projektor anpassen"
 
@@ -34,8 +38,23 @@ msgstr "Anmerkungen"
 msgid "Big buttons"
 msgstr "Große Buttons"
 
+msgctxt "shortcut window"
+msgid "Blank screen"
+msgstr ""
+
+msgid "Cairo can not draw gif"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Cancel goto/jump/highlighting/zooming"
+msgstr ""
+
 msgid "Clock"
 msgstr "Uhr"
+
+msgctxt "shortcut window"
+msgid "Close file"
+msgstr ""
 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr "Inhalts- und Präsentator-Fenster dürfen beim Start im Vollbild-Modus nicht auf dem gleichen Monitor sein!"
@@ -64,20 +83,19 @@ msgstr "Bildschirmschoner-Status kann nicht gesetzt werden: Status"
 msgid "Current slide"
 msgstr "Aktuelle Folie"
 
-msgid "ERROR Unknown widget to start fullscreen: {}"
-msgstr "FEHLER Unbekanntes Widget für den Start des Vollbildmodus: {}"
-
-msgid "ERROR no action defined for this link!"
-msgstr "FEHLER Für diesen Link ist keine Aktion definiert!"
-
 msgid "Error loading icon for about window"
 msgstr "Fehler beim Laden des Icons für das \"Über\"-Fenster"
 
 msgid "Error opening the file \"{}\""
 msgstr "Die Datei \"{}\" konnte nicht geöffnet werden"
 
-msgid "Error: access denied when trying to access screen saver settings in registry!"
-msgstr "Fehler: Zugriff auf die Bildschirmschoner-Einstellungen der Registry nicht erlaubt!"
+msgctxt "shortcut window"
+msgid "First slide"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Go to page number"
+msgstr ""
 
 msgid "GtkImage gif player"
 msgstr "Gif-Wiedergabe mit GtkImage"
@@ -91,23 +109,34 @@ msgstr "Ungültiges Log-Level \"{}\", versuche eines aus {}"
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr "Ungültige Zeit (mm oder mm:ss erwartet), habe \"{}\""
 
+msgctxt "shortcut window"
+msgid "Jump to page label"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Last slide"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Manage files"
+msgstr ""
+
 msgid "Media support uses {}."
 msgstr "Videounterstützung verwendet {}."
+
+msgctxt "shortcut window"
+msgid "Navigating"
+msgstr ""
 
 msgid "Next slide"
 msgstr "Nächste Folie"
 
+msgctxt "shortcut window"
+msgid "Next slide"
+msgstr ""
+
 msgid "No action was defined for this link"
 msgstr "Für diesen Link wurde keine Aktion definiert"
-
-msgid ""
-"No file selected!\n"
-"\n"
-"You can specify the PDF file to open on the command line if you don't want to use the \"Open File\" dialog."
-msgstr ""
-"Keine Datei ausgewählt!\n"
-"\n"
-"Die zu öffnende PDF-Datei kann via Kommandozeile übergeben werden, falls der \"Datei öffnen\"-Dialog nicht verwendet werden soll."
 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
 msgstr "Inhalts- und Präsentator-Fenster werden nicht im Vollbild gestartet, da nur ein Monitor vorhanden ist"
@@ -115,14 +144,24 @@ msgstr "Inhalts- und Präsentator-Fenster werden nicht im Vollbild gestartet, da
 msgid "Notes"
 msgstr "Notizen"
 
+msgid "Notes position"
+msgstr ""
+
 msgid "Open _Recent"
 msgstr "_Kürzlich geöffnet"
+
+msgctxt "shortcut window"
+msgid "Open file"
+msgstr ""
 
 msgid "Open..."
 msgstr "Öffnen..."
 
 msgid "Options:"
 msgstr "Optionen:"
+
+msgid "Overrides the detection from the file."
+msgstr ""
 
 msgid "PDF files"
 msgstr "PDF-Dateien"
@@ -133,11 +172,23 @@ msgstr "Pause"
 msgid "Play"
 msgstr "Wiedergabe"
 
+msgctxt "shortcut window"
+msgid "Play/pause timer"
+msgstr ""
+
 msgid "Pointer"
 msgstr "Zeiger"
 
+msgctxt "shortcut window"
+msgid "Presentation"
+msgstr ""
+
 msgid "Presenter fullscreen"
 msgstr "Vollbild für Präsentator"
+
+msgctxt "shortcut window"
+msgid "Previous slide"
+msgstr ""
 
 msgid "Pympress Content"
 msgstr "Pympress-Inhalt"
@@ -172,14 +223,29 @@ msgstr "Pympress unterstützt den Link-Typ \"{}\" nach \"{}\" noch nicht"
 msgid "Python version {}"
 msgstr "Python Version {}"
 
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Reset timer"
+msgstr ""
+
 msgid "Resources are loaded from "
 msgstr "Daten werden geladen von "
+
+msgctxt "shortcut window"
+msgid "Set estimated talk time"
+msgstr ""
 
 msgid "Set level of verbosity in log file:"
 msgstr "Verbositäts-Level für die Logdatei setzen:"
 
 msgid "Set talk _Time"
 msgstr "_Redezeit setzen"
+
+msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
+msgstr ""
 
 msgid "Slide number"
 msgstr "Foliennummer"
@@ -189,6 +255,10 @@ msgstr "Ein Teil der Einstellungen ist gespeichert unter"
 
 msgid "Stop"
 msgstr "Stopp"
+
+msgctxt "shortcut window"
+msgid "Swap windows"
+msgstr ""
 
 msgid "The estimated (intended) talk time in minutes"
 msgstr "Die geschätzte (angestrebte) Redezeit in Minuten"
@@ -202,14 +272,39 @@ msgstr "Vergangene Zeit"
 msgid "Time estimation"
 msgstr "Geschätzte Zeit"
 
+msgctxt "shortcut window"
+msgid "Timers"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle annotations"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle fullscreen"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle highlighting"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Toggle notes mode"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Undo highlight stroke"
+msgstr ""
+
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr "Unbekanntes Widget {} für die Vollbildanzeige, Abbruch."
 
-msgid "Unknown event {}"
-msgstr "Unbekanntes Event {}"
-
 msgid "Unsupported OS: can't enable/disable screensaver"
 msgstr "Nicht unterstütztes OS: Bildschirmschoner kann nicht aktiviert/deaktiviert werden"
+
+msgctxt "shortcut window"
+msgid "Unzoom"
+msgstr ""
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Verwendung: {} [Optionen] <Präsentationsdatei>"
@@ -217,29 +312,13 @@ msgstr "Verwendung: {} [Optionen] <Präsentationsdatei>"
 msgid "Video support using VLC is disabled."
 msgstr "Videounterstützung auf Basis von VLC ist deaktiviert."
 
-msgid "Video support using VLC is enabled."
-msgstr "Videounterstützung auf Basis von VLC ist aktiviert."
+msgctxt "shortcut window"
+msgid "Windows"
+msgstr ""
 
-msgid "Warning: Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Warnung: Inhalts- und Präsentator-Fenster dürfen beim Start im Vollbild-Modus nicht auf dem gleichen Monitor sein!"
-
-msgid "Warning: Could not disable DPMS screen blanking: got status "
-msgstr "Warnung: DPMS-Deaktivierung des Bildschirms kann nicht abgeschaltet werden: Status "
-
-msgid "Warning: Could not enable DPMS screen blanking: got status "
-msgstr "Warnung: DPMS-Deaktivierung des Bildschirms kann nicht eingeschaltet werden: Status "
-
-msgid "Warning: Could not set screensaver status: got status "
-msgstr "Warnung: Bildschirmschoner-Status kann nicht gesetzt werden: Status "
-
-msgid "Warning: Unsupported OS: can't enable/disable screensaver"
-msgstr "Warnung: Nicht unterstütztes OS: Bildschirmschoner kann nicht aktiviert/deaktiviert werden"
-
-msgid "Warning: video support is disabled"
-msgstr "Warnung: Videounterstützung ist deaktiviert"
-
-msgid "_About"
-msgstr "_Über"
+msgctxt "shortcut window"
+msgid "Zoom"
+msgstr ""
 
 msgid "_Align content"
 msgstr "Inhalt _ausrichten"
@@ -253,8 +332,8 @@ msgstr "_Schwarzer Bildschirm"
 msgid "_Blue"
 msgstr "_Blau"
 
-msgid "_Close File"
-msgstr "Datei _schließen"
+msgid "_Bottom"
+msgstr ""
 
 msgid "_Disabled"
 msgstr "_Deaktiviert"
@@ -280,8 +359,14 @@ msgstr "_Hilfe"
 msgid "_Highlight"
 msgstr "_Hervorheben"
 
+msgid "_Jump to label"
+msgstr ""
+
 msgid "_Last"
 msgstr "_Ende"
+
+msgid "_Left"
+msgstr ""
 
 msgid "_Navigation"
 msgstr "_Navigation"
@@ -292,9 +377,6 @@ msgstr "_Nächste"
 msgid "_Notes mode"
 msgstr "_Notizmodus"
 
-msgid "_Open"
-msgstr "_Öffnen"
-
 msgid "_Pause timer"
 msgstr "Timer _pausieren"
 
@@ -304,20 +386,26 @@ msgstr "_Präsentation"
 msgid "_Previous"
 msgstr "_Vorherige"
 
-msgid "_Quit"
-msgstr "_Beenden"
-
 msgid "_Red"
 msgstr "_Rot"
 
 msgid "_Reset timer"
 msgstr "Timer _zurücksetzen"
 
+msgid "_Right"
+msgstr ""
+
+msgid "_Shortcuts"
+msgstr ""
+
 msgid "_Starting Configuration"
 msgstr "_Startkonfiguration"
 
 msgid "_Swap screens"
 msgstr "Bildschirme _tauschen"
+
+msgid "_Top"
+msgstr ""
 
 msgid "_Undo zoom"
 msgstr "Zoom z_urücksetzen"
@@ -331,11 +419,11 @@ msgstr "Zugriff auf die Bildschirmschoner-Einstellungen der Registry nicht erlau
 msgid "no action defined for this link!"
 msgstr "für diesen Link ist keine Aktion definiert!"
 
+msgid "page label"
+msgstr ""
+
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress ist ein kleiner PDF-Reader, geschrieben in Python unter Verwendung von Poppler für die PDF-Anzeige und GTK für die GUI.\n"
-
-msgid "video support is disabled"
-msgstr "Videounterstützung ist deaktiviert"
 
 msgid "{}, {}, {}, {}, or {}"
 msgstr "{}, {}, {}, {}, oder {}"
