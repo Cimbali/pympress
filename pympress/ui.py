@@ -149,6 +149,9 @@ class UI(builder.Builder):
     #: :class:`~pympress.talk_time.TalkTime` clock tracking talk time (elapsed, and remaining)
     talk_time = None
 
+    #: A :class:`~Gtk.ShortcutsWindow` to show the shortcuts
+    shortcuts_window = None
+
 
     ##############################################################################
     #############################      UI setup      #############################
@@ -199,7 +202,6 @@ class UI(builder.Builder):
 
         self.make_cwin()
         self.make_pwin()
-        self.shortcuts_window.set_transient_for(self.p_win)
 
         self.connect_signals(self)
 
@@ -323,6 +325,26 @@ class UI(builder.Builder):
         self.c_win.resize(c_bounds.width, c_bounds.height)
         if c_full:
             self.c_win.fullscreen()
+
+
+    def show_shortcuts(self, *args):
+        """ Display the shortcuts window.
+        """
+        # Use a different builder to load and be able to release the shortcuts window
+        shortcuts_builder = builder.Builder()
+        shortcuts_builder.load_ui('shortcuts')
+        self.shortcuts_window = shortcuts_builder.get_object('shortcuts_window')
+
+        self.shortcuts_window.set_transient_for(self.p_win)
+        self.shortcuts_window.show_all()
+        self.shortcuts_window.present()
+
+
+    def close_shortcuts(self, *args):
+        """ Destroy the shortcuts window once it is hidden.
+        """
+        self.shortcuts_window.destroy()
+        self.shortcuts_window = None
 
 
     ##############################################################################

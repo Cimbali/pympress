@@ -497,6 +497,15 @@
                         <signal name="activate" handler="menu_about" swapped="no"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkMenuItem" id="help_shortcuts">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Shortcuts</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="show_shortcuts" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
