@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Pympress v1.2.1\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
 "POT-Creation-Date: 2016-10-24 15:50+0200\n"
-"PO-Revision-Date: 2018-08-30 18:10+0200\n"
+"PO-Revision-Date: 2019-01-14 23:09+0100\n"
 "Last-Translator: Jaroslav Svoboda <multi.flexi@seznam.cz>\n"
 "Language-Team: \n"
 "Language: cs\n"
@@ -21,7 +21,7 @@ msgstr "(pozastaveno)"
 
 msgctxt "shortcut window"
 msgid "Additional features"
-msgstr ""
+msgstr "Další možnosti"
 
 msgid "Adjust alignment of slides in projector screen"
 msgstr "Upravit zarovnání snímků na obrazovce projektoru"
@@ -37,21 +37,21 @@ msgstr "Velká tlačítka"
 
 msgctxt "shortcut window"
 msgid "Blank screen"
-msgstr ""
+msgstr "Prázdná obrazovka"
 
 msgid "Cairo can not draw gif"
-msgstr ""
+msgstr "Cairo nemůže vykreslit gif"
 
 msgctxt "shortcut window"
 msgid "Cancel goto/jump/highlighting/zooming"
-msgstr ""
+msgstr "Zrušit jít na/skočit na/zvýraznění/přiblížení"
 
 msgid "Clock"
 msgstr "Hodiny"
 
 msgctxt "shortcut window"
 msgid "Close file"
-msgstr ""
+msgstr "Zavřít soubor"
 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr "Obsah a okno s prezentací musí být na stejném monitoru pokud zapnete zobrazení na celé obrazovce!"
@@ -88,11 +88,11 @@ msgstr "Chyba při otevírání souboru \"{}\""
 
 msgctxt "shortcut window"
 msgid "First slide"
-msgstr ""
+msgstr "První snímek"
 
 msgctxt "shortcut window"
 msgid "Go to page number"
-msgstr ""
+msgstr "Jít na stránku číslo"
 
 msgid "GtkImage gif player"
 msgstr "GtkImage přehrávač gifů"
@@ -108,33 +108,33 @@ msgstr "Neplatný čas (vyžadován tvar mm nebo mm:ss), zadáno \"{}\""
 
 msgctxt "shortcut window"
 msgid "Jump to page label"
-msgstr ""
+msgstr "Skočit na štítek stránky"
 
 msgctxt "shortcut window"
 msgid "Last slide"
-msgstr ""
+msgstr "Poslední snímek"
 
 msgctxt "shortcut window"
 msgid "Manage files"
-msgstr ""
+msgstr "Spravovat soubory"
 
 msgid "Media support uses {}."
 msgstr "Podpora médií využívá {}."
 
 msgctxt "shortcut window"
 msgid "Navigating"
-msgstr ""
+msgstr "Navigace"
 
 msgid "Next slide"
 msgstr "Další snímek"
 
 msgctxt "shortcut window"
 msgid "Next slide"
-msgstr ""
+msgstr "Další snímek"
 
 msgctxt "shortcut window"
 msgid "Next slide with different label"
-msgstr ""
+msgstr "Další snímek s jiným štítkem"
 
 msgid "No action was defined for this link"
 msgstr "Pro tento odkaz nebyla definována žádná akce"
@@ -146,14 +146,14 @@ msgid "Notes"
 msgstr "Poznámky"
 
 msgid "Notes position"
-msgstr ""
+msgstr "Pozice poznámek"
 
 msgid "Open _Recent"
 msgstr "Otevřít _poslední"
 
 msgctxt "shortcut window"
 msgid "Open file"
-msgstr ""
+msgstr "Otevřít soubor"
 
 msgid "Open..."
 msgstr "Otevřít..."
@@ -162,7 +162,7 @@ msgid "Options:"
 msgstr "Nastavení:"
 
 msgid "Overrides the detection from the file."
-msgstr ""
+msgstr "Přepíše detekci ze souboru."
 
 msgid "PDF files"
 msgstr "PDF soubory"
@@ -175,25 +175,25 @@ msgstr "Spustit"
 
 msgctxt "shortcut window"
 msgid "Play/pause timer"
-msgstr ""
+msgstr "Pustit/zastavit časovač"
 
 msgid "Pointer"
 msgstr "Ukazovátko"
 
 msgctxt "shortcut window"
 msgid "Presentation"
-msgstr ""
+msgstr "Prezentace"
 
 msgid "Presenter fullscreen"
 msgstr "Prezentace na celou obrazovku"
 
 msgctxt "shortcut window"
 msgid "Previous slide"
-msgstr ""
+msgstr "Předchozí snímek"
 
 msgctxt "shortcut window"
 msgid "Previous slide with different label"
-msgstr ""
+msgstr "Předchozí snímek s jiným štítkem"
 
 msgid "Pympress Content"
 msgstr "Pympress Obsah"
@@ -230,18 +230,18 @@ msgstr "Python verze {}"
 
 msgctxt "shortcut window"
 msgid "Quit"
-msgstr ""
+msgstr "Odejít"
 
 msgctxt "shortcut window"
 msgid "Reset timer"
-msgstr ""
+msgstr "Restartovat časovač"
 
 msgid "Resources are loaded from "
 msgstr "Prostředky jsou nahrány z "
 
 msgctxt "shortcut window"
 msgid "Set estimated talk time"
-msgstr ""
+msgstr "Nastavit předpokládanou dobu trvání prezentace"
 
 msgid "Set level of verbosity in log file:"
 msgstr "Nastavit úroveň podrobnosti log souboru:"
@@ -250,7 +250,7 @@ msgid "Set talk _Time"
 msgstr "Nastavit _Čas řeči"
 
 msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
-msgstr ""
+msgstr "Nastavit polohu poznámek na stránce pdf (žádné, vlevo, vpravo, nahoře nebo dole)."
 
 msgid "Slide number"
 msgstr "Snímek číslo"
@@ -263,7 +263,7 @@ msgstr "Zastavit"
 
 msgctxt "shortcut window"
 msgid "Swap windows"
-msgstr ""
+msgstr "Vyměnit okna"
 
 msgid "The estimated (intended) talk time in minutes"
 msgstr "Odhadovaná (plánovaná) doba prezentace v minutách"
@@ -279,27 +279,27 @@ msgstr "Odhad času"
 
 msgctxt "shortcut window"
 msgid "Timers"
-msgstr ""
+msgstr "Časovače"
 
 msgctxt "shortcut window"
 msgid "Toggle annotations"
-msgstr ""
+msgstr "Zobrazit anotace"
 
 msgctxt "shortcut window"
 msgid "Toggle fullscreen"
-msgstr ""
+msgstr "Celá obrazovka"
 
 msgctxt "shortcut window"
 msgid "Toggle highlighting"
-msgstr ""
+msgstr "Zvýrazňování"
 
 msgctxt "shortcut window"
 msgid "Toggle notes mode"
-msgstr ""
+msgstr "Mód poznámek"
 
 msgctxt "shortcut window"
 msgid "Undo highlight stroke"
-msgstr ""
+msgstr "Zrušit obrys zvýraznění"
 
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr "Neznámý widget {} bude na maximalizován na celou obrazovku, ruším."
@@ -309,7 +309,7 @@ msgstr "Nepodporovaný OS: nelze zapnout/vypnout spořič obrazovky"
 
 msgctxt "shortcut window"
 msgid "Unzoom"
-msgstr ""
+msgstr "Oddálit"
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Použití: {} [options] <presentation_file>"
@@ -319,11 +319,11 @@ msgstr "Podpora videa přes VLC je vypnuta."
 
 msgctxt "shortcut window"
 msgid "Windows"
-msgstr ""
+msgstr "Okna"
 
 msgctxt "shortcut window"
 msgid "Zoom"
-msgstr ""
+msgstr "Přiblížení"
 
 msgid "_Align content"
 msgstr "_Zarovnat obsah"
@@ -338,7 +338,7 @@ msgid "_Blue"
 msgstr "_Modré"
 
 msgid "_Bottom"
-msgstr ""
+msgstr "_Dole"
 
 msgid "_Disabled"
 msgstr "_Vypnuto"
@@ -365,13 +365,13 @@ msgid "_Highlight"
 msgstr "_Zvýraznění"
 
 msgid "_Jump to label"
-msgstr ""
+msgstr "_Skočit na štítek"
 
 msgid "_Last"
 msgstr "_Poslední"
 
 msgid "_Left"
-msgstr ""
+msgstr "_Vlevo"
 
 msgid "_Navigation"
 msgstr "_Navigace"
@@ -398,10 +398,10 @@ msgid "_Reset timer"
 msgstr "_Resetovat stopky"
 
 msgid "_Right"
-msgstr ""
+msgstr "_Vpravo"
 
 msgid "_Shortcuts"
-msgstr ""
+msgstr "_Zkratky"
 
 msgid "_Starting Configuration"
 msgstr "_Počáteční nastavení"
@@ -410,7 +410,7 @@ msgid "_Swap screens"
 msgstr "_Prohodit obrazovky"
 
 msgid "_Top"
-msgstr ""
+msgstr "_Nahoře"
 
 msgid "_Undo zoom"
 msgstr "_Oddálit"
@@ -425,7 +425,7 @@ msgid "no action defined for this link!"
 msgstr "žádná akce není definována pro tento odkaz!"
 
 msgid "page label"
-msgstr ""
+msgstr "štítek stránky"
 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress je malý prohlížeč PDF napsaný v Pythonu používající Poppler k zobrazení PDF a GTK pro GUI.\n"
