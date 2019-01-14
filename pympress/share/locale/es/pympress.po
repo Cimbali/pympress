@@ -22,7 +22,7 @@ msgstr "(en pausa)"
 
 msgctxt "shortcut window"
 msgid "Additional features"
-msgstr ""
+msgstr "Características adicionales"
 
 msgid "Adjust alignment of slides in projector screen"
 msgstr "Ajuste de la alineación de diapositivas en la pantalla del proyector"
@@ -38,21 +38,21 @@ msgstr "Botones grandes"
 
 msgctxt "shortcut window"
 msgid "Blank screen"
-msgstr ""
+msgstr "Pantalla en blanco"
 
 msgid "Cairo can not draw gif"
-msgstr ""
+msgstr "Cairo no puede abrir el gif"
 
 msgctxt "shortcut window"
 msgid "Cancel goto/jump/highlighting/zooming"
-msgstr ""
+msgstr "Cancelar ir a/saltar/resaltar/hacer zoom"
 
 msgid "Clock"
 msgstr "Reloj"
 
 msgctxt "shortcut window"
 msgid "Close file"
-msgstr ""
+msgstr "Cerrar archivo"
 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr "Atención: La ventana de contenido y presentación no puede estar en la misma pantalla para comenzar en pantalla completa!"
@@ -89,11 +89,11 @@ msgstr "No se puede abrir el archivo \"{}\""
 
 msgctxt "shortcut window"
 msgid "First slide"
-msgstr ""
+msgstr "Primera diapositiva"
 
 msgctxt "shortcut window"
 msgid "Go to page number"
-msgstr ""
+msgstr "Ir al número de página"
 
 msgid "GtkImage gif player"
 msgstr "Reproductor de gif GtkImage"
@@ -109,33 +109,33 @@ msgstr "Tiempo no válido (mm ou mm:ss de espera), obtenido \"{}\""
 
 msgctxt "shortcut window"
 msgid "Jump to page label"
-msgstr ""
+msgstr "Saltar a la página con etiqueta"
 
 msgctxt "shortcut window"
 msgid "Last slide"
-msgstr ""
+msgstr "Última diapositiva"
 
 msgctxt "shortcut window"
 msgid "Manage files"
-msgstr ""
+msgstr "Administrar archivos"
 
 msgid "Media support uses {}."
 msgstr "Los medios se soportan con {}"
 
 msgctxt "shortcut window"
 msgid "Navigating"
-msgstr ""
+msgstr "Navegando"
 
 msgid "Next slide"
-msgstr "Siguiente diapo"
+msgstr "Siguiente diapositiva"
 
 msgctxt "shortcut window"
 msgid "Next slide"
-msgstr ""
+msgstr "Siguiente diapositiva"
 
 msgctxt "shortcut window"
 msgid "Next slide with different label"
-msgstr ""
+msgstr "Siguiente diapositiva con etiqueta diferente"
 
 msgid "No action was defined for this link"
 msgstr "No se definió ninguna acción para este enlace"
@@ -147,14 +147,14 @@ msgid "Notes"
 msgstr "Notas"
 
 msgid "Notes position"
-msgstr ""
+msgstr "Posición de las notas"
 
 msgid "Open _Recent"
 msgstr "Abierto _Recientemente"
 
 msgctxt "shortcut window"
 msgid "Open file"
-msgstr ""
+msgstr "Abrir archivo"
 
 msgid "Open..."
 msgstr "Abrir..."
@@ -163,7 +163,7 @@ msgid "Options:"
 msgstr "Opciones:"
 
 msgid "Overrides the detection from the file."
-msgstr ""
+msgstr "Anula la detección desde el archivo."
 
 msgid "PDF files"
 msgstr "Fichiros PDF"
@@ -176,25 +176,25 @@ msgstr "Ejecutar"
 
 msgctxt "shortcut window"
 msgid "Play/pause timer"
-msgstr ""
+msgstr "Temporizador de reproducción/pausa"
 
 msgid "Pointer"
 msgstr "Puntero"
 
 msgctxt "shortcut window"
 msgid "Presentation"
-msgstr ""
+msgstr "Presentación"
 
 msgid "Presenter fullscreen"
 msgstr "Presentación a pantalla completa"
 
 msgctxt "shortcut window"
 msgid "Previous slide"
-msgstr ""
+msgstr "Diapositiva anterior"
 
 msgctxt "shortcut window"
 msgid "Previous slide with different label"
-msgstr ""
+msgstr "Diapositiva anterior con etiqueta diferente"
 
 msgid "Pympress Content"
 msgstr "Contenido de pympress"
@@ -231,18 +231,18 @@ msgstr "Versión de python {}"
 
 msgctxt "shortcut window"
 msgid "Quit"
-msgstr ""
+msgstr "Salir"
 
 msgctxt "shortcut window"
 msgid "Reset timer"
-msgstr ""
+msgstr "Restablecer el temporizador"
 
 msgid "Resources are loaded from "
 msgstr "Los recursos se cargan desde "
 
 msgctxt "shortcut window"
 msgid "Set estimated talk time"
-msgstr ""
+msgstr "Ajustar el tiempo de conversación estimado"
 
 msgid "Set level of verbosity in log file:"
 msgstr "Nivel de detalle en los logs:"
@@ -251,7 +251,7 @@ msgid "Set talk _Time"
 msgstr "Seleccionar el _Tiempo de duración de la presentación"
 
 msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
-msgstr ""
+msgstr "Establecer la posición de las notas en la página del pdf (ninguna, izquierda, derecha, arriba o abajo)."
 
 msgid "Slide number"
 msgstr "Número de Diapo"
@@ -264,7 +264,7 @@ msgstr "Parar"
 
 msgctxt "shortcut window"
 msgid "Swap windows"
-msgstr ""
+msgstr "Intercambiar ventanas"
 
 msgid "The estimated (intended) talk time in minutes"
 msgstr "Duración estimada (prevista) de la presentación, en minutos"
@@ -280,19 +280,19 @@ msgstr "Tiempo estimado"
 
 msgctxt "shortcut window"
 msgid "Timers"
-msgstr ""
+msgstr "Temporizadores"
 
 msgctxt "shortcut window"
 msgid "Toggle annotations"
-msgstr ""
+msgstr "Alternar anotaciones"
 
 msgctxt "shortcut window"
 msgid "Toggle fullscreen"
-msgstr ""
+msgstr "Alternar pantalla completa"
 
 msgctxt "shortcut window"
 msgid "Toggle highlighting"
-msgstr ""
+msgstr "Alternar resaltado"
 
 msgctxt "shortcut window"
 msgid "Toggle notes mode"
@@ -300,7 +300,7 @@ msgstr ""
 
 msgctxt "shortcut window"
 msgid "Undo highlight stroke"
-msgstr ""
+msgstr "Alternar el modo de notas"
 
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr "Elemento visual {} desconocido a pantalla completa, parando."
@@ -310,7 +310,7 @@ msgstr "Sistema operativo no soportado: ningún salvapantallas se puede activar/
 
 msgctxt "shortcut window"
 msgid "Unzoom"
-msgstr ""
+msgstr "Deshacer zoom"
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Uso: {} [opciones] <archivo_de_presentación>."
@@ -320,11 +320,11 @@ msgstr "El soporte de vídeo con VLC está desactivado"
 
 msgctxt "shortcut window"
 msgid "Windows"
-msgstr ""
+msgstr "Ventanas"
 
 msgctxt "shortcut window"
 msgid "Zoom"
-msgstr ""
+msgstr "Zoom"
 
 msgid "_Align content"
 msgstr "_Alinear contenido"
@@ -339,7 +339,7 @@ msgid "_Blue"
 msgstr "_Azul"
 
 msgid "_Bottom"
-msgstr ""
+msgstr "_Abajo"
 
 msgid "_Disabled"
 msgstr "_Desactivado"
@@ -366,13 +366,13 @@ msgid "_Highlight"
 msgstr "_Resaltar"
 
 msgid "_Jump to label"
-msgstr ""
+msgstr "_Saltar a la etiqueta"
 
 msgid "_Last"
-msgstr "_ültimo"
+msgstr "_último"
 
 msgid "_Left"
-msgstr ""
+msgstr "_Derecha"
 
 msgid "_Navigation"
 msgstr "_Navigación"
@@ -399,10 +399,10 @@ msgid "_Reset timer"
 msgstr "_Reinicializar el temporizador"
 
 msgid "_Right"
-msgstr ""
+msgstr "_Izquierda"
 
 msgid "_Shortcuts"
-msgstr ""
+msgstr "_Accesos directos"
 
 msgid "_Starting Configuration"
 msgstr "Configuración del _inicio"
@@ -411,7 +411,7 @@ msgid "_Swap screens"
 msgstr "_Intercambio de pantallass"
 
 msgid "_Top"
-msgstr ""
+msgstr "_Arriba"
 
 msgid "_Undo zoom"
 msgstr "Deshacer zoom"
@@ -426,7 +426,7 @@ msgid "no action defined for this link!"
 msgstr "ninguna acción definida para este enlace !"
 
 msgid "page label"
-msgstr ""
+msgstr "página de etiquetas"
 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress es un lector de PDF ligero escrito en Python, usando Poppler para mostrar PDF y GTK en la interfaz gráfica de usuario..\n"
