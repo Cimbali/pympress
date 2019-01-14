@@ -31,7 +31,7 @@ msgid "All files"
 msgstr "Todos los archivos"
 
 msgid "Annotations"
-msgstr "Notas"
+msgstr "Anotaciones"
 
 msgid "Big buttons"
 msgstr "Botones grandes"
@@ -55,10 +55,10 @@ msgid "Close file"
 msgstr "Cerrar archivo"
 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Atención: La ventana de contenido y presentación no puede estar en la misma pantalla para comenzar en pantalla completa!"
+msgstr "Atención: Las ventanas de contenido y presentación no pueden estar en la misma pantalla para comenzar en pantalla completa!"
 
 msgid "Content blanked"
-msgstr "Contenido oculto"
+msgstr "Contenido ocultado"
 
 msgid "Content fullscreen"
 msgstr "Contenido a pantalla completa"
@@ -76,10 +76,10 @@ msgid "Could not find the file \"{}\""
 msgstr "No se puede abrir el archivo \"{}\""
 
 msgid "Could not set screensaver status: got status "
-msgstr "Atención: El estado del protector de pantalla no se puede recuperar: "
+msgstr "Atención: El estado del salvapantallas no se puede recuperar: "
 
 msgid "Current slide"
-msgstr "Diapo actual"
+msgstr "Diapositiva actual"
 
 msgid "Error loading icon for about window"
 msgstr "Error al cargar los iconos"
@@ -105,7 +105,7 @@ msgid "Invalid log level \"{}\", try one of {}"
 msgstr "Nivel de registro incorrecto \"{}\", seleccione una de las siguientes opciones {}"
 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
-msgstr "Tiempo no válido (mm ou mm:ss de espera), obtenido \"{}\""
+msgstr "Tiempo no válido (mm o mm:ss de espera), obtenido \"{}\""
 
 msgctxt "shortcut window"
 msgid "Jump to page label"
@@ -166,7 +166,7 @@ msgid "Overrides the detection from the file."
 msgstr "Anula la detección desde el archivo."
 
 msgid "PDF files"
-msgstr "Fichiros PDF"
+msgstr "Archivos PDF"
 
 msgid "Pause"
 msgstr "Pausa"
@@ -254,7 +254,7 @@ msgid "Set the position of notes on the pdf page (none, left, right, top, or bot
 msgstr "Establecer la posición de las notas en la página del pdf (ninguna, izquierda, derecha, arriba o abajo)."
 
 msgid "Slide number"
-msgstr "Número de Diapo"
+msgstr "Número de diapositiva"
 
 msgid "Some preferences are saved in "
 msgstr "Algunas preferencias se guardan en"
@@ -296,11 +296,11 @@ msgstr "Alternar resaltado"
 
 msgctxt "shortcut window"
 msgid "Toggle notes mode"
-msgstr ""
+msgstr "Alternar el modo de notas"
 
 msgctxt "shortcut window"
 msgid "Undo highlight stroke"
-msgstr "Alternar el modo de notas"
+msgstr "Deshacer trazo de resalta"
 
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr "Elemento visual {} desconocido a pantalla completa, parando."
@@ -316,7 +316,7 @@ msgid "Usage: {} [options] <presentation_file>"
 msgstr "Uso: {} [opciones] <archivo_de_presentación>."
 
 msgid "Video support using VLC is disabled."
-msgstr "El soporte de vídeo con VLC está desactivado"
+msgstr "El soporte de vídeo con VLC está desactivado."
 
 msgctxt "shortcut window"
 msgid "Windows"
@@ -336,10 +336,10 @@ msgid "_Blank screen"
 msgstr "Ocultar pantalla"
 
 msgid "_Blue"
-msgstr "_Azul"
+msgstr "Azul"
 
 msgid "_Bottom"
-msgstr "_Abajo"
+msgstr "A_bajo"
 
 msgid "_Disabled"
 msgstr "_Desactivado"
@@ -348,10 +348,10 @@ msgid "_File"
 msgstr "_Fichero"
 
 msgid "_First"
-msgstr "_Primero"
+msgstr "Primero"
 
 msgid "_Fullscreen"
-msgstr "Plein écran"
+msgstr "Pantalla completa"
 
 msgid "_Go to..."
 msgstr "_Ir a..."
@@ -360,25 +360,25 @@ msgid "_Green"
 msgstr "Verde"
 
 msgid "_Help"
-msgstr "_Ayuda"
+msgstr "Ayuda"
 
 msgid "_Highlight"
-msgstr "_Resaltar"
+msgstr "Resaltar"
 
 msgid "_Jump to label"
-msgstr "_Saltar a la etiqueta"
+msgstr "Saltar a la etiqueta"
 
 msgid "_Last"
-msgstr "_último"
+msgstr "Último"
 
 msgid "_Left"
-msgstr "_Derecha"
+msgstr "Derecha"
 
 msgid "_Navigation"
-msgstr "_Navigación"
+msgstr "_Navegación"
 
 msgid "_Next"
-msgstr "_Siguiente"
+msgstr "Siguiente"
 
 msgid "_Notes mode"
 msgstr "Modo _Notas"
@@ -390,7 +390,7 @@ msgid "_Presentation"
 msgstr "_Presentación"
 
 msgid "_Previous"
-msgstr "_Précédent"
+msgstr "_Precedente"
 
 msgid "_Red"
 msgstr "_Rojo"
@@ -399,25 +399,25 @@ msgid "_Reset timer"
 msgstr "_Reinicializar el temporizador"
 
 msgid "_Right"
-msgstr "_Izquierda"
+msgstr "Izquierda"
 
 msgid "_Shortcuts"
-msgstr "_Accesos directos"
+msgstr "Acce_sos directos"
 
 msgid "_Starting Configuration"
-msgstr "Configuración del _inicio"
+msgstr "Configuración del inicio"
 
 msgid "_Swap screens"
-msgstr "_Intercambio de pantallass"
+msgstr "Intercambio de pantallas"
 
 msgid "_Top"
-msgstr "_Arriba"
+msgstr "Arriba"
 
 msgid "_Undo zoom"
 msgstr "Deshacer zoom"
 
 msgid "_Zoom in"
-msgstr "Hacer zoom"
+msgstr "Hacer _zoom"
 
 msgid "access denied when trying to access screen saver settings in registry!"
 msgstr "acceso denegado al cambiar la configuración del protector de pantalla durante el registro !"
@@ -426,7 +426,7 @@ msgid "no action defined for this link!"
 msgstr "ninguna acción definida para este enlace !"
 
 msgid "page label"
-msgstr "página de etiquetas"
+msgstr "etiqueta de página"
 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress es un lector de PDF ligero escrito en Python, usando Poppler para mostrar PDF y GTK en la interfaz gráfica de usuario..\n"
