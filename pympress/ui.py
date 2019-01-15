@@ -325,6 +325,7 @@ class UI(builder.Builder):
         self.c_win.resize(c_bounds.width, c_bounds.height)
         if c_full:
             self.c_win.fullscreen()
+            GLib.idle_add(lambda: util.set_screensaver(True, self.c_win.get_window()))
 
 
     def show_shortcuts(self, *args):
@@ -451,6 +452,9 @@ class UI(builder.Builder):
 
         self.config.update_layout('notes' if self.notes_mode else 'plain',
                                   self.p_central.get_children()[0], self.pane_handle_pos)
+
+        if bool(self.c_win.get_window().get_state() & Gdk.WindowState.FULLSCREEN):
+            util.set_screensaver(False, self.c_win.get_window())
 
         self.config.save_config()
         Gtk.main_quit()
