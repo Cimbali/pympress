@@ -22,7 +22,7 @@ msgstr "(wstrzymany)"
 
 msgctxt "shortcut window"
 msgid "Additional features"
-msgstr ""
+msgstr "Dodatkowe funkcje"
 
 msgid "Adjust alignment of slides in projector screen"
 msgstr "Wyreguluj wyrównanie slajdów na ekranie rzutnika"
@@ -38,21 +38,21 @@ msgstr "Duże przyciski"
 
 msgctxt "shortcut window"
 msgid "Blank screen"
-msgstr ""
+msgstr "Pusty ekran"
 
 msgid "Cairo can not draw gif"
-msgstr ""
+msgstr "Cairo nie może narysować gif-a"
 
 msgctxt "shortcut window"
 msgid "Cancel goto/jump/highlighting/zooming"
-msgstr ""
+msgstr "Anuluj idź do/skocz/zakreślanie/zbliżanie"
 
 msgid "Clock"
 msgstr "Zegar"
 
 msgctxt "shortcut window"
 msgid "Close file"
-msgstr ""
+msgstr "Zamknij plik"
 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr "okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnego ekranu!"
@@ -89,11 +89,11 @@ msgstr "Błąd podczas otwierania pliku \"{}\""
 
 msgctxt "shortcut window"
 msgid "First slide"
-msgstr ""
+msgstr "Pierwszy slajd"
 
 msgctxt "shortcut window"
 msgid "Go to page number"
-msgstr ""
+msgstr "Idź do strony o numerze"
 
 msgid "GtkImage gif player"
 msgstr "Odtwarzacz gifa GtkImage"
@@ -109,33 +109,33 @@ msgstr "Nieprawidłowy czas (oczekiwano min lub min:sek), podano (wprowadzono) \
 
 msgctxt "shortcut window"
 msgid "Jump to page label"
-msgstr ""
+msgstr "Skocz do strony o etykiecie"
 
 msgctxt "shortcut window"
 msgid "Last slide"
-msgstr ""
+msgstr "Ostatni slajd"
 
 msgctxt "shortcut window"
 msgid "Manage files"
-msgstr ""
+msgstr "Zarządzaj plikami"
 
 msgid "Media support uses {}."
 msgstr "Obsługa multimediów używa {}"
 
 msgctxt "shortcut window"
 msgid "Navigating"
-msgstr ""
+msgstr "Nawigowanie"
 
 msgid "Next slide"
 msgstr "Następny slajd"
 
 msgctxt "shortcut window"
 msgid "Next slide"
-msgstr ""
+msgstr "Następny slajd"
 
 msgctxt "shortcut window"
 msgid "Next slide with different label"
-msgstr ""
+msgstr "Następny slajd"
 
 msgid "No action was defined for this link"
 msgstr "Dla tego odnośnika nie zdefiniowano żadnych działań"
@@ -147,14 +147,14 @@ msgid "Notes"
 msgstr "Notatki"
 
 msgid "Notes position"
-msgstr ""
+msgstr "Pozycja notatek"
 
 msgid "Open _Recent"
 msgstr "Otwórz _Ostatni"
 
 msgctxt "shortcut window"
 msgid "Open file"
-msgstr ""
+msgstr "Otwórz plik"
 
 msgid "Open..."
 msgstr "Otwórz..."
@@ -163,7 +163,7 @@ msgid "Options:"
 msgstr "Opcje:"
 
 msgid "Overrides the detection from the file."
-msgstr ""
+msgstr "Nadpisz wykrywanie z pliku."
 
 msgid "PDF files"
 msgstr "Pliki PDF"
@@ -176,25 +176,25 @@ msgstr "Odtwarzaj"
 
 msgctxt "shortcut window"
 msgid "Play/pause timer"
-msgstr ""
+msgstr "Uruchom / wstrzymaj licznik czasu"
 
 msgid "Pointer"
 msgstr "Wskaźnik"
 
 msgctxt "shortcut window"
 msgid "Presentation"
-msgstr ""
+msgstr "Prezentacja"
 
 msgid "Presenter fullscreen"
 msgstr "Okno prelegenta w trybie pełnego ekranu"
 
 msgctxt "shortcut window"
 msgid "Previous slide"
-msgstr ""
+msgstr "Poprzedni slajd"
 
 msgctxt "shortcut window"
 msgid "Previous slide with different label"
-msgstr ""
+msgstr "Poprzedni slajd"
 
 msgid "Pympress Content"
 msgstr "Okno treści Pympress"
@@ -231,18 +231,18 @@ msgstr "Python wersja {}"
 
 msgctxt "shortcut window"
 msgid "Quit"
-msgstr ""
+msgstr "Wyjdź"
 
 msgctxt "shortcut window"
 msgid "Reset timer"
-msgstr ""
+msgstr "Zresetuj licznik czasu"
 
 msgid "Resources are loaded from "
 msgstr "Zasoby są ładowane z "
 
 msgctxt "shortcut window"
 msgid "Set estimated talk time"
-msgstr ""
+msgstr "Ustaw szacowany czas trwania prelekcji"
 
 msgid "Set level of verbosity in log file:"
 msgstr "Ustaw poziom szczegółowości pliku dziennika:"
@@ -251,7 +251,7 @@ msgid "Set talk _Time"
 msgstr "Ustaw _czas trwania wystąpienia (prelekcji)"
 
 msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
-msgstr ""
+msgstr "Ustaw pozycję notatek na stronie pdf (brak, lewo, prawo, góra lub dół)."
 
 msgid "Slide number"
 msgstr "Numer slajdu"
@@ -264,7 +264,7 @@ msgstr "Zatrzymaj"
 
 msgctxt "shortcut window"
 msgid "Swap windows"
-msgstr ""
+msgstr "Zamień okna"
 
 msgid "The estimated (intended) talk time in minutes"
 msgstr "Przewidywany (spodziewany) czas trwania wystąpienia (prelekcji) w minutach"
@@ -280,27 +280,27 @@ msgstr "Przewidziany czas"
 
 msgctxt "shortcut window"
 msgid "Timers"
-msgstr ""
+msgstr "Liczniki czasu"
 
 msgctxt "shortcut window"
 msgid "Toggle annotations"
-msgstr ""
+msgstr "Przełącz adnotacje"
 
 msgctxt "shortcut window"
 msgid "Toggle fullscreen"
-msgstr ""
+msgstr "Przełącz tryb pełnoekranowy"
 
 msgctxt "shortcut window"
 msgid "Toggle highlighting"
-msgstr ""
+msgstr "Przełącz zakreślanie"
 
 msgctxt "shortcut window"
 msgid "Toggle notes mode"
-msgstr ""
+msgstr "Przełącz tryb notatek"
 
 msgctxt "shortcut window"
 msgid "Undo highlight stroke"
-msgstr ""
+msgstr "Cofnij wyróżnienie obrysu"
 
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr "Nie mogę uruchomić w trybie pełnego ekranu, nieznanego widżetu {}, przerywam działanie."
@@ -310,7 +310,7 @@ msgstr "Nieobsługiwany system operacyjny: nie można włączyć/wyłączyć wyg
 
 msgctxt "shortcut window"
 msgid "Unzoom"
-msgstr ""
+msgstr "Cofnij powiększanie"
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Sposób użycia: {} [opcje] <plik_z_prezentacją>"
@@ -320,11 +320,11 @@ msgstr "Obsługa wideo przy użyciu VLC jest wyłączona."
 
 msgctxt "shortcut window"
 msgid "Windows"
-msgstr ""
+msgstr "Okna"
 
 msgctxt "shortcut window"
 msgid "Zoom"
-msgstr ""
+msgstr "Powiększanie"
 
 msgid "_Align content"
 msgstr "_Wyrównaj treść"
@@ -339,7 +339,7 @@ msgid "_Blue"
 msgstr "_Niebieski"
 
 msgid "_Bottom"
-msgstr ""
+msgstr "Dół"
 
 msgid "_Disabled"
 msgstr "_Nieaktywny"
@@ -366,13 +366,13 @@ msgid "_Highlight"
 msgstr "_Zakreślacz"
 
 msgid "_Jump to label"
-msgstr ""
+msgstr "Skocz do etykiety"
 
 msgid "_Last"
 msgstr "_Ostatni"
 
 msgid "_Left"
-msgstr ""
+msgstr "_Lewo"
 
 msgid "_Navigation"
 msgstr "_Nawigacja"
@@ -399,10 +399,10 @@ msgid "_Reset timer"
 msgstr "Zresetuj timer"
 
 msgid "_Right"
-msgstr ""
+msgstr "P_rawo"
 
 msgid "_Shortcuts"
-msgstr ""
+msgstr "_Skróty"
 
 msgid "_Starting Configuration"
 msgstr "_Konfiguracja startowa"
@@ -411,7 +411,7 @@ msgid "_Swap screens"
 msgstr "_Zamień ekrany"
 
 msgid "_Top"
-msgstr ""
+msgstr "Góra"
 
 msgid "_Undo zoom"
 msgstr "Cofnij zbliżenie"
@@ -426,7 +426,7 @@ msgid "no action defined for this link!"
 msgstr "nie określono działania dla tego odnośnika!"
 
 msgid "page label"
-msgstr ""
+msgstr "etykieta strony"
 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress jest małym czytnikiem PDF napisanym w Pythonie, używającym Popplera do renderowania plików PDF oraz GTK do tworzenia GUI.\n"
