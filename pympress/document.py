@@ -616,7 +616,7 @@ class Document(object):
     #: Our position in the history
     hist_pos = -1
     #: `dict` of all the page labels
-    page_labels = {}
+    page_labels = []
 
     #: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`
     page_change = lambda p: None
@@ -637,7 +637,7 @@ class Document(object):
 
         # Pages number
         self.nb_pages = self.doc.get_n_pages()
-        self.page_labels = {self.doc.get_page(n).get_label(): n for n in range(self.nb_pages)}
+        self.page_labels = [self.doc.get_page(n).get_label() for n in range(self.nb_pages)]
 
         # Number of the current page
         self.cur_page = page
@@ -765,7 +765,7 @@ class Document(object):
         Returns:
             `bool`: False iff there are no labels or they are just the page numbers
         """
-        return self.page_labels != {str(n+1): n for n in range(self.nb_pages)}
+        return self.page_labels != [str(n+1) for n in range(self.nb_pages)]
 
 
     def lookup_label(self, label, prefix_unique = True):
@@ -781,33 +781,26 @@ class Document(object):
         # somehow this always returns None
         #page = self.doc.get_page_by_label(label).get_index()
 
-        # try exact match
-        try: return self.page_labels[label]
-        except KeyError: pass
-
-        compatible_labels = {l for l in self.page_labels if l.lower().startswith(label.lower())}
+        # make a shortlist: squash synonymous labels, keeping the last one
+        compatible_labels = {l: n for n, l in enumerate(self.page_labels) if l.lower().startswith(label.lower())}
 
         if len(compatible_labels) == 1:
-            return self.page_labels[compatible_labels.pop()]
+            return set(compatible_labels.values()).pop()
 
-        # try case-insensitive match
+        # try exact match
+        try: return compatible_labels[label]
+        except KeyError: pass
+
+        # try case-insensitive match, prefix case-sensitive match, prefix case-insensitive match (if prefix_unique = False)
         full = len(label)
-        full_nocasematch = {l for l in compatible_labels if len(l) == full}
-
-        if full_nocasematch:
-            return self.page_labels[full_nocasematch.pop()]
-
-        # try prefix case-sensitive match
-        prefix_casematch = {l for l in compatible_labels if l.startswith(label)}
-
-        if prefix_casematch and (len(prefix_casematch) == 1 or not prefix_unique):
-            return self.page_labels[prefix_casematch.pop()]
-
-        # try prefix case-insensitive match
-        if not prefix_unique:
-            return self.page_labels[compatible_labels.pop()]
-
-        return None
+        for filtering in [lambda l: len(l) == full, lambda l: l.startswith(label), lambda l: not prefix_unique]:
+            try:
+                found = next(l for l in compatible_labels if filtering(l))
+            except StopIteration:
+                continue
+            return compatible_labels[found]
+        else:
+            return None
 
 
     def goto(self, number):
@@ -855,26 +848,50 @@ class Document(object):
         self.goto(self.nb_pages-1)
 
 
+    def label_after(self, page):
+        """ Switch to the next page with different label.
+        If we're within a set of pages with the same label we want to go to the last one.
+        """
+        labels_after = enumerate(self.page_labels[page + 1:], page + 1)
+
+        try:
+            next_page, next_label = next(labels_after)
+        except StopIteration:
+            # we're already at the last page!
+            return page
+
+        # will stop as soon as next_page + 1 (aka following_page) is a different label or due to end of iterator
+        for following_page, following_label in labels_after:
+            if following_label == next_label:
+                next_page = following_page
+            else:
+                break
+
+        return next_page
+
+
+    def label_before(self, page):
+        """ Switch to the previous page with different label
+        If we're within a set of pages with the same label we want to go *before* the first one.
+        """
+        # will stop as soon as we find a different label or due to end of iterator
+        for prev_page, prev_label in enumerate(reversed(self.page_labels[:page])):
+            if prev_label != self.page_labels[page]:
+                return page - 1 - prev_page
+        else:
+            return 0
+
+
     def label_next(self, *args):
         """ Switch to the next page with different label
         """
-        try:
-            dest = min(page for page in self.page_labels.values() if page > self.cur_page)
-        except ValueError:
-            pass
-        else:
-            self.goto(dest)
+        self.goto(self.label_after(self.cur_page))
 
 
     def label_prev(self, *args):
         """ Switch to the previous page with different label
         """
-        try:
-            dest = max(page for page in self.page_labels.values() if page < self.cur_page)
-        except ValueError:
-            pass
-        else:
-            self.goto(dest)
+        self.goto(self.label_before(self.cur_page))
 
 
     def hist_next(self, *args):

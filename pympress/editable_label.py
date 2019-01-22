@@ -189,6 +189,10 @@ class PageNumber(EditableLabel):
     goto_page = lambda p: None
     #: callback, to be connected to :func:`~pympress.document.Document.lookup_label`
     find_label = lambda p: None
+    #: callback, to be connected to :func:`~pympress.document.Document.label_after`
+    label_before = lambda p: None
+    #: callback, to be connected to :func:`~pympress.document.Document.label_before`
+    label_after = lambda: None
     #: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`
     page_change = lambda b: None
     #: callback, to be connected to :func:`~pympress.editable_label.EstimatedTalkTime.stop_editing`
@@ -209,6 +213,8 @@ class PageNumber(EditableLabel):
 
         self.goto_page             = builder.get_callback_handler('doc.goto')
         self.find_label            = builder.get_callback_handler('doc.lookup_label')
+        self.label_after           = builder.get_callback_handler('doc.label_after')
+        self.label_before          = builder.get_callback_handler('doc.label_before')
         self.page_change           = builder.get_callback_handler('on_page_change')
         self.stop_editing_est_time = builder.get_callback_handler('est_time.stop_editing')
 
@@ -264,10 +270,10 @@ class PageNumber(EditableLabel):
         if self.page_labels and self.edit_label.is_focus():
             page_nb = self.find_label(self.edit_label.get_text(), prefix_unique = False)
 
-        if not page_nb:
-            page_nb = self.spin_cur.get_value()
+        if page_nb is None:
+            page_nb = self.spin_cur.get_value() - 1
 
-        if page_nb:
+        if page_nb is not None:
             self.goto_page(page_nb)
         else:
             self.cancel()
@@ -282,10 +288,18 @@ class PageNumber(EditableLabel):
     def more_actions(self, event, name):
         """ Implement directions (left/right/home/end) keystrokes, otherwise pass on to :func:`~Gtk.SpinButton.do_key_press_event()`
         """
+        modified = event.get_state() & Gdk.ModifierType.CONTROL_MASK or event.get_state() & Gdk.ModifierType.SHIFT_MASK
+
         if name == 'home':
             self.spin_cur.set_value(1)
         elif name == 'end':
             self.spin_cur.set_value(self.max_page_number)
+        elif modified and name == 'up':
+            cur_page = int(self.spin_cur.get_value()) - 1
+            self.spin_cur.set_value(1 + self.label_before(cur_page))
+        elif modified and name == 'down':
+            cur_page = int(self.spin_cur.get_value()) - 1
+            self.spin_cur.set_value(1 + self.label_after(cur_page))
         elif name == 'up':
             self.spin_cur.set_value(self.spin_cur.get_value() - 1)
         elif name == 'down':
@@ -317,7 +331,17 @@ class PageNumber(EditableLabel):
             elif self.invert_scroll and event.direction == Gdk.ScrollDirection.UP:
                 event.direction = Gdk.ScrollDirection.DOWN
 
-            return Gtk.SpinButton.do_scroll_event(self.spin_cur, event)
+            # Manually get destination slide if we're editing labels
+            if self.edit_label.is_focus():
+                cur_page = int(self.spin_cur.get_value()) - 1
+                if event.direction == Gdk.ScrollDirection.DOWN:
+                    self.spin_cur.set_value(1 + self.label_before(cur_page))
+                elif event.direction == Gdk.ScrollDirection.UP:
+                    self.spin_cur.set_value(1 + self.label_after(cur_page))
+
+            # Otherwise let the spinner do its job
+            else:
+                return Gtk.SpinButton.do_scroll_event(self.spin_cur, event)
 
 
     def swap_label_for_entry(self, hint = None):
