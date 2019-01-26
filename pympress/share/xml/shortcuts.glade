@@ -19,7 +19,7 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">Right Down space</property>
+                <property name="accelerator">Right Down Page_Down space</property>
                 <property name="title" translatable="yes" context="shortcut window">Next slide</property>
               </object>
             </child>
@@ -27,7 +27,7 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">Left Up BackSpace</property>
+                <property name="accelerator">Left Up Page_Up</property>
                 <property name="title" translatable="yes" context="shortcut window">Previous slide</property>
               </object>
             </child>
@@ -35,7 +35,7 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">Page_Down</property>
+                <property name="accelerator">&lt;shift&gt;Right &lt;shift&gt;Down &lt;shift&gt;Page_Up</property>
                 <property name="title" translatable="yes" context="shortcut window">Next slide with different label</property>
               </object>
             </child>
@@ -43,7 +43,7 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">1</property>
-                <property name="accelerator">Page_Up</property>
+                <property name="accelerator">&lt;shift&gt;Left &lt;shift&gt;Up &lt;shift&gt;Page_Up</property>
                 <property name="title" translatable="yes" context="shortcut window">Previous slide with different label</property>
               </object>
             </child>
@@ -61,6 +61,22 @@
                 <property name="visible">1</property>
                 <property name="accelerator">End</property>
                 <property name="title" translatable="yes" context="shortcut window">Last slide</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">BackSpace</property>
+                <property name="title" translatable="yes" context="shortcut window">Go back in slide history</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;shift&gt;BackSpace</property>
+                <property name="title" translatable="yes" context="shortcut window">Go forward in slide history</property>
               </object>
             </child>
 

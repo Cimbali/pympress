@@ -864,6 +864,7 @@ class UI(builder.Builder):
 
         name = Gdk.keyval_name(event.keyval)
         ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
+        shift_pressed = event.get_state() & Gdk.ModifierType.SHIFT_MASK
 
         # Try passing events to spinner or ett if they are enabled
         if self.page_number.on_keypress(widget, event):
@@ -875,17 +876,24 @@ class UI(builder.Builder):
         elif self.scribbler.nav_scribble(name, ctrl_pressed):
             return True
 
-        if name == 'space' and self.talk_time.unpause():
-            # first space unpauses, next space(s) advance by one page
-            pass
-        elif name in ['Right', 'Down', 'space']:
-            self.doc.goto_next()
-        elif name in ['Left', 'Up', 'BackSpace']:
-            self.doc.goto_prev()
-        elif name == 'Page_Down':
-            self.doc.label_next()
-        elif name == 'Page_Up':
-            self.doc.label_prev()
+        if name in ['Right', 'Down', 'Page_Down', 'space']:
+            # first key unpauses, next advance by one page
+            if self.talk_time.unpause():
+                pass
+            elif not ctrl_pressed and not shift_pressed:
+                self.doc.goto_next()
+            else:
+                self.doc.label_next()
+        elif name in ['Left', 'Up', 'Page_Up']:
+            if not ctrl_pressed and not shift_pressed:
+                self.doc.goto_prev()
+            else:
+                self.doc.label_prev()
+        elif name == 'BackSpace':
+            if not ctrl_pressed and not shift_pressed:
+                self.doc.hist_prev()
+            else:
+                self.doc.hist_next()
         elif name == 'Home':
             self.doc.goto_home()
         elif name == 'End':
