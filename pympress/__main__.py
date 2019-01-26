@@ -117,8 +117,8 @@ def main(argv = sys.argv[1:]):
                 ))
 
 
-    pympress_meta = util.get_pympress_meta()
-    logger.info(' '.join(['Pympress:', pympress_meta.__version__,
+    pympress_meta = util.get_pympress_meta().__version__
+    logger.info(' '.join(['Pympress:', pympress_meta,
             '; Python:', platform.python_version(),
             '; OS:', platform.system(), platform.release(), #platform.version(),
             '; Gtk {}.{}.{}'.format(ui.Gtk.get_major_version(), ui.Gtk.get_minor_version(), ui.Gtk.get_micro_version()),
