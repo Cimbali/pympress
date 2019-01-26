@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.2.1
+		v1.3.0
 	</div>
 
 	
@@ -199,15 +199,13 @@
 
 <span class="kn">import</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">sys</span>
 
-<span class="kn">import</span> <span class="nn">pkg_resources</span>
-
 <span class="kn">import</span> <span class="nn">gi</span>
 <span class="kn">import</span> <span class="nn">cairo</span>
 <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GLib</span>
 
 
-<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">__main__</span><span class="p">,</span> <span class="n">document</span><span class="p">,</span> <span class="n">surfacecache</span><span class="p">,</span> <span class="n">util</span><span class="p">,</span> <span class="n">pointer</span><span class="p">,</span> <span class="n">scribble</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">builder</span><span class="p">,</span> <span class="n">talk_time</span><span class="p">,</span> <span class="n">extras</span><span class="p">,</span> <span class="n">editable_label</span>
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">document</span><span class="p">,</span> <span class="n">surfacecache</span><span class="p">,</span> <span class="n">util</span><span class="p">,</span> <span class="n">pointer</span><span class="p">,</span> <span class="n">scribble</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">builder</span><span class="p">,</span> <span class="n">talk_time</span><span class="p">,</span> <span class="n">extras</span><span class="p">,</span> <span class="n">editable_label</span>
 
 
 
@@ -310,6 +308,9 @@
     <span class="n">est_time</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1">#: :class:`~pympress.talk_time.TalkTime` clock tracking talk time (elapsed, and remaining)</span>
     <span class="n">talk_time</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: A :class:`~Gtk.ShortcutsWindow` to show the shortcuts</span>
+    <span class="n">shortcuts_window</span> <span class="o">=</span> <span class="kc">None</span>
 
 
     <span class="c1">##############################################################################</span>
@@ -483,7 +484,28 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">c_bounds</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">c_bounds</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">c_bounds</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">c_bounds</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">c_full</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">fullscreen</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">fullscreen</span><span class="p">()</span>
+            <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">util</span><span class="o">.</span><span class="n">set_screensaver</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">get_window</span><span class="p">()))</span></div>
+
+
+<div class="viewcode-block" id="UI.show_shortcuts"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.show_shortcuts">[docs]</a>    <span class="k">def</span> <span class="nf">show_shortcuts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Display the shortcuts window.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use a different builder to load and be able to release the shortcuts window</span>
+        <span class="n">shortcuts_builder</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">Builder</span><span class="p">()</span>
+        <span class="n">shortcuts_builder</span><span class="o">.</span><span class="n">load_ui</span><span class="p">(</span><span class="s1">&#39;shortcuts&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcuts_window</span> <span class="o">=</span> <span class="n">shortcuts_builder</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s1">&#39;shortcuts_window&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcuts_window</span><span class="o">.</span><span class="n">set_transient_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcuts_window</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcuts_window</span><span class="o">.</span><span class="n">present</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="UI.close_shortcuts"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.close_shortcuts">[docs]</a>    <span class="k">def</span> <span class="nf">close_shortcuts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Destroy the shortcuts window once it is hidden.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcuts_window</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcuts_window</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
     <span class="c1">##############################################################################</span>
@@ -591,6 +613,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="s1">&#39;notes&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span> <span class="k">else</span> <span class="s1">&#39;plain&#39;</span><span class="p">,</span>
                                   <span class="bp">self</span><span class="o">.</span><span class="n">p_central</span><span class="o">.</span><span class="n">get_children</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">pane_handle_pos</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">get_window</span><span class="p">()</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">WindowState</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">):</span>
+            <span class="n">util</span><span class="o">.</span><span class="n">set_screensaver</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">get_window</span><span class="p">())</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_config</span><span class="p">()</span>
         <span class="n">Gtk</span><span class="o">.</span><span class="n">main_quit</span><span class="p">()</span></div>
 
@@ -638,6 +663,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpath</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">reloading</span> <span class="ow">and</span> <span class="n">docpath</span><span class="p">:</span>
+                <span class="n">Gtk</span><span class="o">.</span><span class="n">RecentManager</span><span class="o">.</span><span class="n">get_default</span><span class="p">()</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">get_uri</span><span class="p">())</span>
                 <span class="n">util</span><span class="o">.</span><span class="n">FileWatcher</span><span class="o">.</span><span class="n">watch_file</span><span class="p">(</span><span class="n">docpath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reload_document</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="n">GLib</span><span class="o">.</span><span class="n">Error</span><span class="p">:</span>
@@ -998,6 +1024,7 @@
 
         <span class="n">name</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">keyval_name</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">keyval</span><span class="p">)</span>
         <span class="n">ctrl_pressed</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ModifierType</span><span class="o">.</span><span class="n">CONTROL_MASK</span>
+        <span class="n">shift_pressed</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ModifierType</span><span class="o">.</span><span class="n">SHIFT_MASK</span>
 
         <span class="c1"># Try passing events to spinner or ett if they are enabled</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">on_keypress</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
@@ -1009,13 +1036,24 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">nav_scribble</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ctrl_pressed</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
 
-        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;space&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">unpause</span><span class="p">():</span>
-            <span class="c1"># first space unpauses, next space(s) advance by one page</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Right&#39;</span><span class="p">,</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;Page_Down&#39;</span><span class="p">,</span> <span class="s1">&#39;space&#39;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_next</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Left&#39;</span><span class="p">,</span> <span class="s1">&#39;Up&#39;</span><span class="p">,</span> <span class="s1">&#39;Page_Up&#39;</span><span class="p">,</span> <span class="s1">&#39;BackSpace&#39;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_prev</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Right&#39;</span><span class="p">,</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;Page_Down&#39;</span><span class="p">,</span> <span class="s1">&#39;space&#39;</span><span class="p">]:</span>
+            <span class="c1"># first key unpauses, next advance by one page</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">unpause</span><span class="p">():</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">ctrl_pressed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">shift_pressed</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_next</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">label_next</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Left&#39;</span><span class="p">,</span> <span class="s1">&#39;Up&#39;</span><span class="p">,</span> <span class="s1">&#39;Page_Up&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ctrl_pressed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">shift_pressed</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_prev</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">label_prev</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;BackSpace&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ctrl_pressed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">shift_pressed</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">hist_prev</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">hist_next</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Home&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_home</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;End&#39;</span><span class="p">:</span>
@@ -1553,7 +1591,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-336-gdf6dc5e&#39;',
+            VERSION:'b&#39;0.6-356-g7154333&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

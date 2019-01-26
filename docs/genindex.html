@@ -57,7 +57,7 @@
 	<br />
 	<a href="index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.2.1
+		v1.3.0
 	</div>
 
 	
@@ -279,14 +279,14 @@
 </li>
       <li><a href="pympress.html#pympress.document.Document.cleanup_media_files">cleanup_media_files() (pympress.document.Document method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.extras.Zoom.clear_cache">clear_cache() (pympress.extras.Zoom method)</a>
 
       <ul>
         <li><a href="pympress.html#pympress.surfacecache.SurfaceCache.clear_cache">(pympress.surfacecache.SurfaceCache method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.scribble.Scribbler.clear_scribble">clear_scribble() (pympress.scribble.Scribbler method)</a>
 </li>
       <li><a href="pympress.html#pympress.ui.UI.clear_zoom_cache">clear_zoom_cache() (pympress.ui.UI method)</a>
@@ -294,6 +294,8 @@
       <li><a href="pympress.html#pympress.ui.UI.click_link">click_link() (pympress.ui.UI method)</a>
 </li>
       <li><a href="pympress.html#pympress.ui.UI.close_file">close_file() (pympress.ui.UI method)</a>
+</li>
+      <li><a href="pympress.html#pympress.ui.UI.close_shortcuts">close_shortcuts() (pympress.ui.UI method)</a>
 </li>
       <li><a href="pympress.html#pympress.talk_time.TimeLabelColorer.color_map">color_map (pympress.talk_time.TimeLabelColorer attribute)</a>
 </li>
@@ -517,6 +519,8 @@
 </li>
       <li><a href="pympress.html#pympress.util.get_ui_resource_file">get_ui_resource_file() (in module pympress.util)</a>
 </li>
+      <li><a href="pympress.html#pympress.document.Document.get_uri">get_uri() (pympress.document.Document method)</a>
+</li>
       <li><a href="pympress.html#pympress.surfacecache.SurfaceCache.get_widget_type">get_widget_type() (pympress.surfacecache.SurfaceCache method)</a>
 </li>
       <li><a href="pympress.html#pympress.media_overlay.get_window_handle">get_window_handle() (in module pympress.media_overlay)</a>
@@ -603,6 +607,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.document.Page.label">label() (pympress.document.Page method)</a>
 </li>
+      <li><a href="pympress.html#pympress.document.Document.label_after">label_after() (pympress.document.Document method)</a>
+
+      <ul>
+        <li><a href="pympress.html#pympress.editable_label.PageNumber.label_after">(pympress.editable_label.PageNumber method)</a>
+</li>
+      </ul></li>
+      <li><a href="pympress.html#pympress.document.Document.label_before">label_before() (pympress.document.Document method)</a>
+
+      <ul>
+        <li><a href="pympress.html#pympress.editable_label.PageNumber.label_before">(pympress.editable_label.PageNumber method)</a>
+</li>
+      </ul></li>
       <li><a href="pympress.html#pympress.talk_time.TimeCounter.label_clock">label_clock (pympress.talk_time.TimeCounter attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.talk_time.TimeLabelColorer.label_color_default">label_color_default (pympress.talk_time.TimeLabelColorer attribute)</a>
@@ -615,6 +631,10 @@
 </li>
       <li><a href="pympress.html#pympress.editable_label.PageNumber.label_last">label_last (pympress.editable_label.PageNumber attribute)</a>
 </li>
+      <li><a href="pympress.html#pympress.document.Document.label_next">label_next() (pympress.document.Document method)</a>
+</li>
+      <li><a href="pympress.html#pympress.document.Document.label_prev">label_prev() (pympress.document.Document method)</a>
+</li>
       <li><a href="pympress.html#pympress.editable_label.PageNumber.label_sep">label_sep (pympress.editable_label.PageNumber attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.editable_label.EstimatedTalkTime.label_time">label_time (pympress.editable_label.EstimatedTalkTime attribute)</a>
@@ -625,12 +645,12 @@
         <li><a href="pympress.html#pympress.talk_time.TimeLabelColorer.label_time">(pympress.talk_time.TimeLabelColorer attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.ui.UI.laser">laser (pympress.ui.UI attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.config.Config.layout">layout (pympress.config.Config attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.config.layout_from_json">layout_from_json() (in module pympress.config)</a>
 </li>
       <li><a href="pympress.html#pympress.document.PdfPage.LEFT">LEFT (pympress.document.PdfPage attribute)</a>
@@ -665,6 +685,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pympress.html#pympress.__main__.main">main() (in module pympress.__main__)</a>
+</li>
       <li><a href="pympress.html#pympress.ui.UI.make_cwin">make_cwin() (pympress.ui.UI method)</a>
 </li>
       <li><a href="pympress.html#pympress.ui.UI.make_pwin">make_pwin() (pympress.ui.UI method)</a>
@@ -871,6 +893,8 @@
 </li>
       <li><a href="pympress.html#pympress.config.Config.path_to_config">path_to_config() (pympress.config.Config static method)</a>
 </li>
+      <li><a href="pympress.html#pympress.document.Document.path_to_uri">path_to_uri() (pympress.document.Document static method)</a>
+</li>
       <li><a href="pympress.html#pympress.talk_time.TimeCounter.pause">pause() (pympress.talk_time.TimeCounter method)</a>
 </li>
       <li><a href="pympress.html#pympress.talk_time.TimeCounter.paused">paused (pympress.talk_time.TimeCounter attribute)</a>
@@ -938,6 +962,8 @@
       <li><a href="pympress.html#pympress.extras.Media.purge_media_overlays">purge_media_overlays() (pympress.extras.Media method)</a>
 </li>
       <li><a href="pympress.html#pympress.document.Page.pw">pw (pympress.document.Page attribute)</a>
+</li>
+      <li><a href="pympress.html#module-pympress.__main__">pympress.__main__ (module)</a>
 </li>
       <li><a href="pympress.html#module-pympress.builder">pympress.builder (module)</a>
 </li>
@@ -1117,6 +1143,8 @@
 </li>
       <li><a href="pympress.html#pympress.editable_label.EditableLabel.shortcut_keys">shortcut_keys (pympress.editable_label.EditableLabel attribute)</a>
 </li>
+      <li><a href="pympress.html#pympress.ui.UI.shortcuts_window">shortcuts_window (pympress.ui.UI attribute)</a>
+</li>
       <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.show">show() (pympress.media_overlay.VideoOverlay method)</a>
 </li>
       <li><a href="pympress.html#pympress.ui.UI.show_annotations">show_annotations (pympress.ui.UI attribute)</a>
@@ -1126,6 +1154,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.pointer.Pointer.show_pointer">show_pointer (pympress.pointer.Pointer attribute)</a>
+</li>
+      <li><a href="pympress.html#pympress.ui.UI.show_shortcuts">show_shortcuts() (pympress.ui.UI method)</a>
 </li>
       <li><a href="pympress.html#pympress.builder.Builder.signal_connector">signal_connector() (pympress.builder.Builder method)</a>
 </li>
@@ -1269,6 +1299,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.ui.UI">UI (class in pympress.ui)</a>
 </li>
+      <li><a href="pympress.html#pympress.__main__.uncaught_handler">uncaught_handler() (in module pympress.__main__)</a>
+</li>
       <li><a href="pympress.html#pympress.talk_time.TimeCounter.unpause">unpause() (pympress.talk_time.TimeCounter method)</a>
 </li>
       <li><a href="pympress.html#pympress.scribble.Scribbler.update_color">update_color() (pympress.scribble.Scribbler method)</a>
@@ -1294,6 +1326,8 @@
       <li><a href="pympress.html#pympress.talk_time.TimeLabelColorer.update_time_color">update_time_color() (pympress.talk_time.TimeLabelColorer method)</a>
 </li>
       <li><a href="pympress.html#pympress.scribble.Scribbler.update_width">update_width() (pympress.scribble.Scribbler method)</a>
+</li>
+      <li><a href="pympress.html#pympress.__main__.usage">usage() (in module pympress.__main__)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1410,7 +1444,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-336-gdf6dc5e&#39;',
+            VERSION:'b&#39;0.6-356-g7154333&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

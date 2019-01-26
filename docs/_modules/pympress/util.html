@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.2.1
+		v1.3.0
 	</div>
 
 	
@@ -245,8 +245,10 @@
     <span class="k">except</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">module</span>
 
-    <span class="n">tag</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">sha</span><span class="p">,</span> <span class="o">*</span><span class="n">dirty</span> <span class="o">=</span> <span class="n">git_version</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">dirty</span><span class="p">):</span>
+    <span class="c1"># answer format is: {last tag}-{commit count since tag}-g{commit sha1 hash}[-dirty]</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">git_version</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">tag</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">sha</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">tag</span>
     <span class="n">module</span><span class="o">.</span><span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">+</span><span class="si">{}</span><span class="s1">@</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">),</span> <span class="n">count</span><span class="p">,</span> <span class="n">sha</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">))</span>
 
@@ -583,7 +585,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-336-gdf6dc5e&#39;',
+            VERSION:'b&#39;0.6-356-g7154333&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

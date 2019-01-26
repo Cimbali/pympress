@@ -57,7 +57,7 @@
 	<br />
 	<a href="index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.2.1
+		v1.3.0
 	</div>
 
 	
@@ -86,7 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="README.html#dependencies">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#contributing">Contributing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Pympress package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-pympress.ui">Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pympress.__main__">Modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pympress-ui-gui-management"><code class="docutils literal notranslate"><span class="pre">pympress.ui</span></code> – GUI management</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pympress-document-document-handling"><code class="docutils literal notranslate"><span class="pre">pympress.document</span></code> – document handling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pympress-ui-builder-abstract-gui-management"><code class="docutils literal notranslate"><span class="pre">pympress.ui_builder</span></code> – abstract GUI management</a></li>
@@ -177,9 +177,24 @@
 <p>This page contains the inline documentation, generated from the code using sphinx.</p>
 <p>The code is documented in the source using the <a class="reference external" href="https://google.github.io/styleguide/pyguide.html">Google style</a> for docstrings. Sphinx has gathered a <a class="reference external" href="http://www.sphinx-doc.org/en/latest/ext/example_google.html">set of examples</a> which serves as a better crash course than the full style reference.</p>
 <p>Retructured text (rst) can be used inside the comments and docstrings.</p>
-<div class="section" id="module-pympress.ui">
-<span id="modules"></span><span id="modules"></span><h2>Modules<a class="headerlink" href="#module-pympress.ui" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="pympress-ui-gui-management">
+<div class="section" id="module-pympress.__main__">
+<span id="modules"></span><span id="modules"></span><h2>Modules<a class="headerlink" href="#module-pympress.__main__" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pympress.__main__.main">
+<code class="descclassname">pympress.__main__.</code><code class="descname">main</code><span class="sig-paren">(</span><em>argv=['-b', 'html', '-d', '_build/doctrees', '.', '..']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/__main__.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.__main__.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pympress.__main__.uncaught_handler">
+<code class="descclassname">pympress.__main__.</code><code class="descname">uncaught_handler</code><span class="sig-paren">(</span><em>*exc_info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/__main__.html#uncaught_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.__main__.uncaught_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pympress.__main__.usage">
+<code class="descclassname">pympress.__main__.</code><code class="descname">usage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/__main__.html#usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.__main__.usage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<span class="target" id="module-pympress.ui"></span><div class="section" id="pympress-ui-gui-management">
 <h3><a class="reference internal" href="#module-pympress.ui" title="pympress.ui"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pympress.ui</span></code></a> – GUI management<a class="headerlink" href="#pympress-ui-gui-management" title="Permalink to this headline">¶</a></h3>
 <p>This module contains the whole graphical user interface of pympress, which is
 made of two separate windows: the Content window, which displays only the
@@ -290,6 +305,12 @@ Handles a click on a slide.</p>
 <dt id="pympress.ui.UI.close_file">
 <code class="descname">close_file</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.close_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.close_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove the current document.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.ui.UI.close_shortcuts">
+<code class="descname">close_shortcuts</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.close_shortcuts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.close_shortcuts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy the shortcuts window once it is hidden.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -793,6 +814,12 @@ This is very useful on windows where resizing gets sluggish if we try to redraw 
 </dd></dl>
 
 <dl class="attribute">
+<dt id="pympress.ui.UI.shortcuts_window">
+<code class="descname">shortcuts_window</code><em class="property"> = None</em><a class="headerlink" href="#pympress.ui.UI.shortcuts_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/ShortcutsWindow.html#Gtk.ShortcutsWindow" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShortcutsWindow</span></code></a> to show the shortcuts</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="pympress.ui.UI.show_annotations">
 <code class="descname">show_annotations</code><em class="property"> = True</em><a class="headerlink" href="#pympress.ui.UI.show_annotations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to display annotations or not</p>
@@ -802,6 +829,12 @@ This is very useful on windows where resizing gets sluggish if we try to redraw 
 <dt id="pympress.ui.UI.show_bigbuttons">
 <code class="descname">show_bigbuttons</code><em class="property"> = True</em><a class="headerlink" href="#pympress.ui.UI.show_bigbuttons" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to display big buttons or not</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.ui.UI.show_shortcuts">
+<code class="descname">show_shortcuts</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/ui.html#UI.show_shortcuts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.ui.UI.show_shortcuts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the shortcuts window.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1119,6 +1152,21 @@ or to the current directory.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pympress.document.Document.get_uri">
+<code class="descname">get_uri</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.get_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.get_uri" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the URI to the file currently opened.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#str" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="pympress.document.Document.goto">
 <code class="descname">goto</code><span class="sig-paren">(</span><em>number</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.goto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.goto" title="Permalink to this definition">¶</a></dt>
 <dd><p>Switch to another page.</p>
@@ -1213,6 +1261,32 @@ or to the current directory.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="pympress.document.Document.label_after">
+<code class="descname">label_after</code><span class="sig-paren">(</span><em>page</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.label_after"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.label_after" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch to the next page with different label.
+If we’re within a set of pages with the same label we want to go to the last one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.document.Document.label_before">
+<code class="descname">label_before</code><span class="sig-paren">(</span><em>page</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.label_before"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.label_before" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch to the previous page with different label
+If we’re within a set of pages with the same label we want to go <em>before</em> the first one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.document.Document.label_next">
+<code class="descname">label_next</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.label_next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.label_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch to the next page with different label</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.document.Document.label_prev">
+<code class="descname">label_prev</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.label_prev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.label_prev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch to the previous page with different label</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pympress.document.Document.lookup_label">
 <code class="descname">lookup_label</code><span class="sig-paren">(</span><em>label</em>, <em>prefix_unique=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.lookup_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.lookup_label" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find a page from its label</p>
@@ -1290,7 +1364,7 @@ or to the current directory.</p>
 
 <dl class="attribute">
 <dt id="pympress.document.Document.page_labels">
-<code class="descname">page_labels</code><em class="property"> = {}</em><a class="headerlink" href="#pympress.document.Document.page_labels" title="Permalink to this definition">¶</a></dt>
+<code class="descname">page_labels</code><em class="property"> = []</em><a class="headerlink" href="#pympress.document.Document.page_labels" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of all the page labels</p>
 </dd></dl>
 
@@ -1323,6 +1397,11 @@ a page that has already been loaded.</p>
 <code class="descname">path</code><em class="property"> = None</em><a class="headerlink" href="#pympress.document.Document.path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Path to pdf</p>
 </dd></dl>
+
+<dl class="staticmethod">
+<dt id="pympress.document.Document.path_to_uri">
+<em class="property">static </em><code class="descname">path_to_uri</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/document.html#Document.path_to_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.document.Document.path_to_uri" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pympress.document.Document.play_media">
@@ -2805,7 +2884,7 @@ widget names and its values are document types from ui.</p>
 
 <dl class="attribute">
 <dt id="pympress.pointer.Pointer.pointer">
-<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7f6b4831ce10 (GdkPixbuf at 0x55bd5daa2580)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pointer</code><em class="property"> = &lt;GdkPixbuf.Pixbuf object at 0x7f340adbaaf8 (GdkPixbuf at 0x559b37592180)&gt;</em><a class="headerlink" href="#pympress.pointer.Pointer.pointer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/GdkPixbuf-2.0/classes/Pixbuf.html#GdkPixbuf.Pixbuf" title="(in GdkPixbuf 2.0 v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pixbuf</span></code></a> to read XML descriptions of GUIs and load them.</p>
 </dd></dl>
 
@@ -3042,7 +3121,7 @@ Call this when the page_number module is initialized, but before needing the cal
 
 <dl class="attribute">
 <dt id="pympress.editable_label.EstimatedTalkTime.entry_ett">
-<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f6b483599d8 (GtkEntry at 0x55bd5dba4480)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
+<code class="descname">entry_ett</code><em class="property"> = &lt;Gtk.Entry object at 0x7f34092956c0 (GtkEntry at 0x559b3769e480)&gt;</em><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.entry_ett" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Entry.html#Gtk.Entry" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Entry</span></code></a> used to set the estimated talk time.</p>
 </dd></dl>
 
@@ -3099,7 +3178,7 @@ If it is an entry, then replace it with the label.</p>
 
 <dl class="method">
 <dt id="pympress.editable_label.EstimatedTalkTime.swap_label_for_entry">
-<code class="descname">swap_label_for_entry</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#EstimatedTalkTime.swap_label_for_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.swap_label_for_entry" title="Permalink to this definition">¶</a></dt>
+<code class="descname">swap_label_for_entry</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pympress/editable_label.html#EstimatedTalkTime.swap_label_for_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pympress.editable_label.EstimatedTalkTime.swap_label_for_entry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform the actual work of starting the editing.</p>
 </dd></dl>
 
@@ -3175,6 +3254,18 @@ If it is an entry, then replace it with the label.</p>
 <dt id="pympress.editable_label.PageNumber.invert_scroll">
 <code class="descname">invert_scroll</code><em class="property"> = True</em><a class="headerlink" href="#pympress.editable_label.PageNumber.invert_scroll" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3.4/library/functions.html#bool" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a> whether to scroll with the pages (True) or with the page numbers (False)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.editable_label.PageNumber.label_after">
+<code class="descname">label_after</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pympress.editable_label.PageNumber.label_after" title="Permalink to this definition">¶</a></dt>
+<dd><p>callback, to be connected to <a class="reference internal" href="#pympress.document.Document.label_before" title="pympress.document.Document.label_before"><code class="xref py py-func docutils literal notranslate"><span class="pre">label_before()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pympress.editable_label.PageNumber.label_before">
+<code class="descname">label_before</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pympress.editable_label.PageNumber.label_before" title="Permalink to this definition">¶</a></dt>
+<dd><p>callback, to be connected to <a class="reference internal" href="#pympress.document.Document.label_after" title="pympress.document.Document.label_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">label_after()</span></code></a></p>
 </dd></dl>
 
 <dl class="attribute">
@@ -3546,7 +3637,7 @@ Times are given in seconds. In between timestamps the color will interpolated li
 
 <dl class="attribute">
 <dt id="pympress.config.Config.layout">
-<code class="descname">layout</code><em class="property"> = {'highlight': {'resizeable': True, 'children': ['highlight', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.5502857142857143, 0.44971428571428573], 'orientation': 'vertical'}], 'proportions': [0.6712962962962963, 0.3287037037037037], 'orientation': 'horizontal'}, 'notes': {'resizeable': True, 'children': ['notes', {'resizeable': False, 'children': ['current', 'next'], 'orientation': 'vertical'}], 'proportions': [0.6, 0.4], 'orientation': 'horizontal'}, 'plain': {'resizeable': True, 'children': ['current', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.5221238938053098, 0.47787610619469023], 'orientation': 'vertical'}], 'proportions': [0.5989583333333334, 0.40104166666666663], 'orientation': 'horizontal'}}</em><a class="headerlink" href="#pympress.config.Config.layout" title="Permalink to this definition">¶</a></dt>
+<code class="descname">layout</code><em class="property"> = {'highlight': {'resizeable': True, 'children': ['highlight', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.5497787610619469, 0.4502212389380531], 'orientation': 'vertical'}], 'proportions': [0.6715481171548117, 0.32845188284518834], 'orientation': 'horizontal'}, 'notes': {'resizeable': True, 'children': ['notes', {'resizeable': False, 'children': ['current', 'next'], 'orientation': 'vertical'}], 'proportions': [0.497907949790795, 0.502092050209205], 'orientation': 'horizontal'}, 'plain': {'resizeable': True, 'children': ['current', {'resizeable': True, 'children': ['next', 'annotations'], 'proportions': [0.49042553191489363, 0.5095744680851064], 'orientation': 'vertical'}], 'proportions': [0.5869791666666667, 0.4130208333333333], 'orientation': 'horizontal'}}</em><a class="headerlink" href="#pympress.config.Config.layout" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://docs.python.org/3.4/library/stdtypes.html#dict" title="(in Python v3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>-tree of presenter layouts for various modes</p>
 </dd></dl>
 
@@ -3704,7 +3795,7 @@ Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on 
 
 <dl class="attribute">
 <dt id="pympress.extras.Annotations.annotation_renderer">
-<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7f6b4833b5a0 (GtkCellRendererText at 0x55bd5db84150)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">annotation_renderer</code><em class="property"> = &lt;Gtk.CellRendererText object at 0x7f340adbf288 (GtkCellRendererText at 0x559b3767e150)&gt;</em><a class="headerlink" href="#pympress.extras.Annotations.annotation_renderer" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference external" href="https://lazka.github.io/pgi-docs/Gtk-3.0/classes/CellRendererText.html#Gtk.CellRendererText" title="(in Gtk 3.0 v3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CellRendererText</span></code></a> Text renderer for the annotations</p>
 </dd></dl>
 
@@ -4951,7 +5042,7 @@ Should run on the main thread to ensure we avoid vlc plugins’ reentrency probl
 <dl class="attribute">
 <dt id="pympress.media_overlay.VideoOverlay.time_format">
 <code class="descname">time_format</code><em class="property"> = '{:01}:{:02}'</em><a class="headerlink" href="#pympress.media_overlay.VideoOverlay.time_format" title="Permalink to this definition">¶</a></dt>
-<dd><p><a href="#id1"><span class="problematic" id="id2">**</span></a>Format of the video time, defaults to m* – ss, changed to “m* – ss / m:ss” when the max time is known</p>
+<dd><p><a href="#id1"><span class="problematic" id="id2">**</span></a>Format of the video time, defaults to m* – ss, changed to m* – ss / m:ss when the max time is known</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -5067,7 +5158,7 @@ Solution from <a class="reference external" href="http://stackoverflow.com/a/272
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'b&#39;0.6-336-gdf6dc5e&#39;',
+            VERSION:'b&#39;0.6-356-g7154333&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -57,7 +57,7 @@
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.2.1
+		v1.3.0
 	</div>
 
 	
@@ -349,6 +349,10 @@
     <span class="n">goto_page</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="kc">None</span>
     <span class="c1">#: callback, to be connected to :func:`~pympress.document.Document.lookup_label`</span>
     <span class="n">find_label</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="c1">#: callback, to be connected to :func:`~pympress.document.Document.label_after`</span>
+    <span class="n">label_before</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="kc">None</span>
+    <span class="c1">#: callback, to be connected to :func:`~pympress.document.Document.label_before`</span>
+    <span class="n">label_after</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
     <span class="c1">#: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`</span>
     <span class="n">page_change</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">b</span><span class="p">:</span> <span class="kc">None</span>
     <span class="c1">#: callback, to be connected to :func:`~pympress.editable_label.EstimatedTalkTime.stop_editing`</span>
@@ -369,6 +373,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">goto_page</span>             <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;doc.goto&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">find_label</span>            <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;doc.lookup_label&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_after</span>           <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;doc.label_after&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_before</span>          <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;doc.label_before&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">page_change</span>           <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;on_page_change&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_editing_est_time</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">get_callback_handler</span><span class="p">(</span><span class="s1">&#39;est_time.stop_editing&#39;</span><span class="p">)</span>
 
@@ -424,10 +430,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_label</span><span class="o">.</span><span class="n">is_focus</span><span class="p">():</span>
             <span class="n">page_nb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edit_label</span><span class="o">.</span><span class="n">get_text</span><span class="p">(),</span> <span class="n">prefix_unique</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">page_nb</span><span class="p">:</span>
-            <span class="n">page_nb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">page_nb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">page_nb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
 
-        <span class="k">if</span> <span class="n">page_nb</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">page_nb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">goto_page</span><span class="p">(</span><span class="n">page_nb</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
@@ -442,10 +448,18 @@
 <div class="viewcode-block" id="PageNumber.more_actions"><a class="viewcode-back" href="../../pympress.html#pympress.editable_label.PageNumber.more_actions">[docs]</a>    <span class="k">def</span> <span class="nf">more_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Implement directions (left/right/home/end) keystrokes, otherwise pass on to :func:`~Gtk.SpinButton.do_key_press_event()`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">modified</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ModifierType</span><span class="o">.</span><span class="n">CONTROL_MASK</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ModifierType</span><span class="o">.</span><span class="n">SHIFT_MASK</span>
+
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;home&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_page_number</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">modified</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">:</span>
+            <span class="n">cur_page</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_before</span><span class="p">(</span><span class="n">cur_page</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">modified</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;down&#39;</span><span class="p">:</span>
+            <span class="n">cur_page</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_after</span><span class="p">(</span><span class="n">cur_page</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;down&#39;</span><span class="p">:</span>
@@ -477,7 +491,17 @@
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">invert_scroll</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ScrollDirection</span><span class="o">.</span><span class="n">UP</span><span class="p">:</span>
                 <span class="n">event</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ScrollDirection</span><span class="o">.</span><span class="n">DOWN</span>
 
-            <span class="k">return</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">SpinButton</span><span class="o">.</span><span class="n">do_scroll_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></div>
+            <span class="c1"># Manually get destination slide if we&#39;re editing labels</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edit_label</span><span class="o">.</span><span class="n">is_focus</span><span class="p">():</span>
+                <span class="n">cur_page</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ScrollDirection</span><span class="o">.</span><span class="n">DOWN</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_before</span><span class="p">(</span><span class="n">cur_page</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ScrollDirection</span><span class="o">.</span><span class="n">UP</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_after</span><span class="p">(</span><span class="n">cur_page</span><span class="p">))</span>
+
+            <span class="c1"># Otherwise let the spinner do its job</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">SpinButton</span><span class="o">.</span><span class="n">do_scroll_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PageNumber.swap_label_for_entry"><a class="viewcode-back" href="../../pympress.html#pympress.editable_label.PageNumber.swap_label_for_entry">[docs]</a>    <span class="k">def</span> <span class="nf">swap_label_for_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hint</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -643,7 +667,7 @@
         <span class="k">return</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">do_key_press_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entry_ett</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="EstimatedTalkTime.swap_label_for_entry"><a class="viewcode-back" href="../../pympress.html#pympress.editable_label.EstimatedTalkTime.swap_label_for_entry">[docs]</a>    <span class="k">def</span> <span class="nf">swap_label_for_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EstimatedTalkTime.swap_label_for_entry"><a class="viewcode-back" href="../../pympress.html#pympress.editable_label.EstimatedTalkTime.swap_label_for_entry">[docs]</a>    <span class="k">def</span> <span class="nf">swap_label_for_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Perform the actual work of starting the editing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_editing_page_number</span><span class="p">()</span>
@@ -709,7 +733,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-336-gdf6dc5e&#39;',
+            VERSION:'b&#39;0.6-356-g7154333&#39;',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
