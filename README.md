@@ -108,7 +108,7 @@ Alternately, you can build your Gtk+3 stack from source using MSVC, see [the Gno
 
 Dependencies can be installed using [Homebrew](https://brew.sh/):
 
-    brew install gtk+3 poppler gobject-introspection
+    brew install gtk+3 poppler gobject-introspection pygobject3
 
 # Contributing
 
