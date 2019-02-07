@@ -164,6 +164,7 @@ setup_opts = dict(name='pympress',
         'Topic :: Multimedia :: Graphics :: Viewers',
     ],
     license='GPLv2',
+    packages=['pympress'],
 )
 
 
@@ -215,7 +216,10 @@ if __name__ == '__main__':
                 'pympress{} = pympress.__main__:main'.format(sys.version_info.major),
             ]},
             install_requires=['python-vlc', 'watchdog'],
-            package_data={'pympress': [f for p, f in pympress_resources()]}
+            package_data={'pympress':
+                [os.path.join('share', 'xml', '*.glade'), os.path.join('share', 'css', '*.css'), os.path.join('share', 'pixmaps', '*.png')]
+                + [f.split(os.path.sep, 1)[1] for f in glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))]
+            }
         ))
 
     else:
