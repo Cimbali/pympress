@@ -241,7 +241,7 @@ def set_screensaver(must_disable, window):
                 set_screensaver.dpms_was_enabled.poll()
                 set_screensaver.dpms_was_enabled = None
 
-    elif IS_POSIX:
+    elif IS_POSIX and type(window).__name__ == 'X11Window':
         # On Linux, set screensaver with xdg-screensaver
         # (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
         cmd = "suspend" if must_disable else "resume"
@@ -279,8 +279,8 @@ def set_screensaver(must_disable, window):
         try:
             with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Control Panel\Desktop', 0, winreg.KEY_QUERY_VALUE|winreg.KEY_SET_VALUE) as key:
                 if must_disable:
-                    (value,type) = winreg.QueryValueEx(key, "ScreenSaveActive")
-                    assert(type == winreg.REG_SZ)
+                    (value,regtype) = winreg.QueryValueEx(key, "ScreenSaveActive")
+                    assert(regtype == winreg.REG_SZ)
                     set_screensaver.dpms_was_enabled = (value == "1")
                     if set_screensaver.dpms_was_enabled:
                         winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "0")
@@ -288,6 +288,7 @@ def set_screensaver(must_disable, window):
                     winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "1")
         except (OSError, PermissionError):
             logger.exception(_("access denied when trying to access screen saver settings in registry!"))
+
     else:
         logger.warning(_("Unsupported OS: can't enable/disable screensaver"))
 
