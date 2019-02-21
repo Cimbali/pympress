@@ -215,7 +215,7 @@ if __name__ == '__main__':
                 'pympress = pympress.__main__:main',
                 'pympress{} = pympress.__main__:main'.format(sys.version_info.major),
             ]},
-            install_requires=['python-vlc', 'watchdog'],
+            install_requires=['python-vlc', 'watchdog', 'enum34;python_version<"3.4"'],
             package_data={'pympress':
                 [os.path.join('share', 'xml', '*.glade'), os.path.join('share', 'css', '*.css'), os.path.join('share', 'pixmaps', '*.png')]
                 + [f.split(os.path.sep, 1)[1] for f in glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))]
