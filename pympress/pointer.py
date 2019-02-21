@@ -87,7 +87,7 @@ class Pointer(object):
         """
         if name in ['pointer_red', 'pointer_green', 'pointer_blue']:
             self.show_pointer = POINTER_HIDE
-            self.pointer = util.get_icon_pixbuf(name + '.png')
+            self.pointer = GdkPixbuf.Pixbuf.new_from_file(util.get_icon_path(name + '.png'))
         else:
             self.show_pointer = POINTER_OFF
 

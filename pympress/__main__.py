@@ -35,10 +35,13 @@ import ctypes
 import tempfile
 import platform
 
+
+# Setup logging, and catch all uncaught exceptions in the log file.
+# Load pympress.util early (OS and path-specific things) to load and setup gettext translation asap.
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename=os.path.join(tempfile.gettempdir(), 'pympress.log'), level=logging.DEBUG)
 
-# Catch all uncaught exceptions in the log file:
+
 def uncaught_handler(*exc_info):
     logger.critical('Uncaught exception:\n{}'.format(logging.Formatter().formatException(exc_info)))
     sys.__excepthook__(*exc_info)
@@ -57,6 +60,23 @@ locale.setlocale(locale.LC_ALL, '')
 gettext.install('pympress', util.get_locale_dir())
 
 
+
+# Load python bindings for gobject introspections, aka pygobject, aka gi.
+# This is a dependency that is not specified in the setup.py, so we need to start here
+# see https://github.com/Cimbali/pympress/issues/100
+try:
+    import gi
+    gi.require_version('Gtk', '3.0')
+    from gi.repository import Gtk, GLib
+except ModuleNotFoundError:
+    logger.critical('Gobject Introspections module is missing', exc_info = True)
+    print(_('Gobject Introspections module is missing'))
+    exit(1)
+
+
+
+
+# Finally the real deal: load pympress modules, handle command line args, and start up
 from pympress import media_overlay, document, ui
 
 
@@ -72,6 +92,8 @@ def usage():
     print("    --log=level                      " + _("Set level of verbosity in log file:"))
     print("                                       " + _("{}, {}, {}, {}, or {}").format("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"))
     print("")
+
+
 
 def main(argv = sys.argv[1:]):
     signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -121,8 +143,8 @@ def main(argv = sys.argv[1:]):
     logger.info(' '.join(['Pympress:', pympress_meta,
             '; Python:', platform.python_version(),
             '; OS:', platform.system(), platform.release(), #platform.version(),
-            '; Gtk {}.{}.{}'.format(ui.Gtk.get_major_version(), ui.Gtk.get_minor_version(), ui.Gtk.get_micro_version()),
-            '; GLib ', '.'.join(map(str, ui.GLib.glib_version)),
+            '; Gtk {}.{}.{}'.format(Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version()),
+            '; GLib ', '.'.join(map(str, GLib.glib_version)),
             '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
             '; Cairo', ui.cairo.cairo_version_string(), ', pycairo', ui.cairo.version,
             '; Media:', media_overlay.VideoOverlay.backend_version()

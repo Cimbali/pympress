@@ -42,7 +42,7 @@ import os.path, sys
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import GObject, Gtk, Gdk, GLib
+from gi.repository import GObject, Gtk, Gdk, GLib, GdkPixbuf
 
 
 from pympress import document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, editable_label
@@ -163,7 +163,7 @@ class UI(builder.Builder):
 
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(),
-            util.get_style_provider(),
+            util.load_style_provider(Gtk.CssProvider()),
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
@@ -206,15 +206,13 @@ class UI(builder.Builder):
         self.connect_signals(self)
 
         # Common to both windows
-        icon_list = util.load_icons()
-        self.c_win.set_icon_list(icon_list)
-        self.p_win.set_icon_list(icon_list)
+        self.load_icons()
 
         # Show all windows
         self.c_win.show_all()
         self.p_win.show_all()
 
-        util.FileWatcher.start_daemon()
+        extras.FileWatcher.start_daemon()
 
         # Queue some redraws
         self.c_da.queue_draw()
@@ -226,6 +224,19 @@ class UI(builder.Builder):
         self.next_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
         self.p_frame_annot.set_visible(self.show_annotations)
+
+
+    def load_icons(self):
+        """ Set the icon list for both windows
+        """
+        try:
+            icon_list = [GdkPixbuf.Pixbuf.new_from_file(i) for i in util.list_icons()]
+        except Exception as e:
+            logger.exception('Error loading icons')
+            return
+
+        self.c_win.set_icon_list(icon_list)
+        self.p_win.set_icon_list(icon_list)
 
 
     def make_cwin(self):
@@ -447,7 +458,7 @@ class UI(builder.Builder):
         """
         self.scribbler.disable_scribbling()
 
-        util.FileWatcher.stop_daemon()
+        extras.FileWatcher.stop_daemon()
         self.doc.cleanup_media_files()
 
         self.config.update_layout('notes' if self.notes_mode else 'plain',
@@ -477,7 +488,7 @@ class UI(builder.Builder):
                          + _('Python version {}').format(sys.version))
         about.set_website('http://www.pympress.xyz/')
         try:
-            about.set_logo(util.get_icon_pixbuf('pympress-128.png'))
+            about.set_logo(GdkPixbuf.Pixbuf.new_from_file(util.get_icon_path('pympress-128.png')))
         except Exception as e:
             logger.exception(_('Error loading icon for about window'))
         about.run()
@@ -504,13 +515,13 @@ class UI(builder.Builder):
 
             if not reloading and docpath:
                 Gtk.RecentManager.get_default().add_item(self.doc.get_uri())
-                util.FileWatcher.watch_file(docpath, self.reload_document)
+                extras.FileWatcher.watch_file(docpath, self.reload_document)
 
         except GLib.Error:
             if reloading: return
             self.doc = document.Document.create(self, None)
             self.error_opening_file(docpath)
-            util.FileWatcher.stop_watching()
+            extras.FileWatcher.stop_watching()
 
         # Guess notes mode by default if the document has notes
         if not reloading:
