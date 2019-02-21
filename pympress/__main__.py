@@ -94,9 +94,11 @@ def usage():
     print("")
 
 
-
 def main(argv = sys.argv[1:]):
     signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+    Gtk.init(argv)
+
     try:
         opts, args = getopt.getopt(argv, "hn:t:", ["help", "notes=", "talk-time=", "log="])
     except getopt.GetoptError:
