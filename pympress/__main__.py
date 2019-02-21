@@ -67,7 +67,7 @@ gettext.install('pympress', util.get_locale_dir())
 try:
     import gi
     gi.require_version('Gtk', '3.0')
-    from gi.repository import Gtk, GLib
+    from gi.repository import Gtk, Gdk, GLib
 except ModuleNotFoundError:
     logger.critical('Gobject Introspections module is missing', exc_info = True)
     print(_('Gobject Introspections module is missing'))
@@ -97,6 +97,10 @@ def usage():
 def main(argv = sys.argv[1:]):
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+    # prefere X11 on posix systems because Wayland still has some shortcomings for us,
+    # specifically libVLC and the ability to disable screensavers
+    if util.IS_POSIX:
+        Gdk.set_allowed_backends('x11,*')
     Gtk.init(argv)
 
     try:
