@@ -15,10 +15,11 @@ Pympress was originally created and maintained by [Schnouki](https://github.com/
 
 # Installing
 
-## If you have python
-First, make sure you have all [the dependencies](#dependencies).
+## Using pip (requires python)
 
-### Using pip
+This technique is preferred on Linux and macOS, and also requires you to have all [the dependencies](#dependencies). On Windows, it is easier to use the [binary installer](#binary-install-currently-only-for-windows).
+
+### From PyPI (the Python Package Index)
 
 Run the following command in your shell (or replace `python3 -m pip` with `python -m pip` or just `pip`, and ):
 
@@ -41,7 +42,7 @@ If you don't want to know about source code or dependencies, this is for you.
 
 Packages with 'amd64' in the name are for 64 bit machines, 'x86' for 32 bit machines. The 'vlc' suffix indicates that the installer ships VLC as well, so try it if the other version fails to read videos.
 
-If you get an error message along the lines of "MSVCP100.dll is missing", get the Visual C++ redistributables from Microsoft ([x86 (32 bit)](https://www.microsoft.com/en-in/download/details.aspx?id=5555) or [x64 (64 bits)](https://www.microsoft.com/en-us/download/details.aspx?id=14632)). Those libraries really should already be installed on your system.
+If you get an error message along the lines of "MSVCP100.dll is missing", get the Visual C++ 2010 redistributables from Microsoft ([x86 (32 bit)](https://www.microsoft.com/en-in/download/details.aspx?id=5555) or [x64 (64 bits)](https://www.microsoft.com/en-us/download/details.aspx?id=14632)). Those libraries really should already be installed on your system.
 
 # Usage
 
@@ -91,10 +92,20 @@ Different distributions might have different package naming conventions, for exa
 
     zypper in python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gobject python3-gobject-Gdk python3-cairo python3-gobject-cairo typelib-1_0-GdkPixbuf-2_0 typelib-1_0-Gtk-3_0 typelib-1_0-Poppler-0_18
 
-### On windows
-There are two ways to get the dependencies:
+### On macOS
 
-1. using MSYS2 (replace x86_64 with i686 if you're using a 32 bit machine):
+Dependencies can be installed using [Homebrew](https://brew.sh/):
+
+    brew install gtk+3 poppler gobject-introspection pygobject3
+
+### On windows
+The [binary installer for windows](#binary-install-currently-only-for-windows) comes with pympress and all its dependencies packaged.
+
+In order to install from pypi or from source on windows, there are two ways to get the dependencies:
+
+1. using MSYS2 (replace x86_64 with i686 if you're using a 32 bit machine).
+
+   **Warning:** this can take a substantial amount of disk size as it requires a full software distribution and building platform.
 
         pacman -S --needed mingw-w64-x86_64-gtk3 mingw-w64-x86_64-cairo mingw-w64-x86_64-poppler mingw-w64-x86_64-python3 mingw-w64-x86_64-vlc python3-pip mingw-w64-x86_64-python3-pip mingw-w64-x86_64-python3-gobject mingw-w64-x86_64-python3-cairo
 
@@ -102,13 +113,7 @@ There are two ways to get the dependencies:
   - Install native [python for windows](https://www.python.org/downloads/windows/)
   - Get GTK+3, Poppler and their python bindings by executing [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/).  Be sure to tick all the necessary dependencies in the installer (Poppler, Cairo, Gdk-Pixbuf).
 
-Alternately, you can build your Gtk+3 stack from source using MSVC, see [the Gnome wiki](https://wiki.gnome.org/Projects/GTK+/Win32/MSVCCompilationOfGTKStack) and [this python script that compiles the whole Gtk+3 stack](https://github.com/wingtk/gvsbuild/)
-
-### On macOS
-
-Dependencies can be installed using [Homebrew](https://brew.sh/):
-
-    brew install gtk+3 poppler gobject-introspection pygobject3
+Alternately, you can build your Gtk+3 stack from source using MSVC, see [the Gnome wiki](https://wiki.gnome.org/Projects/GTK+/Win32/MSVCCompilationOfGTKStack) and [this python script that compiles the whole Gtk+3 stack](https://github.com/wingtk/gvsbuild/).
 
 # Contributing
 
