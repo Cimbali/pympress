@@ -293,6 +293,8 @@ class Page(object):
                     continue
             elif annot_type == Poppler.AnnotType.SCREEN:
                 action_obj = annotation.annot.get_action()
+                if not action_obj:
+                    continue
                 action = self.get_annot_action(action_obj.any.type, action_obj, annotation.area)
                 if not action:
                     continue
