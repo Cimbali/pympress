@@ -703,6 +703,7 @@
                             <property name="min_content_height">10</property>
                             <child>
                               <object class="GtkTreeView" id="scrollable_treelist">
+                                <property name="name">scrollable_treelist</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="headers_visible">False</property>
