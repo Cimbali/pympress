@@ -715,6 +715,21 @@
                                     <property name="mode">none</property>
                                   </object>
                                 </child>
+                                <child>
+                                  <object class="GtkTreeViewColumn">
+                                    <property name="sizing">autosize</property>
+                                    <property name="fixed_width">1</property>
+                                    <property name="title" translatable="yes">column</property>
+                                    <child>
+                                      <object class="GtkCellRendererText" id="annotation_renderer">
+                                        <property name="wrap_mode">word-char</property>
+                                      </object>
+                                      <attributes>
+                                        <attribute name="text">0</attribute>
+                                      </attributes>
+                                    </child>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>

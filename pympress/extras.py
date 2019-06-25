@@ -49,9 +49,8 @@ class Annotations(object):
     scrollable_treelist = None
     #: Making the annotations list scroll if it's too long
     scrolled_window = None
-
     #: :class:`~Gtk.CellRendererText` Text renderer for the annotations
-    annotation_renderer = Gtk.CellRendererText()
+    annotation_renderer = None
 
     def __init__(self, builder):
         """ Load the widgets and setup for the annotations' display.
@@ -62,16 +61,6 @@ class Annotations(object):
         super(Annotations, self).__init__()
         builder.load_widgets(self)
 
-        # wrap text
-        self.annotation_renderer.props.wrap_mode = Pango.WrapMode.WORD_CHAR
-
-        column = Gtk.TreeViewColumn(None, self.annotation_renderer, text=0)
-        column.props.sizing = Gtk.TreeViewColumnSizing.AUTOSIZE
-        column.set_fixed_width(1)
-
-        self.scrollable_treelist.set_model(Gtk.ListStore(str))
-        self.scrollable_treelist.append_column(column)
-
         self.scrolled_window.set_hexpand(True)
 
 
@@ -81,6 +70,9 @@ class Annotations(object):
         Args:
             annotations (`list`): A list of strings, that are the annotations to be displayed
         """
+        prev_annots = self.scrollable_treelist.get_model()
+        if prev_annots:
+            prev_annots.clear()
         list_annot = Gtk.ListStore(str)
 
         for annot in annotations:
