@@ -41,7 +41,111 @@ import mimetypes
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-from pympress import media_overlay, document
+from pympress import media_overlay, document, builder
+
+
+class TimingReport(builder.Builder):
+    #: `list` of time at which each page was reached
+    page_time = []
+    #: `int` the time at which the clock was reset
+    reset_time = -1
+    #: The :class:`~Gtk.TreeView` containing the timing data to display in the dialog.
+    timing_treeview = None
+    #: A :class:`~Gtk.Dialog` to contain the timing to show.
+    time_report_dialog = None
+
+    def __init__(self, parent):
+        super(TimingReport, self).__init__()
+        self.load_ui('time_report_dialog')
+        self.time_report_dialog.set_transient_for(parent.p_win)
+        self.time_report_dialog.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        self.connect_signals(self)
+
+
+    def transition(self, page, time):
+        ''' Record a transition time between slides
+
+        Args:
+            page (`int`): the page number of the current slide
+            time (`int`): the number of seconds elapsed since the beginning of the presentation
+        '''
+        if self.reset_time >= 0:
+            self.reset_time = -1
+            self.page_time.clear()
+        self.page_time.append((page, time))
+
+
+    def reset(self, reset_time):
+        ''' A timer reset. Clear the history as soon as we start changing pages again.
+        '''
+        self.reset_time = reset_time
+
+
+    def show(self, current_time, doc_structure, page_labels):
+        ''' Show the popup with the timing infortmation
+
+        Args:
+            current_time (`int`): the number of seconds elapsed since the beginning of the presentation
+            doc_structure (`dict`): the structure of the document
+            page_labels (`list`): the page labels for each of the pages
+        '''
+        times = [time for page, time in self.page_time] + [current_time if self.reset_time < 0 else self.reset_time]
+        durations = (e - s for e, s in zip(times[1:], times[:-1]))
+
+        infos = {'time': min(time for page, time in self.page_time), 'duration': 0, 'children': [], 'page': 0}
+        infos['title'] = 'Full presentation'
+
+        for (page, start_time), duration in zip(self.page_time, durations):
+            if not duration:
+                continue
+
+            infos['duration'] += duration
+
+            # lookup the position of the page in the document structure (section etc)
+            lookup = doc_structure
+            cur_info_pos = infos
+            while lookup:
+                try:
+                    pos = max(p for p in lookup if p <= page)
+                except ValueError:
+                    break
+                item = lookup[pos]
+                lookup = item.get('children', None)
+
+                if cur_info_pos['children'] and cur_info_pos['children'][-1]['page'] == pos:
+                    cur_info_pos['children'][-1]['duration'] += duration
+                else:
+                    cur_info_pos['children'].append({'page': pos, 'title': item['title'], 'children': [],
+                                        'duration': duration, 'time': start_time})
+                cur_info_pos = cur_info_pos['children'][-1]
+
+            # add the actual page as a leaf node
+            cur_info_pos['children'].append({'page': page, 'title': _('slide #') + page_labels[page],
+                                        'duration': duration, 'time': start_time})
+
+
+        treemodel = self.timing_treeview.get_model()
+        if treemodel:
+            treemodel.clear()
+
+        treemodel = Gtk.TreeStore(str, str, str, str)
+
+        dfs_info = [(None, infos)]
+        while dfs_info:
+            first_it, first = dfs_info.pop()
+            fmt = lambda val: '{:02}:{:02}'.format(*divmod(val, 60))
+            last_col = '{} ({}/{})'.format(page_labels[first['page']], first['page'], len(page_labels))
+            row = [first['title'], fmt(first['time']), fmt(first['duration']), last_col]
+            it = treemodel.append(first_it, row)
+
+            if 'children' in first:
+                dfs_info.extend((it, child) for child in reversed(first['children']))
+
+        self.timing_treeview.set_model(treemodel)
+        self.timing_treeview.expand_row(Gtk.TreePath.new_first(), False)
+
+        self.time_report_dialog.run()
+        self.time_report_dialog.hide()
 
 
 class Annotations(object):

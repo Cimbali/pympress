@@ -148,6 +148,8 @@ class UI(builder.Builder):
     est_time = None
     #: :class:`~pympress.talk_time.TimeCounter` clock tracking talk time (elapsed, and remaining)
     talk_time = None
+    #: :class:`~pympress.extras.TimingReport` popup to show how much time was spent on which part
+    timing = None
 
     #: A :class:`~Gtk.ShortcutsWindow` to show the shortcuts
     shortcuts_window = None
@@ -184,6 +186,7 @@ class UI(builder.Builder):
         self.est_time = editable_label.EstimatedTalkTime(self)
         self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))
         self.talk_time = talk_time.TimeCounter(self, self.est_time)
+        self.timing = extras.TimingReport(self)
 
         # solve circular creation-time dependency
         self.est_time.delayed_callback_connection(self)
@@ -546,7 +549,9 @@ class UI(builder.Builder):
         # Draw the new page(s)
         if not reloading:
             self.talk_time.pause()
+            self.timing.reset(int(self.talk_time.delta))
             self.talk_time.reset_timer()
+
         self.on_page_change(False)
 
 
@@ -749,6 +754,7 @@ class UI(builder.Builder):
         # Start counter if needed
         if unpause:
             self.talk_time.unpause()
+        self.timing.transition(self.page_preview_nb, int(self.talk_time.delta))
 
         # Update display
         self.page_number.update_page_numbers(self.page_preview_nb, page_cur.label())
@@ -922,6 +928,7 @@ class UI(builder.Builder):
         elif name == 'Pause':
             self.talk_time.switch_pause(widget, event)
         elif name.upper() == 'R':
+            self.timing.reset(int(self.talk_time.delta))
             self.talk_time.reset_timer()
 
         # Some key events are already handled by toggle actions in the
@@ -1192,6 +1199,14 @@ class UI(builder.Builder):
             self.c_frame.set_property(prop, val)
         else:
             self.config.set('content', prop, str(button.get_value()))
+
+
+    def show_timing_report(self, *args):
+        ''' Show the popup with information on timing of the talk.
+
+        Gather current time, document structure, page labels etc. and pass it to timing popup for display.
+        '''
+        self.timing.show(int(self.talk_time.delta), self.doc.get_structure(), self.doc.page_labels)
 
 
     ##############################################################################

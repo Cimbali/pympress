@@ -354,6 +354,15 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkMenuItem" id="timing_breakdown">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Timing breakdown</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="show_timing_report" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
