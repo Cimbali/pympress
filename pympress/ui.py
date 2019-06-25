@@ -146,7 +146,7 @@ class UI(builder.Builder):
 
     #: :class:`~pympress.editable_label.EstimatedTalkTime` to set estimated/remaining talk time
     est_time = None
-    #: :class:`~pympress.talk_time.TalkTime` clock tracking talk time (elapsed, and remaining)
+    #: :class:`~pympress.talk_time.TimeCounter` clock tracking talk time (elapsed, and remaining)
     talk_time = None
 
     #: A :class:`~Gtk.ShortcutsWindow` to show the shortcuts
