@@ -664,6 +664,75 @@ class Document(object):
                 self.notes = PdfPage.NONE
 
 
+    def get_structure(self, index_iter = None):
+        """ Gets the structure of the document from its index.
+
+        Recursive, pass the iterator.
+
+        Args:
+            index_iter (:class:`~Poppler.IndexIter` or `None`): the iterator for the child index to explore.
+
+        Returns:
+            `list`: A list of tuples (depth, page number, title)
+        """
+        try:
+            if index_iter is None:
+                index_iter = Poppler.IndexIter(self.doc)
+        except TypeError:
+            return {}
+        if index_iter is None:
+            return {}
+
+        index = {}
+        while True:
+            action = index_iter.get_action()
+            title = ''
+            try:
+                if action.type == Poppler.ActionType.GOTO_DEST:
+                    title = action.goto_dest.title
+                    if action.goto_dest.dest.type == Poppler.DestType.NAMED:
+                        dest = self.parent.doc.find_dest(action.goto_dest.dest.named_dest)
+                        page = dest.page_num - 1
+                    elif action.goto_dest.dest.type == Poppler.DestType.UNKNOWN:
+                        raise AssertionError('Unknown type of destination')
+                    else:
+                        page = action.goto_dest.dest.page_num - 1
+                else:
+                    raise AssertionError('Unexpected type of action')
+            except:
+                logger.error(_('Unexpected action in index "{}"').format(action.type))
+                page = None
+
+            new_entry = {'title': title}
+            child = index_iter.get_child()
+            if child:
+                new_entry['children'] = self.get_structure(child)
+
+            # there should not be synonymous sections, correct the page here to a better guess
+            if page is None or page in index:
+                if 'children' in new_entry:
+                    page = min(new_entry['children'])
+                else:
+                    lower_bound = max(index)
+                    find = index[lower_bound]
+                    while 'children' in find:
+                        lower_bound = max(find)
+                        find = find[lower_bound]
+
+                    try:
+                        page = min(l for l, n in enumerate(self.page_labels) if n == self.page_labels[page] and l > lower_bound)
+                    except ValueError: # empty iterator
+                        page = lower_bound + 1
+
+
+            index[page] = new_entry
+
+            if not index_iter.next():
+                break
+
+        return index
+
+
     @staticmethod
     def path_to_uri(path):
         # Do not trust urlsplit, manually check we have an URI
