@@ -150,7 +150,7 @@ def main(argv = sys.argv[1:]):
             '; Python:', platform.python_version(),
             '; OS:', platform.system(), platform.release(), #platform.version(),
             '; Gtk {}.{}.{}'.format(Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version()),
-            '; GLib ', '.'.join(map(str, GLib.glib_version)),
+            '; GLib {}.{}.{}'.format(GLib.MAJOR_VERSION, GLib.MINOR_VERSION, GLib.MICRO_VERSION),
             '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
             '; Cairo', ui.cairo.cairo_version_string(), ', pycairo', ui.cairo.version,
             '; Media:', media_overlay.VideoOverlay.backend_version()
