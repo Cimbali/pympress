@@ -4,7 +4,7 @@ Pympress is a little PDF reader written in Python using Poppler for PDF renderin
 
 It is designed to be a dual-screen reader used for presentations and public talks, with two displays: the *Content window* for a projector, and the *Presenter window* for your laptop. It is portable and has been tested on various Mac, Windows and Linux systems.
 
-It comes with many great features:
+It comes with many great features ([more below](#functionalities)):
 - supports embedded videos
 - text annotations displayed in the presenter window
 - natively supports beamer's *notes on second screen*!
@@ -60,15 +60,24 @@ All functionalities are available from the menus of the window with slide previe
 Keyboard shortcuts are also listed in these menus. Some more usual shortcuts are often available, for example `Ctrl`+`L`, and `F11` also toggle fullscreen, though the main shortcut is just `F`.
 
 A few of the fancier functionalities are listed here:
-- **Swap screens**: If Pympress mixed up which screen is the projector and which is not, press `S`
+- **Two-screen display**: See on your laptop or tablet display the current slide, the next slide, the talk time and wall-clock time, and annotations (either PDF annotations, or beamer notes on second slide). The position of the beamer notes in the slide is detected automatically and can be overriden via a menu option.
+- **Media support**: supports playing video, audio, and gif files embedded in (or linked from) the PDF file.
+- **Highlight mode**: Allows to draw freehand on the slide currently on screen.
 - **Go To Slide**: To jump to a selected slide without flashing through the whole presentation on the projector, press `G` or click the "current  slide" box.
+  Using `J` or clicking the slide label will allow you to navigate slide labels instead of page numbers, useful e.g. for multi-page slides from beamer `\pause`.
 
   A spin box will appear, and you will be able to navigate through your slides in the presenter window only by scrolling your mouse, with the `Home`/`Up`/`Down`/`End` keys, with the + and - buttons of the spin box, or simply by typing in the number of the slide. Press `Enter` to validate going to the new slide or `Esc` to cancel.
+  
+- **Software pointer**: Clicking on the slide (in either window) while holding `ctrl` down will display a software laser pointer on the slide.
+- **Talk time breakdown**: The `Presentation > Timing Breakdown` menu item displays a breakdown of how much time was spent on each slide, with a hierarchical breakdown per chapters/sections/etc. if available in the PDF.
+- **Automatic file reloading**: If the file is modified, pympress will reload it (and preserve the current slide, current time, etc.)
+- **Big button mode**: Add big buttons (duh) for touch displays.
+- **Swap screens**: If Pympress mixed up which screen is the projector and which is not, press `S`
 - **Estimated talk time**: Click the `Time estimation` box and set your planned talk duration. The color will allow you to see at a glance how much time you have left.
 - **Adjust screen centering**: If your slides' form factor doesn't fit the projectors' and you don't want the slide centered in the window, use the "Screen Center" option in the "Presentation" menu.
 - **Resize Current/Next slide**: You can drag the bar between both slides on the Presenter window to adjust their relative sizes to your liking.
 - **Preferences**: Some of your choices are saved in a configuration file, in *~/.config/pympress* or *~/.pympress* on linux, and in *%APPDATA%/pympress.ini* on windows.
-- **Cache**: For efficiency, Pympress caches rendered pages (up to 200 by default). If this is too memory consuming for you, you can change this number in the configuration file.
+- **Caching**: For efficiency, Pympress caches rendered pages (up to 200 by default). If this is too memory consuming for you, you can change this number in the configuration file.
 
 ## Command line arguments
 
