@@ -13,6 +13,9 @@ Pympress is a free software, distributed under the terms of the GPL license (ver
 
 Pympress was originally created and maintained by [Schnouki](https://github.com/Schnouki), on [his repo](https://github.com/Schnouki/pympress).
 
+Here is what the 2 screen setup looks like, with a big notes slide next to 2 small slides (current and next) on the presenter side:
+![A screenshot with Pympress’ 2 screens](https://repository-images.githubusercontent.com/42637225/925da680-886b-11e9-9a12-28b48debbf19)
+
 # Installing
 
 ## Using pip (requires python)
