@@ -58,7 +58,7 @@ source_parsers = {
     '.md': CommonMarkParser,
 }
 
-github_doc_root = 'https://pympress.xyz/'
+github_doc_root = 'https://cimbali.github.io/pympress/'
 def setup(app):
     app.add_config_value('recommonmark_config', {
             'url_resolver': lambda url: github_doc_root + url,

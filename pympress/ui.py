@@ -489,7 +489,7 @@ class UI(builder.Builder):
                          + _('Resources are loaded from ') + os.path.dirname(util.get_locale_dir()) + '\n\n'
                          + (_('Media support uses {}.').format(self.medias.backend_version())) + '\n'
                          + _('Python version {}').format(sys.version))
-        about.set_website('http://www.pympress.xyz/')
+        about.set_website('https://github.com/Cimbali/pympress')
         try:
             about.set_logo(GdkPixbuf.Pixbuf.new_from_file(util.get_icon_path('pympress-128.png')))
         except Exception as e:
