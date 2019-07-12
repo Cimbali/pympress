@@ -70,7 +70,10 @@ try:
     from gi.repository import Gtk, Gdk, GLib
 except ModuleNotFoundError:
     logger.critical('Gobject Introspections module is missing', exc_info = True)
-    print(_('Gobject Introspections module is missing'))
+    print('\n' + _('ERROR: Gobject Introspections module is missing, make Gtk and pygobject are installed on your system.'))
+    print('\n' + _('For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies'))
+    print(_('If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject'))
+    print(_('pip will then download and compile pygobject, for which you need the Gtk headers (or development package).') + '\n')
     exit(1)
 
 

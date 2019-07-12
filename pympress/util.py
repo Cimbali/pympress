@@ -46,12 +46,6 @@ if IS_WINDOWS:
         import winreg
     except ImportError:
         import _winreg as winreg
-else:
-    try:
-        gi.require_version('GdkX11', '3.0')
-        from gi.repository import GdkX11
-    except:
-        pass
 
 try:
     PermissionError()
