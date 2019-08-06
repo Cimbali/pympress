@@ -48,10 +48,10 @@ def gtk_resources():
         'etc',
         os.path.join('lib', 'girepository-1.0'),
         os.path.join('lib', 'gtk-3.0'),
+        os.path.join('lib', 'gdk-pixbuf-2.0'),
         os.path.join('share', 'poppler'),
         os.path.join('share', 'themes'),
         os.path.join('share', 'icons'),
-        os.path.join('share', 'fonts'),
         os.path.join('share', 'glib-2.0'),
         os.path.join('share', 'xml')
     ]
@@ -67,45 +67,17 @@ def gtk_resources():
 
 
 def dlls():
-    """ Returns a list of all DLL files we need
+    """ Returns a list of all DLL files we need, for now return them all and sort it later.
     """
     if os.name != 'nt': return []
 
-    # This is all relatively hardcoded and only tested with Python3.4/PyGobjet3.18
-    # for example sometimes we need libstdc++-6.dll, other times libstdc++.dll
-    libs = ['libatk-1.0-0.dll', 'libcairo-gobject-2.dll', 'libepoxy-0.dll',
-    'libffi-6.dll', 'libfontconfig-1.dll', 'libfreetype-6.dll', 'libgailutil-3-0.dll',
-    'libgdk-3-0.dll', 'libgdk_pixbuf-2.0-0.dll', 'libgio-2.0-0.dll',
-    'libgirepository-1.0-1.dll', 'libglib-2.0-0.dll', 'libgmodule-2.0-0.dll',
-    'libgobject-2.0-0.dll', 'libgthread-2.0-0.dll', 'libgtk-3-0.dll', 'libharfbuzz-0.dll',
-    'libharfbuzz-gobject-0.dll', 'libharfbuzz-icu-0.dll', 'libintl-8.dll', 'libjasper-1.dll',
-    'libjpeg-8.dll', 'liblcms2-2.dll', 'libopenjp2.dll', 'libpango-1.0-0.dll',
-    'libpangocairo-1.0-0.dll', 'libpangoft2-1.0-0.dll', 'libpangowin32-1.0-0.dll',
-    'libpng16-16.dll', 'libpoppler-glib-8.dll', 'librsvg-2-2.dll', 'libstdc++.dll',
-    'libstdc++-6.dll', 'libtiff-5.dll', 'libwebp-5.dll', 'libwinpthread-1.dll', 'libxmlxpat.dll',
-    'libzzz.dll', 'libintl-8.dll']
+    libdir = os.path.dirname(find_library('libgtk-3-0'))
+    libs = []
 
-    include_files = []
-    for lib in libs:
-        path = find_library(lib)
-        if path and os.path.exists(path):
-            include_files.append((path, lib))
-        else:
-            print('WARNING: Can not find library {}'.format(lib))
+    for lib in glob.glob(os.path.join(libdir, '*.dll')):
+        libs.append((lib, os.path.basename(lib)))
 
-    python_dll='python{}{}.dll'.format(sys.version_info.major, sys.version_info.minor)
-    for d in site.getsitepackages() + [os.environ['SYSTEMROOT'],
-        os.path.join(os.environ['SYSTEMROOT'], 'System32'),
-        os.path.join(os.environ['SYSTEMROOT'], 'SysWOW64')]:
-
-        if os.path.isfile(os.path.join(d, python_dll)):
-            print('Found',python_dll,'at',os.path.join(d, python_dll))
-            include_files.append((python_dll, os.path.join(d, python_dll)))
-            break
-    else:
-        print('WARNING: Can not find library',python_dll)
-
-    return include_files
+    return libs
 
 
 def vlc_resources():
@@ -130,7 +102,7 @@ def vlc_resources():
 def pympress_resources():
     """ Return pympress resources
     """
-    resources = [os.path.join('share', 'xml'), os.path.join('share', 'css')]
+    resources = [os.path.join('share', 'xml'), os.path.join('share', 'pixmaps'), os.path.join('share', 'css')]
     translations = glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))
     return [(os.path.join('pympress', f), f) for f in resources] + [(t, t.split(os.path.sep, 1)[1]) for t in translations]
 
@@ -228,7 +200,7 @@ if __name__ == '__main__':
         setup_opts.update(dict(options = {'build_exe':{
               'includes': [],
               'excludes': [],
-              'packages': ['codecs', 'gi', 'packaging', 'six', 'appdirs', 'vlc'],
+              'packages': ['codecs', 'gi', 'packaging', 'six', 'appdirs', 'vlc', 'watchdog'],
               'include_files': include_files,
               'silent': True
           }},
