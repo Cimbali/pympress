@@ -17,47 +17,40 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Pympress developer documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.3.0
+		v1.4.0
 	</div>
 
 	
@@ -101,7 +94,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Pympress</a>
@@ -109,9 +102,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -140,12 +134,6 @@
     
     
       <li class="wy-breadcrumbs-aside">
-        
-            
-            
-              <a href="https://github.com/Cimbali/pympress/blob/master/docs/source/_modules/pympress/document" class="fa fa-github"> Edit on GitHub</a>
-            
-          
         
       </li>
     
@@ -220,7 +208,7 @@
 <span class="kn">from</span> <span class="nn">pympress.util</span> <span class="k">import</span> <span class="n">fileopen</span>
 
 
-<div class="viewcode-block" id="get_extension"><a class="viewcode-back" href="../../pympress.html#pympress.document.get_extension">[docs]</a><span class="k">def</span> <span class="nf">get_extension</span><span class="p">(</span><span class="n">mime_type</span><span class="p">):</span>
+<div class="viewcode-block" id="get_extension"><a class="viewcode-back" href="../../pympress.html#pympress.ui.get_extension">[docs]</a><span class="k">def</span> <span class="nf">get_extension</span><span class="p">(</span><span class="n">mime_type</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Returns a valid filename extension (recognized by python) for a given mime type.</span>
 
 <span class="sd">    Args:</span>
@@ -236,7 +224,7 @@
             <span class="k">return</span> <span class="n">ext</span></div>
 
 
-<div class="viewcode-block" id="PdfPage"><a class="viewcode-back" href="../../pympress.html#pympress.document.PdfPage">[docs]</a><span class="k">class</span> <span class="nc">PdfPage</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
+<div class="viewcode-block" id="PdfPage"><a class="viewcode-back" href="../../pympress.html#pympress.ui.PdfPage">[docs]</a><span class="k">class</span> <span class="nc">PdfPage</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Represents the part of a PDF page that we want to draw.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: No notes on PDF page, only falsy value</span>
@@ -252,19 +240,19 @@
     <span class="c1">#: Left half of PDF page</span>
     <span class="n">LEFT</span>    <span class="o">=</span> <span class="mi">5</span>
 
-    <span class="k">def</span> <span class="nf">complement</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+<div class="viewcode-block" id="PdfPage.complement"><a class="viewcode-back" href="../../pympress.html#pympress.ui.PdfPage.complement">[docs]</a>    <span class="k">def</span> <span class="nf">complement</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return the enum value for the other part of the page.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">PdfPage</span><span class="p">(</span><span class="n">val</span> <span class="o">^</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PdfPage</span><span class="p">(</span><span class="n">val</span> <span class="o">^</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+<div class="viewcode-block" id="PdfPage.scale"><a class="viewcode-back" href="../../pympress.html#pympress.ui.PdfPage.scale">[docs]</a>    <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return the enum value that does only scaling not shifting</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">PdfPage</span><span class="p">(</span><span class="n">val</span> <span class="o">|</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PdfPage</span><span class="p">(</span><span class="n">val</span> <span class="o">|</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">from_screen</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PdfPage.from_screen"><a class="viewcode-back" href="../../pympress.html#pympress.ui.PdfPage.from_screen">[docs]</a>    <span class="k">def</span> <span class="nf">from_screen</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Transform visible part of the page coordinates to full page coordinates.</span>
 
 <span class="sd">        Pass 2 floats to transform coordinates, 4 to transform margins,</span>
@@ -290,10 +278,10 @@
         <span class="k">if</span> <span class="n">x2</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">y2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">page</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">page</span> <span class="o">+</span> <span class="n">val</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span><span class="o">.</span><span class="n">from_screen</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">page</span> <span class="o">+</span> <span class="n">val</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span><span class="o">.</span><span class="n">from_screen</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">to_screen</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PdfPage.to_screen"><a class="viewcode-back" href="../../pympress.html#pympress.ui.PdfPage.to_screen">[docs]</a>    <span class="k">def</span> <span class="nf">to_screen</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Transform full page coordinates to visible part coordinates.</span>
 
 <span class="sd">        Pass 2 floats to transform coordinates, 4 to transform margins,</span>
@@ -319,10 +307,10 @@
         <span class="k">if</span> <span class="n">x2</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">y2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">screen</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">screen</span> <span class="o">+</span> <span class="n">val</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span><span class="o">.</span><span class="n">to_screen</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">screen</span> <span class="o">+</span> <span class="n">val</span><span class="o">.</span><span class="n">complement</span><span class="p">()</span><span class="o">.</span><span class="n">to_screen</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Link"><a class="viewcode-back" href="../../pympress.html#pympress.document.Link">[docs]</a><span class="k">class</span> <span class="nc">Link</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Link"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Link">[docs]</a><span class="k">class</span> <span class="nc">Link</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; This class encapsulates one hyperlink of the document.</span>
 
 <span class="sd">    Args:</span>
@@ -349,7 +337,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">follow</span> <span class="o">=</span> <span class="n">action</span>
 
 
-<div class="viewcode-block" id="Link.is_over"><a class="viewcode-back" href="../../pympress.html#pympress.document.Link.is_over">[docs]</a>    <span class="k">def</span> <span class="nf">is_over</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="Link.is_over"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Link.is_over">[docs]</a>    <span class="k">def</span> <span class="nf">is_over</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Tell if the input coordinates are on the link rectangle.</span>
 
 <span class="sd">        Args:</span>
@@ -362,7 +350,7 @@
         <span class="k">return</span> <span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y1</span> <span class="o">&lt;=</span> <span class="n">y</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y2</span><span class="p">)</span> <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Link.build_closure"><a class="viewcode-back" href="../../pympress.html#pympress.document.Link.build_closure">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Link.build_closure"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Link.build_closure">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">build_closure</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return a lambda that calls fun(\*args, \**kwargs), with the current value of args and kwargs.</span>
 <span class="sd">        By creating the lambda in a new scope, we bind the arguments, thus creating a closure and remember the arguments.</span>
@@ -376,7 +364,7 @@
 
 
 
-<div class="viewcode-block" id="Page"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page">[docs]</a><span class="k">class</span> <span class="nc">Page</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Page"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page">[docs]</a><span class="k">class</span> <span class="nc">Page</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Class representing a single page.</span>
 
 <span class="sd">    It provides several methods used by the GUI for preparing windows for</span>
@@ -453,6 +441,8 @@
                     <span class="k">continue</span>
             <span class="k">elif</span> <span class="n">annot_type</span> <span class="o">==</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">AnnotType</span><span class="o">.</span><span class="n">SCREEN</span><span class="p">:</span>
                 <span class="n">action_obj</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">get_action</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">action_obj</span><span class="p">:</span>
+                    <span class="k">continue</span>
                 <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_annot_action</span><span class="p">(</span><span class="n">action_obj</span><span class="o">.</span><span class="n">any</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">action_obj</span><span class="p">,</span> <span class="n">annotation</span><span class="o">.</span><span class="n">area</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">action</span><span class="p">:</span>
                     <span class="k">continue</span>
@@ -489,7 +479,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">my_annotation</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Page.get_link_action"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page.get_link_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_link_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">link_type</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<div class="viewcode-block" id="Page.get_link_action"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.get_link_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_link_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">link_type</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the function to be called when the link is followed.</span>
 
 <span class="sd">        Args:</span>
@@ -577,7 +567,7 @@
         <span class="k">return</span> <span class="n">fun</span></div>
 
 
-<div class="viewcode-block" id="Page.get_annot_action"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page.get_annot_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_annot_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">link_type</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">rect</span><span class="p">):</span>
+<div class="viewcode-block" id="Page.get_annot_action"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.get_annot_action">[docs]</a>    <span class="k">def</span> <span class="nf">get_annot_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">link_type</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">rect</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the function to be called when the link is followed.</span>
 
 <span class="sd">        Args:</span>
@@ -620,19 +610,19 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_link_action</span><span class="p">(</span><span class="n">link_type</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Page.number"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page.number">[docs]</a>    <span class="k">def</span> <span class="nf">number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Page.number"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.number">[docs]</a>    <span class="k">def</span> <span class="nf">number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the page number.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_nb</span></div>
 
 
-<div class="viewcode-block" id="Page.label"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page.label">[docs]</a>    <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Page.label"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.label">[docs]</a>    <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the page label.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_label</span></div>
 
 
-<div class="viewcode-block" id="Page.get_link_at"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page.get_link_at">[docs]</a>    <span class="k">def</span> <span class="nf">get_link_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">FULL</span><span class="p">):</span>
+<div class="viewcode-block" id="Page.get_link_at"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.get_link_at">[docs]</a>    <span class="k">def</span> <span class="nf">get_link_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">FULL</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the :class:`~pympress.document.Link` corresponding to the given</span>
 <span class="sd">        position, or `None` if there is no link at this position.</span>
 
@@ -657,7 +647,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="Page.get_size"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page.get_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">FULL</span><span class="p">):</span>
+<div class="viewcode-block" id="Page.get_size"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.get_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">FULL</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the page size.</span>
 
 <span class="sd">        Args:</span>
@@ -669,7 +659,7 @@
         <span class="k">return</span> <span class="n">dtype</span><span class="o">.</span><span class="n">scale</span><span class="p">()</span><span class="o">.</span><span class="n">from_screen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ph</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Page.get_aspect_ratio"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page.get_aspect_ratio">[docs]</a>    <span class="k">def</span> <span class="nf">get_aspect_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">FULL</span><span class="p">):</span>
+<div class="viewcode-block" id="Page.get_aspect_ratio"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.get_aspect_ratio">[docs]</a>    <span class="k">def</span> <span class="nf">get_aspect_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">FULL</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the page aspect ratio.</span>
 
 <span class="sd">        Args:</span>
@@ -682,7 +672,7 @@
         <span class="k">return</span> <span class="n">w</span> <span class="o">/</span> <span class="n">h</span></div>
 
 
-<div class="viewcode-block" id="Page.get_annotations"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page.get_annotations">[docs]</a>    <span class="k">def</span> <span class="nf">get_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Page.get_annotations"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.get_annotations">[docs]</a>    <span class="k">def</span> <span class="nf">get_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the list of text annotations on this page.</span>
 
 <span class="sd">        Returns:</span>
@@ -691,7 +681,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span></div>
 
 
-<div class="viewcode-block" id="Page.get_media"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page.get_media">[docs]</a>    <span class="k">def</span> <span class="nf">get_media</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Page.get_media"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.get_media">[docs]</a>    <span class="k">def</span> <span class="nf">get_media</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the list of medias this page might want to play.</span>
 
 <span class="sd">        Returns:</span>
@@ -700,7 +690,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">medias</span></div>
 
 
-<div class="viewcode-block" id="Page.render_cairo"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page.render_cairo">[docs]</a>    <span class="k">def</span> <span class="nf">render_cairo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cr</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">FULL</span><span class="p">):</span>
+<div class="viewcode-block" id="Page.render_cairo"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.render_cairo">[docs]</a>    <span class="k">def</span> <span class="nf">render_cairo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cr</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">FULL</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Render the page on a Cairo surface.</span>
 
 <span class="sd">        Args:</span>
@@ -733,7 +723,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">cr</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Page.can_render"><a class="viewcode-back" href="../../pympress.html#pympress.document.Page.can_render">[docs]</a>    <span class="k">def</span> <span class="nf">can_render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Page.can_render"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Page.can_render">[docs]</a>    <span class="k">def</span> <span class="nf">can_render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Informs that rendering *is* necessary (avoids checking the type)</span>
 
 <span class="sd">        Returns:</span>
@@ -742,7 +732,7 @@
         <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
-<div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; This is the main document handling class.</span>
 
 <span class="sd">    .. note:: The internal page numbering scheme is the same as in Poppler: it</span>
@@ -822,7 +812,76 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="n">PdfPage</span><span class="o">.</span><span class="n">NONE</span>
 
 
-<div class="viewcode-block" id="Document.path_to_uri"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.path_to_uri">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Document.get_structure"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.get_structure">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index_iter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Gets the structure of the document from its index.</span>
+
+<span class="sd">        Recursive, pass the iterator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            index_iter (:class:`~Poppler.IndexIter` or `None`): the iterator for the child index to explore.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `list`: A list of tuples (depth, page number, title)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">index_iter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">index_iter</span> <span class="o">=</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">IndexIter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">index_iter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+        <span class="n">index</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">index_iter</span><span class="o">.</span><span class="n">get_action</span><span class="p">()</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">ActionType</span><span class="o">.</span><span class="n">GOTO_DEST</span><span class="p">:</span>
+                    <span class="n">title</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">goto_dest</span><span class="o">.</span><span class="n">title</span>
+                    <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">goto_dest</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">DestType</span><span class="o">.</span><span class="n">NAMED</span><span class="p">:</span>
+                        <span class="n">dest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">find_dest</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">goto_dest</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">named_dest</span><span class="p">)</span>
+                        <span class="n">page</span> <span class="o">=</span> <span class="n">dest</span><span class="o">.</span><span class="n">page_num</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">action</span><span class="o">.</span><span class="n">goto_dest</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Poppler</span><span class="o">.</span><span class="n">DestType</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">&#39;Unknown type of destination&#39;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">page</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">goto_dest</span><span class="o">.</span><span class="n">dest</span><span class="o">.</span><span class="n">page_num</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">&#39;Unexpected type of action&#39;</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Unexpected action in index &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+                <span class="n">page</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">new_entry</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">title</span><span class="p">}</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="n">index_iter</span><span class="o">.</span><span class="n">get_child</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">child</span><span class="p">:</span>
+                <span class="n">new_entry</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_structure</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+
+            <span class="c1"># there should not be synonymous sections, correct the page here to a better guess</span>
+            <span class="k">if</span> <span class="n">page</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">index</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;children&#39;</span> <span class="ow">in</span> <span class="n">new_entry</span><span class="p">:</span>
+                    <span class="n">page</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">new_entry</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">lower_bound</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                    <span class="n">find</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="n">lower_bound</span><span class="p">]</span>
+                    <span class="k">while</span> <span class="s1">&#39;children&#39;</span> <span class="ow">in</span> <span class="n">find</span><span class="p">:</span>
+                        <span class="n">lower_bound</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">find</span><span class="p">)</span>
+                        <span class="n">find</span> <span class="o">=</span> <span class="n">find</span><span class="p">[</span><span class="n">lower_bound</span><span class="p">]</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">page</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span><span class="p">[</span><span class="n">page</span><span class="p">]</span> <span class="ow">and</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">lower_bound</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span> <span class="c1"># empty iterator</span>
+                        <span class="n">page</span> <span class="o">=</span> <span class="n">lower_bound</span> <span class="o">+</span> <span class="mi">1</span>
+
+
+            <span class="n">index</span><span class="p">[</span><span class="n">page</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_entry</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">index_iter</span><span class="o">.</span><span class="n">next</span><span class="p">():</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">index</span></div>
+
+
+<div class="viewcode-block" id="Document.path_to_uri"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.path_to_uri">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">path_to_uri</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="c1"># Do not trust urlsplit, manually check we have an URI</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">path</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
@@ -832,7 +891,7 @@
             <span class="k">return</span> <span class="n">urljoin</span><span class="p">(</span><span class="s1">&#39;file:&#39;</span><span class="p">,</span> <span class="n">pathname2url</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Document.create"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Document.create"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">builder</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Initializes a Document by passing it a :class:`~Poppler.Document`</span>
 
@@ -854,7 +913,7 @@
         <span class="k">return</span> <span class="n">doc</span></div>
 
 
-<div class="viewcode-block" id="Document.guess_notes"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.guess_notes">[docs]</a>    <span class="k">def</span> <span class="nf">guess_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.guess_notes"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.guess_notes">[docs]</a>    <span class="k">def</span> <span class="nf">guess_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get our best guess for the document mode.</span>
 
 <span class="sd">        Returns:</span>
@@ -863,7 +922,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span></div>
 
 
-<div class="viewcode-block" id="Document.page"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.page">[docs]</a>    <span class="k">def</span> <span class="nf">page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.page"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.page">[docs]</a>    <span class="k">def</span> <span class="nf">page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the specified page.</span>
 
 <span class="sd">        Args:</span>
@@ -880,7 +939,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pages_cache</span><span class="p">[</span><span class="n">number</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="Document.current_page"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.current_page">[docs]</a>    <span class="k">def</span> <span class="nf">current_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.current_page"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.current_page">[docs]</a>    <span class="k">def</span> <span class="nf">current_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the current page.</span>
 
 <span class="sd">        Returns:</span>
@@ -889,7 +948,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Document.next_page"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.next_page">[docs]</a>    <span class="k">def</span> <span class="nf">next_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.next_page"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.next_page">[docs]</a>    <span class="k">def</span> <span class="nf">next_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the next page.</span>
 
 <span class="sd">        Returns:</span>
@@ -898,7 +957,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Document.pages_number"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.pages_number">[docs]</a>    <span class="k">def</span> <span class="nf">pages_number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.pages_number"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.pages_number">[docs]</a>    <span class="k">def</span> <span class="nf">pages_number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the number of pages in the document.</span>
 
 <span class="sd">        Returns:</span>
@@ -919,7 +978,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">page_change</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="Document.has_labels"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.has_labels">[docs]</a>    <span class="k">def</span> <span class="nf">has_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.has_labels"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.has_labels">[docs]</a>    <span class="k">def</span> <span class="nf">has_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return whether this document has useful labels.</span>
 
 <span class="sd">        Returns:</span>
@@ -928,7 +987,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span> <span class="o">!=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_pages</span><span class="p">)]</span></div>
 
 
-<div class="viewcode-block" id="Document.lookup_label"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.lookup_label">[docs]</a>    <span class="k">def</span> <span class="nf">lookup_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">prefix_unique</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.lookup_label"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.lookup_label">[docs]</a>    <span class="k">def</span> <span class="nf">lookup_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">prefix_unique</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Find a page from its label</span>
 
 <span class="sd">        Args:</span>
@@ -963,7 +1022,7 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="Document.goto"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.goto">[docs]</a>    <span class="k">def</span> <span class="nf">goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.goto"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.goto">[docs]</a>    <span class="k">def</span> <span class="nf">goto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to another page.</span>
 
 <span class="sd">        Args:</span>
@@ -984,31 +1043,31 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_do_page_change</span><span class="p">(</span><span class="n">number</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Document.goto_next"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.goto_next">[docs]</a>    <span class="k">def</span> <span class="nf">goto_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.goto_next"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.goto_next">[docs]</a>    <span class="k">def</span> <span class="nf">goto_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to the next page.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Document.goto_prev"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.goto_prev">[docs]</a>    <span class="k">def</span> <span class="nf">goto_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.goto_prev"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.goto_prev">[docs]</a>    <span class="k">def</span> <span class="nf">goto_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to the previous page.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Document.goto_home"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.goto_home">[docs]</a>    <span class="k">def</span> <span class="nf">goto_home</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.goto_home"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.goto_home">[docs]</a>    <span class="k">def</span> <span class="nf">goto_home</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to the first page.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Document.goto_end"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.goto_end">[docs]</a>    <span class="k">def</span> <span class="nf">goto_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.goto_end"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.goto_end">[docs]</a>    <span class="k">def</span> <span class="nf">goto_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to the last page.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_pages</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Document.label_after"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.label_after">[docs]</a>    <span class="k">def</span> <span class="nf">label_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.label_after"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.label_after">[docs]</a>    <span class="k">def</span> <span class="nf">label_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to the next page with different label.</span>
 <span class="sd">        If we&#39;re within a set of pages with the same label we want to go to the last one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1030,7 +1089,7 @@
         <span class="k">return</span> <span class="n">next_page</span></div>
 
 
-<div class="viewcode-block" id="Document.label_before"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.label_before">[docs]</a>    <span class="k">def</span> <span class="nf">label_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.label_before"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.label_before">[docs]</a>    <span class="k">def</span> <span class="nf">label_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to the previous page with different label</span>
 <span class="sd">        If we&#39;re within a set of pages with the same label we want to go *before* the first one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1042,19 +1101,19 @@
             <span class="k">return</span> <span class="mi">0</span></div>
 
 
-<div class="viewcode-block" id="Document.label_next"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.label_next">[docs]</a>    <span class="k">def</span> <span class="nf">label_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.label_next"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.label_next">[docs]</a>    <span class="k">def</span> <span class="nf">label_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to the next page with different label</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_after</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Document.label_prev"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.label_prev">[docs]</a>    <span class="k">def</span> <span class="nf">label_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.label_prev"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.label_prev">[docs]</a>    <span class="k">def</span> <span class="nf">label_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to the previous page with different label</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">goto</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_before</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_page</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Document.hist_next"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.hist_next">[docs]</a>    <span class="k">def</span> <span class="nf">hist_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.hist_next"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.hist_next">[docs]</a>    <span class="k">def</span> <span class="nf">hist_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to the page we viewed next</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">):</span>
@@ -1064,7 +1123,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_do_page_change</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="Document.hist_prev"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.hist_prev">[docs]</a>    <span class="k">def</span> <span class="nf">hist_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.hist_prev"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.hist_prev">[docs]</a>    <span class="k">def</span> <span class="nf">hist_prev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Switch to the page we viewed before</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1074,7 +1133,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_do_page_change</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hist_pos</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="Document.get_uri"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.get_uri">[docs]</a>    <span class="k">def</span> <span class="nf">get_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.get_uri"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.get_uri">[docs]</a>    <span class="k">def</span> <span class="nf">get_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Returns:</span>
@@ -1083,7 +1142,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Document.get_full_path"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.get_full_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_full_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.get_full_path"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.get_full_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_full_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns full path, extrapolated from a path relative to this document</span>
 <span class="sd">        or to the current directory.</span>
 
@@ -1103,7 +1162,7 @@
                 <span class="k">return</span> <span class="n">filepath</span></div>
 
 
-<div class="viewcode-block" id="Document.remove_on_exit"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.remove_on_exit">[docs]</a>    <span class="k">def</span> <span class="nf">remove_on_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.remove_on_exit"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.remove_on_exit">[docs]</a>    <span class="k">def</span> <span class="nf">remove_on_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Remember a temporary file to delete later</span>
 
 <span class="sd">        Args:</span>
@@ -1112,7 +1171,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">temp_files</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Document.cleanup_media_files"><a class="viewcode-back" href="../../pympress.html#pympress.document.Document.cleanup_media_files">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup_media_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.cleanup_media_files"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Document.cleanup_media_files">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup_media_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Removes all files that were extracted from the pdf into the filesystem</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">temp_files</span><span class="p">:</span>
@@ -1120,7 +1179,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">temp_files</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="EmptyPage"><a class="viewcode-back" href="../../pympress.html#pympress.document.EmptyPage">[docs]</a><span class="k">class</span> <span class="nc">EmptyPage</span><span class="p">(</span><span class="n">Page</span><span class="p">):</span>
+<div class="viewcode-block" id="EmptyPage"><a class="viewcode-back" href="../../pympress.html#pympress.ui.EmptyPage">[docs]</a><span class="k">class</span> <span class="nc">EmptyPage</span><span class="p">(</span><span class="n">Page</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; A dummy page, placeholder for when there are no valid pages around.</span>
 
 <span class="sd">    This page is a non-notes page with an aspect ratio of 1.3 and nothing else inside.</span>
@@ -1140,7 +1199,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ph</span> <span class="o">=</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">1.0</span>
 
 
-<div class="viewcode-block" id="EmptyPage.render_cairo"><a class="viewcode-back" href="../../pympress.html#pympress.document.EmptyPage.render_cairo">[docs]</a>    <span class="k">def</span> <span class="nf">render_cairo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cr</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">FULL</span><span class="p">):</span>
+<div class="viewcode-block" id="EmptyPage.render_cairo"><a class="viewcode-back" href="../../pympress.html#pympress.ui.EmptyPage.render_cairo">[docs]</a>    <span class="k">def</span> <span class="nf">render_cairo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cr</span><span class="p">,</span> <span class="n">ww</span><span class="p">,</span> <span class="n">wh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">PdfPage</span><span class="o">.</span><span class="n">FULL</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Overriding this purely for safety: make sure we do not accidentally try to render</span>
 
 <span class="sd">        Args:</span>
@@ -1152,7 +1211,7 @@
         <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="EmptyPage.can_render"><a class="viewcode-back" href="../../pympress.html#pympress.document.EmptyPage.can_render">[docs]</a>    <span class="k">def</span> <span class="nf">can_render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="EmptyPage.can_render"><a class="viewcode-back" href="../../pympress.html#pympress.ui.EmptyPage.can_render">[docs]</a>    <span class="k">def</span> <span class="nf">can_render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Informs that rendering is *not* necessary (avoids checking the type)</span>
 
 <span class="sd">        Returns:</span>
@@ -1161,7 +1220,7 @@
         <span class="k">return</span> <span class="kc">False</span></div></div>
 
 
-<div class="viewcode-block" id="EmptyDocument"><a class="viewcode-back" href="../../pympress.html#pympress.document.EmptyDocument">[docs]</a><span class="k">class</span> <span class="nc">EmptyDocument</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+<div class="viewcode-block" id="EmptyDocument"><a class="viewcode-back" href="../../pympress.html#pympress.ui.EmptyDocument">[docs]</a><span class="k">class</span> <span class="nc">EmptyDocument</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; A dummy document, placeholder for when no document is open.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1174,7 +1233,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="EmptyDocument.page"><a class="viewcode-back" href="../../pympress.html#pympress.document.EmptyDocument.page">[docs]</a>    <span class="k">def</span> <span class="nf">page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+<div class="viewcode-block" id="EmptyDocument.page"><a class="viewcode-back" href="../../pympress.html#pympress.ui.EmptyDocument.page">[docs]</a>    <span class="k">def</span> <span class="nf">page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Retreive a page from the document.</span>
 
 <span class="sd">        Args:</span>
@@ -1196,9 +1255,7 @@
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -1207,11 +1264,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali.
+        &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1224,36 +1281,15 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-356-g7154333&#39;',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>

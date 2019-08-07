@@ -17,47 +17,40 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Pympress developer documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
 	<br />
 	<a href="../../index.html" class="icon icon-home"> Docs home</a>
 	<div class="version">
-		v1.3.0
+		v1.4.0
 	</div>
 
 	
@@ -101,7 +94,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">Pympress</a>
@@ -109,9 +102,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -140,12 +134,6 @@
     
     
       <li class="wy-breadcrumbs-aside">
-        
-            
-            
-              <a href="https://github.com/Cimbali/pympress/blob/master/docs/source/_modules/pympress/extras" class="fa fa-github"> Edit on GitHub</a>
-            
-          
         
       </li>
     
@@ -190,6 +178,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">gi</span>
 <span class="kn">import</span> <span class="nn">cairo</span>
 <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
@@ -197,7 +186,114 @@
 
 <span class="kn">import</span> <span class="nn">mimetypes</span>
 
-<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">media_overlay</span><span class="p">,</span> <span class="n">document</span>
+<span class="kn">from</span> <span class="nn">watchdog.observers</span> <span class="k">import</span> <span class="n">Observer</span>
+<span class="kn">from</span> <span class="nn">watchdog.events</span> <span class="k">import</span> <span class="n">FileSystemEventHandler</span>
+
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">media_overlay</span><span class="p">,</span> <span class="n">document</span><span class="p">,</span> <span class="n">builder</span>
+
+
+<div class="viewcode-block" id="TimingReport"><a class="viewcode-back" href="../../pympress.html#pympress.extras.TimingReport">[docs]</a><span class="k">class</span> <span class="nc">TimingReport</span><span class="p">(</span><span class="n">builder</span><span class="o">.</span><span class="n">Builder</span><span class="p">):</span>
+    <span class="c1">#: `list` of time at which each page was reached</span>
+    <span class="n">page_time</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1">#: `int` the time at which the clock was reset</span>
+    <span class="n">reset_time</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="c1">#: The :class:`~Gtk.TreeView` containing the timing data to display in the dialog.</span>
+    <span class="n">timing_treeview</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: A :class:`~Gtk.Dialog` to contain the timing to show.</span>
+    <span class="n">time_report_dialog</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TimingReport</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_ui</span><span class="p">(</span><span class="s1">&#39;time_report_dialog&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_report_dialog</span><span class="o">.</span><span class="n">set_transient_for</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">p_win</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_report_dialog</span><span class="o">.</span><span class="n">add_button</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">STOCK_CLOSE</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">CLOSE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TimingReport.transition"><a class="viewcode-back" href="../../pympress.html#pympress.extras.TimingReport.transition">[docs]</a>    <span class="k">def</span> <span class="nf">transition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Record a transition time between slides</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            page (`int`): the page number of the current slide</span>
+<span class="sd">            time (`int`): the number of seconds elapsed since the beginning of the presentation</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_time</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset_time</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page_time</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_time</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">page</span><span class="p">,</span> <span class="n">time</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TimingReport.reset"><a class="viewcode-back" href="../../pympress.html#pympress.extras.TimingReport.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset_time</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; A timer reset. Clear the history as soon as we start changing pages again.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_time</span> <span class="o">=</span> <span class="n">reset_time</span></div>
+
+
+<div class="viewcode-block" id="TimingReport.show"><a class="viewcode-back" href="../../pympress.html#pympress.extras.TimingReport.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_time</span><span class="p">,</span> <span class="n">doc_structure</span><span class="p">,</span> <span class="n">page_labels</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Show the popup with the timing infortmation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current_time (`int`): the number of seconds elapsed since the beginning of the presentation</span>
+<span class="sd">            doc_structure (`dict`): the structure of the document</span>
+<span class="sd">            page_labels (`list`): the page labels for each of the pages</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="p">[</span><span class="n">time</span> <span class="k">for</span> <span class="n">page</span><span class="p">,</span> <span class="n">time</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_time</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">current_time</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_time</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_time</span><span class="p">]</span>
+        <span class="n">durations</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="o">-</span> <span class="n">s</span> <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">times</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">times</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="n">infos</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">time</span> <span class="k">for</span> <span class="n">page</span><span class="p">,</span> <span class="n">time</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_time</span><span class="p">),</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="n">infos</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Full presentation&#39;</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">start_time</span><span class="p">),</span> <span class="n">duration</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page_time</span><span class="p">,</span> <span class="n">durations</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">duration</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">infos</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">duration</span>
+
+            <span class="c1"># lookup the position of the page in the document structure (section etc)</span>
+            <span class="n">lookup</span> <span class="o">=</span> <span class="n">doc_structure</span>
+            <span class="n">cur_info_pos</span> <span class="o">=</span> <span class="n">infos</span>
+            <span class="k">while</span> <span class="n">lookup</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">lookup</span> <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">page</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">lookup</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span>
+                <span class="n">lookup</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;children&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">cur_info_pos</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">cur_info_pos</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;page&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">pos</span><span class="p">:</span>
+                    <span class="n">cur_info_pos</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">duration</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cur_info_pos</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="n">pos</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">],</span> <span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[],</span>
+                                        <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">start_time</span><span class="p">})</span>
+                <span class="n">cur_info_pos</span> <span class="o">=</span> <span class="n">cur_info_pos</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># add the actual page as a leaf node</span>
+            <span class="n">cur_info_pos</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;slide #&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">page_labels</span><span class="p">[</span><span class="n">page</span><span class="p">],</span>
+                                        <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">start_time</span><span class="p">})</span>
+
+
+        <span class="n">treemodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timing_treeview</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">treemodel</span><span class="p">:</span>
+            <span class="n">treemodel</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="n">treemodel</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeStore</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+        <span class="n">dfs_info</span> <span class="o">=</span> <span class="p">[(</span><span class="kc">None</span><span class="p">,</span> <span class="n">infos</span><span class="p">)]</span>
+        <span class="k">while</span> <span class="n">dfs_info</span><span class="p">:</span>
+            <span class="n">first_it</span><span class="p">,</span> <span class="n">first</span> <span class="o">=</span> <span class="n">dfs_info</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">fmt</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">val</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{:02}</span><span class="s1">:</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="nb">divmod</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
+            <span class="n">last_col</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">page_labels</span><span class="p">[</span><span class="n">first</span><span class="p">[</span><span class="s1">&#39;page&#39;</span><span class="p">]],</span> <span class="n">first</span><span class="p">[</span><span class="s1">&#39;page&#39;</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">page_labels</span><span class="p">))</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="n">first</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">],</span> <span class="n">fmt</span><span class="p">(</span><span class="n">first</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]),</span> <span class="n">fmt</span><span class="p">(</span><span class="n">first</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]),</span> <span class="n">last_col</span><span class="p">]</span>
+            <span class="n">it</span> <span class="o">=</span> <span class="n">treemodel</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">first_it</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;children&#39;</span> <span class="ow">in</span> <span class="n">first</span><span class="p">:</span>
+                <span class="n">dfs_info</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="n">it</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">first</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timing_treeview</span><span class="o">.</span><span class="n">set_model</span><span class="p">(</span><span class="n">treemodel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timing_treeview</span><span class="o">.</span><span class="n">expand_row</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">TreePath</span><span class="o">.</span><span class="n">new_first</span><span class="p">(),</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_report_dialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_report_dialog</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="Annotations"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Annotations">[docs]</a><span class="k">class</span> <span class="nc">Annotations</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -205,9 +301,8 @@
     <span class="n">scrollable_treelist</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1">#: Making the annotations list scroll if it&#39;s too long</span>
     <span class="n">scrolled_window</span> <span class="o">=</span> <span class="kc">None</span>
-
     <span class="c1">#: :class:`~Gtk.CellRendererText` Text renderer for the annotations</span>
-    <span class="n">annotation_renderer</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+    <span class="n">annotation_renderer</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Load the widgets and setup for the annotations&#39; display.</span>
@@ -218,16 +313,6 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">Annotations</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="n">builder</span><span class="o">.</span><span class="n">load_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-        <span class="c1"># wrap text</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">annotation_renderer</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">wrap_mode</span> <span class="o">=</span> <span class="n">Pango</span><span class="o">.</span><span class="n">WrapMode</span><span class="o">.</span><span class="n">WORD_CHAR</span>
-
-        <span class="n">column</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotation_renderer</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">column</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">sizing</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumnSizing</span><span class="o">.</span><span class="n">AUTOSIZE</span>
-        <span class="n">column</span><span class="o">.</span><span class="n">set_fixed_width</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">scrollable_treelist</span><span class="o">.</span><span class="n">set_model</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scrollable_treelist</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">scrolled_window</span><span class="o">.</span><span class="n">set_hexpand</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
 
@@ -237,6 +322,9 @@
 <span class="sd">        Args:</span>
 <span class="sd">            annotations (`list`): A list of strings, that are the annotations to be displayed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prev_annots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scrollable_treelist</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">prev_annots</span><span class="p">:</span>
+            <span class="n">prev_annots</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="n">list_annot</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">annot</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
@@ -667,12 +755,95 @@
             <span class="n">Gdk</span><span class="o">.</span><span class="n">cairo_rectangle</span><span class="p">(</span><span class="n">cairo_context</span><span class="p">,</span> <span class="n">rect</span><span class="p">)</span>
             <span class="n">cairo_context</span><span class="o">.</span><span class="n">set_source_rgba</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">)</span>
             <span class="n">cairo_context</span><span class="o">.</span><span class="n">fill</span><span class="p">()</span></div></div>
+
+
+
+<div class="viewcode-block" id="FileWatcher"><a class="viewcode-back" href="../../pympress.html#pympress.extras.FileWatcher">[docs]</a><span class="k">class</span> <span class="nc">FileWatcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A class with only static methods that wraps object watchdogs, to trigger callbacks when a file changes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#: A :class:`~watchdog.observers.Observer` to watch when the file changes</span>
+    <span class="n">observer</span> <span class="o">=</span> <span class="n">Observer</span><span class="p">()</span>
+
+    <span class="c1">#: A :class:`~watchdog.events.FileSystemEventHandler` to get notified when the file changes</span>
+    <span class="n">monitor</span> <span class="o">=</span> <span class="n">FileSystemEventHandler</span><span class="p">()</span>
+
+    <span class="c1"># `int` that is a GLib timeout id to delay the callback</span>
+    <span class="n">timeout</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="FileWatcher.watch_file"><a class="viewcode-back" href="../../pympress.html#pympress.extras.FileWatcher.watch_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">watch_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Watches a new file with a new callback. Removes any precedent watched files.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path (`str`): full path to the file to watch</span>
+<span class="sd">            callback (`function`): callback to call with all the further arguments when the file changes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">start_daemon</span><span class="p">()</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">stop_watching</span><span class="p">()</span>
+
+        <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">on_modified</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">evt</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">if</span> <span class="n">evt</span><span class="o">.</span><span class="n">src_path</span> <span class="o">==</span> <span class="n">path</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">schedule</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">monitor</span><span class="p">,</span> <span class="n">directory</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Impossible to open dir at </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">directory</span><span class="p">),</span> <span class="n">exc_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileWatcher.enqueue"><a class="viewcode-back" href="../../pympress.html#pympress.extras.FileWatcher.enqueue">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">enqueue</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Do not call callback directly, instead delay as to avoid repeated calls in short periods of time.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            callback (`function`): callback to call with all the further arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+            <span class="n">GLib</span><span class="o">.</span><span class="n">Source</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">GLib</span><span class="o">.</span><span class="n">timeout_add</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FileWatcher.call"><a class="viewcode-back" href="../../pympress.html#pympress.extras.FileWatcher.call">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Call the callback</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            callback (`function`): callback to call with all the further arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">callback</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FileWatcher.stop_watching"><a class="viewcode-back" href="../../pympress.html#pympress.extras.FileWatcher.stop_watching">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">stop_watching</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Remove all files that are being watched</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">unschedule_all</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FileWatcher.start_daemon"><a class="viewcode-back" href="../../pympress.html#pympress.extras.FileWatcher.start_daemon">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">start_daemon</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Start the watchdog observer thread</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FileWatcher.stop_daemon"><a class="viewcode-back" href="../../pympress.html#pympress.extras.FileWatcher.stop_daemon">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">stop_daemon</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">wait</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stop the watchdog observer thread.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            wait (`bool`): whether to wait for the thread to have joined before returning</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">unschedule_all</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="n">wait</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">observer</span><span class="o">.</span><span class="n">join</span><span class="p">()</span></div></div>
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -681,11 +852,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali.
+        &copy; Copyright 2009-2011, Thomas Jost; 2015-2017 Cimbali
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -698,36 +869,15 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'b&#39;0.6-356-g7154333&#39;',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>
