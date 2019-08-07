@@ -48,13 +48,15 @@ def gtk_resources():
         'etc',
         os.path.join('lib', 'girepository-1.0'),
         os.path.join('lib', 'gtk-3.0'),
-        os.path.join('lib', 'gdk-pixbuf-2.0'),
         os.path.join('share', 'poppler'),
         os.path.join('share', 'themes'),
         os.path.join('share', 'icons'),
         os.path.join('share', 'glib-2.0'),
         os.path.join('share', 'xml')
     ]
+
+    for lib in glob.glob(os.path.join(base, 'lib', 'gdk-pixbuf-2.0', '**', 'libpixbufloader-*.dll'), recursive = True):
+        include_files.append((lib, os.path.relpath(lib, base)))
 
     for f in resources:
         p = os.path.join(include_path, f)
@@ -71,13 +73,28 @@ def dlls():
     """
     if os.name != 'nt': return []
 
-    libdir = os.path.dirname(find_library('libgtk-3-0'))
-    libs = []
+    # Hardcoded list tested for the appveyor build setup
+    libs = 'libatk-2.0-0.dll libbrotlicommon.dll libbrotlidec.dll libcurl-4.dll libdatrie-1.dll \
+    libepoxy-0.dll libfribidi-0.dll libgdk-3-0.dll libgdk_pixbuf-2.0-0.dll libgif-7.dll \
+    libgio-2.0-0.dll libgirepository-1.0-1.dll libglib-2.0-0.dll libgobject-2.0-0.dll libgtk-3-0.dll \
+    libidn2-0.dll libjpeg-8.dll liblcms2-2.dll libnghttp2-14.dll libnspr4.dll libopenjp2-7.dll \
+    libpango-1.0-0.dll libpangocairo-1.0-0.dll libpangoft2-1.0-0.dll libpangowin32-1.0-0.dll \
+    libplc4.dll libplds4.dll libpoppler-89.dll libpoppler-cpp-0.dll libpoppler-glib-8.dll libpsl-5.dll \
+    libpython3.7m.dll libstdc++-6.dll libthai-0.dll libtiff-5.dll libunistring-2.dll libwinpthread-1.dll \
+    libzstd.dll nss3.dll nssutil3.dll smime3.dll'
+    # these appear superfluous, though unexpectedly so:
+    # libcairo-2.dll libcairo-gobject-2.dll libfontconfig-1.dll libfreetype-6.dll libiconv-2.dll
+    # libgettextlib-0-19-8-1.dll libgettextpo-0.dll libgettextsrc-0-19-8-1.dll libintl-8.dll libjasper-4.dll
 
-    for lib in glob.glob(os.path.join(libdir, '*.dll')):
-        libs.append((lib, os.path.basename(lib)))
+    include_files = []
+    for lib in libs.split():
+        path = find_library(lib)
+        if path and os.path.exists(path):
+            include_files.append((path, lib))
+        else:
+            print('WARNING: Can not find library {}'.format(lib))
 
-    return libs
+    return include_files
 
 
 def vlc_resources():
