@@ -1,0 +1,24 @@
+version: {build}
+
+branches:
+  only:
+  - master
+skip_non_tags: true
+
+environment:
+  py: python3
+  matrix:
+  - vlc: without-vlc
+    arch: x86_64
+  - vlc: with-vlc
+    arch: x86_64
+  - vlc: without-vlc
+    arch: i686
+  - vlc: with-vlc
+    arch: i686
+
+build_script:
+- cmd: C:\msys64\msys2_shell.cmd -mingw64 -defterm -here scripts\build_msi_mingw.sh
+
+artifacts:
+- path: dist\*
