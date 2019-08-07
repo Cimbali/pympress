@@ -114,7 +114,7 @@ def vlc_resources(setup_opts):
 
     base, last = os.path.split(vlc.plugin_path)
     plugin_dir = os.path.join(base, 'lib', 'vlc', 'plugins') if last == 'bin' else os.path.join(base, last, 'plugins')
-    include_files.append(plugin_dir, 'plugins'))
+    include_files.append(plugin_dir, 'plugins')
     return include_files
 
 
