@@ -48,15 +48,13 @@ def gtk_resources():
         'etc',
         os.path.join('lib', 'girepository-1.0'),
         os.path.join('lib', 'gtk-3.0'),
+        os.path.join('lib', 'gdk-pixbuf-2.0'),
         os.path.join('share', 'poppler'),
         os.path.join('share', 'themes'),
         os.path.join('share', 'icons'),
         os.path.join('share', 'glib-2.0'),
         os.path.join('share', 'xml')
     ]
-
-    for lib in glob.glob(os.path.join(base, 'lib', 'gdk-pixbuf-2.0', '**', 'libpixbufloader-*.dll'), recursive = True):
-        include_files.append((lib, os.path.relpath(lib, base)))
 
     for f in resources:
         p = os.path.join(include_path, f)
