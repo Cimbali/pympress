@@ -18,7 +18,8 @@ environment:
     arch: i686
 
 build_script:
-- cmd: C:\msys64\msys2_shell.cmd -mingw64 -defterm -here scripts\build_msi_mingw.sh
+- cmd: if x%arch% == xx86_64 (set mingw=mingw64) else (set mingw=mingw32)
+- cmd: C:\msys64\msys2_shell.cmd -%mingw% -defterm -here scripts\build_msi_mingw.sh
 
 artifacts:
 - path: dist\*

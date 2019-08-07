@@ -72,7 +72,7 @@ def dlls():
     if os.name != 'nt': return []
 
     # Hardcoded list tested for the appveyor build setup
-    libs = 'libatk-2.0-0.dll libbrotlicommon.dll libbrotlidec.dll libcurl-4.dll libdatrie-1.dll \
+    libs = 'libatk-1.0-0.dll libbrotlicommon.dll libbrotlidec.dll libcurl-4.dll libdatrie-1.dll \
     libepoxy-0.dll libfribidi-0.dll libgdk-3-0.dll libgdk_pixbuf-2.0-0.dll libgif-7.dll \
     libgio-2.0-0.dll libgirepository-1.0-1.dll libglib-2.0-0.dll libgobject-2.0-0.dll libgtk-3-0.dll \
     libidn2-0.dll libjpeg-8.dll liblcms2-2.dll libnghttp2-14.dll libnspr4.dll libopenjp2-7.dll \
@@ -95,11 +95,13 @@ def dlls():
     return include_files
 
 
-def vlc_resources():
+def vlc_resources(setup_opts):
     """ Return VLC resources
+
+    Args:
+        setup_opts (dict): The keyword-args that will be passed to setup()
     """
     import vlc
-    buildOptions['packages'].append('vlc')
     print('Found VLC at '+vlc.plugin_path)
 
     include_files = []
@@ -110,7 +112,9 @@ def vlc_resources():
     for f in glob.glob(os.path.join(vlc.plugin_path, '*.dll')):
         include_files.append((f, os.path.basename(f)))
 
-    include_files.append((os.path.join(vlc.plugin_path, 'plugins'), 'plugins'))
+    base, last = os.path.split(vlc.plugin_path)
+    plugin_dir = os.path.join(base, 'lib', 'vlc', 'plugins') if last == 'bin' else os.path.join(base, last, 'plugins')
+    include_files.append(plugin_dir, 'plugins'))
     return include_files
 
 
@@ -186,7 +190,7 @@ if __name__ == '__main__':
 
     if include_vlc:
         try:
-            include_files += vlc_resources()
+            include_files += vlc_resources(setup_opts)
         except ImportError:
             print('ERROR: VLC python module not available!')
             exit(-1)
