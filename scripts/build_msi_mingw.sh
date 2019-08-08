@@ -6,4 +6,4 @@ pacman -S --noprogressbar --noconfirm --needed mingw-w64-$arch-$py-{pip,gobject,
 $py -m pip install --disable-pip-version-check --upgrade pip
 $py -m pip install watchdog python-vlc
 $py setup.py --freeze --$vlc build_exe
-$py setup.py --freeze --$vlc bdist_msi --add-to-path True
+$py setup.py --freeze --$vlc bdist_msi --add-to-path True --target-name pympress-$(git describe --tags)-$arch.msi
