@@ -26,7 +26,7 @@
 # DON'T IMPORT ANYTHING HERE (OR YOU WILL BREAK setup.py)
 #
 
-__version__ = '1.4.0'
+__version__ = '1.4.1'
 __author__ = '''2009, 2010 Thomas Jost <thomas.jost@gmail.com>
 2015-2019 Cimbali <me@cimba.li>
 2016 Christoph Rath <christof.rath@iaik.tugraz.at>

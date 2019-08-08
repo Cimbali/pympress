@@ -1,4 +1,4 @@
-# What is Pympress?
+# <img src="https://raw.githubusercontent.com/Cimbali/pympress/master/pympress/share/pixmaps/pympress-32.png" alt="Pympress logo" /> What is Pympress?
 
 Pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK+ for the GUI.
 

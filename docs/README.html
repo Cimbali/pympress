@@ -13,6 +13,8 @@
 
   
   
+    <link rel="shortcut icon" href="_static/pympress.ico"/>
+  
   
   
 
@@ -51,8 +53,9 @@
 	<a href="https://github.com/Cimbali/pympress/" class="fa fa-github"> Pympress on GitHub</a>
 	<br />
 	<a href="index.html" class="icon icon-home"> Docs home</a>
+	<img src="_static/pympress-128.png" class="logo" alt="Logo"/>
 	<div class="version">
-		v1.4.0
+		v1.4.1
 	</div>
 
 	
@@ -213,7 +216,8 @@
 <h2>Binary install (currently only for windows)<a class="headerlink" href="#binary-install-currently-only-for-windows" title="Permalink to this headline">¶</a></h2>
 <p>Grab <a class="reference external" href="https://github.com/Cimbali/pympress/releases/latest">the latest installer for your platform</a> and execute it.
 If you don’t want to know about source code or dependencies, this is for you.</p>
-<p>Packages with ‘amd64’ in the name are for 64 bit machines, ‘x86’ for 32 bit machines. The ‘vlc’ suffix indicates that the installer ships VLC as well, so try it if the other version fails to read videos.</p>
+<p>Packages with ‘x86_64’ in the name are for 64 bit machines, ‘i686’ for 32 bit machines.
+To support playing embedded videos in the PDFs, your system must have VLC installed, with the same bitness than pympress.</p>
 <p>If you get an error message along the lines of “MSVCP100.dll is missing”, get the Visual C++ 2010 redistributables from Microsoft (<a class="reference external" href="https://www.microsoft.com/en-in/download/details.aspx?id=5555">x86 (32 bit)</a> or <a class="reference external" href="https://www.microsoft.com/en-us/download/details.aspx?id=14632">x64 (64 bits)</a>). Those libraries really should already be installed on your system.</p>
 </div>
 </div>
@@ -310,6 +314,7 @@ For example, on ubuntu, you can run the following as root to make sure you have 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">pacman</span> <span class="o">-</span><span class="n">S</span> <span class="o">--</span><span class="n">needed</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">gtk3</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">cairo</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">poppler</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">python3</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">vlc</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">python3</span><span class="o">-</span><span class="n">gobject</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">python3</span><span class="o">-</span><span class="n">cairo</span>
 </pre></div>
 </div>
+<p>This is also the strategy used to automate <a class="reference external" href="scripts/build_msi_mingw.sh">builds on appveyor</a>.</p>
 </li>
 <li><p>Using PyGobjectWin32. <em>Be sure to check the supported Python versions (up to 3.4 at the time of writing)</em>, they appear in the FEATURES list in the linked page.</p></li>
 </ol>
@@ -317,7 +322,8 @@ For example, on ubuntu, you can run the following as root to make sure you have 
 <li><p>Install native <a class="reference external" href="https://www.python.org/downloads/windows/">python for windows</a></p></li>
 <li><p>Get GTK+3, Poppler and their python bindings by executing <a class="reference external" href="https://sourceforge.net/projects/pygobjectwin32/">the PyGi installer</a>.  Be sure to tick all the necessary dependencies in the installer (Poppler, Cairo, Gdk-Pixbuf).</p></li>
 </ul>
-<p>Alternately, you can build your Gtk+3 stack from source using MSVC, see <a class="reference external" href="https://wiki.gnome.org/Projects/GTK+/Win32/MSVCCompilationOfGTKStack">the Gnome wiki</a> and <a class="reference external" href="https://github.com/wingtk/gvsbuild/">this python script that compiles the whole Gtk+3 stack</a>.</p>
+<p>Alternately, you can build your Gtk+3 stack from source using MSVC, see <a class="reference external" href="https://wiki.gnome.org/Projects/GTK+/Win32/MSVCCompilationOfGTKStack">the Gnome wiki</a> and <a class="reference external" href="https://github.com/wingtk/gvsbuild/">this python script that compiles the whole Gtk+3 stack</a>.
+This strategy has not been used successfully yet, due to problems building Poppler with its introspection bidings (i.e. typelib) − see #109.</p>
 </div>
 </div>
 <div class="section" id="contributing">
