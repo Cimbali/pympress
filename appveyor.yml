@@ -7,19 +7,25 @@ skip_non_tags: true
 
 environment:
   py: python3
+  vlc: without-vlc
   matrix:
-  - vlc: without-vlc
-    arch: x86_64
-  - vlc: with-vlc
-    arch: x86_64
-  - vlc: without-vlc
-    arch: i686
-  - vlc: with-vlc
-    arch: i686
+  - arch: x86_64
+  - arch: i686
 
 build_script:
 - cmd: if x%arch% == xx86_64 (set mingw=mingw64) else (set mingw=mingw32)
 - cmd: C:\msys64\msys2_shell.cmd -%mingw% -defterm -here scripts\build_msi_mingw.sh
 
 artifacts:
-- path: dist\*
+- path: dist/*
+
+
+deploy:
+- provider: GitHub
+  tag: $(appveyor_repo_tag_name)
+  description: Automated upload of windows binaries
+  auth_token:
+    secure: 99OQhliIMiV/Z1/kuZQ3TxR55Qb7Y2zaD7ZV6/JUaUGDbAxHzep97/yBLfM21Jzw
+  artifact: dist/pympress-$(appveyor_repo_tag_name)-x86_64.msi dist/pympress-$(appveyor_repo_tag_name)-i686.msi
+  draft: true
+  force_update: false

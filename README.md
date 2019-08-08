@@ -43,7 +43,8 @@ If you also want the source code, you can clone this repo or grab [the latest re
 Grab [the latest installer for your platform](https://github.com/Cimbali/pympress/releases/latest) and execute it.
 If you don't want to know about source code or dependencies, this is for you.
 
-Packages with 'amd64' in the name are for 64 bit machines, 'x86' for 32 bit machines. The 'vlc' suffix indicates that the installer ships VLC as well, so try it if the other version fails to read videos.
+Packages with 'x86_64' in the name are for 64 bit machines, 'i686' for 32 bit machines.
+To support playing embedded videos in the PDFs, your system must have VLC installed, with the same bitness than pympress.
 
 If you get an error message along the lines of "MSVCP100.dll is missing", get the Visual C++ 2010 redistributables from Microsoft ([x86 (32 bit)](https://www.microsoft.com/en-in/download/details.aspx?id=5555) or [x64 (64 bits)](https://www.microsoft.com/en-us/download/details.aspx?id=14632)). Those libraries really should already be installed on your system.
 
@@ -70,7 +71,7 @@ A few of the fancier functionalities are listed here:
   Using `J` or clicking the slide label will allow you to navigate slide labels instead of page numbers, useful e.g. for multi-page slides from beamer `\pause`.
 
   A spin box will appear, and you will be able to navigate through your slides in the presenter window only by scrolling your mouse, with the `Home`/`Up`/`Down`/`End` keys, with the + and - buttons of the spin box, or simply by typing in the number of the slide. Press `Enter` to validate going to the new slide or `Esc` to cancel.
-  
+
 - **Software pointer**: Clicking on the slide (in either window) while holding `ctrl` down will display a software laser pointer on the slide.
 - **Talk time breakdown**: The `Presentation > Timing Breakdown` menu item displays a breakdown of how much time was spent on each slide, with a hierarchical breakdown per chapters/sections/etc. if available in the PDF.
 - **Automatic file reloading**: If the file is modified, pympress will reload it (and preserve the current slide, current time, etc.)
@@ -128,11 +129,14 @@ In order to install from pypi or from source on windows, there are two ways to g
 
         pacman -S --needed mingw-w64-x86_64-gtk3 mingw-w64-x86_64-cairo mingw-w64-x86_64-poppler mingw-w64-x86_64-python3 mingw-w64-x86_64-vlc python3-pip mingw-w64-x86_64-python3-pip mingw-w64-x86_64-python3-gobject mingw-w64-x86_64-python3-cairo
 
+    This is also the strategy used to automate [builds on appveyor](scripts/build_msi_mingw.sh).
+
 2. Using PyGobjectWin32. *Be sure to check the supported Python versions (up to 3.4 at the time of writing)*, they appear in the FEATURES list in the linked page.
   - Install native [python for windows](https://www.python.org/downloads/windows/)
   - Get GTK+3, Poppler and their python bindings by executing [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/).  Be sure to tick all the necessary dependencies in the installer (Poppler, Cairo, Gdk-Pixbuf).
 
 Alternately, you can build your Gtk+3 stack from source using MSVC, see [the Gnome wiki](https://wiki.gnome.org/Projects/GTK+/Win32/MSVCCompilationOfGTKStack) and [this python script that compiles the whole Gtk+3 stack](https://github.com/wingtk/gvsbuild/).
+This strategy has not been used successfully yet, due to problems building Poppler with its introspection bidings (i.e. typelib) − see #109.
 
 # Contributing
 
