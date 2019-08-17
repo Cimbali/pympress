@@ -18,9 +18,21 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 
 # Installing
 
+- Linux, macOS:
+  - *preferred:* via pip from Python's Package index
+  - via pip from source
+- Windows:
+  - via [pre-built binaries for the latest release](https://github.com/Cimbali/pympress/releases/latest)
+  - via [Chocolatey](https://chocolatey.org/), a package manager for Windows: `choco install pympress`
+   
+  To support playing embedded videos in the PDFs, your system must have VLC installed, with the same bitness as pympress. Pympress will autodetect it on its next run. If you let Chocolatey install both packages with default settings, it will pick the same default bitness of your system for both: `choco install pympress vlc`.
+
+  If you get an error message along the lines of "MSVCP100.dll is missing", get the Visual C++ 2010 redistributables from Microsoft ([x86 (32 bit)](https://www.microsoft.com/en-in/download/details.aspx?id=5555) or [x64 (64 bits)](https://www.microsoft.com/en-us/download/details.aspx?id=14632)). Those libraries really should already be installed on your system.
+
+
 ## Using pip (requires python)
 
-This technique is preferred on Linux and macOS, and also requires you to have all [the dependencies](#dependencies). On Windows, it is easier to use the [binary installer](#binary-install-currently-only-for-windows).
+This technique is preferred on Linux and macOS, and also requires you to have all [the dependencies](#dependencies). On Windows, it is easier to use the options described above.
 
 ### From PyPI (the Python Package Index)
 
@@ -37,16 +49,6 @@ If you don't have pip, see [the python documentation on installing](https://docs
 ### From source
 
 If you also want the source code, you can clone this repo or grab [the latest releases' source](https://github.com/Cimbali/pympress/releases/latest), open a console where you put the code, and type `python3 -m pip install .` (or, if you plan on modifying that code, `python3 -m pip install -e .`).
-
-## Binary install (currently only for windows)
-
-Grab [the latest installer for your platform](https://github.com/Cimbali/pympress/releases/latest) and execute it.
-If you don't want to know about source code or dependencies, this is for you.
-
-Packages with 'x86_64' in the name are for 64 bit machines, 'i686' for 32 bit machines.
-To support playing embedded videos in the PDFs, your system must have VLC installed, with the same bitness than pympress.
-
-If you get an error message along the lines of "MSVCP100.dll is missing", get the Visual C++ 2010 redistributables from Microsoft ([x86 (32 bit)](https://www.microsoft.com/en-in/download/details.aspx?id=5555) or [x64 (64 bits)](https://www.microsoft.com/en-us/download/details.aspx?id=14632)). Those libraries really should already be installed on your system.
 
 # Usage
 
