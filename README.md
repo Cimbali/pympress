@@ -5,7 +5,7 @@ Pympress is a little PDF reader written in Python using Poppler for PDF renderin
 It is designed to be a dual-screen reader used for presentations and public talks, with two displays: the *Content window* for a projector, and the *Presenter window* for your laptop. It is portable and has been tested on various Mac, Windows and Linux systems.
 
 It comes with many great features ([more below](#functionalities)):
-- supports embedded videos
+- supports embedded gifs and videos
 - text annotations displayed in the presenter window
 - natively supports beamer's *notes on second screen*!
 
@@ -18,7 +18,7 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 
 # Installing
 
-- Linux, macOS: `pip install pympress` − requires python.
+- Linux, macOS: `pip install pympress` − requires [python, gtk+3, poppler, and their python bindings](#dependencies).
 - Windows: `choco install pympress` with [Chocolatey](https://chocolatey.org/) or download the installer from the [latest Github release](https://github.com/Cimbali/pympress/releases/latest).
 
 ### Notes
@@ -27,9 +27,10 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 - Using pip, you may want to use `python3 -m pip` as the command if `pip` points to the python 2.x pip. You may also want to install with the `--user` option, or install from github or downloaded sources. See [the python documentation on installing](https://docs.python.org/3.7/installing/index.html) for more details.
 
 ### Troubleshooting
-- If your python environment lacks the Gobject Introspections module, try 
+- If your python environment lacks the Gobject Introspections module, try
    1. checking you have all [the dependencies](#dependencies),
-   2. using `--system-site-packages` for [virtual environments](https://docs.python.org/3.7/library/venv.html), or installing pygobject from pip (`pip install pygobject`, which requires the correct development/header packages, see [the PyPI installation instructions of PyGObject for your system](https://pygobject.readthedocs.io/en/latest/getting_started.html)).
+   2. using `--system-site-packages` for [virtual environments](https://docs.python.org/3.7/library/venv.html),
+   3. installing pygobject from pip (`pip install pygobject`, which requires the correct development/header packages. See [the PyPI installation instructions of PyGObject for your system](https://pygobject.readthedocs.io/en/latest/getting_started.html)).
 - For manually downloaded installers, if you get an error message along the lines of "MSVCP100.dll is missing", get the Visual C++ 2010 redistributables from Microsoft ([x86 (32 bit)](https://www.microsoft.com/en-in/download/details.aspx?id=5555) or [x64 (64 bits)](https://www.microsoft.com/en-us/download/details.aspx?id=14632)). Those libraries really should already be installed on your system.
 
 
@@ -78,7 +79,7 @@ A few of the fancier functionalities are listed here:
 # Dependencies
 
 Pympress relies on:
-* Python, 3.x or 2.7 (with [setuptools](https://pypi.python.org/pypi/setuptools), which is usually shipped by default with python).
+* Python (version 3.x strongly recommended though 2.7 should still work fine).
 * [Poppler](http://poppler.freedesktop.org/), the PDF rendering library.
 * [Gtk+ 3](http://www.gtk.org/), a toolkit for creating graphical user interfaces, and [its dependencies](https://www.gtk.org/overview.php), specifically:
   * [Cairo](https://www.cairographics.org/) (and python bindings for cairo), the graphics library which is used to pre-render and draw over PDF pages.
