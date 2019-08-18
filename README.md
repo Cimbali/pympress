@@ -18,37 +18,20 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 
 # Installing
 
-- Linux, macOS:
-  - *preferred:* via pip from Python's Package index
-  - via pip from source
-- Windows:
-  - via [pre-built binaries for the latest release](https://github.com/Cimbali/pympress/releases/latest)
-  - via [Chocolatey](https://chocolatey.org/), a package manager for Windows: `choco install pympress`
-   
-  To support playing embedded videos in the PDFs, your system must have VLC installed, with the same bitness as pympress. Pympress will autodetect it on its next run. If you let Chocolatey install both packages with default settings, it will pick the same default bitness of your system for both: `choco install pympress vlc`.
+- Linux, macOS: `pip install pympress` − requires python.
+- Windows: `choco install pympress` with [Chocolatey](https://chocolatey.org/) or download the installer from the [latest Github release](https://github.com/Cimbali/pympress/releases/latest).
 
-  If you get an error message along the lines of "MSVCP100.dll is missing", get the Visual C++ 2010 redistributables from Microsoft ([x86 (32 bit)](https://www.microsoft.com/en-in/download/details.aspx?id=5555) or [x64 (64 bits)](https://www.microsoft.com/en-us/download/details.aspx?id=14632)). Those libraries really should already be installed on your system.
+### Notes
+- To support playing embedded videos in the PDFs, your system must have VLC installed (with the same bitness as pympress). VLC is not distributed with pympress, but it is certainly available in your system’s package manager and [on their website](https://www.videolan.org/vlc/).
+- On Linux and macOS, make sure you have all [the dependencies](#dependencies), as they do not come via pip. (On Windows, they are included in the binary package.)
+- Using pip, you may want to use `python3 -m pip` as the command if `pip` points to the python 2.x pip. You may also want to install with the `--user` option, or install from github or downloaded sources. See [the python documentation on installing](https://docs.python.org/3.7/installing/index.html) for more details.
 
+### Troubleshooting
+- If your python environment lacks the Gobject Introspections module, try 
+   1. checking you have all [the dependencies](#dependencies),
+   2. using `--system-site-packages` for [virtual environments](https://docs.python.org/3.7/library/venv.html), or installing pygobject from pip (`pip install pygobject`, which requires the correct development/header packages, see [the PyPI installation instructions of PyGObject for your system](https://pygobject.readthedocs.io/en/latest/getting_started.html)).
+- For manually downloaded installers, if you get an error message along the lines of "MSVCP100.dll is missing", get the Visual C++ 2010 redistributables from Microsoft ([x86 (32 bit)](https://www.microsoft.com/en-in/download/details.aspx?id=5555) or [x64 (64 bits)](https://www.microsoft.com/en-us/download/details.aspx?id=14632)). Those libraries really should already be installed on your system.
 
-## Using pip (requires python)
-
-This technique is preferred on Linux and macOS, and also requires you to have all [the dependencies](#dependencies). On Windows, it is easier to use the options described above.
-
-### From PyPI (the Python Package Index)
-
-Run the following command in your shell (or replace `python3 -m pip` with `python -m pip` or just `pip`, and ):
-
-    python3 -m pip install pympress
-
-Or you can get it from github:
-
-    python3 -m pip install git+https://github.com/Cimbali/pympress#egg=pympress
-
-If you don't have pip, see [the python documentation on installing](https://docs.python.org/3.7/installing/index.html).
-
-### From source
-
-If you also want the source code, you can clone this repo or grab [the latest releases' source](https://github.com/Cimbali/pympress/releases/latest), open a console where you put the code, and type `python3 -m pip install .` (or, if you plan on modifying that code, `python3 -m pip install -e .`).
 
 # Usage
 
@@ -138,7 +121,7 @@ In order to install from pypi or from source on windows, there are two ways to g
   - Get GTK+3, Poppler and their python bindings by executing [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/).  Be sure to tick all the necessary dependencies in the installer (Poppler, Cairo, Gdk-Pixbuf).
 
 Alternately, you can build your Gtk+3 stack from source using MSVC, see [the Gnome wiki](https://wiki.gnome.org/Projects/GTK+/Win32/MSVCCompilationOfGTKStack) and [this python script that compiles the whole Gtk+3 stack](https://github.com/wingtk/gvsbuild/).
-This strategy has not been used successfully yet, due to problems building Poppler with its introspection bidings (i.e. typelib) − see #109.
+This strategy has not been used successfully yet, due to problems building Poppler with its introspection bidings (i.e. typelib) − see [#109](https://github.com/Cimbali/pympress/issues/109).
 
 # Contributing
 
@@ -149,3 +132,9 @@ Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.o
 
 If you want to add a translation, check if `pympress/share/locale/<language>/pympress.po` already exists. If not, take [the template file](https://github.com/Cimbali/pympress/tree/master/pympress/share/locale/pympress.pot) as input and translate all the strings, then add it to the repo in `pympress/share/locale/<language>/pympress.po`.
 Finally pass this .po file to msgfmt and add the output to the repo at `pympress/share/locale/<language>/LC_MESSAGES/pympress.mo`.
+
+## Packages
+
+Official releases are made to [PyPI](https://pypi.org/) and with [github releases](https://github.com/Cimbali/pympress/releases). The community maintains a number of other packages or recipes to install pympress (and more can be added to this list):
+- [@Jose1711](https://github.com/jose1711) made the [AUR pympress package](https://aur.archlinux.org/packages/python-pympress/)
+- [@ComFreek](https://github.com/ComFreek) maintains the [Chocolatey pympress package](https://chocolatey.org/packages/pympress)
