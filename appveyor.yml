@@ -26,6 +26,5 @@ deploy:
   description: Automated upload of windows binaries
   auth_token:
     secure: 99OQhliIMiV/Z1/kuZQ3TxR55Qb7Y2zaD7ZV6/JUaUGDbAxHzep97/yBLfM21Jzw
-  artifact: dist/pympress-$(appveyor_repo_tag_name)-x86_64.msi dist/pympress-$(appveyor_repo_tag_name)-i686.msi
   draft: true
   force_update: false
