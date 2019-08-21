@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Cimbali/pympress/master/pympress/share/pixmaps/pympress-32.png" alt="Pympress logo" /> What is Pympress?
+# ![Pympress logo](https://raw.githubusercontent.com/Cimbali/pympress/master/pympress/share/pixmaps/pympress-32.png) What is Pympress?
 
 Pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK+ for the GUI.
 
@@ -107,7 +107,7 @@ Dependencies can be installed using [Homebrew](https://brew.sh/):
 ### On windows
 The [binary installer for windows](#binary-install-currently-only-for-windows) comes with pympress and all its dependencies packaged.
 
-In order to install from pypi or from source on windows, there are two ways to get the dependencies:
+Alternately, in order to install from pypi or from source on windows, there are two ways to get the dependencies:
 
 1. using MSYS2 (replace x86_64 with i686 if you're using a 32 bit machine).
 
@@ -115,7 +115,7 @@ In order to install from pypi or from source on windows, there are two ways to g
 
         pacman -S --needed mingw-w64-x86_64-gtk3 mingw-w64-x86_64-cairo mingw-w64-x86_64-poppler mingw-w64-x86_64-python3 mingw-w64-x86_64-vlc python3-pip mingw-w64-x86_64-python3-pip mingw-w64-x86_64-python3-gobject mingw-w64-x86_64-python3-cairo
 
-    This is also the strategy used to automate [builds on appveyor](scripts/build_msi_mingw.sh).
+    This is also the strategy used to automate [builds on appveyor](https://github.com/Cimbali/pympress/tree/master/scripts/build_msi_mingw.sh).
 
 2. Using PyGobjectWin32. *Be sure to check the supported Python versions (up to 3.4 at the time of writing)*, they appear in the FEATURES list in the linked page.
   - Install native [python for windows](https://www.python.org/downloads/windows/)

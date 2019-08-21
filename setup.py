@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 #       setup.py
 #
@@ -20,26 +20,19 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os, site, sys, importlib
+import os, sys
 from ctypes.util import find_library
 import glob
-
-def open_file(filename):
-    with open(filename, 'r') as f:
-        return f.read()
 
 try: read_input = raw_input
 except NameError: read_input = input
 
 
-# get Pympress version
-pkg_meta = importlib.import_module('pympress.__init__')
 
 # All functions listing resources return a list of pairs: (system path, distribution relative path)
-
 def gtk_resources():
-    """ Returns a list of the Gtk resources we need
-    """
+    ''' Returns a list of the non-DLL Gtk resources to include in a frozen/binary package.
+    '''
     base, last = os.path.split(os.path.dirname(find_library('libgtk-3-0')))
     include_path = base if last in {'bin', 'lib', 'lib64'} else os.path.join(base, last)
 
@@ -67,11 +60,12 @@ def gtk_resources():
 
 
 def dlls():
-    """ Returns a list of all DLL files we need, for now return them all and sort it later.
-    """
+    ''' Returns a list of all DLL files we need to include, in a frozen/binary package on windows.
+
+    Relies on a hardcoded list tested for the appveyor build setup.
+    '''
     if os.name != 'nt': return []
 
-    # Hardcoded list tested for the appveyor build setup
     libs = 'libatk-1.0-0.dll libbrotlicommon.dll libbrotlidec.dll libcurl-4.dll libdatrie-1.dll \
     libepoxy-0.dll libfribidi-0.dll libgdk-3-0.dll libgdk_pixbuf-2.0-0.dll libgif-7.dll \
     libgio-2.0-0.dll libgirepository-1.0-1.dll libglib-2.0-0.dll libgobject-2.0-0.dll libgtk-3-0.dll \
@@ -95,12 +89,33 @@ def dlls():
     return include_files
 
 
-def vlc_resources(setup_opts):
-    """ Return VLC resources
+def check_vlc_redistribution():
+    ''' We might want to redistribute the VLC library (DLLs etc.) with pympress.
 
-    Args:
-        setup_opts (dict): The keyword-args that will be passed to setup()
-    """
+        NB: we always depend on the vlc python package. That way, installing
+        pympress on a system that has VLC installed works out of the box,
+        even without redistributing it.
+
+    Returns (bool): whether to include VLC redistributables
+                    (decided from command line arguments or prompt).
+    '''
+    opts = {'--with-vlc': True, '--without-vlc': False}
+
+    for opt, val in opts.items():
+        if opt in sys.argv[1:]:
+            sys.argv.remove(opt)
+            return val
+
+    # If unclear, interactively ask whether we include VLC
+    while True:
+        answer = read_input('Include VLC in the package? [y/N] ').lower()
+        if answer in {'y', 'n', ''}:
+            return answer == 'y'
+
+
+def vlc_resources():
+    ''' Return the list of VLC resources (DLLs, plugins, license file...) to redistribute
+    '''
     import vlc
     print('Found VLC at '+vlc.plugin_path)
 
@@ -119,115 +134,54 @@ def vlc_resources(setup_opts):
 
 
 def pympress_resources():
-    """ Return pympress resources
-    """
+    ''' Return pympress resources. Only for frozen packages, as this is redundant with package_data.
+    '''
     resources = [os.path.join('share', 'xml'), os.path.join('share', 'pixmaps'), os.path.join('share', 'css')]
     translations = glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))
     return [(os.path.join('pympress', f), f) for f in resources] + [(t, t.split(os.path.sep, 1)[1]) for t in translations]
 
 
-# Options that are common, whichever setup() function we call eventually
-setup_opts = dict(name='pympress',
-    version=pkg_meta.__version__,
-    description=pkg_meta.__doc__.split('\n')[0],
-    long_description = open_file('README.md'),
-    long_description_content_type = 'text/markdown',
-    author='Cimbali, Thomas Jost, Christof Rath, Epithumia',
-    author_email='me@cimba.li',
-    url='https://github.com/Cimbali/pympress/',
-    download_url='https://github.com/Cimbali/pympress/releases/latest',
-    classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: X11 Applications :: GTK',
-        'Intended Audience :: Education',
-        'Intended Audience :: End Users/Desktop',
-        'Intended Audience :: Information Technology',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)',
-        'Natural Language :: English',
-        'Natural Language :: French',
-        'Natural Language :: German',
-        'Natural Language :: Polish',
-        'Natural Language :: Spanish',
-        'Natural Language :: Czech',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Topic :: Multimedia :: Graphics :: Presentation',
-        'Topic :: Multimedia :: Graphics :: Viewers',
-    ],
-    license='GPLv2',
-    packages=['pympress'],
-)
-
-
-# List of options we support but that aren't part of setuptools/cx_Freeze
-homemade_opts = ['--with-vlc', '--without-vlc', '--freeze']
-
-
 if __name__ == '__main__':
+    setup_opts = {}
+
     # Check our options: whether to freeze, and whether to include VLC resources (DLLs, plugins, etc).
-    use_cxfreeze = '--freeze' in sys.argv[1:]
+    if '--freeze' in sys.argv[1:]:
+        sys.argv.remove('--freeze')
 
-    # NB: we always include the vlc package. That way, installing pympress on a system
-    # that has VLC installed works out of the box, without redistributing it.
-    include_vlc = True if '--with-vlc' in sys.argv[1:] else \
-            False if '--without-vlc' in sys.argv[1:] or not use_cxfreeze else None
-
-    # cleanup argv for setup()
-    for opt in homemade_opts:
-        try: sys.argv.remove(opt)
-        except ValueError: pass
-
-
-    # If unclear, interactively ask whether we include VLC
-    while include_vlc is None:
-        answer = read_input('Include VLC in the package? [y/N] ').lower()
-        if answer in {'y', 'n', ''}:
-            include_vlc = answer == 'y'
-
-
-    # List all resources we'll distribute
-    include_files = gtk_resources() + dlls() + pympress_resources() if use_cxfreeze else []
-
-    if include_vlc:
-        try:
-            include_files += vlc_resources(setup_opts)
-        except ImportError:
-            print('ERROR: VLC python module not available!')
-            exit(-1)
-        except Exception as e:
-            print('ERROR: Cannot include VLC: ' + str(e))
-            exit(-1)
-
-
-    if not use_cxfreeze:
-        print('Using setuptools.setup():')
-        from setuptools import setup
-        setup_opts.update(dict(entry_points={'gui_scripts': [
-                'pympress = pympress.__main__:main',
-                'pympress{} = pympress.__main__:main'.format(sys.version_info.major),
-            ]},
-            install_requires=['python-vlc', 'watchdog', 'enum34;python_version<"3.4"'],
-            package_data={'pympress':
-                [os.path.join('share', 'xml', '*.glade'), os.path.join('share', 'css', '*.css'), os.path.join('share', 'pixmaps', '*.png')]
-                + [f.split(os.path.sep, 1)[1] for f in glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))]
-            }
-        ))
-
-    else:
-        print('Using cx_Freeze.setup():',)
+        print('Using cx_Freeze.setup():')
         from cx_Freeze import setup, Executable
-        setup_opts.update(dict(options = {'build_exe':{
-              'includes': [],
-              'excludes': [],
-              'packages': ['codecs', 'gi', 'packaging', 'six', 'appdirs', 'vlc', 'watchdog'],
-              'include_files': include_files,
-              'silent': True
-          }},
-          executables = [Executable(os.path.join('pympress', '__main__.py'), targetName='pympress.exe', base='Win32GUI',
+
+        # List all resources we'll distribute
+        setup_opts.update({
+            'options': {
+                'build_exe':{
+                    'includes': [],
+                    'excludes': [],
+                    'packages': ['codecs', 'gi', 'packaging', 'six', 'appdirs', 'vlc', 'watchdog'],
+                    'include_files': gtk_resources() + dlls() + pympress_resources(),
+                    'silent': True
+                    }
+                },
+            'executables': [Executable(os.path.join('pympress', '__main__.py'), targetName='pympress.exe', base='Win32GUI',
                                     shortcutDir='ProgramMenuFolder', shortcutName='pympress',
                                     icon=os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico'))]
-        ))
+        })
+
+        if check_vlc_redistribution():
+            try:
+                setup_opts['options']['build_exe']['include_files'] += vlc_resources()
+            except ImportError:
+                print('ERROR: VLC python module not available!')
+                exit(-1)
+            except Exception as e:
+                print('ERROR: Cannot include VLC: ' + str(e))
+                exit(-1)
+
+    else:
+        # Normal behaviour: use setuptools, load options from setup.cfg
+        print('Using setuptools.setup():')
+        from setuptools import setup
+
 
     setup(**setup_opts)
 
