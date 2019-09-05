@@ -14,7 +14,7 @@ environment:
 
 build_script:
 - cmd: if x%arch% == xx86_64 (set mingw=mingw64) else (set mingw=mingw32)
-- cmd: C:\msys64\msys2_shell.cmd -%mingw% -defterm -here scripts\build_msi_mingw.sh
+- cmd: C:\msys64\msys2_shell.cmd -%mingw% -defterm -here -no-start scripts\build_msi_mingw.sh
 
 artifacts:
 - path: dist/*

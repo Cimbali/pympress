@@ -142,7 +142,6 @@ def pympress_resources():
 
 
 if __name__ == '__main__':
-    setup_opts = {}
 
     # Check our options: whether to freeze, and whether to include VLC resources (DLLs, plugins, etc).
     if '--freeze' in sys.argv[1:]:
@@ -152,7 +151,8 @@ if __name__ == '__main__':
         from cx_Freeze import setup, Executable
 
         # List all resources we'll distribute
-        setup_opts.update({
+        setup_opts = {
+            'name': 'pympress', # force repetition from setup.cfg otherwise cx_Freeze throws TypeError
             'options': {
                 'build_exe':{
                     'includes': [],
@@ -165,7 +165,7 @@ if __name__ == '__main__':
             'executables': [Executable(os.path.join('pympress', '__main__.py'), targetName='pympress.exe', base='Win32GUI',
                                     shortcutDir='ProgramMenuFolder', shortcutName='pympress',
                                     icon=os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico'))]
-        })
+        }
 
         if check_vlc_redistribution():
             try:
@@ -177,13 +177,13 @@ if __name__ == '__main__':
                 print('ERROR: Cannot include VLC: ' + str(e))
                 exit(-1)
 
+        setup(**setup_opts)
     else:
         # Normal behaviour: use setuptools, load options from setup.cfg
         print('Using setuptools.setup():')
         from setuptools import setup
 
-
-    setup(**setup_opts)
+        setup()
 
 
 ##
