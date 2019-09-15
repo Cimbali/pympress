@@ -59,14 +59,6 @@ class GstOverlay(base.VideoOverlay):
     def __init__(self, *args, **kwargs):
         super(GstOverlay, self).__init__(*args, **kwargs)
 
-        self.renderer = GstPlayer.PlayerVideoOverlayVideoRenderer()
-        self.player = GstPlayer.Player.new(self.renderer)
-
-        self.player.connect('state-changed', self.track_state)
-        self.player.connect('duration-changed', lambda p, ns: self.update_range(ns / 1e9))
-        self.player.connect('position-updated', lambda p, ns: self.update_progress(ns / 1e9))
-        self.player.connect('end-of-stream', lambda e: GLib.idle_add(self.hide))
-
 
     def track_state(self, player, state):
         """ Update the current state of the player for easy reference
@@ -75,9 +67,8 @@ class GstOverlay(base.VideoOverlay):
             player (:class:`~GstPlayer.Player`): The player for which the position changed
             duration (:class:`~GstPlayer.PlayerState`): The player's new state
         """
-        assert player == self.player
         self.player_state = state
-        if not self.is_playing():
+        if not self.is_playing() and self.renderer:
             self.renderer.expose()
 
 
@@ -96,7 +87,7 @@ class GstOverlay(base.VideoOverlay):
         Args:
             filepath (`str`): The path to the media file path
         """
-        self.player.set_uri('file://' + filepath)
+        self.uri = 'file://' + filepath
 
 
     def mute(self, value):
@@ -105,17 +96,26 @@ class GstOverlay(base.VideoOverlay):
         Args:
             value (`bool`): `True` iff this player should be muted
         """
-        self.player.set_mute(value)
+        self.muted = value
         return False
 
 
     def do_play(self):
         """ Start playing the media file.
-        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
+        self.renderer = GstPlayer.PlayerVideoOverlayVideoRenderer()
+        self.player = GstPlayer.Player.new(self.renderer)
+        self.player.set_uri(self.uri)
+        self.player.set_mute(self.muted)
+
+        self.player.connect('state-changed', self.track_state)
+        self.player.connect('duration-changed', lambda p, ns: self.update_range(ns / 1e9))
+        self.player.connect('position-updated', lambda p, ns: self.update_progress(ns / 1e9))
+        self.player.connect('end-of-stream', lambda e: GLib.idle_add(self.hide))
+
         if self.renderer.get_window_handle():
             pass
         elif IS_WINDOWS:
@@ -144,6 +144,8 @@ class GstOverlay(base.VideoOverlay):
         """ Stops playing in the backend player.
         """
         self.player.stop()
+        self.player = None
+        self.renderer = None
 
 
     def do_set_time(self, t):
