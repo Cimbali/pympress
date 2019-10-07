@@ -30,7 +30,7 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
-import os.path
+import os
 import json
 from collections import deque
 
@@ -43,7 +43,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
-from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
+from pympress import util
 
 
 try:
@@ -96,7 +96,11 @@ class Config(configparser.ConfigParser, object): # python 2 fix
     def path_to_config():
         """ Return the OS-specific path to the configuration file.
         """
-        if IS_POSIX:
+        portable_config = util.get_portable_config()
+        if os.path.exists(portable_config):
+            return portable_config
+
+        elif util.IS_POSIX:
             conf_dir = os.path.expanduser('~/.config')
             conf_file_nodir = os.path.expanduser('~/.pympress')
             conf_file_indir = os.path.expanduser('~/.config/pympress')
@@ -110,8 +114,35 @@ class Config(configparser.ConfigParser, object): # python 2 fix
                 return conf_file_indir
             else:
                 return conf_file_nodir
+
         else:
             return os.path.join(os.environ['APPDATA'], 'pympress.ini')
+
+
+    @staticmethod
+    def toggle_portable_config(*args):
+        """ Create or remove a configuration file for portable installs.
+
+        The portable install file will be used by default, and deleting it causes the config
+        to fall back to the user profile location.
+
+        No need to populate the new config file, this will be done on pympress exit.
+        """
+        if Config.using_portable_config():
+            os.remove(util.get_portable_config())
+        else:
+            with open(util.get_portable_config(), 'w') as f:
+                pass
+
+
+    @staticmethod
+    def using_portable_config():
+        """ Checks which configuration file location is in use
+
+        Returns:
+            `bool`: `True` iff we are using the portable (i.e. in install dir) location
+        """
+        return util.get_portable_config() == Config.path_to_config()
 
 
     def __init__(config):

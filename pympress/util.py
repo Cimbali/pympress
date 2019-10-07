@@ -127,6 +127,15 @@ def get_locale_dir():
     return __get_resource_path('share', 'locale')
 
 
+def get_portable_config():
+    """ Returns the path to the configuration file for a portable install (i.e. in the install root).
+
+    Returns:
+        str: The path to the portable configuration file.
+    """
+    return __get_resource_path('pympress.conf')
+
+
 def load_style_provider(style_provider):
     """ Load the css and in a style provider.
 

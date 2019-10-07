@@ -276,6 +276,7 @@ class UI(builder.Builder):
             'start_blanked':   self.config.getboolean('content', 'start_blanked'),
             'start_cwin_full': self.config.getboolean('content', 'start_fullscreen'),
             'start_pwin_full': self.config.getboolean('presenter', 'start_fullscreen'),
+            'portable_config': self.config.using_portable_config(),
         }
 
         for n in init_checkstates:

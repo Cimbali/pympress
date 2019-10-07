@@ -481,6 +481,15 @@
                         <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="portable_config">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Portable installation</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="config.toggle_portable_config" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
