@@ -127,21 +127,22 @@ class Scribbler(builder.Builder):
         self.get_object("scribble_width").set_value(self.scribble_width)
 
 
-    def nav_scribble(self, name, ctrl_pressed):
+    def nav_scribble(self, name, ctrl_pressed, command = None):
         """ Handles an key press event: undo or disable scribbling.
 
         Args:
             name (`str`): The name of the key pressed
             ctrl_pressed (`bool`): whether the ctrl modifier key was pressed
+            command (`str`): the name of the command in case this function is called by on_navigation
 
         Returns:
             `bool`: whether the event was consumed
         """
         if not self.scribbling_mode:
             return False
-        elif name.upper() == 'Z' and ctrl_pressed:
+        elif command == 'undo_scribble':
             self.pop_scribble()
-        elif name == 'Escape':
+        elif command == 'cancel':
             self.disable_scribbling()
         else:
             return False
@@ -268,13 +269,12 @@ class Scribbler(builder.Builder):
         self.resize_cache(widget.get_name(), event.width, event.height)
 
 
-    def switch_scribbling(self, widget, event = None, name = None):
+    def switch_scribbling(self, widget, event = None):
         """ Starts the mode where one can read on top of the screen
 
         Args:
             widget (:class:`~Gtk.Widget`):  the widget which has received the event.
             event (:class:`~Gdk.Event` or None):  the GTK event., None when called through a menu item
-            name (`str`): The name of the key pressed
 
         Returns:
             `bool`: whether the event was consumed
@@ -287,13 +287,7 @@ class Scribbler(builder.Builder):
             # A button or menu item, etc. directly connected to this action
             pass
 
-        elif event.type == Gdk.EventType.KEY_PRESS:
-            if name is None:
-                name = Gdk.keyval_name(event.keyval)
-            if name.upper() != 'H':
-                return False
-
-        else:
+        elif event.type != Gdk.EventType.KEY_PRESS:
             return False
 
         # Perform the state toggle

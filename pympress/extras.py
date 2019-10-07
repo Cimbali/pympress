@@ -467,17 +467,21 @@ class Zoom(object):
         return True
 
 
-    def nav_zoom(self, name, ctrl_pressed):
+    def nav_zoom(self, name, ctrl_pressed, command = None):
         """ Handles an key press event: stop trying to select an area to zoom.
 
         Args:
             name (`str`): The name of the key pressed
             ctrl_pressed (`bool`): whether the ctrl modifier key was pressed
+            command (`str`): the name of the command in case this function is called by on_navigation
 
         Returns:
             `bool`: whether the event was consumed
         """
-        if name == 'Escape' and self.zoom_selecting:
+        if not self.zoom_selecting:
+            return False
+
+        elif command == 'cancel':
             Cursor.set_cursor(self.p_central)
             self.zoom_selecting = False
             self.zoom_points = None

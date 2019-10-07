@@ -55,7 +55,6 @@
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="pick_file" swapped="no"/>
-                        <accelerator key="o" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -84,7 +83,6 @@
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="close_file" swapped="no"/>
-                        <accelerator key="w" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -95,7 +93,6 @@
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="save_and_quit" swapped="no"/>
-                        <accelerator key="q" signal="activate"/>
                       </object>
                     </child>
                   </object>
@@ -120,7 +117,6 @@
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
                         <signal name="toggled" handler="talk_time.switch_pause" swapped="no"/>
-                        <accelerator key="p" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -130,7 +126,6 @@
                         <property name="label" translatable="yes">_Reset timer</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="talk_time.reset_timer" swapped="no"/>
-                        <accelerator key="r" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -140,7 +135,6 @@
                         <property name="label" translatable="yes">Set talk _Time</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="est_time.on_label_event" swapped="no"/>
-                        <accelerator key="t" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -150,7 +144,6 @@
                         <property name="label" translatable="yes">_Fullscreen</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="switch_fullscreen" swapped="no"/>
-                        <accelerator key="f" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -160,7 +153,6 @@
                         <property name="label" translatable="yes">_Swap screens</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="swap_screens" swapped="no"/>
-                        <accelerator key="s" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -170,7 +162,6 @@
                         <property name="label" translatable="yes">_Notes mode</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="switch_mode" swapped="no"/>
-                        <accelerator key="n" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -180,7 +171,6 @@
                         <property name="label" translatable="yes">_Blank screen</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="switch_blanked" swapped="no"/>
-                        <accelerator key="b" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -199,7 +189,6 @@
                         <property name="label" translatable="yes">_Annotations</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="switch_annotations" swapped="no"/>
-                        <accelerator key="a" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -218,7 +207,6 @@
                         <property name="label" translatable="yes">_Highlight</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="scribbler.switch_scribbling" swapped="no"/>
-                        <accelerator key="h" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -284,7 +272,6 @@
                         <property name="label" translatable="yes">_Zoom in</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="zoom.start_zooming" swapped="no"/>
-                        <accelerator key="z" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -295,7 +282,6 @@
                         <property name="use_underline">True</property>
                         <property name="sensitive">False</property>
                         <signal name="activate" handler="zoom.stop_zooming" swapped="no"/>
-                        <accelerator key="u" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -384,7 +370,6 @@
                         <property name="label" translatable="yes">_Next</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="doc.goto_next" swapped="no"/>
-                        <accelerator key="Right" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -394,7 +379,6 @@
                         <property name="label" translatable="yes">_Previous</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="doc.goto_prev" swapped="no"/>
-                        <accelerator key="Left" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -404,7 +388,6 @@
                         <property name="label" translatable="yes">_First</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="doc.goto_home" swapped="no"/>
-                        <accelerator key="Home" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -414,7 +397,6 @@
                         <property name="label" translatable="yes">_Last</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="doc.goto_end" swapped="no"/>
-                        <accelerator key="End" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -424,7 +406,6 @@
                         <property name="label" translatable="yes">_Go to...</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="page_number.on_label_event" swapped="no"/>
-                        <accelerator key="g" signal="activate"/>
                       </object>
                     </child>
                     <child>
@@ -434,7 +415,6 @@
                         <property name="label" translatable="yes">_Jump to label</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="page_number.on_label_event" swapped="no"/>
-                        <accelerator key="j" signal="activate"/>
                       </object>
                     </child>
                   </object>

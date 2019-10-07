@@ -36,8 +36,6 @@ import time
 
 
 class EditableLabel(object):
-    #: uppercase `str` of characters containing the keys used as shortcuts for editing this button
-    shortcut_keys = ''
     #: :class:`~Gtk.EventBox` around the label, used to sense clicks
     event_box = None
 
@@ -67,18 +65,14 @@ class EditableLabel(object):
             hint = widget.get_name()
             pass
 
-        elif event.type == Gdk.EventType.KEY_PRESS:
-            if name is None:
-                name = Gdk.keyval_name(event.keyval)
-            if name.upper() not in self.shortcut_keys:
-                return False
-            else:
-                hint = name.upper()
-
         elif event.type == Gdk.EventType.BUTTON_PRESS:
             # If we clicked on the Event Box then don't toggle, just enable.
             if widget is not self.event_box or self.editing:
                 return False
+
+        elif event.type != Gdk.EventType.KEY_PRESS:
+            hint = name
+
         else:
             return False
 
@@ -104,7 +98,7 @@ class EditableLabel(object):
         raise NotImplementedError
 
 
-    def on_keypress(self, widget, event):
+    def on_keypress(self, widget, event, command = None):
         """ Manage key presses for the editable label.
 
         If we are editing the label, intercept some key presses (to validate or cancel editing or other specific behaviour),
@@ -113,6 +107,7 @@ class EditableLabel(object):
         Args:
             widget (:class:`~Gtk.Widget`):  the widget which has received the event.
             event (:class:`~Gdk.Event`):  the GTK event.
+            command (`str`): the name of the command in case this function is called by on_navigation
 
         Returns:
             `bool`: whether the event was consumed
@@ -120,13 +115,11 @@ class EditableLabel(object):
         if not self.editing or event.type != Gdk.EventType.KEY_PRESS:
             return False
 
-        name = Gdk.keyval_name(event.keyval).lower().replace('kp_', '')
-
-        if name == 'return' or name == 'enter':
+        if command == 'validate':
             self.validate()
             self.restore_label()
 
-        elif name == 'escape':
+        elif command == 'cancel':
             self.cancel()
             self.restore_label()
 
@@ -223,7 +216,6 @@ class PageNumber(EditableLabel):
         self.hb_cur.remove(self.edit_label)
         self.hb_cur.remove(self.label_sep)
 
-        self.shortcut_keys = 'GJ'
         self.event_box = self.eb_cur
 
 
@@ -375,7 +367,7 @@ class PageNumber(EditableLabel):
             cur_nb = -1
         self.spin_cur.set_value(cur_nb)
 
-        if self.page_labels and (hint == 'J' or hint == 'nav_jump'):
+        if self.page_labels and (hint == 'jump_label' or hint == 'nav_jump'):
             self.edit_label.grab_focus()
             self.edit_label.select_region(0, -1)
         else:
@@ -458,7 +450,6 @@ class EstimatedTalkTime(EditableLabel):
 
         self.set_time(ett)
 
-        self.shortcut_keys = 'T'
         self.event_box = self.eb_ett
 
 

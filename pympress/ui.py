@@ -154,6 +154,9 @@ class UI(builder.Builder):
     #: A :class:`~Gtk.ShortcutsWindow` to show the shortcuts
     shortcuts_window = None
 
+    #: A :class:`Gtk.AccelGroup` to store the shortcuts
+    accel_group = None
+
 
     ##############################################################################
     #############################      UI setup      #############################
@@ -354,6 +357,11 @@ class UI(builder.Builder):
         shortcuts_builder = builder.Builder()
         shortcuts_builder.load_ui('shortcuts')
         self.shortcuts_window = shortcuts_builder.get_object('shortcuts_window')
+
+        for command, shortcut_list in self.config.items('shortcuts'):
+            display_shortcut = shortcuts_builder.get_object('shortcut_' + command)
+            if display_shortcut is not None:
+                display_shortcut.props.accelerator = shortcut_list
 
         self.shortcuts_window.set_transient_for(self.p_win)
         self.shortcuts_window.show_all()
@@ -887,86 +895,70 @@ class UI(builder.Builder):
         name = Gdk.keyval_name(event.keyval)
         ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
         shift_pressed = event.get_state() & Gdk.ModifierType.SHIFT_MASK
+        meta_pressed = event.get_state() & Gdk.ModifierType.MOD1_MASK
 
-        # Try passing events to spinner or ett if they are enabled
-        if self.page_number.on_keypress(widget, event):
+        command = self.config.shortcuts.get((event.keyval, ctrl_pressed | shift_pressed | meta_pressed), None)
+
+        # Try passing events to special-behaviour widgets (spinner, ett, zooming, scribbler) in case they are enabled
+        if self.page_number.on_keypress(widget, event, command):
             return True
-        elif self.est_time.on_keypress(widget, event):
+        elif self.est_time.on_keypress(widget, event, command):
             return True
-        elif self.zoom.nav_zoom(name, ctrl_pressed):
+        elif self.zoom.nav_zoom(name, ctrl_pressed, command):
             return True
-        elif self.scribbler.nav_scribble(name, ctrl_pressed):
+        elif self.scribbler.nav_scribble(name, ctrl_pressed, command):
             return True
 
-        if name in ['Right', 'Down', 'Page_Down', 'space']:
-            # first key unpauses, next advance by one page
-            if self.talk_time.unpause():
-                pass
-            elif not ctrl_pressed and not shift_pressed:
-                self.doc.goto_next()
-            else:
-                self.doc.label_next()
-        elif name in ['Left', 'Up', 'Page_Up']:
-            if not ctrl_pressed and not shift_pressed:
-                self.doc.goto_prev()
-            else:
-                self.doc.label_prev()
-        elif name == 'BackSpace':
-            if not ctrl_pressed and not shift_pressed:
-                self.doc.hist_prev()
-            else:
-                self.doc.hist_next()
-        elif name == 'Home':
+        # first key unpauses, next advance by one page
+        elif command in {'next', 'next_label'} and self.talk_time.unpause():
+            pass
+        elif command == 'next':
+            self.doc.goto_next()
+        elif command == 'next_label':
+            self.doc.label_next()
+        elif command == 'prev':
+            self.doc.goto_prev()
+        elif command == 'prev_label':
+            self.doc.label_prev()
+        elif command == 'hist_back':
+            self.doc.hist_prev()
+        elif command == 'hist_forward':
+            self.doc.hist_next()
+        elif command == 'first':
             self.doc.goto_home()
-        elif name == 'End':
+        elif command == 'last':
             self.doc.goto_end()
-        # sic - accelerator recognizes f not F
-        elif name.upper() == 'F11' or name == 'F' \
-            or (name == 'Return' and event.get_state() & Gdk.ModifierType.MOD1_MASK) \
-            or (name.upper() == 'L' and ctrl_pressed) \
-            or (name.upper() == 'F5' and (self.c_win.get_window().get_state() & Gdk.WindowState.FULLSCREEN) == 0):
+        elif command == 'fullscreen_content':
             self.switch_fullscreen(self.c_win)
-        elif name.upper() == 'F' and ctrl_pressed:
+        elif command == 'fullscreen_presenter':
             self.switch_fullscreen(self.p_win)
-        elif name.upper() == 'Q':
+        elif command == 'quit':
             self.save_and_quit()
-        elif name == 'Pause':
+        elif command == 'pause_timer':
             self.talk_time.switch_pause(widget, event)
-        elif name.upper() == 'R':
+        elif command == 'reset_timer':
             self.timing.reset(int(self.talk_time.delta))
             self.talk_time.reset_timer()
-
-        # Some key events are already handled by toggle actions in the
-        # presenter window, so we must handle them in the content window only
-        # to prevent them from double-firing
-        elif widget is self.c_win:
-            if self.scribbler.switch_scribbling(widget, event, name):
-                return True
-            elif self.est_time.on_label_event(widget, event, name):
-                return True
-            elif self.page_number.on_label_event(widget, event, name):
-                return True
-            elif name.upper() == 'P':
-                self.talk_time.switch_pause(widget, event)
-            elif name.upper() == 'N':
-                self.switch_mode(widget, event)
-            elif name.upper() == 'A':
-                self.switch_annotations(widget, event)
-            elif name.upper() == 'S':
-                self.swap_screens()
-            elif name.upper() == 'F':
-                if ctrl_pressed:
-                    self.switch_fullscreen(self.p_win)
-                else:
-                    self.switch_fullscreen(self.c_win)
-            elif name.upper() == 'B':
-                self.switch_blanked(widget, event)
-            elif ctrl_pressed and name.upper() == 'W':
-                self.close_file()
-            else:
-                return False
-
-            return True
+        elif command == 'highlight':
+            return self.scribbler.switch_scribbling(widget, event)
+        elif command == 'zoom':
+            return self.zoom.start_zooming(widget, event)
+        elif command == 'unzoom':
+            return self.zoom.stop_zooming(widget, event)
+        elif command in {'goto_page', 'jump_label'}:
+            return self.page_number.on_label_event(widget, event, command)
+        elif command == 'talk_time':
+            return self.talk_time.on_label_event(widget, event, command)
+        elif command == 'notes_mode':
+            self.switch_mode(widget, event)
+        elif command == 'annotations':
+            self.switch_annotations(widget, event)
+        elif command == 'swap_screens':
+            self.swap_screens()
+        elif command == 'blank_screen':
+            self.switch_blanked(widget, event)
+        elif command == 'close_file':
+            self.close_file()
         else:
             return False
 

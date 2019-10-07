@@ -92,6 +92,9 @@ class Config(configparser.ConfigParser, object): # python 2 fix
     #: Map of strings that are the valid representations of widgets from the presenter window that can be dynamically rearranged, mapping to their names
     placeable_widgets = {"notes": "p_frame_notes", "current": "p_frame_cur", "next": "p_frame_next", "annotations": "p_frame_annot", "highlight": "scribble_overlay"}
 
+    #: Map of (keyval, Gdk.ModifierType) to string, which representing the shortcuts for each command
+    shortcuts = {}
+
     @staticmethod
     def path_to_config():
         """ Return the OS-specific path to the configuration file.
@@ -152,8 +155,19 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         config.read(util.get_default_config())
         config.load_window_layouts()
 
+        all_commands = dict(config.items('shortcuts')).keys()
+
         config.read(config.path_to_config())
         config.load_window_layouts()
+
+        for command in all_commands:
+            parsed = {Gtk.accelerator_parse(l) for l in config.get('shortcuts', command).split()}
+
+            if (0, 0) in parsed:
+                logger.warning('Failed parsing 1 or more shortcuts for ' + command)
+                parsed.remove((0, 0))
+
+            config.shortcuts.update({s: command for s in parsed})
 
 
     def save_config(self):
