@@ -303,6 +303,10 @@ class UI(builder.Builder):
         self.p_win.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
         self.p_win.drag_dest_add_text_targets()
 
+        colourclass = 'white' if self.config.getboolean('content', 'white_blanking') else 'black'
+        self.c_da.get_style_context().add_class(colourclass)
+        self.c_win.get_style_context().add_class(colourclass)
+
 
     def setup_screens(self):
         """ Sets up the position of the windows

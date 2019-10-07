@@ -168,6 +168,9 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         if not config.has_option('content', 'monitor'):
             config.set('content', 'monitor', '0')
 
+        if not config.has_option('content', 'white_blanking'):
+            config.set('content', 'white_blanking', 'off')
+
         if not config.has_option('content', 'start_blanked'):
             config.set('content', 'start_blanked', 'off')
 

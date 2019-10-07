@@ -1,9 +1,14 @@
 #p_win {
 }
 
-#c_win, #c_frame{
+#c_win.black, #c_frame.black {
     background-color: #000;
 }
+
+#c_win.white , #c_frame.white {
+    background-color: #fff;
+}
+
 
 #p_win GtkPaned .pane-separator {
     background-color: #ccc;
