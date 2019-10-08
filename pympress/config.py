@@ -148,68 +148,11 @@ class Config(configparser.ConfigParser, object): # python 2 fix
     def __init__(config):
         super(Config, config).__init__()
 
-        config.add_section('content')
-        config.add_section('presenter')
-        config.add_section('layout')
-        config.add_section('cache')
-        config.add_section('scribble')
+        # populate values first from the default config file, then from the proper one
+        config.read(util.get_default_config())
+        config.load_window_layouts()
 
         config.read(config.path_to_config())
-
-        if not config.has_option('cache', 'maxpages'):
-            config.set('cache', 'maxpages', '200')
-
-        if not config.has_option('content', 'xalign'):
-            config.set('content', 'xalign', '0.50')
-
-        if not config.has_option('content', 'yalign'):
-            config.set('content', 'yalign', '0.50')
-
-        if not config.has_option('content', 'monitor'):
-            config.set('content', 'monitor', '0')
-
-        if not config.has_option('content', 'white_blanking'):
-            config.set('content', 'white_blanking', 'off')
-
-        if not config.has_option('content', 'start_blanked'):
-            config.set('content', 'start_blanked', 'off')
-
-        if not config.has_option('content', 'start_fullscreen'):
-            config.set('content', 'start_fullscreen', 'on')
-
-        if not config.has_option('presenter', 'monitor'):
-            config.set('presenter', 'monitor', '1')
-
-        if not config.has_option('presenter', 'start_fullscreen'):
-            config.set('presenter', 'start_fullscreen', 'off')
-
-        if not config.has_option('presenter', 'pointer'):
-            config.set('presenter', 'pointer', 'red')
-
-        if not config.has_option('presenter', 'show_bigbuttons'):
-            config.set('presenter', 'show_bigbuttons', 'off')
-
-        if not config.has_option('presenter', 'show_annotations'):
-            config.set('presenter', 'show_annotations', 'off')
-
-        if not config.has_option('presenter', 'scroll_number'):
-            config.set('presenter', 'scroll_number', 'off')
-
-        if not config.has_option('layout', 'notes'):
-            config.set('layout', 'notes', '')
-
-        if not config.has_option('layout', 'plain'):
-            config.set('layout', 'plain', '')
-
-        if not config.has_option('layout', 'highlight'):
-            config.set('layout', 'highlight', '')
-
-        if not config.has_option('scribble', 'color'):
-            config.set('scribble', 'color', Gdk.RGBA(1., 0., 0., 1.).to_string())
-
-        if not config.has_option('scribble', 'width'):
-            config.set('scribble', 'width', '8')
-
         config.load_window_layouts()
 
 
@@ -290,26 +233,20 @@ class Config(configparser.ConfigParser, object): # python 2 fix
     def load_window_layouts(self):
         """ Parse and validate layouts loaded from config, with fallbacks if needed.
         """
-        default_layout = {
-            'notes':     '{"resizeable":true, "orientation":"horizontal", "children":["notes", {"resizeable":false, "children":["current", "next"], "orientation":"vertical"}], "proportions": [0.60, 0.40]}',
-            'plain':     '{"resizeable":true, "orientation":"horizontal", "children":["current", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}',
-            'highlight': '{"resizeable":true, "orientation":"horizontal", "children":["highlight", {"resizeable":true, "orientation":"vertical", "children":["next", "annotations"], "proportions":[0.55, 0.45]}], "proportions":[0.67, 0.33]}'
-        }
-
         widget_reqs = {
             'notes':     (set(self.placeable_widgets.keys()) - {"annotations", "highlight"},),
             'plain':     (set(self.placeable_widgets.keys()) - {"notes", "highlight"},),
             'highlight': ({"highlight"}, set(self.placeable_widgets.keys()) - {"highlight"})
         }
 
-        for layout_name in default_layout:
+        for layout_name in widget_reqs:
             # Log error and keep default layout
             try:
-                self.layout[layout_name] = layout_from_json(self.get('layout', layout_name))
-                self.validate_layout(self.layout[layout_name] , *widget_reqs[layout_name])
+                loaded_layout = layout_from_json(self.get('layout', layout_name))
+                self.validate_layout(loaded_layout, *widget_reqs[layout_name])
+                self.layout[layout_name] = loaded_layout
             except ValueError as e:
                 logger.exception('Invalid layout')
-                self.layout[layout_name] = layout_from_json(default_layout[layout_name])
 
 
     def widget_layout_to_tree(self, widget, pane_handle_pos):

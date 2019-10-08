@@ -136,6 +136,15 @@ def get_portable_config():
     return __get_resource_path('pympress.conf')
 
 
+def get_default_config():
+    """ Returns the path to the configuration file containing the defaults.
+
+    Returns:
+        str: The path to the portable configuration file.
+    """
+    return __get_resource_path('share', 'defaults.conf')
+
+
 def load_style_provider(style_provider):
     """ Load the css and in a style provider.
 

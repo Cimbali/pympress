@@ -136,7 +136,7 @@ def vlc_resources():
 def pympress_resources():
     ''' Return pympress resources. Only for frozen packages, as this is redundant with package_data.
     '''
-    resources = [os.path.join('share', 'xml'), os.path.join('share', 'pixmaps'), os.path.join('share', 'css')]
+    resources = [os.path.join('share', 'xml'), os.path.join('share', 'pixmaps'), os.path.join('share', 'css'), os.path.join('share', 'defaults.conf')]
     translations = glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))
     return [(os.path.join('pympress', f), f) for f in resources] + [(t, t.split(os.path.sep, 1)[1]) for t in translations]
 
