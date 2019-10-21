@@ -145,6 +145,24 @@ def get_default_config():
     return __get_resource_path('share', 'defaults.conf')
 
 
+def get_user_config():
+    """ Returns the path to the configuration file in the user config directory.
+
+    Returns:
+        `str`: path to the user configuration file.
+    """
+    if IS_WINDOWS:
+        base_dir = os.getenv('APPDATA')
+    elif IS_MAC_OS:
+        base_dir = os.path.expanduser('~/Library/Preferences')
+    else:
+        base_dir = os.getenv('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
+        if not os.path.isdir(base_dir):
+            os.mkdir(base_dir)
+
+    return os.path.join(base_dir, 'pympress' + ('.ini' if IS_WINDOWS else ''))
+
+
 def load_style_provider(style_provider):
     """ Load the css and in a style provider.
 
@@ -199,15 +217,19 @@ def list_icons():
 
 
 def get_log_path():
+    """ Returns the appropriate path to the log file in the user app dirs.
+
+    Returns:
+        `str`: path to the log file.
+    """
     if IS_WINDOWS:
-        base_dir = os.environ.get('LOCALAPPDATA') or os.environ.get('APPDATA')
+        base_dir = os.getenv('LOCALAPPDATA', os.getenv('APPDATA'))
     elif IS_MAC_OS:
         base_dir = os.path.expanduser('~/Library/Logs')
     else:
-        base_dir = os.environ.get('XDG_CACHE_HOME') or os.path.expanduser('~/.cache')
-
-    if not os.path.isdir(base_dir):
-        os.mkdir(base_dir)
+        base_dir = os.getenv('XDG_CACHE_HOME', os.path.expanduser('~/.cache'))
+        if not os.path.isdir(base_dir):
+            os.mkdir(base_dir)
 
     return os.path.join(base_dir, 'pympress.log')
 

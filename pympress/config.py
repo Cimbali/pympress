@@ -31,6 +31,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import os
+import shutil
 import json
 from collections import deque
 
@@ -96,30 +97,25 @@ class Config(configparser.ConfigParser, object): # python 2 fix
     shortcuts = {}
 
     @staticmethod
-    def path_to_config():
-        """ Return the OS-specific path to the configuration file.
+    def path_to_config(search_legacy_locations = False):
+        """ Return the path to the currently used configuration file.
+
+        Args:
+            search_legacy_locations (`bool`): whether to look in previously used locations
         """
         portable_config = util.get_portable_config()
         if os.path.exists(portable_config):
             return portable_config
 
-        elif util.IS_POSIX:
-            conf_dir = os.path.expanduser('~/.config')
-            conf_file_nodir = os.path.expanduser('~/.pympress')
-            conf_file_indir = os.path.expanduser('~/.config/pympress')
+        user_config = util.get_user_config()
 
-            if os.path.isfile(conf_file_indir):
-                return conf_file_indir
-            elif os.path.isfile(conf_file_nodir):
-                return conf_file_nodir
+        # migrate old configuration files from previously-used erroneous locations
+        if search_legacy_locations and (util.IS_POSIX or util.IS_MAC_OS) and not os.path.exists(user_config):
+            for legacy_location in [os.path.expanduser('~/.pympress'), os.path.expanduser('~/.config/pympress')]:
+                if os.path.exists(legacy_location):
+                    shutil.move(legacy_location, user_config)
 
-            elif os.path.isdir(conf_dir):
-                return conf_file_indir
-            else:
-                return conf_file_nodir
-
-        else:
-            return os.path.join(os.environ['APPDATA'], 'pympress.ini')
+        return user_config
 
 
     @staticmethod
@@ -157,7 +153,7 @@ class Config(configparser.ConfigParser, object): # python 2 fix
 
         all_commands = dict(config.items('shortcuts')).keys()
 
-        config.read(config.path_to_config())
+        config.read(config.path_to_config(True))
         config.load_window_layouts()
 
         for command in all_commands:

@@ -26,13 +26,11 @@ from __future__ import print_function, unicode_literals
 
 import logging
 import os
-import os.path
 import sys
 import getopt
 import signal
 import locale
 import gettext
-import tempfile
 import platform
 
 from pympress import util
