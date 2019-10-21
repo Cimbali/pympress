@@ -124,7 +124,7 @@ class UI(builder.Builder):
     pane_handle_pos = {}
 
     #: :class:`~pympress.config.Config` to remember preferences
-    config = config.Config()
+    config = None
 
     #: :class:`~pympress.surfacecache.SurfaceCache` instance.
     cache = None
@@ -165,8 +165,11 @@ class UI(builder.Builder):
     #############################      UI setup      #############################
     ##############################################################################
 
-    def __init__(self):
+    def __init__(self, app, config):
         super(UI, self).__init__()
+        self.app = app
+        self.config = config
+
         self.blanked = self.config.getboolean('content', 'start_blanked')
 
         Gtk.StyleContext.add_provider_for_screen(
@@ -183,6 +186,8 @@ class UI(builder.Builder):
         # Make and populate windows
         self.load_ui('presenter')
         self.load_ui('content')
+        self.app.add_window(self.p_win)
+        self.app.add_window(self.c_win)
 
         self.zoom = extras.Zoom(self)
         self.scribbler = scribble.Scribbler(self.config, self, self.notes_mode)
@@ -506,18 +511,9 @@ class UI(builder.Builder):
     ############################  Program lifetime  ############################
     ############################################################################
 
-    def run(self):
-        """ Run the GTK main loop.
-        """
-        Gtk.main()
-
-
-    def save_and_quit(self, *args):
+    def cleanup(self, *args):
         """ Save configuration and exit the main loop.
         """
-        if self.p_win.in_destruction() or self.c_win.in_destruction():
-            return
-
         self.scribbler.disable_scribbling()
         self.medias.hide_all()
 
@@ -529,11 +525,6 @@ class UI(builder.Builder):
 
         if bool(self.c_win.get_window().get_state() & Gdk.WindowState.FULLSCREEN):
             util.set_screensaver(False, self.c_win.get_window())
-
-        self.config.save_config()
-        self.p_win.destroy()
-        self.c_win.destroy()
-        Gtk.main_quit()
 
 
     def menu_about(self, *args):
@@ -999,7 +990,7 @@ class UI(builder.Builder):
         elif command == 'fullscreen_presenter':
             self.switch_fullscreen(self.p_win)
         elif command == 'quit':
-            self.save_and_quit()
+            self.app.quit()
         elif command == 'pause_timer':
             self.talk_time.switch_pause(widget, event)
         elif command == 'reset_timer':

@@ -29,11 +29,8 @@ from __future__ import print_function, unicode_literals
 import logging
 import os
 import sys
-import getopt
-import signal
 import locale
 import gettext
-import platform
 
 from pympress import util
 
@@ -82,7 +79,7 @@ except NameError:
 try:
     import gi
     gi.require_version('Gtk', '3.0')
-    from gi.repository import Gtk, Gdk, GLib
+    from gi.repository import Gtk, Gdk, GLib, Gio
     import cairo
 except ModuleNotFoundError:
     logger.critical('Gobject Introspections and/or pycairo module is missing', exc_info = True)
@@ -99,132 +96,13 @@ except ModuleNotFoundError:
 
 
 # Finally the real deal: load pympress modules, handle command line args, and start up
-from pympress import extras, document, ui
+from pympress import app
 
 
-def usage():
-    """ Display how to use the command line options.
-    """
-    print('''{usage}
-
-{options}
-
-    -h, --help                       {help}
-    -t mm[:ss], --talk-time=mm[:ss]  {talk_time}
-                                         {talk_time_secs}
-    -n position, --notes=position    {notes}
-                                         {notes_position}
-                                         {notes_override}
-    --log=level                      {log_level}
-                                         {log_levels_list}
-'''.format(
-        usage           = _('Usage: {} [options] <presentation_file>').format(sys.argv[0]),
-        options         = _('Options:'),
-        help            = _('This help'),
-        talk_time       = _('The estimated (intended) talk time in minutes'),
-        talk_time_secs  = _('(and optionally seconds)'),
-        notes           = _('Set the position of notes on the pdf page'),
-        notes_position  = _('(none, left, right, top, bottom, or after).'),
-        notes_override  = _('Overrides the detection from the file.'),
-        log_level       = _('Set level of verbosity in log file:'),
-        log_levels_list = _('{}, {}, {}, {}, or {}').format('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'),
-    ))
-
-
-def parse_opts(opts):
-    """ Parse command line options, returned from getopt.getopt().
-
-    Returns:
-        `tuple`: estimated talk time, log level, notes positions.
-    """
-    ett = 0
-    log_level = logging.ERROR
-    notes_pos = None
-
-    for opt, arg in opts.items():
-        if opt in ("-h", "--help"):
-            usage()
-            sys.exit()
-        if opt in ("-n", "--notes"):
-            if arg.lower()[0] == 'n': notes_pos = document.PdfPage.NONE
-            if arg.lower()[0] == 'l': notes_pos = document.PdfPage.LEFT
-            if arg.lower()[0] == 'r': notes_pos = document.PdfPage.RIGHT
-            if arg.lower()[0] == 't': notes_pos = document.PdfPage.TOP
-            if arg.lower()[0] == 'b': notes_pos = document.PdfPage.BOTTOM
-            if arg.lower()[0] == 'a': notes_pos = document.PdfPage.AFTER
-        elif opt in ("-t", "--talk-time"):
-            t = ["0" + n.strip() for n in arg.split(':')]
-            try:
-                m = int(t[0])
-                s = int(t[1])
-            except ValueError:
-                print(_("Invalid time (mm or mm:ss expected), got \"{}\"").format(arg))
-                usage()
-                sys.exit(2)
-            except IndexError:
-                s = 0
-            ett = m * 60 + s
-        elif opt == "--log":
-            numeric_level = getattr(logging, arg.upper(), None)
-            if isinstance(numeric_level, int):
-                log_level = numeric_level
-            else:
-                print(_("Invalid log level \"{}\", try one of {}").format(
-                    arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"
-                ))
-
-    return ett, log_level, notes_pos
-
-
-def main(argv = sys.argv[1:]):
+def main(argv = sys.argv[:]):
     """ Entry point of pympress. Parse command line arguments, instantiate the UI, and start the main loop.
     """
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-    # prefere X11 on posix systems because Wayland still has some shortcomings for us,
-    # specifically libVLC and the ability to disable screensavers
-    if util.IS_POSIX:
-        Gdk.set_allowed_backends('x11,*')
-    Gtk.init(argv)
-
-    pympress_meta = util.get_pympress_meta()['version']
-    logger.info(' '.join([
-        'Pympress:', pympress_meta,
-        '; Python:', platform.python_version(),
-        '; OS:', platform.system(), platform.release(), platform.version(),
-        '; Gtk {}.{}.{}'.format(Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version()),
-        '; GLib {}.{}.{}'.format(GLib.MAJOR_VERSION, GLib.MINOR_VERSION, GLib.MICRO_VERSION),
-        '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
-        '; Cairo', cairo.cairo_version_string(), ', pycairo', cairo.version,
-        '; Media:', extras.Media.backend_version()
-    ]))
-
-    try:
-        opts, args = getopt.getopt(argv, "hn:t:", ["help", "notes=", "talk-time=", "log="])
-        opts = dict(opts)
-    except getopt.GetoptError:
-        usage()
-        sys.exit(2)
-
-    ett, log_level, notes_pos = parse_opts(opts)
-    logger.setLevel(log_level)
-
-    # Create windows
-    gui = ui.UI()
-
-    # Connect proper exit function to interrupt
-    signal.signal(signal.SIGINT, gui.save_and_quit)
-
-    # pass command line args
-    if ett:
-        gui.est_time.set_time(ett)
-
-    gui.swap_document(os.path.abspath(args[0])) if args else gui.pick_file()
-
-    if notes_pos is not None:
-        gui.change_notes_pos(notes_pos, force_change = True)
-
-    gui.run()
+    app.Pympress().run(argv)
 
 
 if __name__ == "__main__":

@@ -14,6 +14,11 @@ Retructured text (rst) can be used inside the comments and docstrings.
     :undoc-members:
     :show-inheritance:
 
+.. automodule:: pympress.app
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 .. automodule:: pympress.ui
     :members:
     :undoc-members:

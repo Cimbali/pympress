@@ -9,8 +9,6 @@
     <property name="role">presenter</property>
     <property name="window-position">center</property>
     <signal name="configure-event" handler="on_configure_win" swapped="no"/>
-    <signal name="delete-event" handler="save_and_quit" swapped="no"/>
-    <signal name="destroy" handler="save_and_quit" swapped="no"/>
     <signal name="drag-data-received" handler="on_drag_drop" swapped="no"/>
     <signal name="key-press-event" handler="on_navigation" swapped="no"/>
     <signal name="scroll-event" handler="on_scroll" swapped="no"/>
@@ -79,7 +77,6 @@
                         <property name="can-focus">False</property>
                         <property name="use-underline">True</property>
                         <property name="use-stock">True</property>
-                        <signal name="activate" handler="save_and_quit" swapped="no"/>
                       </object>
                     </child>
                   </object>
