@@ -198,6 +198,20 @@ def list_icons():
     return [get_icon_path(i) for i in icons if os.path.splitext(i)[1].lower() == '.png' and i[:9] == 'pympress-']
 
 
+def get_log_path():
+    if IS_WINDOWS:
+        base_dir = os.environ.get('LOCALAPPDATA') or os.environ.get('APPDATA')
+    elif IS_MAC_OS:
+        base_dir = os.path.expanduser('~/Library/Logs')
+    else:
+        base_dir = os.environ.get('XDG_CACHE_HOME') or os.path.expanduser('~/.cache')
+
+    if not os.path.isdir(base_dir):
+        os.mkdir(base_dir)
+
+    return os.path.join(base_dir, 'pympress.log')
+
+
 def fileopen(f):
     """ Call the right function to open files, based on the platform.
 
