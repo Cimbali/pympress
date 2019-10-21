@@ -500,7 +500,8 @@ class UI(builder.Builder):
         about.set_copyright(_('Contributors:') + '\n' + pympress.__author__)
         about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n')
                          + _('Some preferences are saved in ') + self.config.path_to_config() + '\n'
-                         + _('Resources are loaded from ') + os.path.dirname(util.get_locale_dir()) + '\n\n'
+                         + _('Resources are loaded from ') + os.path.dirname(util.get_locale_dir()) + '\n'
+                         + _('The log is written to ') + util.get_log_path() + '\n\n'
                          + (_('Media support uses {}.').format(self.medias.backend_version())) + '\n'
                          + _('Python version {}').format(sys.version))
         about.set_website('https://github.com/Cimbali/pympress')
