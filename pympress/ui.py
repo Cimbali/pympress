@@ -291,38 +291,6 @@ class UI(builder.Builder):
             radio.set_name(radio_name)
             radio.set_active(radio_name == default)
 
-        # set the accelerators. Gtk.AccelLabel.set_accel() only exists in Gtk 3.6+
-        if (Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version()) >= (3,6):
-            menuitem_to_command_name = {
-                'file_open': 'open_file',
-                'file_close': 'close_file',
-                'file_quit': 'quit',
-
-                'nav_next': 'next',
-                'nav_prev': 'prev',
-                'nav_first': 'first',
-                'nav_last': 'last',
-                'nav_goto': 'goto_page',
-                'nav_jump': 'jumpto_label',
-
-                'pres_pause': 'pause_timer',
-                'pres_reset': 'reset_timer',
-                'pres_ett': 'talk_time',
-                'pres_fullscreen': 'fullscreen_content',
-                'pres_swap': 'swap_screens',
-                'pres_notes': 'notes_mode',
-                'pres_blank': 'blank_screen',
-                'pres_annot': 'annotations',
-                'pres_highlight': 'highlight',
-
-                'menu_zoom_in': 'zoom',
-                'menu_zoom_out': 'unzoom'
-            }
-            commands_lookup = {command: shortcut for shortcut, command in self.config.shortcuts.items()}
-            for menu, command in menuitem_to_command_name.items():
-                self.get_object(menu).get_child().set_accel(*commands_lookup.get(command, (0, 0)))
-
-
         slide_type = self.notes_mode.complement()
         self.cache.add_widget(self.p_da_cur, slide_type)
         self.cache.add_widget(self.p_da_cur, slide_type, zoomed = True)
