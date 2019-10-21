@@ -32,7 +32,6 @@ import getopt
 import signal
 import locale
 import gettext
-import ctypes
 import tempfile
 import platform
 
