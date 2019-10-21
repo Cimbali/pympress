@@ -25,6 +25,7 @@
 from __future__ import print_function, unicode_literals
 
 import logging
+import os
 import os.path
 import sys
 import getopt
@@ -39,7 +40,10 @@ import platform
 # Setup logging, and catch all uncaught exceptions in the log file.
 # Load pympress.util early (OS and path-specific things) to load and setup gettext translation asap.
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename=os.path.join(tempfile.gettempdir(), 'pympress.log'), level=logging.DEBUG)
+logging.basicConfig(
+    filename=os.path.join(tempfile.gettempdir(), 'pympress.{}.log'.format(os.getuid())),
+    level=logging.DEBUG
+)
 
 
 def uncaught_handler(*exc_info):
