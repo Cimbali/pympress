@@ -901,9 +901,9 @@ class UI(builder.Builder):
         command = self.config.shortcuts.get((event.keyval, ctrl_pressed | shift_pressed | meta_pressed), None)
 
         # Try passing events to special-behaviour widgets (spinner, ett, zooming, scribbler) in case they are enabled
-        if self.page_number.on_keypress(widget, event, command):
+        if self.page_number.on_keypress(widget, event, name, command):
             return True
-        elif self.est_time.on_keypress(widget, event, command):
+        elif self.est_time.on_keypress(widget, event, name, command):
             return True
         elif self.zoom.nav_zoom(name, ctrl_pressed, command):
             return True
@@ -946,10 +946,10 @@ class UI(builder.Builder):
             return self.zoom.start_zooming(widget, event)
         elif command == 'unzoom':
             return self.zoom.stop_zooming(widget, event)
-        elif command in {'goto_page', 'jump_label'}:
+        elif command in {'goto_page', 'jumpto_label'}:
             return self.page_number.on_label_event(widget, event, command)
         elif command == 'talk_time':
-            return self.talk_time.on_label_event(widget, event, command)
+            return self.est_time.on_label_event(widget, event, command)
         elif command == 'notes_mode':
             self.switch_mode(widget, event)
         elif command == 'annotations':
@@ -960,7 +960,14 @@ class UI(builder.Builder):
             self.switch_blanked(widget, event)
         elif command == 'close_file':
             self.close_file()
+        elif command == 'open_file':
+            self.pick_file()
         else:
+            if command:
+                logger.error('ERROR: missing command "{}" for {}{}{}{}'.format(command,
+                    'ctrl + ' if ctrl_pressed else '', 'shift + ' if shift_pressed else '',
+                    'meta + ' if meta_pressed else '', name))
+
             return False
 
         return True

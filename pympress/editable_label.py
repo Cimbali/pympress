@@ -70,7 +70,7 @@ class EditableLabel(object):
             if widget is not self.event_box or self.editing:
                 return False
 
-        elif event.type != Gdk.EventType.KEY_PRESS:
+        elif event.type == Gdk.EventType.KEY_PRESS:
             hint = name
 
         else:
@@ -98,7 +98,7 @@ class EditableLabel(object):
         raise NotImplementedError
 
 
-    def on_keypress(self, widget, event, command = None):
+    def on_keypress(self, widget, event, name = None, command = None):
         """ Manage key presses for the editable label.
 
         If we are editing the label, intercept some key presses (to validate or cancel editing or other specific behaviour),
@@ -107,6 +107,7 @@ class EditableLabel(object):
         Args:
             widget (:class:`~Gtk.Widget`):  the widget which has received the event.
             event (:class:`~Gdk.Event`):  the GTK event.
+            name (`str`): the name of the key stroke
             command (`str`): the name of the command in case this function is called by on_navigation
 
         Returns:
@@ -367,7 +368,7 @@ class PageNumber(EditableLabel):
             cur_nb = -1
         self.spin_cur.set_value(cur_nb)
 
-        if self.page_labels and (hint == 'jump_label' or hint == 'nav_jump'):
+        if self.page_labels and (hint == 'jumpto_label' or hint == 'nav_jump'):
             self.edit_label.grab_focus()
             self.edit_label.select_region(0, -1)
         else:
