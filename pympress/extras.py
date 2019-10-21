@@ -347,8 +347,16 @@ class Media(object):
         Args:
             media_id (`int`): A unique idientifier of the media to start playing
         """
-        for p in self._media_overlays[media_id]:
+        if media_id in self._media_overlays:
             c, p = self._media_overlays[media_id]
+            if c.is_shown(): c.do_hide()
+            if p.is_shown(): p.do_hide()
+
+
+    def hide_all(self):
+        """ Stops all playing medias and hides the players. Used before exit.
+        """
+        for c, p in self._media_overlays.values():
             if c.is_shown(): c.do_hide()
             if p.is_shown(): p.do_hide()
 

@@ -505,6 +505,7 @@ class UI(builder.Builder):
         """ Save configuration and exit the main loop.
         """
         self.scribbler.disable_scribbling()
+        self.medias.hide_all()
 
         extras.FileWatcher.stop_daemon()
         self.doc.cleanup_media_files()
