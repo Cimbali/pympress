@@ -106,7 +106,9 @@ class GifOverlay(base.VideoOverlay):
         if self.iter.advance():
             self.movie_zone.queue_draw()
 
-        GLib.timeout_add(self.iter.get_delay_time(), self.advance_gif)
+        delay = self.iter.get_delay_time()
+        if delay >= 0:
+            GLib.timeout_add(delay, self.advance_gif)
 
 
     def do_set_time(self, t):
