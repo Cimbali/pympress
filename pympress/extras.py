@@ -397,6 +397,7 @@ class Media(object):
             version = GifOverlay.setup_backend()
 
             cls._backends['image/gif'] = GifOverlay
+            cls._backends['image/svg+xml'] = GifOverlay
             cls._backend_versions.append(version)
 
         except: logger.exception(_('Video support using {} is disabled.').format('Overlay'))

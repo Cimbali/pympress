@@ -35,6 +35,7 @@ needs_sphinx = '1.3' # for sphinx.ext.napoleon
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'recommonmark',
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
@@ -52,11 +53,8 @@ templates_path = ['_template']
 #
 source_suffix = ['.rst', '.md']
 
-from recommonmark.parser import CommonMarkParser
+import recommonmark
 from recommonmark.transform import AutoStructify
-source_parsers = {
-    '.md': CommonMarkParser,
-}
 
 github_doc_root = 'https://cimbali.github.io/pympress/'
 def setup(app):

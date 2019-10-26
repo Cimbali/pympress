@@ -76,7 +76,7 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html"> What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#dependencies">Dependencies</a></li>
@@ -305,6 +305,9 @@
     <span class="c1">#: A :class:`~Gtk.ShortcutsWindow` to show the shortcuts</span>
     <span class="n">shortcuts_window</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="c1">#: A :class:`Gtk.AccelGroup` to store the shortcuts</span>
+    <span class="n">accel_group</span> <span class="o">=</span> <span class="kc">None</span>
+
 
     <span class="c1">##############################################################################</span>
     <span class="c1">#############################      UI setup      #############################</span>
@@ -332,7 +335,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span> <span class="o">=</span> <span class="n">extras</span><span class="o">.</span><span class="n">Zoom</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span> <span class="o">=</span> <span class="n">scribble</span><span class="o">.</span><span class="n">Scribbler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes_mode</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">extras</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">medias</span> <span class="o">=</span> <span class="n">extras</span><span class="o">.</span><span class="n">Media</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">medias</span> <span class="o">=</span> <span class="n">extras</span><span class="o">.</span><span class="n">Media</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">laser</span> <span class="o">=</span> <span class="n">pointer</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span> <span class="o">=</span> <span class="n">editable_label</span><span class="o">.</span><span class="n">EstimatedTalkTime</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span> <span class="o">=</span> <span class="n">editable_label</span><span class="o">.</span><span class="n">PageNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;scroll_number&#39;</span><span class="p">))</span>
@@ -427,6 +430,7 @@
             <span class="s1">&#39;start_blanked&#39;</span><span class="p">:</span>   <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_blanked&#39;</span><span class="p">),</span>
             <span class="s1">&#39;start_cwin_full&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">),</span>
             <span class="s1">&#39;start_pwin_full&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;portable_config&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">using_portable_config</span><span class="p">(),</span>
         <span class="p">}</span>
 
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">init_checkstates</span><span class="p">:</span>
@@ -451,7 +455,11 @@
 
         <span class="c1"># Enable dropping files onto the window</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">drag_dest_set</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">DestDefaults</span><span class="o">.</span><span class="n">ALL</span><span class="p">,</span> <span class="p">[],</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">DragAction</span><span class="o">.</span><span class="n">COPY</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">drag_dest_add_text_targets</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="o">.</span><span class="n">drag_dest_add_text_targets</span><span class="p">()</span>
+
+        <span class="n">colourclass</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;white_blanking&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;black&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_da</span><span class="o">.</span><span class="n">get_style_context</span><span class="p">()</span><span class="o">.</span><span class="n">add_class</span><span class="p">(</span><span class="n">colourclass</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">get_style_context</span><span class="p">()</span><span class="o">.</span><span class="n">add_class</span><span class="p">(</span><span class="n">colourclass</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UI.setup_screens"><a class="viewcode-back" href="../../pympress.html#pympress.ui.UI.setup_screens">[docs]</a>    <span class="k">def</span> <span class="nf">setup_screens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -500,6 +508,11 @@
         <span class="n">shortcuts_builder</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">Builder</span><span class="p">()</span>
         <span class="n">shortcuts_builder</span><span class="o">.</span><span class="n">load_ui</span><span class="p">(</span><span class="s1">&#39;shortcuts&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shortcuts_window</span> <span class="o">=</span> <span class="n">shortcuts_builder</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s1">&#39;shortcuts_window&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">command</span><span class="p">,</span> <span class="n">shortcut_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="s1">&#39;shortcuts&#39;</span><span class="p">):</span>
+            <span class="n">display_shortcut</span> <span class="o">=</span> <span class="n">shortcuts_builder</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s1">&#39;shortcut_&#39;</span> <span class="o">+</span> <span class="n">command</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">display_shortcut</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">display_shortcut</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">accelerator</span> <span class="o">=</span> <span class="n">shortcut_list</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shortcuts_window</span><span class="o">.</span><span class="n">set_transient_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shortcuts_window</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
@@ -611,6 +624,7 @@
         <span class="sd">&quot;&quot;&quot; Save configuration and exit the main loop.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">disable_scribbling</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">hide_all</span><span class="p">()</span>
 
         <span class="n">extras</span><span class="o">.</span><span class="n">FileWatcher</span><span class="o">.</span><span class="n">stop_daemon</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">cleanup_media_files</span><span class="p">()</span>
@@ -637,7 +651,8 @@
         <span class="n">about</span><span class="o">.</span><span class="n">set_copyright</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Contributors:&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">pympress</span><span class="o">.</span><span class="n">__author__</span><span class="p">)</span>
         <span class="n">about</span><span class="o">.</span><span class="n">set_comments</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
                          <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Some preferences are saved in &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_to_config</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
-                         <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Resources are loaded from &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">get_locale_dir</span><span class="p">())</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+                         <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Resources are loaded from &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">get_locale_dir</span><span class="p">())</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                         <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;The log is written to &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">util</span><span class="o">.</span><span class="n">get_log_path</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
                          <span class="o">+</span> <span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Media support uses </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">medias</span><span class="o">.</span><span class="n">backend_version</span><span class="p">()))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
                          <span class="o">+</span> <span class="n">_</span><span class="p">(</span><span class="s1">&#39;Python version </span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">))</span>
         <span class="n">about</span><span class="o">.</span><span class="n">set_website</span><span class="p">(</span><span class="s1">&#39;https://github.com/Cimbali/pympress&#39;</span><span class="p">)</span>
@@ -1033,87 +1048,78 @@
         <span class="n">name</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">keyval_name</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">keyval</span><span class="p">)</span>
         <span class="n">ctrl_pressed</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ModifierType</span><span class="o">.</span><span class="n">CONTROL_MASK</span>
         <span class="n">shift_pressed</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ModifierType</span><span class="o">.</span><span class="n">SHIFT_MASK</span>
+        <span class="n">meta_pressed</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ModifierType</span><span class="o">.</span><span class="n">MOD1_MASK</span>
 
-        <span class="c1"># Try passing events to spinner or ett if they are enabled</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">on_keypress</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">shortcuts</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">event</span><span class="o">.</span><span class="n">keyval</span><span class="p">,</span> <span class="n">ctrl_pressed</span> <span class="o">|</span> <span class="n">shift_pressed</span> <span class="o">|</span> <span class="n">meta_pressed</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># Try passing events to special-behaviour widgets (spinner, ett, zooming, scribbler) in case they are enabled</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">on_keypress</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span><span class="o">.</span><span class="n">on_keypress</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span><span class="o">.</span><span class="n">on_keypress</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="o">.</span><span class="n">nav_zoom</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ctrl_pressed</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="o">.</span><span class="n">nav_zoom</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ctrl_pressed</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">nav_scribble</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ctrl_pressed</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">nav_scribble</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ctrl_pressed</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
 
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Right&#39;</span><span class="p">,</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;Page_Down&#39;</span><span class="p">,</span> <span class="s1">&#39;space&#39;</span><span class="p">]:</span>
-            <span class="c1"># first key unpauses, next advance by one page</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">unpause</span><span class="p">():</span>
-                <span class="k">pass</span>
-            <span class="k">elif</span> <span class="ow">not</span> <span class="n">ctrl_pressed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">shift_pressed</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_next</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">label_next</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Left&#39;</span><span class="p">,</span> <span class="s1">&#39;Up&#39;</span><span class="p">,</span> <span class="s1">&#39;Page_Up&#39;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">ctrl_pressed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">shift_pressed</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_prev</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">label_prev</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;BackSpace&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">ctrl_pressed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">shift_pressed</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">hist_prev</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">hist_next</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Home&#39;</span><span class="p">:</span>
+        <span class="c1"># first key unpauses, next advance by one page</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;next&#39;</span><span class="p">,</span> <span class="s1">&#39;next_label&#39;</span><span class="p">}</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">unpause</span><span class="p">():</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;next&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_next</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;next_label&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">label_next</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;prev&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_prev</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;prev_label&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">label_prev</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;hist_back&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">hist_prev</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;hist_forward&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">hist_next</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;first&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_home</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;End&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;last&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">goto_end</span><span class="p">()</span>
-        <span class="c1"># sic - accelerator recognizes f not F</span>
-        <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;F11&#39;</span> <span class="ow">or</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;F&#39;</span> \
-            <span class="ow">or</span> <span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Return&#39;</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">ModifierType</span><span class="o">.</span><span class="n">MOD1_MASK</span><span class="p">)</span> \
-            <span class="ow">or</span> <span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span> <span class="ow">and</span> <span class="n">ctrl_pressed</span><span class="p">)</span> \
-            <span class="ow">or</span> <span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;F5&#39;</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="o">.</span><span class="n">get_window</span><span class="p">()</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">WindowState</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;fullscreen_content&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">switch_fullscreen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;F&#39;</span> <span class="ow">and</span> <span class="n">ctrl_pressed</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;fullscreen_presenter&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">switch_fullscreen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Q&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;quit&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save_and_quit</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Pause&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;pause_timer&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">switch_pause</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;reset_timer&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">delta</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">reset_timer</span><span class="p">()</span>
-
-        <span class="c1"># Some key events are already handled by toggle actions in the</span>
-        <span class="c1"># presenter window, so we must handle them in the content window only</span>
-        <span class="c1"># to prevent them from double-firing</span>
-        <span class="k">elif</span> <span class="n">widget</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">switch_scribbling</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-                <span class="k">return</span> <span class="kc">True</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span><span class="o">.</span><span class="n">on_label_event</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-                <span class="k">return</span> <span class="kc">True</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">on_label_event</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-                <span class="k">return</span> <span class="kc">True</span>
-            <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;P&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">talk_time</span><span class="o">.</span><span class="n">switch_pause</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">switch_mode</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">switch_annotations</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">swap_screens</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;F&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">ctrl_pressed</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">switch_fullscreen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_win</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">switch_fullscreen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_win</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">switch_blanked</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">ctrl_pressed</span> <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;W&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">close_file</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span>
-
-            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;highlight&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scribbler</span><span class="o">.</span><span class="n">switch_scribbling</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;zoom&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="o">.</span><span class="n">start_zooming</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;unzoom&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="o">.</span><span class="n">stop_zooming</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;goto_page&#39;</span><span class="p">,</span> <span class="s1">&#39;jumpto_label&#39;</span><span class="p">}:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="o">.</span><span class="n">on_label_event</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;talk_time&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">est_time</span><span class="o">.</span><span class="n">on_label_event</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;notes_mode&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switch_mode</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;annotations&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switch_annotations</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;swap_screens&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">swap_screens</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;blank_screen&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switch_blanked</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;close_file&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close_file</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;open_file&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pick_file</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">command</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: missing command &quot;</span><span class="si">{}</span><span class="s1">&quot; for </span><span class="si">{}{}{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="p">,</span>
+                    <span class="s1">&#39;ctrl + &#39;</span> <span class="k">if</span> <span class="n">ctrl_pressed</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;shift + &#39;</span> <span class="k">if</span> <span class="n">shift_pressed</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;meta + &#39;</span> <span class="k">if</span> <span class="n">meta_pressed</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>

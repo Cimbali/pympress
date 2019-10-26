@@ -76,7 +76,7 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html"> What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#dependencies">Dependencies</a></li>
@@ -180,7 +180,6 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">gi</span>
 <span class="kn">import</span> <span class="nn">cairo</span>
@@ -188,11 +187,13 @@
 <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span><span class="p">,</span> <span class="n">GLib</span><span class="p">,</span> <span class="n">Pango</span>
 
 <span class="kn">import</span> <span class="nn">mimetypes</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">from</span> <span class="nn">watchdog.observers</span> <span class="k">import</span> <span class="n">Observer</span>
 <span class="kn">from</span> <span class="nn">watchdog.events</span> <span class="k">import</span> <span class="n">FileSystemEventHandler</span>
 
-<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">media_overlay</span><span class="p">,</span> <span class="n">document</span><span class="p">,</span> <span class="n">builder</span>
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">document</span><span class="p">,</span> <span class="n">builder</span><span class="p">,</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">pympress.media_overlays.base</span> <span class="k">import</span> <span class="n">VideoOverlay</span>
 
 
 <div class="viewcode-block" id="TimingReport"><a class="viewcode-back" href="../../pympress.html#pympress.extras.TimingReport">[docs]</a><span class="k">class</span> <span class="nc">TimingReport</span><span class="p">(</span><span class="n">builder</span><span class="o">.</span><span class="n">Builder</span><span class="p">):</span>
@@ -369,7 +370,7 @@
 
 
 <div class="viewcode-block" id="Media"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media">[docs]</a><span class="k">class</span> <span class="nc">Media</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="c1">#: `dict` of :class:`~pympress.media_overlay.VideoOverlay` ready to be added on top of the slides</span>
+    <span class="c1">#: `dict` of :class:`~pympress.media_overlays.base.VideoOverlay` ready to be added on top of the slides</span>
     <span class="n">_media_overlays</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1">#: :class:`~Gtk.Overlay` for the Content window.</span>
@@ -377,13 +378,22 @@
     <span class="c1">#: :class:`~Gtk.Overlay` for the Presenter window.</span>
     <span class="n">p_overlay</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
+    <span class="c1">#: static `bool` tracking whether we&#39;ve already done the one-time setup</span>
+    <span class="n">_backends_setup</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1">#: `dict` of mime type as `str` to the `type` of a class inheriting from :class:`~pympress.media_overlays.base.VideoOverlay`</span>
+    <span class="n">_backends</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># `list` of info on backend versions</span>
+    <span class="n">_backend_versions</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Set up the required widgets and queue an initial draw.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets</span>
+<span class="sd">            conf (:class:`~pympress.config.Config`): An object containing the preferences</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Media</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_backends</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
         <span class="n">builder</span><span class="o">.</span><span class="n">load_widgets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="o">.</span><span class="n">queue_draw</span><span class="p">()</span>
@@ -421,7 +431,7 @@
 
             <span class="k">if</span> <span class="n">media_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
                 <span class="n">mime_type</span><span class="p">,</span> <span class="n">enc</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-                <span class="n">factory</span> <span class="o">=</span> <span class="n">media_overlay</span><span class="o">.</span><span class="n">VideoOverlay</span><span class="o">.</span><span class="n">get_factory</span><span class="p">(</span><span class="n">mime_type</span><span class="p">)</span>
+                <span class="n">factory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_factory</span><span class="p">(</span><span class="n">mime_type</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">factory</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No available overlay for mime type </span><span class="si">{}</span><span class="s1">, ignoring media </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mime_type</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
@@ -430,7 +440,7 @@
                 <span class="k">def</span> <span class="nf">get_curryfied_callback</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">media_id</span> <span class="o">=</span> <span class="n">media_id</span><span class="p">):</span>
                     <span class="sd">&quot;&quot;&quot; Return a callback for signal &#39;name&#39; that has the value &#39;media_id&#39; pre-set, and remembered by this closure.</span>
 <span class="sd">                    &quot;&quot;&quot;</span>
-                    <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">media_overlay</span><span class="o">.</span><span class="n">VideoOverlay</span><span class="o">.</span><span class="n">find_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="n">media_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">VideoOverlay</span><span class="o">.</span><span class="n">find_callback_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="n">media_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
                 <span class="n">v_da_c</span> <span class="o">=</span> <span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_overlay</span><span class="p">,</span> <span class="n">show_controls</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">page_type</span><span class="p">,</span> <span class="n">get_curryfied_callback</span><span class="p">)</span>
                 <span class="n">v_da_p</span> <span class="o">=</span> <span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_overlay</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">relative_margins</span><span class="p">,</span> <span class="n">page_type</span><span class="p">,</span> <span class="n">get_curryfied_callback</span><span class="p">)</span>
@@ -488,8 +498,16 @@
 <span class="sd">        Args:</span>
 <span class="sd">            media_id (`int`): A unique idientifier of the media to start playing</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">media_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">:</span>
             <span class="n">c</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">is_shown</span><span class="p">():</span> <span class="n">c</span><span class="o">.</span><span class="n">do_hide</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_shown</span><span class="p">():</span> <span class="n">p</span><span class="o">.</span><span class="n">do_hide</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Media.hide_all"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.hide_all">[docs]</a>    <span class="k">def</span> <span class="nf">hide_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stops all playing medias and hides the players. Used before exit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">is_shown</span><span class="p">():</span> <span class="n">c</span><span class="o">.</span><span class="n">do_hide</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_shown</span><span class="p">():</span> <span class="n">p</span><span class="o">.</span><span class="n">do_hide</span><span class="p">()</span></div>
 
@@ -513,14 +531,84 @@
         <span class="n">GLib</span><span class="o">.</span><span class="n">idle_add</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">do_set_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_overlays</span><span class="p">[</span><span class="n">media_id</span><span class="p">]))</span></div>
 
 
-<div class="viewcode-block" id="Media.backend_version"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.backend_version">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">backend_version</span><span class="p">():</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_setup_backends</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Load the backends for video overlays</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_backends_setup</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_backends_setup</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">conf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">conf</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">Config</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">pympress.media_overlays.gif_backend</span> <span class="k">import</span> <span class="n">GifOverlay</span>
+
+            <span class="n">version</span> <span class="o">=</span> <span class="n">GifOverlay</span><span class="o">.</span><span class="n">setup_backend</span><span class="p">()</span>
+
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="p">[</span><span class="s1">&#39;image/gif&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">GifOverlay</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="p">[</span><span class="s1">&#39;image/svg+xml&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">GifOverlay</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_backend_versions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+
+        <span class="k">except</span><span class="p">:</span> <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Video support using </span><span class="si">{}</span><span class="s1"> is disabled.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Overlay&#39;</span><span class="p">))</span>
+
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">conf</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;gst&#39;</span><span class="p">,</span> <span class="s1">&#39;enabled&#39;</span><span class="p">):</span>
+                <span class="kn">from</span> <span class="nn">pympress.media_overlays.gst_backend</span> <span class="k">import</span> <span class="n">GstOverlay</span>
+
+                <span class="n">version</span> <span class="o">=</span> <span class="n">GstOverlay</span><span class="o">.</span><span class="n">setup_backend</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s1">&#39;gst&#39;</span><span class="p">,</span> <span class="s1">&#39;init_options&#39;</span><span class="p">))</span>
+
+                <span class="n">types_list</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s1">&#39;gst&#39;</span><span class="p">,</span> <span class="s1">&#39;mime_types&#39;</span><span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mt</span><span class="p">:</span> <span class="n">GstOverlay</span> <span class="k">for</span> <span class="n">mt</span> <span class="ow">in</span> <span class="n">types_list</span><span class="p">})</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_backend_versions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+
+                <span class="c1"># make GstOverlay the default</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">types_list</span><span class="p">:</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">GstOverlay</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="p">)</span>
+
+        <span class="k">except</span><span class="p">:</span> <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s1">&#39;Video support using </span><span class="si">{}</span><span class="s1"> is disabled.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;GStreamer&#39;</span><span class="p">))</span>
+
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">conf</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;vlc&#39;</span><span class="p">,</span> <span class="s1">&#39;enabled&#39;</span><span class="p">):</span>
+                <span class="kn">from</span> <span class="nn">pympress.media_overlays.vlc_backend</span> <span class="k">import</span> <span class="n">VlcOverlay</span>
+
+                <span class="n">version</span> <span class="o">=</span> <span class="n">VlcOverlay</span><span class="o">.</span><span class="n">setup_backend</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s1">&#39;vlc&#39;</span><span class="p">,</span> <span class="s1">&#39;init_options&#39;</span><span class="p">))</span>
+
+                <span class="n">types_list</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s1">&#39;vlc&#39;</span><span class="p">,</span> <span class="s1">&#39;mime_types&#39;</span><span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mt</span><span class="p">:</span> <span class="n">VlcOverlay</span> <span class="k">for</span> <span class="n">mt</span> <span class="ow">in</span> <span class="n">types_list</span><span class="p">})</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_backend_versions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+
+                <span class="c1"># make VlcOverlay the (new) default</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">types_list</span><span class="p">:</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">VlcOverlay</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="p">)</span>
+
+        <span class="k">except</span><span class="p">:</span> <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Video support using </span><span class="si">{}</span><span class="s2"> is disabled.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;VLC&#39;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="Media.backend_version"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.backend_version">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">backend_version</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns which backend is used.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            `str`: The name and version of the backend.</span>
+<span class="sd">            `str`: The name and version of the backend(s).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">media_overlay</span><span class="o">.</span><span class="n">VideoOverlay</span><span class="o">.</span><span class="n">backend_version</span><span class="p">()</span></div></div>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_setup_backends</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_backend_versions</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Media.get_factory"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Media.get_factory">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_factory</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mime_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a class of type :attr:`~_backend`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_setup_backends</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span> <span class="c1"># NB don&#39;t get(mime_type, None) so that a default can be set</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="p">[</span><span class="n">mime_type</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
+
 
 
 <div class="viewcode-block" id="Cursor"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Cursor">[docs]</a><span class="k">class</span> <span class="nc">Cursor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -618,17 +706,21 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="Zoom.nav_zoom"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Zoom.nav_zoom">[docs]</a>    <span class="k">def</span> <span class="nf">nav_zoom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ctrl_pressed</span><span class="p">):</span>
+<div class="viewcode-block" id="Zoom.nav_zoom"><a class="viewcode-back" href="../../pympress.html#pympress.extras.Zoom.nav_zoom">[docs]</a>    <span class="k">def</span> <span class="nf">nav_zoom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ctrl_pressed</span><span class="p">,</span> <span class="n">command</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Handles an key press event: stop trying to select an area to zoom.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name (`str`): The name of the key pressed</span>
 <span class="sd">            ctrl_pressed (`bool`): whether the ctrl modifier key was pressed</span>
+<span class="sd">            command (`str`): the name of the command in case this function is called by on_navigation</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            `bool`: whether the event was consumed</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;Escape&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom_selecting</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom_selecting</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;cancel&#39;</span><span class="p">:</span>
             <span class="n">Cursor</span><span class="o">.</span><span class="n">set_cursor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_central</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">zoom_selecting</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">zoom_points</span> <span class="o">=</span> <span class="kc">None</span>

@@ -77,7 +77,7 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html"> What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#usage">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#dependencies">Dependencies</a></li>
@@ -185,6 +185,8 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pympress.html#pympress.ui.UI.accel_group">accel_group (pympress.ui.UI attribute)</a>
+</li>
       <li><a href="pympress.html#pympress.surfacecache.SurfaceCache.active_widgets">active_widgets (pympress.surfacecache.SurfaceCache attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.extras.Annotations.add_annotations">add_annotations() (pympress.extras.Annotations method)</a>
@@ -195,11 +197,11 @@
 </li>
       <li><a href="pympress.html#pympress.extras.Media.adjust_margins_for_mode">adjust_margins_for_mode() (pympress.extras.Media method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.advance_gif">advance_gif() (pympress.media_overlay.GifOverlay method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.anim">anim (pympress.media_overlay.GifOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.advance_gif">advance_gif() (pympress.media_overlays.gif_backend.GifOverlay method)</a>
+</li>
+      <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.anim">anim (pympress.media_overlays.gif_backend.GifOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.extras.Annotations.annotation_renderer">annotation_renderer (pympress.extras.Annotations attribute)</a>
 </li>
@@ -211,7 +213,7 @@
         <li><a href="pympress.html#pympress.ui.UI.annotations">(pympress.ui.UI attribute)</a>
 </li>
       </ul></li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.autoplay">autoplay (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.autoplay">autoplay (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -219,18 +221,14 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pympress.html#pympress.extras.Media.backend_version">backend_version() (pympress.extras.Media static method)</a>
-
-      <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.backend_version">(pympress.media_overlay.VideoOverlay class method)</a>
+      <li><a href="pympress.html#pympress.extras.Media.backend_version">backend_version() (pympress.extras.Media class method)</a>
 </li>
-      </ul></li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.base_size">base_size (pympress.media_overlay.GifOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.base_size">base_size (pympress.media_overlays.gif_backend.GifOverlay attribute)</a>
+</li>
+      <li><a href="pympress.html#pympress.ui.UI.blanked">blanked (pympress.ui.UI attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pympress.html#pympress.ui.UI.blanked">blanked (pympress.ui.UI attribute)</a>
-</li>
       <li><a href="pympress.html#pympress.document.PdfPage.BOTTOM">BOTTOM (pympress.document.PdfPage attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.document.Link.build_closure">build_closure() (pympress.document.Link static method)</a>
@@ -339,40 +337,48 @@
 </li>
       <li><a href="pympress.html#pympress.scribble.Scribbler.disable_scribbling">disable_scribbling() (pympress.scribble.Scribbler method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.do_hide">do_hide() (pympress.media_overlay.VideoOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.do_hide">do_hide() (pympress.media_overlays.base.VideoOverlay method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.do_play">do_play() (pympress.media_overlay.GifOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.do_play">do_play() (pympress.media_overlays.base.VideoOverlay method)</a>
 
       <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VLCVideo.do_play">(pympress.media_overlay.VLCVideo method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.do_play">(pympress.media_overlays.gif_backend.GifOverlay method)</a>
 </li>
-        <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.do_play">(pympress.media_overlay.VideoOverlay method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay.do_play">(pympress.media_overlays.gst_backend.GstOverlay method)</a>
+</li>
+        <li><a href="pympress.html#pympress.media_overlays.vlc_backend.VlcOverlay.do_play">(pympress.media_overlays.vlc_backend.VlcOverlay method)</a>
 </li>
       </ul></li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.do_play_pause">do_play_pause() (pympress.media_overlay.GifOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.do_play_pause">do_play_pause() (pympress.media_overlays.base.VideoOverlay method)</a>
 
       <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VLCVideo.do_play_pause">(pympress.media_overlay.VLCVideo method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.do_play_pause">(pympress.media_overlays.gif_backend.GifOverlay method)</a>
 </li>
-        <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.do_play_pause">(pympress.media_overlay.VideoOverlay method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay.do_play_pause">(pympress.media_overlays.gst_backend.GstOverlay method)</a>
+</li>
+        <li><a href="pympress.html#pympress.media_overlays.vlc_backend.VlcOverlay.do_play_pause">(pympress.media_overlays.vlc_backend.VlcOverlay method)</a>
 </li>
       </ul></li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.do_set_time">do_set_time() (pympress.media_overlay.GifOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.do_set_time">do_set_time() (pympress.media_overlays.base.VideoOverlay method)</a>
 
       <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VLCVideo.do_set_time">(pympress.media_overlay.VLCVideo method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.do_set_time">(pympress.media_overlays.gif_backend.GifOverlay method)</a>
 </li>
-        <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.do_set_time">(pympress.media_overlay.VideoOverlay method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay.do_set_time">(pympress.media_overlays.gst_backend.GstOverlay method)</a>
+</li>
+        <li><a href="pympress.html#pympress.media_overlays.vlc_backend.VlcOverlay.do_set_time">(pympress.media_overlays.vlc_backend.VlcOverlay method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.do_stop">do_stop() (pympress.media_overlay.GifOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.do_stop">do_stop() (pympress.media_overlays.base.VideoOverlay method)</a>
 
       <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VLCVideo.do_stop">(pympress.media_overlay.VLCVideo method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.do_stop">(pympress.media_overlays.gif_backend.GifOverlay method)</a>
 </li>
-        <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.do_stop">(pympress.media_overlay.VideoOverlay method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay.do_stop">(pympress.media_overlays.gst_backend.GstOverlay method)</a>
+</li>
+        <li><a href="pympress.html#pympress.media_overlays.vlc_backend.VlcOverlay.do_stop">(pympress.media_overlays.vlc_backend.VlcOverlay method)</a>
 </li>
       </ul></li>
       <li><a href="pympress.html#pympress.document.Document.doc">doc (pympress.document.Document attribute)</a>
@@ -387,11 +393,11 @@
 </li>
       <li><a href="pympress.html#pympress.document.Document">Document (class in pympress.document)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.dragging_paused">dragging_paused (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.dragging_paused">dragging_paused (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.dragging_position">dragging_position (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.dragging_position">dragging_position (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.draw">draw() (pympress.media_overlay.GifOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.draw">draw() (pympress.media_overlays.gif_backend.GifOverlay method)</a>
 </li>
       <li><a href="pympress.html#pympress.scribble.Scribbler.draw_scribble">draw_scribble() (pympress.scribble.Scribbler method)</a>
 </li>
@@ -461,7 +467,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.document.Link.follow">follow() (pympress.document.Link method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.format_millis">format_millis() (pympress.media_overlay.VideoOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.format_millis">format_millis() (pympress.media_overlays.base.VideoOverlay method)</a>
 </li>
       <li><a href="pympress.html#pympress.document.PdfPage.from_screen">from_screen() (pympress.document.PdfPage method)</a>
 </li>
@@ -483,9 +489,11 @@
 </li>
       <li><a href="pympress.html#pympress.builder.Builder.get_callback_handler">get_callback_handler() (pympress.builder.Builder method)</a>
 </li>
+      <li><a href="pympress.html#pympress.util.get_default_config">get_default_config() (in module pympress.util)</a>
+</li>
       <li><a href="pympress.html#pympress.document.get_extension">get_extension() (in module pympress.document)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.get_factory">get_factory() (pympress.media_overlay.VideoOverlay class method)</a>
+      <li><a href="pympress.html#pympress.extras.Media.get_factory">get_factory() (pympress.extras.Media class method)</a>
 </li>
       <li><a href="pympress.html#pympress.document.Document.get_full_path">get_full_path() (pympress.document.Document method)</a>
 </li>
@@ -499,11 +507,15 @@
 </li>
       <li><a href="pympress.html#pympress.util.get_locale_dir">get_locale_dir() (in module pympress.util)</a>
 </li>
+      <li><a href="pympress.html#pympress.util.get_log_path">get_log_path() (in module pympress.util)</a>
+</li>
       <li><a href="pympress.html#pympress.extras.Zoom.get_matrix">get_matrix() (pympress.extras.Zoom method)</a>
 </li>
       <li><a href="pympress.html#pympress.document.Page.get_media">get_media() (pympress.document.Page method)</a>
 </li>
       <li><a href="pympress.html#pympress.ui.UI.get_notes_mode">get_notes_mode() (pympress.ui.UI method)</a>
+</li>
+      <li><a href="pympress.html#pympress.util.get_portable_config">get_portable_config() (in module pympress.util)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -523,11 +535,15 @@
 </li>
       <li><a href="pympress.html#pympress.document.Document.get_uri">get_uri() (pympress.document.Document method)</a>
 </li>
+      <li><a href="pympress.html#pympress.util.get_user_config">get_user_config() (in module pympress.util)</a>
+</li>
       <li><a href="pympress.html#pympress.surfacecache.SurfaceCache.get_widget_type">get_widget_type() (pympress.surfacecache.SurfaceCache method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.get_window_handle">get_window_handle() (in module pympress.media_overlay)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.get_window_handle">get_window_handle() (in module pympress.media_overlays.base)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay">GifOverlay (class in pympress.media_overlay)</a>
+      <li><a href="pympress.html#pympress.config.Config.getlist">getlist() (pympress.config.Config method)</a>
+</li>
+      <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay">GifOverlay (class in pympress.media_overlays.gif_backend)</a>
 </li>
       <li><a href="pympress.html#pympress.document.Document.goto">goto() (pympress.document.Document method)</a>
 </li>
@@ -541,6 +557,8 @@
 </li>
       <li><a href="pympress.html#pympress.document.Document.goto_prev">goto_prev() (pympress.document.Document method)</a>
 </li>
+      <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay">GstOverlay (class in pympress.media_overlays.gst_backend)</a>
+</li>
       <li><a href="pympress.html#pympress.document.Document.guess_notes">guess_notes() (pympress.document.Document method)</a>
 </li>
   </ul></td>
@@ -549,22 +567,24 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.handle_embed">handle_embed() (pympress.media_overlay.VideoOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.handle_embed">handle_embed() (pympress.media_overlays.base.VideoOverlay method)</a>
 
       <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VLCVideo.handle_embed">(pympress.media_overlay.VLCVideo method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.vlc_backend.VlcOverlay.handle_embed">(pympress.media_overlays.vlc_backend.VlcOverlay method)</a>
 </li>
       </ul></li>
       <li><a href="pympress.html#pympress.document.Document.has_labels">has_labels() (pympress.document.Document method)</a>
 </li>
       <li><a href="pympress.html#pympress.editable_label.PageNumber.hb_cur">hb_cur (pympress.editable_label.PageNumber attribute)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.hide">hide (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.hide">hide (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.extras.Media.hide">hide() (pympress.extras.Media method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pympress.html#pympress.extras.Media.hide_all">hide_all() (pympress.extras.Media method)</a>
+</li>
       <li><a href="pympress.html#pympress.ui.UI.highlight_button">highlight_button (pympress.ui.UI attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.document.Document.hist_next">hist_next() (pympress.document.Document method)</a>
@@ -587,19 +607,21 @@
 </li>
       <li><a href="pympress.html#pympress.document.Link.is_over">is_over() (pympress.document.Link method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.is_playing">is_playing() (pympress.media_overlay.GifOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.is_playing">is_playing() (pympress.media_overlays.base.VideoOverlay method)</a>
 
       <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VLCVideo.is_playing">(pympress.media_overlay.VLCVideo method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.is_playing">(pympress.media_overlays.gif_backend.GifOverlay method)</a>
 </li>
-        <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.is_playing">(pympress.media_overlay.VideoOverlay method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay.is_playing">(pympress.media_overlays.gst_backend.GstOverlay method)</a>
+</li>
+        <li><a href="pympress.html#pympress.media_overlays.vlc_backend.VlcOverlay.is_playing">(pympress.media_overlays.vlc_backend.VlcOverlay method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.is_shown">is_shown() (pympress.media_overlay.VideoOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.is_shown">is_shown() (pympress.media_overlays.base.VideoOverlay method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.iter">iter (pympress.media_overlay.GifOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.iter">iter (pympress.media_overlays.gif_backend.GifOverlay attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -699,11 +721,11 @@
 </li>
       <li><a href="pympress.html#pympress.surfacecache.SurfaceCache.max_pages">max_pages (pympress.surfacecache.SurfaceCache attribute)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.maxval">maxval (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.maxval">maxval (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.extras.Media">Media (class in pympress.extras)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.media_overlay">media_overlay (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.media_overlay">media_overlay (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.document.Page.medias">medias (pympress.document.Page attribute)</a>
 
@@ -729,12 +751,14 @@
       </ul></li>
       <li><a href="pympress.html#pympress.surfacecache.OrderedDict.move_to_end">move_to_end() (pympress.surfacecache.OrderedDict method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.movie_zone">movie_zone (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.movie_zone">movie_zone (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.mute">mute() (pympress.media_overlay.GifOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.mute">mute() (pympress.media_overlays.gif_backend.GifOverlay method)</a>
 
       <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VLCVideo.mute">(pympress.media_overlay.VLCVideo method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay.mute">(pympress.media_overlays.gst_backend.GstOverlay method)</a>
+</li>
+        <li><a href="pympress.html#pympress.media_overlays.vlc_backend.VlcOverlay.mute">(pympress.media_overlays.vlc_backend.VlcOverlay method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -892,7 +916,7 @@
       <li><a href="pympress.html#pympress.document.Page.parent">parent (pympress.document.Page attribute)</a>
 
       <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.parent">(pympress.media_overlay.VideoOverlay attribute)</a>
+        <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.parent">(pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
       </ul></li>
       <li><a href="pympress.html#pympress.document.Document.path">path (pympress.document.Document attribute)</a>
@@ -911,8 +935,6 @@
 </li>
       <li><a href="pympress.html#pympress.document.Page.ph">ph (pympress.document.Page attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.ui.UI.pick_file">pick_file() (pympress.ui.UI method)</a>
 </li>
       <li><a href="pympress.html#pympress.config.Config.placeable_widgets">placeable_widgets (pympress.config.Config attribute)</a>
@@ -921,15 +943,21 @@
         <li><a href="pympress.html#pympress.ui.UI.placeable_widgets">(pympress.ui.UI attribute)</a>
 </li>
       </ul></li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.play">play (pympress.media_overlay.VideoOverlay attribute)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.play">play (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.extras.Media.play">play() (pympress.extras.Media method)</a>
 </li>
       <li><a href="pympress.html#pympress.document.Document.play_media">play_media() (pympress.document.Document method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.play_pause">play_pause (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.play_pause">play_pause (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.extras.Media.play_pause">play_pause() (pympress.extras.Media method)</a>
+</li>
+      <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay.player">player (pympress.media_overlays.gst_backend.GstOverlay attribute)</a>
+</li>
+      <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay.player_state">player_state (pympress.media_overlays.gst_backend.GstOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.pointer.Pointer">Pointer (class in pympress.pointer)</a>
 </li>
@@ -961,9 +989,9 @@
 </li>
       <li><a href="pympress.html#pympress.ui.UI.prev_button">prev_button (pympress.ui.UI attribute)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.progress">progress (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.progress">progress (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.progress_moved">progress_moved() (pympress.media_overlay.VideoOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.progress_moved">progress_moved() (pympress.media_overlays.base.VideoOverlay method)</a>
 </li>
       <li><a href="pympress.html#pympress.extras.Media.purge_media_overlays">purge_media_overlays() (pympress.extras.Media method)</a>
 </li>
@@ -981,7 +1009,13 @@
 </li>
       <li><a href="pympress.html#module-pympress.extras">pympress.extras (module)</a>
 </li>
-      <li><a href="pympress.html#module-pympress.media_overlay">pympress.media_overlay (module)</a>
+      <li><a href="pympress.html#module-pympress.media_overlays.base">pympress.media_overlays.base (module)</a>
+</li>
+      <li><a href="pympress.html#module-pympress.media_overlays.gif_backend">pympress.media_overlays.gif_backend (module)</a>
+</li>
+      <li><a href="pympress.html#module-pympress.media_overlays.gst_backend">pympress.media_overlays.gst_backend (module)</a>
+</li>
+      <li><a href="pympress.html#module-pympress.media_overlays.vlc_backend">pympress.media_overlays.vlc_backend (module)</a>
 </li>
       <li><a href="pympress.html#module-pympress.pointer">pympress.pointer (module)</a>
 </li>
@@ -1019,9 +1053,9 @@
 </li>
       <li><a href="pympress.html#pympress.ui.UI.redraw_timeout">redraw_timeout (pympress.ui.UI attribute)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.relative_margins">relative_margins (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.relative_margins">relative_margins (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.relative_page_margins">relative_page_margins (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.relative_page_margins">relative_page_margins (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.ui.UI.reload_document">reload_document() (pympress.ui.UI method)</a>
 </li>
@@ -1054,7 +1088,7 @@
       <li><a href="pympress.html#pympress.extras.Media.resize">resize() (pympress.extras.Media method)</a>
 
       <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.resize">(pympress.media_overlay.VideoOverlay method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.resize">(pympress.media_overlays.base.VideoOverlay method)</a>
 </li>
       </ul></li>
       <li><a href="pympress.html#pympress.scribble.Scribbler.resize_cache">resize_cache() (pympress.scribble.Scribbler method)</a>
@@ -1123,12 +1157,14 @@
 </li>
       <li><a href="pympress.html#pympress.extras.Cursor.set_cursor">set_cursor() (pympress.extras.Cursor class method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.set_file">set_file() (pympress.media_overlay.GifOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.set_file">set_file() (pympress.media_overlays.base.VideoOverlay method)</a>
 
       <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VLCVideo.set_file">(pympress.media_overlay.VLCVideo method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.set_file">(pympress.media_overlays.gif_backend.GifOverlay method)</a>
 </li>
-        <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.set_file">(pympress.media_overlay.VideoOverlay method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay.set_file">(pympress.media_overlays.gst_backend.GstOverlay method)</a>
+</li>
+        <li><a href="pympress.html#pympress.media_overlays.vlc_backend.VlcOverlay.set_file">(pympress.media_overlays.vlc_backend.VlcOverlay method)</a>
 </li>
       </ul></li>
       <li><a href="pympress.html#pympress.editable_label.PageNumber.set_last">set_last() (pympress.editable_label.PageNumber method)</a>
@@ -1137,7 +1173,7 @@
 </li>
       <li><a href="pympress.html#pympress.extras.Zoom.set_scribble_zoomout_sensitive">set_scribble_zoomout_sensitive() (pympress.extras.Zoom method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.set_time">set_time (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.set_time">set_time (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.editable_label.EstimatedTalkTime.set_time">set_time() (pympress.editable_label.EstimatedTalkTime method)</a>
 
@@ -1145,30 +1181,38 @@
         <li><a href="pympress.html#pympress.extras.Media.set_time">(pympress.extras.Media method)</a>
 </li>
       </ul></li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.set_transform">set_transform() (pympress.media_overlay.GifOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.set_transform">set_transform() (pympress.media_overlays.gif_backend.GifOverlay method)</a>
 </li>
       <li><a href="pympress.html#pympress.surfacecache.SurfaceCache.set_widget_type">set_widget_type() (pympress.surfacecache.SurfaceCache method)</a>
 </li>
+      <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.setup_backend">setup_backend() (pympress.media_overlays.gif_backend.GifOverlay class method)</a>
+
+      <ul>
+        <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay.setup_backend">(pympress.media_overlays.gst_backend.GstOverlay class method)</a>
+</li>
+        <li><a href="pympress.html#pympress.media_overlays.vlc_backend.VlcOverlay.setup_backend">(pympress.media_overlays.vlc_backend.VlcOverlay class method)</a>
+</li>
+      </ul></li>
       <li><a href="pympress.html#pympress.ui.UI.setup_screens">setup_screens() (pympress.ui.UI method)</a>
 </li>
       <li><a href="pympress.html#pympress.extras.Zoom.shift">shift (pympress.extras.Zoom attribute)</a>
 </li>
-      <li><a href="pympress.html#pympress.editable_label.EditableLabel.shortcut_keys">shortcut_keys (pympress.editable_label.EditableLabel attribute)</a>
+      <li><a href="pympress.html#pympress.config.Config.shortcuts">shortcuts (pympress.config.Config attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.ui.UI.shortcuts_window">shortcuts_window (pympress.ui.UI attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.extras.TimingReport.show">show() (pympress.extras.TimingReport method)</a>
 
       <ul>
-        <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.show">(pympress.media_overlay.VideoOverlay method)</a>
+        <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.show">(pympress.media_overlays.base.VideoOverlay method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.ui.UI.show_annotations">show_annotations (pympress.ui.UI attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.ui.UI.show_bigbuttons">show_bigbuttons (pympress.ui.UI attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.pointer.Pointer.show_pointer">show_pointer (pympress.pointer.Pointer attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.ui.UI.show_shortcuts">show_shortcuts() (pympress.ui.UI method)</a>
@@ -1267,7 +1311,7 @@
 </li>
       <li><a href="pympress.html#pympress.document.Document.temp_files">temp_files (pympress.document.Document attribute)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.time_format">time_format (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.time_format">time_format (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.extras.TimingReport.time_report_dialog">time_report_dialog (pympress.extras.TimingReport attribute)</a>
 </li>
@@ -1287,6 +1331,8 @@
 </li>
       <li><a href="pympress.html#pympress.pointer.Pointer.toggle_pointer">toggle_pointer() (pympress.pointer.Pointer method)</a>
 </li>
+      <li><a href="pympress.html#pympress.config.Config.toggle_portable_config">toggle_portable_config() (pympress.config.Config static method)</a>
+</li>
       <li><a href="pympress.html#pympress.scribble.Scribbler.toggle_scribble">toggle_scribble() (pympress.scribble.Scribbler method)</a>
 </li>
   </ul></td>
@@ -1295,7 +1341,7 @@
 </li>
       <li><a href="pympress.html#pympress.extras.Zoom.toggle_zoom_target">toggle_zoom_target() (pympress.extras.Zoom method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.toolbar">toolbar (pympress.media_overlay.VideoOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.toolbar">toolbar (pympress.media_overlays.base.VideoOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.document.PdfPage.TOP">TOP (pympress.document.PdfPage attribute)</a>
 </li>
@@ -1315,9 +1361,11 @@
 </li>
       <li><a href="pympress.html#pympress.scribble.Scribbler.track_scribble">track_scribble() (pympress.scribble.Scribbler method)</a>
 </li>
+      <li><a href="pympress.html#pympress.media_overlays.gst_backend.GstOverlay.track_state">track_state() (pympress.media_overlays.gst_backend.GstOverlay method)</a>
+</li>
       <li><a href="pympress.html#pympress.extras.Zoom.track_zoom_target">track_zoom_target() (pympress.extras.Zoom method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.GifOverlay.transform">transform (pympress.media_overlay.GifOverlay attribute)</a>
+      <li><a href="pympress.html#pympress.media_overlays.gif_backend.GifOverlay.transform">transform (pympress.media_overlays.gif_backend.GifOverlay attribute)</a>
 </li>
       <li><a href="pympress.html#pympress.extras.TimingReport.transition">transition() (pympress.extras.TimingReport method)</a>
 </li>
@@ -1341,15 +1389,15 @@
 </li>
       <li><a href="pympress.html#pympress.config.Config.update_layout">update_layout() (pympress.config.Config method)</a>
 </li>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.update_margins_for_page">update_margins_for_page() (pympress.media_overlays.base.VideoOverlay method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.update_margins_for_page">update_margins_for_page() (pympress.media_overlay.VideoOverlay method)</a>
-</li>
       <li><a href="pympress.html#pympress.editable_label.PageNumber.update_page_numbers">update_page_numbers() (pympress.editable_label.PageNumber method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.update_progress">update_progress() (pympress.media_overlay.VideoOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.update_progress">update_progress() (pympress.media_overlays.base.VideoOverlay method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay.update_range">update_range() (pympress.media_overlay.VideoOverlay method)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay.update_range">update_range() (pympress.media_overlays.base.VideoOverlay method)</a>
 </li>
       <li><a href="pympress.html#pympress.talk_time.TimeCounter.update_time">update_time() (pympress.talk_time.TimeCounter method)</a>
 </li>
@@ -1358,6 +1406,8 @@
       <li><a href="pympress.html#pympress.scribble.Scribbler.update_width">update_width() (pympress.scribble.Scribbler method)</a>
 </li>
       <li><a href="pympress.html#pympress.__main__.usage">usage() (in module pympress.__main__)</a>
+</li>
+      <li><a href="pympress.html#pympress.config.Config.using_portable_config">using_portable_config() (pympress.config.Config static method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1377,9 +1427,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pympress.html#pympress.config.Config.validate_layout">validate_layout() (pympress.config.Config method)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VideoOverlay">VideoOverlay (class in pympress.media_overlay)</a>
+      <li><a href="pympress.html#pympress.media_overlays.base.VideoOverlay">VideoOverlay (class in pympress.media_overlays.base)</a>
 </li>
-      <li><a href="pympress.html#pympress.media_overlay.VLCVideo">VLCVideo (class in pympress.media_overlay)</a>
+      <li><a href="pympress.html#pympress.media_overlays.vlc_backend.VlcOverlay">VlcOverlay (class in pympress.media_overlays.vlc_backend)</a>
 </li>
   </ul></td>
 </tr></table>

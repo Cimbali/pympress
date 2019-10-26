@@ -78,14 +78,10 @@
             
             
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">What is Pympress?</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"> What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#installing">Installing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#using-pip-requires-python">Using pip (requires python)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#from-pypi-the-python-package-index">From PyPI (the Python Package Index)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#from-source">From source</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#binary-install-currently-only-for-windows">Binary install (currently only for windows)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#usage">Usage</a><ul>
@@ -102,6 +98,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#contributing">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#translations">Translations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#packages">Packages</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pympress.html">Pympress package</a></li>
@@ -154,7 +151,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>What is Pympress?</li>
+      <li> What is Pympress?</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -175,50 +172,47 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="what-is-pympress">
-<h1>What is Pympress?<a class="headerlink" href="#what-is-pympress" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="pympress-logo-what-is-pympress">
+<h1><img alt="Pympress logo" src="https://raw.githubusercontent.com/Cimbali/pympress/master/pympress/share/pixmaps/pympress-32.png" /> What is Pympress?<a class="headerlink" href="#pympress-logo-what-is-pympress" title="Permalink to this headline">¶</a></h1>
 <p>Pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK+ for the GUI.</p>
 <p>It is designed to be a dual-screen reader used for presentations and public talks, with two displays: the <em>Content window</em> for a projector, and the <em>Presenter window</em> for your laptop. It is portable and has been tested on various Mac, Windows and Linux systems.</p>
 <p>It comes with many great features (<a class="reference external" href="#functionalities">more below</a>):</p>
 <ul class="simple">
-<li><p>supports embedded videos</p></li>
+<li><p>supports embedded gifs and videos</p></li>
 <li><p>text annotations displayed in the presenter window</p></li>
 <li><p>natively supports beamer’s <em>notes on second screen</em>!</p></li>
 </ul>
 <p>Pympress is a free software, distributed under the terms of the GPL license (version 2 or, at your option, any later version).</p>
 <p>Pympress was originally created and maintained by <a class="reference external" href="https://github.com/Schnouki">Schnouki</a>, on <a class="reference external" href="https://github.com/Schnouki/pympress">his repo</a>.</p>
 <p>Here is what the 2 screen setup looks like, with a big notes slide next to 2 small slides (current and next) on the presenter side:
-<img alt="https://repository-images.githubusercontent.com/42637225/925da680-886b-11e9-9a12-28b48debbf19" src="https://repository-images.githubusercontent.com/42637225/925da680-886b-11e9-9a12-28b48debbf19" />A screenshot with Pympress’ 2 screens</p>
+<img alt="A screenshot with Pympress’ 2 screens" src="https://repository-images.githubusercontent.com/42637225/925da680-886b-11e9-9a12-28b48debbf19" /></p>
 </div>
 <div class="section" id="installing">
 <h1>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="using-pip-requires-python">
-<h2>Using pip (requires python)<a class="headerlink" href="#using-pip-requires-python" title="Permalink to this headline">¶</a></h2>
-<p>This technique is preferred on Linux and macOS, and also requires you to have all <a class="reference external" href="#dependencies">the dependencies</a>. On Windows, it is easier to use the <a class="reference external" href="#binary-install-currently-only-for-windows">binary installer</a>.</p>
-<div class="section" id="from-pypi-the-python-package-index">
-<h3>From PyPI (the Python Package Index)<a class="headerlink" href="#from-pypi-the-python-package-index" title="Permalink to this headline">¶</a></h3>
-<p>Run the following command in your shell (or replace <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span></code> with <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span></code> or just <code class="docutils literal notranslate"><span class="pre">pip</span></code>, and ):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">pympress</span>
-</pre></div>
+<ul class="simple">
+<li><p>Linux, macOS: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pympress</span></code> − requires <a class="reference external" href="#dependencies">python, gtk+3, poppler, and their python bindings</a>.</p></li>
+<li><p>Windows: <code class="docutils literal notranslate"><span class="pre">choco</span> <span class="pre">install</span> <span class="pre">pympress</span></code> with <a class="reference external" href="https://chocolatey.org/">Chocolatey</a> or download the installer from the <a class="reference external" href="https://github.com/Cimbali/pympress/releases/latest">latest Github release</a>.</p></li>
+</ul>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>To support playing embedded videos in the PDFs, your system must have VLC installed (with the same bitness as pympress). VLC is not distributed with pympress, but it is certainly available in your system’s package manager and <a class="reference external" href="https://www.videolan.org/vlc/">on their website</a>.</p></li>
+<li><p>On Linux and macOS, make sure you have all <a class="reference external" href="#dependencies">the dependencies</a>, as they do not come via pip. (On Windows, they are included in the binary package.)</p></li>
+<li><p>Using pip, you may want to use <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span></code> as the command if <code class="docutils literal notranslate"><span class="pre">pip</span></code> points to the python 2.x pip. You may also want to install with the <code class="docutils literal notranslate"><span class="pre">--user</span></code> option, or install from github or downloaded sources. See <a class="reference external" href="https://docs.python.org/3.7/installing/index.html">the python documentation on installing</a> for more details.</p></li>
+</ul>
 </div>
-<p>Or you can get it from github:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Cimbali</span><span class="o">/</span><span class="n">pympress</span><span class="c1">#egg=pympress</span>
-</pre></div>
-</div>
-<p>If you don’t have pip, see <a class="reference external" href="https://docs.python.org/3.7/installing/index.html">the python documentation on installing</a>.</p>
-</div>
-<div class="section" id="from-source">
-<h3>From source<a class="headerlink" href="#from-source" title="Permalink to this headline">¶</a></h3>
-<p>If you also want the source code, you can clone this repo or grab <a class="reference external" href="https://github.com/Cimbali/pympress/releases/latest">the latest releases’ source</a>, open a console where you put the code, and type <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code> (or, if you plan on modifying that code, <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span></code>).</p>
-</div>
-</div>
-<div class="section" id="binary-install-currently-only-for-windows">
-<h2>Binary install (currently only for windows)<a class="headerlink" href="#binary-install-currently-only-for-windows" title="Permalink to this headline">¶</a></h2>
-<p>Grab <a class="reference external" href="https://github.com/Cimbali/pympress/releases/latest">the latest installer for your platform</a> and execute it.
-If you don’t want to know about source code or dependencies, this is for you.</p>
-<p>Packages with ‘x86_64’ in the name are for 64 bit machines, ‘i686’ for 32 bit machines.
-To support playing embedded videos in the PDFs, your system must have VLC installed, with the same bitness than pympress.</p>
-<p>If you get an error message along the lines of “MSVCP100.dll is missing”, get the Visual C++ 2010 redistributables from Microsoft (<a class="reference external" href="https://www.microsoft.com/en-in/download/details.aspx?id=5555">x86 (32 bit)</a> or <a class="reference external" href="https://www.microsoft.com/en-us/download/details.aspx?id=14632">x64 (64 bits)</a>). Those libraries really should already be installed on your system.</p>
+<div class="section" id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>If your python environment lacks the Gobject Introspections module, try</p>
+<ol class="simple">
+<li><p>checking you have all <a class="reference external" href="#dependencies">the dependencies</a>,</p></li>
+<li><p>using <code class="docutils literal notranslate"><span class="pre">--system-site-packages</span></code> for <a class="reference external" href="https://docs.python.org/3.7/library/venv.html">virtual environments</a>,</p></li>
+<li><p>installing pygobject from pip (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pygobject</span></code>, which requires the correct development/header packages. See <a class="reference external" href="https://pygobject.readthedocs.io/en/latest/getting_started.html">the PyPI installation instructions of PyGObject for your system</a>).</p></li>
+</ol>
+</li>
+<li><p>For manually downloaded installers, if you get an error message along the lines of “MSVCP100.dll is missing”, get the Visual C++ 2010 redistributables from Microsoft (<a class="reference external" href="https://www.microsoft.com/en-in/download/details.aspx?id=5555">x86 (32 bit)</a> or <a class="reference external" href="https://www.microsoft.com/en-us/download/details.aspx?id=14632">x64 (64 bits)</a>). Those libraries really should already be installed on your system.</p></li>
+</ul>
 </div>
 </div>
 <div class="section" id="usage">
@@ -270,7 +264,7 @@ Using <code class="docutils literal notranslate"><span class="pre">J</span></cod
 <h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h1>
 <p>Pympress relies on:</p>
 <ul class="simple">
-<li><p>Python, 3.x or 2.7 (with <a class="reference external" href="https://pypi.python.org/pypi/setuptools">setuptools</a>, which is usually shipped by default with python).</p></li>
+<li><p>Python (version 3.x strongly recommended though 2.7 should still work fine).</p></li>
 <li><p><a class="reference external" href="http://poppler.freedesktop.org/">Poppler</a>, the PDF rendering library.</p></li>
 <li><p><a class="reference external" href="http://www.gtk.org/">Gtk+ 3</a>, a toolkit for creating graphical user interfaces, and <a class="reference external" href="https://www.gtk.org/overview.php">its dependencies</a>, specifically:</p>
 <ul>
@@ -307,14 +301,14 @@ For example, on ubuntu, you can run the following as root to make sure you have 
 <div class="section" id="on-windows">
 <h2>On windows<a class="headerlink" href="#on-windows" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference external" href="#binary-install-currently-only-for-windows">binary installer for windows</a> comes with pympress and all its dependencies packaged.</p>
-<p>In order to install from pypi or from source on windows, there are two ways to get the dependencies:</p>
+<p>Alternately, in order to install from pypi or from source on windows, there are two ways to get the dependencies:</p>
 <ol>
 <li><p>using MSYS2 (replace x86_64 with i686 if you’re using a 32 bit machine).</p>
 <p><strong>Warning:</strong> this can take a substantial amount of disk size as it requires a full software distribution and building platform.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">pacman</span> <span class="o">-</span><span class="n">S</span> <span class="o">--</span><span class="n">needed</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">gtk3</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">cairo</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">poppler</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">python3</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">vlc</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">python3</span><span class="o">-</span><span class="n">gobject</span> <span class="n">mingw</span><span class="o">-</span><span class="n">w64</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="n">python3</span><span class="o">-</span><span class="n">cairo</span>
 </pre></div>
 </div>
-<p>This is also the strategy used to automate <a class="reference external" href="scripts/build_msi_mingw.sh">builds on appveyor</a>.</p>
+<p>This is also the strategy used to automate <a class="reference external" href="https://github.com/Cimbali/pympress/tree/master/scripts/build_msi_mingw.sh">builds on appveyor</a>.</p>
 </li>
 <li><p>Using PyGobjectWin32. <em>Be sure to check the supported Python versions (up to 3.4 at the time of writing)</em>, they appear in the FEATURES list in the linked page.</p></li>
 </ol>
@@ -323,7 +317,7 @@ For example, on ubuntu, you can run the following as root to make sure you have 
 <li><p>Get GTK+3, Poppler and their python bindings by executing <a class="reference external" href="https://sourceforge.net/projects/pygobjectwin32/">the PyGi installer</a>.  Be sure to tick all the necessary dependencies in the installer (Poppler, Cairo, Gdk-Pixbuf).</p></li>
 </ul>
 <p>Alternately, you can build your Gtk+3 stack from source using MSVC, see <a class="reference external" href="https://wiki.gnome.org/Projects/GTK+/Win32/MSVCCompilationOfGTKStack">the Gnome wiki</a> and <a class="reference external" href="https://github.com/wingtk/gvsbuild/">this python script that compiles the whole Gtk+3 stack</a>.
-This strategy has not been used successfully yet, due to problems building Poppler with its introspection bidings (i.e. typelib) − see #109.</p>
+This strategy has not been used successfully yet, due to problems building Poppler with its introspection bidings (i.e. typelib) − see <a class="reference external" href="https://github.com/Cimbali/pympress/issues/109">#109</a>.</p>
 </div>
 </div>
 <div class="section" id="contributing">
@@ -334,6 +328,14 @@ Pympress has inline sphinx documentation (<a class="reference external" href="ht
 <h2>Translations<a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h2>
 <p>If you want to add a translation, check if <code class="docutils literal notranslate"><span class="pre">pympress/share/locale/&lt;language&gt;/pympress.po</span></code> already exists. If not, take <a class="reference external" href="https://github.com/Cimbali/pympress/tree/master/pympress/share/locale/pympress.pot">the template file</a> as input and translate all the strings, then add it to the repo in <code class="docutils literal notranslate"><span class="pre">pympress/share/locale/&lt;language&gt;/pympress.po</span></code>.
 Finally pass this .po file to msgfmt and add the output to the repo at <code class="docutils literal notranslate"><span class="pre">pympress/share/locale/&lt;language&gt;/LC_MESSAGES/pympress.mo</span></code>.</p>
+</div>
+<div class="section" id="packages">
+<h2>Packages<a class="headerlink" href="#packages" title="Permalink to this headline">¶</a></h2>
+<p>Official releases are made to <a class="reference external" href="https://pypi.org/">PyPI</a> and with <a class="reference external" href="https://github.com/Cimbali/pympress/releases">github releases</a>. The community maintains a number of other packages or recipes to install pympress (and more can be added to this list):</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/jose1711">&#64;Jose1711</a> made the <a class="reference external" href="https://aur.archlinux.org/packages/python-pympress/">AUR pympress package</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ComFreek">&#64;ComFreek</a> maintains the <a class="reference external" href="https://chocolatey.org/packages/pympress">Chocolatey pympress package</a></p></li>
+</ul>
 </div>
 </div>
 

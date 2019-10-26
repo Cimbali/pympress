@@ -76,7 +76,7 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html"> What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#dependencies">Dependencies</a></li>
@@ -187,8 +187,6 @@
 
 
 <div class="viewcode-block" id="EditableLabel"><a class="viewcode-back" href="../../pympress.html#pympress.editable_label.EditableLabel">[docs]</a><span class="k">class</span> <span class="nc">EditableLabel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="c1">#: uppercase `str` of characters containing the keys used as shortcuts for editing this button</span>
-    <span class="n">shortcut_keys</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="c1">#: :class:`~Gtk.EventBox` around the label, used to sense clicks</span>
     <span class="n">event_box</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -218,18 +216,14 @@
             <span class="n">hint</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
             <span class="k">pass</span>
 
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">KEY_PRESS</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">name</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">keyval_name</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">keyval</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_keys</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">hint</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-
         <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">BUTTON_PRESS</span><span class="p">:</span>
             <span class="c1"># If we clicked on the Event Box then don&#39;t toggle, just enable.</span>
             <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_box</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">editing</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">KEY_PRESS</span><span class="p">:</span>
+            <span class="n">hint</span> <span class="o">=</span> <span class="n">name</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
@@ -255,7 +249,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="EditableLabel.on_keypress"><a class="viewcode-back" href="../../pympress.html#pympress.editable_label.EditableLabel.on_keypress">[docs]</a>    <span class="k">def</span> <span class="nf">on_keypress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="EditableLabel.on_keypress"><a class="viewcode-back" href="../../pympress.html#pympress.editable_label.EditableLabel.on_keypress">[docs]</a>    <span class="k">def</span> <span class="nf">on_keypress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">command</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Manage key presses for the editable label.</span>
 
 <span class="sd">        If we are editing the label, intercept some key presses (to validate or cancel editing or other specific behaviour),</span>
@@ -264,6 +258,8 @@
 <span class="sd">        Args:</span>
 <span class="sd">            widget (:class:`~Gtk.Widget`):  the widget which has received the event.</span>
 <span class="sd">            event (:class:`~Gdk.Event`):  the GTK event.</span>
+<span class="sd">            name (`str`): the name of the key stroke</span>
+<span class="sd">            command (`str`): the name of the command in case this function is called by on_navigation</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            `bool`: whether the event was consumed</span>
@@ -271,13 +267,11 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">editing</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">EventType</span><span class="o">.</span><span class="n">KEY_PRESS</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="n">name</span> <span class="o">=</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">keyval_name</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">keyval</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;kp_&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;return&#39;</span> <span class="ow">or</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;enter&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;validate&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">restore_label</span><span class="p">()</span>
 
-        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;escape&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;cancel&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">restore_label</span><span class="p">()</span>
 
@@ -374,7 +368,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">hb_cur</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edit_label</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hb_cur</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_sep</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_keys</span> <span class="o">=</span> <span class="s1">&#39;GJ&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">event_box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eb_cur</span>
 
 
@@ -526,7 +519,7 @@
             <span class="n">cur_nb</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spin_cur</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">cur_nb</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span> <span class="ow">and</span> <span class="p">(</span><span class="n">hint</span> <span class="o">==</span> <span class="s1">&#39;J&#39;</span> <span class="ow">or</span> <span class="n">hint</span> <span class="o">==</span> <span class="s1">&#39;nav_jump&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_labels</span> <span class="ow">and</span> <span class="p">(</span><span class="n">hint</span> <span class="o">==</span> <span class="s1">&#39;jumpto_label&#39;</span> <span class="ow">or</span> <span class="n">hint</span> <span class="o">==</span> <span class="s1">&#39;nav_jump&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">edit_label</span><span class="o">.</span><span class="n">grab_focus</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">edit_label</span><span class="o">.</span><span class="n">select_region</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -609,7 +602,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_time</span><span class="p">(</span><span class="n">ett</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_keys</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">event_box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eb_ett</span>
 
 

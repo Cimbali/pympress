@@ -76,7 +76,7 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html"> What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#dependencies">Dependencies</a></li>
@@ -181,7 +181,8 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
 
@@ -194,7 +195,7 @@
 <span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span><span class="p">,</span> <span class="n">Gdk</span>
 
-<span class="kn">from</span> <span class="nn">pympress.util</span> <span class="k">import</span> <span class="n">IS_POSIX</span><span class="p">,</span> <span class="n">IS_MAC_OS</span><span class="p">,</span> <span class="n">IS_WINDOWS</span>
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">util</span>
 
 
 <span class="k">try</span><span class="p">:</span>
@@ -240,94 +241,91 @@
     <span class="c1">#: `dict`-tree of presenter layouts for various modes</span>
     <span class="n">layout</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="c1">#: Map of strings that are the valid representations of widgets from the presenter window that can be dynamically rearranged, mapping to their names</span>
+    <span class="c1">#: `dict` of strings that are the valid representations of widgets from the presenter window that can be dynamically rearranged, mapping to their names</span>
     <span class="n">placeable_widgets</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="s2">&quot;p_frame_notes&quot;</span><span class="p">,</span> <span class="s2">&quot;current&quot;</span><span class="p">:</span> <span class="s2">&quot;p_frame_cur&quot;</span><span class="p">,</span> <span class="s2">&quot;next&quot;</span><span class="p">:</span> <span class="s2">&quot;p_frame_next&quot;</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">:</span> <span class="s2">&quot;p_frame_annot&quot;</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">:</span> <span class="s2">&quot;scribble_overlay&quot;</span><span class="p">}</span>
 
+    <span class="c1">#: Map of (keyval, Gdk.ModifierType) to string, which representing the shortcuts for each command</span>
+    <span class="n">shortcuts</span> <span class="o">=</span> <span class="p">{}</span>
+
 <div class="viewcode-block" id="Config.path_to_config"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.path_to_config">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">path_to_config</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot; Return the OS-specific path to the configuration file.</span>
+    <span class="k">def</span> <span class="nf">path_to_config</span><span class="p">(</span><span class="n">search_legacy_locations</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the path to the currently used configuration file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            search_legacy_locations (`bool`): whether to look in previously used locations</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">IS_POSIX</span><span class="p">:</span>
-            <span class="n">conf_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.config&#39;</span><span class="p">)</span>
-            <span class="n">conf_file_nodir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.pympress&#39;</span><span class="p">)</span>
-            <span class="n">conf_file_indir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.config/pympress&#39;</span><span class="p">)</span>
+        <span class="n">portable_config</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">get_portable_config</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">portable_config</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">portable_config</span>
 
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">conf_file_indir</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">conf_file_indir</span>
-            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">conf_file_nodir</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">conf_file_nodir</span>
+        <span class="n">user_config</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">get_user_config</span><span class="p">()</span>
 
-            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">conf_dir</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">conf_file_indir</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">conf_file_nodir</span>
+        <span class="c1"># migrate old configuration files from previously-used erroneous locations</span>
+        <span class="k">if</span> <span class="n">search_legacy_locations</span> <span class="ow">and</span> <span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">IS_POSIX</span> <span class="ow">or</span> <span class="n">util</span><span class="o">.</span><span class="n">IS_MAC_OS</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">user_config</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">legacy_location</span> <span class="ow">in</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.pympress&#39;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.config/pympress&#39;</span><span class="p">)]:</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">legacy_location</span><span class="p">):</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">legacy_location</span><span class="p">,</span> <span class="n">user_config</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">user_config</span></div>
+
+
+<div class="viewcode-block" id="Config.toggle_portable_config"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.toggle_portable_config">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">toggle_portable_config</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create or remove a configuration file for portable installs.</span>
+
+<span class="sd">        The portable install file will be used by default, and deleting it causes the config</span>
+<span class="sd">        to fall back to the user profile location.</span>
+
+<span class="sd">        No need to populate the new config file, this will be done on pympress exit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">Config</span><span class="o">.</span><span class="n">using_portable_config</span><span class="p">():</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">get_portable_config</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;APPDATA&#39;</span><span class="p">],</span> <span class="s1">&#39;pympress.ini&#39;</span><span class="p">)</span></div>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">get_portable_config</span><span class="p">(),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Config.using_portable_config"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.using_portable_config">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">using_portable_config</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot; Checks which configuration file location is in use</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `bool`: `True` iff we are using the portable (i.e. in install dir) location</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">util</span><span class="o">.</span><span class="n">get_portable_config</span><span class="p">()</span> <span class="o">==</span> <span class="n">Config</span><span class="o">.</span><span class="n">path_to_config</span><span class="p">()</span></div>
 
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Config</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">)</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">)</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">)</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">)</span>
-        <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">)</span>
-
-        <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_to_config</span><span class="p">())</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;maxpages&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="s1">&#39;maxpages&#39;</span><span class="p">,</span> <span class="s1">&#39;200&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;xalign&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;xalign&#39;</span><span class="p">,</span> <span class="s1">&#39;0.50&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;yalign&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;yalign&#39;</span><span class="p">,</span> <span class="s1">&#39;0.50&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;monitor&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;monitor&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_blanked&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_blanked&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">,</span> <span class="s1">&#39;on&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;monitor&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;monitor&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;start_fullscreen&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;pointer&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_bigbuttons&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_bigbuttons&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_annotations&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;show_annotations&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;scroll_number&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;presenter&#39;</span><span class="p">,</span> <span class="s1">&#39;scroll_number&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;notes&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;notes&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;highlight&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="s1">&#39;highlight&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="n">Gdk</span><span class="o">.</span><span class="n">RGBA</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">())</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">):</span>
-            <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;scribble&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
-
+        <span class="c1"># populate values first from the default config file, then from the proper one</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">get_default_config</span><span class="p">())</span>
         <span class="n">config</span><span class="o">.</span><span class="n">load_window_layouts</span><span class="p">()</span>
+
+        <span class="n">all_commands</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="s1">&#39;shortcuts&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_to_config</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">load_window_layouts</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">all_commands</span><span class="p">:</span>
+            <span class="n">parsed</span> <span class="o">=</span> <span class="p">{</span><span class="n">Gtk</span><span class="o">.</span><span class="n">accelerator_parse</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shortcuts&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()}</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">in</span> <span class="n">parsed</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Failed parsing 1 or more shortcuts for &#39;</span> <span class="o">+</span> <span class="n">command</span><span class="p">)</span>
+                <span class="n">parsed</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+            <span class="n">config</span><span class="o">.</span><span class="n">shortcuts</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">s</span><span class="p">:</span> <span class="n">command</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">parsed</span><span class="p">})</span>
+
+
+<div class="viewcode-block" id="Config.getlist"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.getlist">[docs]</a>    <span class="k">def</span> <span class="nf">getlist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Parse a config value and return the list by splitting the value on commas.</span>
+
+<span class="sd">        i.e. bar = foo,qux  returns the list [&#39;foo&#39;, &#39;qux&#39;]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            `list`: a config value split into a list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span></div>
 
 
 <div class="viewcode-block" id="Config.save_config"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.save_config">[docs]</a>    <span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -407,26 +405,20 @@
 <div class="viewcode-block" id="Config.load_window_layouts"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.load_window_layouts">[docs]</a>    <span class="k">def</span> <span class="nf">load_window_layouts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parse and validate layouts loaded from config, with fallbacks if needed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">default_layout</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;notes&#39;</span><span class="p">:</span>     <span class="s1">&#39;{&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;horizontal&quot;, &quot;children&quot;:[&quot;notes&quot;, {&quot;resizeable&quot;:false, &quot;children&quot;:[&quot;current&quot;, &quot;next&quot;], &quot;orientation&quot;:&quot;vertical&quot;}], &quot;proportions&quot;: [0.60, 0.40]}&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;plain&#39;</span><span class="p">:</span>     <span class="s1">&#39;{&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;horizontal&quot;, &quot;children&quot;:[&quot;current&quot;, {&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;vertical&quot;, &quot;children&quot;:[&quot;next&quot;, &quot;annotations&quot;], &quot;proportions&quot;:[0.55, 0.45]}], &quot;proportions&quot;:[0.67, 0.33]}&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;highlight&#39;</span><span class="p">:</span> <span class="s1">&#39;{&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;horizontal&quot;, &quot;children&quot;:[&quot;highlight&quot;, {&quot;resizeable&quot;:true, &quot;orientation&quot;:&quot;vertical&quot;, &quot;children&quot;:[&quot;next&quot;, &quot;annotations&quot;], &quot;proportions&quot;:[0.55, 0.45]}], &quot;proportions&quot;:[0.67, 0.33]}&#39;</span>
-        <span class="p">}</span>
-
         <span class="n">widget_reqs</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;notes&#39;</span><span class="p">:</span>     <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">},),</span>
             <span class="s1">&#39;plain&#39;</span><span class="p">:</span>     <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;highlight&quot;</span><span class="p">},),</span>
             <span class="s1">&#39;highlight&#39;</span><span class="p">:</span> <span class="p">({</span><span class="s2">&quot;highlight&quot;</span><span class="p">},</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">placeable_widgets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;highlight&quot;</span><span class="p">})</span>
         <span class="p">}</span>
 
-        <span class="k">for</span> <span class="n">layout_name</span> <span class="ow">in</span> <span class="n">default_layout</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">layout_name</span> <span class="ow">in</span> <span class="n">widget_reqs</span><span class="p">:</span>
             <span class="c1"># Log error and keep default layout</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">layout_from_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="n">layout_name</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">validate_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">]</span> <span class="p">,</span> <span class="o">*</span><span class="n">widget_reqs</span><span class="p">[</span><span class="n">layout_name</span><span class="p">])</span>
+                <span class="n">loaded_layout</span> <span class="o">=</span> <span class="n">layout_from_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="n">layout_name</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">validate_layout</span><span class="p">(</span><span class="n">loaded_layout</span><span class="p">,</span> <span class="o">*</span><span class="n">widget_reqs</span><span class="p">[</span><span class="n">layout_name</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">loaded_layout</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Invalid layout&#39;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">layout_from_json</span><span class="p">(</span><span class="n">default_layout</span><span class="p">[</span><span class="n">layout_name</span><span class="p">])</span></div>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Invalid layout&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Config.widget_layout_to_tree"><a class="viewcode-back" href="../../pympress.html#pympress.ui.Config.widget_layout_to_tree">[docs]</a>    <span class="k">def</span> <span class="nf">widget_layout_to_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">pane_handle_pos</span><span class="p">):</span>

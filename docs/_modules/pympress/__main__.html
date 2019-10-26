@@ -76,7 +76,7 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html">What is Pympress?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html"> What is Pympress?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#installing">Installing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../README.html#dependencies">Dependencies</a></li>
@@ -176,21 +176,21 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">unicode_literals</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">getopt</span>
 <span class="kn">import</span> <span class="nn">signal</span>
 <span class="kn">import</span> <span class="nn">locale</span>
 <span class="kn">import</span> <span class="nn">gettext</span>
-<span class="kn">import</span> <span class="nn">ctypes</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">platform</span>
+
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">util</span>
 
 
 <span class="c1"># Setup logging, and catch all uncaught exceptions in the log file.</span>
 <span class="c1"># Load pympress.util early (OS and path-specific things) to load and setup gettext translation asap.</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">(),</span> <span class="s1">&#39;pympress.log&#39;</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">util</span><span class="o">.</span><span class="n">get_log_path</span><span class="p">(),</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="uncaught_handler"><a class="viewcode-back" href="../../pympress.html#pympress.__main__.uncaught_handler">[docs]</a><span class="k">def</span> <span class="nf">uncaught_handler</span><span class="p">(</span><span class="o">*</span><span class="n">exc_info</span><span class="p">):</span>
@@ -199,8 +199,6 @@
 
 <span class="n">sys</span><span class="o">.</span><span class="n">excepthook</span> <span class="o">=</span> <span class="n">uncaught_handler</span>
 
-
-<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">util</span>
 
 <span class="k">if</span> <span class="n">util</span><span class="o">.</span><span class="n">IS_WINDOWS</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;LANG&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -231,7 +229,7 @@
 
 
 <span class="c1"># Finally the real deal: load pympress modules, handle command line args, and start up</span>
-<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">media_overlay</span><span class="p">,</span> <span class="n">document</span><span class="p">,</span> <span class="n">ui</span>
+<span class="kn">from</span> <span class="nn">pympress</span> <span class="k">import</span> <span class="n">extras</span><span class="p">,</span> <span class="n">document</span><span class="p">,</span> <span class="n">ui</span>
 
 
 <div class="viewcode-block" id="usage"><a class="viewcode-back" href="../../pympress.html#pympress.__main__.usage">[docs]</a><span class="k">def</span> <span class="nf">usage</span><span class="p">():</span>
@@ -307,7 +305,7 @@
             <span class="s1">&#39;; GLib </span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">GLib</span><span class="o">.</span><span class="n">MAJOR_VERSION</span><span class="p">,</span> <span class="n">GLib</span><span class="o">.</span><span class="n">MINOR_VERSION</span><span class="p">,</span> <span class="n">GLib</span><span class="o">.</span><span class="n">MICRO_VERSION</span><span class="p">),</span>
             <span class="s1">&#39;; Poppler&#39;</span><span class="p">,</span> <span class="n">document</span><span class="o">.</span><span class="n">Poppler</span><span class="o">.</span><span class="n">get_version</span><span class="p">(),</span> <span class="n">document</span><span class="o">.</span><span class="n">Poppler</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span><span class="o">.</span><span class="n">value_nick</span><span class="p">,</span>
             <span class="s1">&#39;; Cairo&#39;</span><span class="p">,</span> <span class="n">ui</span><span class="o">.</span><span class="n">cairo</span><span class="o">.</span><span class="n">cairo_version_string</span><span class="p">(),</span> <span class="s1">&#39;, pycairo&#39;</span><span class="p">,</span> <span class="n">ui</span><span class="o">.</span><span class="n">cairo</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
-            <span class="s1">&#39;; Media:&#39;</span><span class="p">,</span> <span class="n">media_overlay</span><span class="o">.</span><span class="n">VideoOverlay</span><span class="o">.</span><span class="n">backend_version</span><span class="p">()</span>
+            <span class="s1">&#39;; Media:&#39;</span><span class="p">,</span> <span class="n">extras</span><span class="o">.</span><span class="n">Media</span><span class="o">.</span><span class="n">backend_version</span><span class="p">()</span>
         <span class="p">]))</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
