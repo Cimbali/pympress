@@ -35,7 +35,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib
 
-from pympress.util import IS_WINDOWS
+from pympress.util import IS_WINDOWS, IS_MAC_OS
 from pympress.media_overlays import base
 
 
@@ -73,6 +73,8 @@ class VlcOverlay(base.VideoOverlay):
             return False
         elif IS_WINDOWS:
             self.player.set_hwnd(base.get_window_handle(window))  # get_property('window')
+        elif IS_MAC_OS:
+            self.player.set_nsobject(base.get_window_nsview(window))
         else:
             self.player.set_xwindow(window.get_xid())
         return False

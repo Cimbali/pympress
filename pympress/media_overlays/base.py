@@ -58,6 +58,28 @@ def get_window_handle(window):
     return gdkdll.gdk_win32_window_get_handle(drawingarea_gpointer)
 
 
+def get_window_nsview(window):
+    """ Uses ctypes to call gdk_quartz_window_get_nsview which is not available
+    in python gobject introspection porting
+
+    Args:
+        window (:class:`~Gdk.Window`): The window for which we want to get the handle
+
+    Returns:
+        The void pointer to the NSView needed by VLC
+    """
+    # get the c gpointer of the gdk window
+    ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
+    ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [ctypes.py_object]
+    drawingarea_gpointer = ctypes.pythonapi.PyCapsule_GetPointer(window.__gpointer__, None)
+    # get the NSView
+    gdkdll = ctypes.CDLL('libgdk-3.0.dylib')
+    get_nsview = gdkdll.gdk_quartz_window_get_nsview
+    get_nsview.restype = ctypes.c_void_p
+    get_nsview.argtypes = [ctypes.c_void_p]
+    return get_nsview(drawingarea_gpointer)
+
+
 class VideoOverlay(builder.Builder):
     """ Simple Video widget.
 
