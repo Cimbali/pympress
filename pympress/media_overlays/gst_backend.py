@@ -34,7 +34,7 @@ gi.require_version('Gst', '1.0')
 from gi.repository import GLib, Gst
 
 
-from pympress.util import IS_WINDOWS
+from pympress.util import IS_WINDOWS, IS_MAC_OS
 from pympress.media_overlays import base
 
 
@@ -157,6 +157,8 @@ class GstOverlay(base.VideoOverlay):
             logger.error('No window in which to embed the Gst player!')
         elif IS_WINDOWS:
             GLib.idle_add(lambda *args: msg.src.set_window_handle(base.get_window_handle(window)))
+        elif IS_MAC_OS:
+            GLib.idle_add(lambda *args: msg.src.set_window_handle(base.get_window_nsview(window)))
         else:
             GLib.idle_add(lambda *args: msg.src.set_window_handle(window.get_xid()))
 
