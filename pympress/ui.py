@@ -230,6 +230,7 @@ class UI(builder.Builder):
         self.next_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
         self.p_frame_annot.set_visible(self.show_annotations)
+        self.laser.activate_pointermode()
 
 
     def load_icons(self):
@@ -963,6 +964,8 @@ class UI(builder.Builder):
             self.close_file()
         elif command == 'open_file':
             self.pick_file()
+        elif command == 'toggle_pointermode':
+            self.laser.toggle_pointermode()
         else:
             if command:
                 logger.error('ERROR: missing command "{}" for {}{}{}{}'.format(command,
@@ -991,6 +994,45 @@ class UI(builder.Builder):
         elif self.page_number.on_scroll(widget, event):
             return True
         elif self.annotations.on_scroll(widget, event):
+            return True
+        else:
+            return False
+
+
+    def track_visibility(self, widget, event):
+        """ Trackes enter/leave events
+        
+        Handles events when the mouse pointer enter/leaves a slide
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget that received the mouse motion
+            event (:class:`~Gdk.Event`):  the GTK event containing the mouse position
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        if widget not in [self.c_da, self.p_da_cur]:
+            return False
+
+        if self.laser.track_visibility(widget, event):
+            return True
+        else:
+            return False
+
+
+    def track_enter_leave(self, widget, event):
+        """ Trackes enter/leave events
+        
+        Handles events when the mouse pointer enter/leaves a slide
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget that received the mouse motion
+            event (:class:`~Gdk.Event`):  the GTK event containing the mouse position
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        if self.laser.track_enter_leave(widget, event):
             return True
         else:
             return False
