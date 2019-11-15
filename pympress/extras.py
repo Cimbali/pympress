@@ -464,11 +464,16 @@ class Cursor(object):
     #: a static `dict` of :class:`~Gdk.Cursor`s, ready to use
     _cursors = {
         'parent': None,
-        'default': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.LEFT_PTR),
-        'pointer': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.HAND1),
-        'crosshair': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.CROSSHAIR),
-        'invisible': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.BLANK_CURSOR),
     }
+
+    @classmethod
+    def _populate_cursors(cls):
+        cls._cursors.update({
+            'default': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.LEFT_PTR),
+            'pointer': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.HAND1),
+            'crosshair': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.CROSSHAIR),
+            'invisible': Gdk.Cursor.new_for_display(Gdk.Display.get_default(), Gdk.CursorType.BLANK_CURSOR),
+        })
 
     @classmethod
     def set_cursor(cls, widget, cursor_name = 'parent'):
@@ -478,7 +483,13 @@ class Cursor(object):
             widget (:class:`~Gtk.Widget`): The widget triggering the cursor change, used to retrieve a Gdk.Window
             cursor_name (`str`): Name of the cursor to be set
         """
-        widget.get_window().set_cursor(cls._cursors[cursor_name])
+        try:
+            cursor = cls._cursors[cursor_name]
+        except KeyError:
+            cls._populate_cursors()
+            cursor = cls._cursors[cursor_name]
+
+        widget.get_window().set_cursor(cursor)
 
 
 class Zoom(object):

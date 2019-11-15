@@ -430,7 +430,7 @@ class EstimatedTalkTime(EditableLabel):
     est_time = 0
 
     #: :class:`~Gtk.Entry` used to set the estimated talk time.
-    entry_ett = Gtk.Entry()
+    entry_ett = None
 
     #: callback, to be connected to :func:`~pympress.editable_label.PageNumber.stop_editing`
     stop_editing_page_number = lambda: None
@@ -444,6 +444,8 @@ class EstimatedTalkTime(EditableLabel):
             ett (`int`): the estimated time for the talk, in seconds.
         """
         super(EstimatedTalkTime, self).__init__()
+
+        self.entry_ett = Gtk.Entry()
 
         builder.load_widgets(self)
         builder.get_object('nav_goto').set_name('nav_goto')
