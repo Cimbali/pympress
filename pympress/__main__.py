@@ -130,7 +130,7 @@ def main(argv = sys.argv[1:]):
                 m = int(t[0])
                 s = int(t[1])
             except ValueError:
-                print(_("Invalid time (mm or mm:ss expected), got \"{}\"").format(text))
+                print(_("Invalid time (mm or mm:ss expected), got \"{}\"").format(arg))
                 usage()
                 sys.exit(2)
             except IndexError:

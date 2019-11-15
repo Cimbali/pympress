@@ -51,7 +51,7 @@ class GstOverlay(base.VideoOverlay):
     player = None
 
     #: A :class:`~GstPlayer.PlayerVideoOverlayVideoRenderer` to be display the videos
-    player = None
+    renderer = None
 
     # A :class:`~GstPlayer.PlayerState` representing the current state of the player
     player_state = GstPlayer.PlayerState.STOPPED
