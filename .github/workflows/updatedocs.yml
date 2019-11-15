@@ -1,0 +1,52 @@
+name: Update docs
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Generate docs
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel
+        pip install pycairo pygobject .[build_sphinx]
+    - name: Build
+      run: |
+        python setup.py build_sphinx
+        tar czf pympress-docs.tar.gz -C build/sphinx/html/ .
+    - name: Upload
+      uses: actions/upload-artifact@v1
+      with:
+        name: pympress-docs.tar.gz
+
+  deploy:
+    name: Deply docs
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        ref: gh-pages
+    - name: Clean
+      run: rm -rf *
+    - name: Download
+      uses: actions/download-artifact@v1
+      with:
+        name: pympress-docs.tar.gz
+    - name: Extract and push
+      run: |
+        tar xzf pympress-docs.tar.gz
+        git add .
+        git -c user.email=me@cimba.li -c user.name="${GITHUB_ACTOR}" commit -m "Github Action-built docs update"
+        git push "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY.git" HEAD:${GITHUB_REF}
+
