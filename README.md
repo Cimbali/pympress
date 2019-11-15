@@ -92,7 +92,7 @@ Pympress relies on:
 The dependencies are often installed by default, or easily available through your package or software manager.
 For example, on ubuntu, you can run the following as root to make sure you have all the prerequisites *assuming you use python3*:
 
-    apt-get install python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-poppler-0.18
+    apt-get install python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gi python3-cairo python3-gi-cairo gobject-introspection libgirepository-1.0-1 libgirepository1.0-dev gir1.2-gtk-3.0 gir1.2-poppler-0.18
 
 Different distributions might have different package naming conventions, for example the equivalent on OpenSUSE would be:
 
