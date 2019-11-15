@@ -55,6 +55,7 @@ source_suffix = ['.rst', '.md']
 
 import recommonmark
 from recommonmark.transform import AutoStructify
+import os, shutil
 
 github_doc_root = 'https://cimbali.github.io/pympress/'
 def setup(app):
@@ -64,6 +65,11 @@ def setup(app):
             'enable_eval_rst': True
             }, True)
     app.add_transform(AutoStructify)
+
+    # get the README.md as a source
+    shutil.copy(os.path.join(os.path.dirname(__file__), '..', 'README.md'), app.srcdir)
+    app.connect('build-finished', lambda app, config: os.unlink(os.path.join(app.srcdir, 'README.md')))
+
 
 # The encoding of source files.
 #
@@ -226,13 +232,13 @@ html_short_title = "Pympress v{}".format(version)
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
 #
-html_logo = '../../pympress/share/pixmaps/pympress-128.png'
+html_logo = '../pympress/share/pixmaps/pympress-128.png'
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 #
-html_favicon = '../../pympress/share/pixmaps/pympress.ico'
+html_favicon = '../pympress/share/pixmaps/pympress.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
