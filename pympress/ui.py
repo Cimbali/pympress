@@ -230,6 +230,7 @@ class UI(builder.Builder):
         self.next_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
         self.p_frame_annot.set_visible(self.show_annotations)
+        self.laser.activate_pointermode()
 
 
     def load_icons(self):
@@ -963,6 +964,8 @@ class UI(builder.Builder):
             self.close_file()
         elif command == 'open_file':
             self.pick_file()
+        elif command == 'toggle_pointermode':
+            self.laser.toggle_pointermode()
         else:
             if command:
                 logger.error('ERROR: missing command "{}" for {}{}{}{}'.format(command,

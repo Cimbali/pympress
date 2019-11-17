@@ -58,7 +58,7 @@ A few of the fancier functionalities are listed here:
 
   A spin box will appear, and you will be able to navigate through your slides in the presenter window only by scrolling your mouse, with the `Home`/`Up`/`Down`/`End` keys, with the + and - buttons of the spin box, or simply by typing in the number of the slide. Press `Enter` to validate going to the new slide or `Esc` to cancel.
 
-- **Software pointer**: Clicking on the slide (in either window) while holding `ctrl` down will display a software laser pointer on the slide.
+- **Software pointer**: Clicking on the slide (in either window) while holding `ctrl` down will display a software laser pointer on the slide. Or press `L` to permanently switch on the laser pointer.
 - **Talk time breakdown**: The `Presentation > Timing Breakdown` menu item displays a breakdown of how much time was spent on each slide, with a hierarchical breakdown per chapters/sections/etc. if available in the PDF.
 - **Automatic file reloading**: If the file is modified, pympress will reload it (and preserve the current slide, current time, etc.)
 - **Big button mode**: Add big buttons (duh) for touch displays.

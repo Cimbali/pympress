@@ -371,6 +371,9 @@ msgstr ""
 msgid "_Left"
 msgstr ""
 
+msgid "_Manual"
+msgstr ""
+
 msgid "_Navigation"
 msgstr ""
 
@@ -381,6 +384,9 @@ msgid "_Notes mode"
 msgstr ""
 
 msgid "_Pause timer"
+msgstr ""
+
+msgid "_Permanent"
 msgstr ""
 
 msgid "_Presentation"

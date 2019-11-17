@@ -376,6 +376,9 @@ msgstr "_Ende"
 msgid "_Left"
 msgstr "_Links"
 
+msgid "_Manual"
+msgstr "_Manuell"
+
 msgid "_Navigation"
 msgstr "_Navigation"
 
@@ -387,6 +390,9 @@ msgstr "_Notizmodus"
 
 msgid "_Pause timer"
 msgstr "Timer _pausieren"
+
+msgid "_Permanent"
+msgstr "_Ständig"
 
 msgid "_Presentation"
 msgstr "_Präsentation"

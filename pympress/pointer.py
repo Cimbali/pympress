@@ -29,6 +29,8 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
+import enum
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gdk, GdkPixbuf
@@ -36,12 +38,13 @@ from gi.repository import Gdk, GdkPixbuf
 from pympress import util, extras
 
 
-#: Pointer disabled, will not be drawn
-POINTER_OFF = -1
-#: Pointer enabled but hidden, will be drawn on ctrl + click
-POINTER_HIDE = 0
-#: Draw the pointer on the current slide
-POINTER_SHOW = 1
+class PointerMode(enum.Enum):
+    #: Pointer switched on continuously
+    CONTINUOUS = 2
+    #: Pointer switched on only manual
+    MANUAL = 1
+    #: Pointer never switched on
+    DISABLED = 0
 
 
 class Pointer(object):
@@ -50,9 +53,21 @@ class Pointer(object):
     #: `(float, float)` of position relative to slide, where the pointer should appear
     pointer_pos = (.5, .5)
     #: `bool` indicating whether we should show the pointer
-    show_pointer = POINTER_OFF
+    show_pointer = False
+    #: :class:`~pympress.pointer.PointerMode` indicating the pointer mode
+    pointer_mode = PointerMode.MANUAL
+    #: The :class:`~pympress.pointer.PointerMode` to which we toggle back
+    old_pointer_mode = PointerMode.CONTINUOUS
     #: A reference to the UI's :class:`~pympress.config.Config`, to update the pointer preference
     config = None
+    #: :class:`~Gtk.DrawingArea` Slide in the Presenter window, used to reliably set cursors.
+    p_da_cur = None
+    #: :class:`~Gtk.DrawingArea` Slide in the Contents window, used to reliably set cursors.
+    c_da     = None
+    #: :class:`~Gtk.AspectFrame` Frame of the Contents window, used to reliably set cursors.
+    c_frame  = None
+    #: a `dict` of the :class:`~Gtk.RadioMenuItem` selecting the pointer mode
+    pointermode_radios = {}
 
     #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
     redraw_current_slide = lambda: None
@@ -67,41 +82,112 @@ class Pointer(object):
         super(Pointer, self).__init__()
         self.config = config
 
+        builder.load_widgets(self)
+
         self.redraw_current_slide = builder.get_callback_handler('redraw_current_slide')
 
-        default = 'pointer_' + config.get('presenter', 'pointer')
-        self.load_pointer(default)
+        default_mode = config.get('presenter', 'pointer_mode')
+        default_color = 'pointer_' + config.get('presenter', 'pointer')
 
-        for radio_name in ['pointer_red', 'pointer_blue', 'pointer_green', 'pointer_none']:
+        try:
+            default_mode = PointerMode[default_mode.upper()]
+        except KeyError:
+            default_mode = PointerMode.MANUAL
+
+        self.activate_pointermode(default_mode)
+
+        for radio_name in ['continuous', 'manual', 'disabled']:
+            radio = builder.get_object('pointermode_' + radio_name)
+            radio.set_name('pointermode_' + radio_name)
+            radio.set_active(radio_name == default_mode.name.lower())
+            self.pointermode_radios[radio_name] = radio
+
+        self.load_pointer(default_color)
+
+        for radio_name in ['pointer_red', 'pointer_blue', 'pointer_green']:
             radio = builder.get_object(radio_name)
             radio.set_name(radio_name)
-
-            radio.set_active(radio_name == default)
+            radio.set_active(radio_name == default_color)
 
 
     def load_pointer(self, name):
-        """ Perform the change of pointer using its name
+        """ Perform the change of pointer using its color name
 
         Args:
             name (`str`): Name of the pointer to load
         """
         if name in ['pointer_red', 'pointer_green', 'pointer_blue']:
-            self.show_pointer = POINTER_HIDE
             self.pointer = GdkPixbuf.Pixbuf.new_from_file(util.get_icon_path(name + '.png'))
         else:
-            self.show_pointer = POINTER_OFF
+            raise ValueError('Wrong color name')
 
 
-    def change_pointer(self, widget):
+    def change_pointercolor(self, widget):
         """ Callback for a radio item selection as pointer color
 
         Args:
             widget (:class:`~Gtk.RadioMenuItem`): the selected radio item in the pointer type selection menu
         """
         if widget.get_active():
-            assert(widget.get_name().startswith('pointer_'))
+            assert widget.get_name().startswith('pointer_')
             self.load_pointer(widget.get_name())
             self.config.set('presenter', 'pointer', widget.get_name()[len('pointer_'):])
+
+
+    def activate_pointermode(self, mode = None):
+        """ Activate the pointer as given by mode
+
+        Depending on the given mode, shows or hides the laser pointer and the normal mouse pointer.
+
+        Args:
+            mode (:class:`~pympress.pointer.PointerMode`): The mode to activate
+        """
+        # Set internal variables, unless called without mode (from ui, after windows have been mapped)
+        if mode == self.pointer_mode:
+            return
+        elif mode is not None:
+            self.old_pointer_mode, self.pointer_mode = self.pointer_mode, mode
+            self.config.set('presenter', 'pointer_mode', self.pointer_mode.name.lower())
+
+
+        # Set mouse pointer and cursors on/off, if windows are already mapped
+        self.show_pointer = False
+        for slide_widget in [self.p_da_cur, self.c_da]:
+            ww, wh = slide_widget.get_allocated_width(), slide_widget.get_allocated_height()
+            if max(ww, wh) == 1:
+                continue
+
+            pointer_coordinates = slide_widget.get_window().get_pointer()
+
+            if 0 < pointer_coordinates.x < ww and 0 < pointer_coordinates.y < wh \
+                    and self.pointer_mode == PointerMode.CONTINUOUS:
+                # Laser activated right away
+                self.pointer_pos = (pointer_coordinates.x / ww, pointer_coordinates.y / wh)
+                self.show_pointer = True
+                extras.Cursor.set_cursor(slide_widget, 'invisible')
+            else:
+                extras.Cursor.set_cursor(slide_widget, 'parent')
+
+        self.redraw_current_slide()
+
+
+    def change_pointermode(self, widget):
+        """ Callback for a radio item selection as pointer mode (continuous, manual, none)
+
+        Args:
+            widget (:class:`~Gtk.RadioMenuItem`): the selected radio item in the pointer type selection menu
+        """
+        if widget.get_active():
+            mode = PointerMode[widget.get_name()[len('pointermode_'):].upper()]
+            self.activate_pointermode(mode)
+
+
+    def toggle_pointermode(self):
+        """ callback for shortcut to switch on/off continuous pointer
+        """
+        mode = self.old_pointer_mode if self.pointer_mode == PointerMode.CONTINUOUS else PointerMode.CONTINUOUS
+        self.activate_pointermode(mode)
+        self.pointermode_radios[mode.name.lower()].set_active(True)
 
 
     def render_pointer(self, cairo_context, ww, wh):
@@ -112,7 +198,7 @@ class Pointer(object):
             ww (`int`): The widget width
             wh (`int`): The widget height
         """
-        if self.show_pointer == POINTER_SHOW:
+        if self.show_pointer:
             x = ww * self.pointer_pos[0] - self.pointer.get_width() / 2
             y = wh * self.pointer_pos[1] - self.pointer.get_height() / 2
             Gdk.cairo_set_source_pixbuf(cairo_context, self.pointer, x, y)
@@ -129,7 +215,7 @@ class Pointer(object):
         Returns:
             `bool`: whether the event was consumed
         """
-        if self.show_pointer == POINTER_SHOW:
+        if self.show_pointer:
             ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
             ex, ey = event.get_coords()
             self.pointer_pos = (ex / ww, ey / wh)
@@ -138,6 +224,36 @@ class Pointer(object):
 
         else:
             return False
+
+
+    def track_enter_leave(self, widget, event):
+        """ Switches laser off/on in continuous mode on leave/enter slides
+
+        In continuous mode, the laser pointer is switched off when the mouse leaves the slide
+        (otherwise the laser pointer "sticks" to the edge of the slide).
+        It is switched on again when the mouse reenters the slide.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        # Only handle enter/leave events on one of the current slides
+        if self.pointer_mode != PointerMode.CONTINUOUS or widget not in [self.c_da, self.p_da_cur]:
+            return False
+
+        if event.type == Gdk.EventType.ENTER_NOTIFY:
+            self.show_pointer = True
+            extras.Cursor.set_cursor(widget, 'invisible')
+
+        elif event.type == Gdk.EventType.LEAVE_NOTIFY:
+            self.show_pointer = False
+            extras.Cursor.set_cursor(widget, 'parent')
+
+        self.redraw_current_slide()
+        return True
 
 
     def toggle_pointer(self, widget, event):
@@ -150,20 +266,20 @@ class Pointer(object):
         Returns:
             `bool`: whether the event was consumed
         """
-        if self.show_pointer == POINTER_OFF:
+        if self.pointer_mode in {PointerMode.DISABLED, PointerMode.CONTINUOUS}:
             return False
 
         ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
 
         if ctrl_pressed and event.type == Gdk.EventType.BUTTON_PRESS:
-            self.show_pointer = POINTER_SHOW
+            self.show_pointer = True
             extras.Cursor.set_cursor(widget, 'invisible')
 
             # Immediately place & draw the pointer
             return self.track_pointer(widget, event)
 
-        elif self.show_pointer == POINTER_SHOW and event.type == Gdk.EventType.BUTTON_RELEASE:
-            self.show_pointer = POINTER_HIDE
+        elif self.show_pointer and event.type == Gdk.EventType.BUTTON_RELEASE:
+            self.show_pointer = False
             extras.Cursor.set_cursor(widget, 'parent')
             self.redraw_current_slide()
             return True

@@ -154,6 +154,7 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         all_commands = dict(config.items('shortcuts')).keys()
 
         config.read(config.path_to_config(True))
+        config.upgrade()
         config.load_window_layouts()
 
         for command in all_commands:
@@ -164,6 +165,14 @@ class Config(configparser.ConfigParser, object): # python 2 fix
                 parsed.remove((0, 0))
 
             config.shortcuts.update({s: command for s in parsed})
+
+
+    def upgrade(self):
+        """ Update obsolete config options when pympress updates
+        """
+        if self.get('presenter', 'pointer') == 'pointer_none':
+            self.set('presenter', 'pointer', 'red')
+            self.set('presenter', 'pointer_mode', 'disabled')
 
 
     def getlist(self, *args):
