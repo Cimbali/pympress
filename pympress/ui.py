@@ -999,45 +999,6 @@ class UI(builder.Builder):
             return False
 
 
-    def track_visibility(self, widget, event):
-        """ Trackes enter/leave events
-        
-        Handles events when the mouse pointer enter/leaves a slide
-
-        Args:
-            widget (:class:`~Gtk.Widget`):  the widget that received the mouse motion
-            event (:class:`~Gdk.Event`):  the GTK event containing the mouse position
-
-        Returns:
-            `bool`: whether the event was consumed
-        """
-        if widget not in [self.c_da, self.p_da_cur]:
-            return False
-
-        if self.laser.track_visibility(widget, event):
-            return True
-        else:
-            return False
-
-
-    def track_enter_leave(self, widget, event):
-        """ Trackes enter/leave events
-        
-        Handles events when the mouse pointer enter/leaves a slide
-
-        Args:
-            widget (:class:`~Gtk.Widget`):  the widget that received the mouse motion
-            event (:class:`~Gdk.Event`):  the GTK event containing the mouse position
-
-        Returns:
-            `bool`: whether the event was consumed
-        """
-        if self.laser.track_enter_leave(widget, event):
-            return True
-        else:
-            return False
-
-
     def track_motions(self, widget, event):
         """ Track mouse motion events
 

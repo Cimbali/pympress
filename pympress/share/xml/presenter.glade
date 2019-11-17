@@ -241,7 +241,7 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkRadioMenuItem" id="pointermode_none">
+                              <object class="GtkRadioMenuItem" id="pointermode_disabled">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">_Disabled</property>
@@ -252,6 +252,10 @@
                               </object>
                             </child>
                             <child>
+                              <object class="GtkSeparatorMenuItem">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
                             </child>
                             <child>
                               <object class="GtkRadioMenuItem" id="pointer_red">
@@ -261,7 +265,7 @@
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">pointer_red</property>
-                                <signal name="toggled" handler="laser.change_pointer" swapped="no"/>
+                                <signal name="toggled" handler="laser.change_pointercolor" swapped="no"/>
                               </object>
                             </child>
                             <child>
@@ -272,7 +276,7 @@
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">pointer_red</property>
-                                <signal name="toggled" handler="laser.change_pointer" swapped="no"/>
+                                <signal name="toggled" handler="laser.change_pointercolor" swapped="no"/>
                               </object>
                             </child>
                             <child>
@@ -283,7 +287,7 @@
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">pointer_red</property>
-                                <signal name="toggled" handler="laser.change_pointer" swapped="no"/>
+                                <signal name="toggled" handler="laser.change_pointercolor" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -638,15 +642,14 @@
                                     <property name="visible">True</property>
                                     <property name="app_paintable">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_VISIBILITY_NOTIFY_MASK</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK</property>
                                     <signal name="button-press-event" handler="track_clicks" swapped="no"/>
                                     <signal name="button-release-event" handler="track_clicks" swapped="no"/>
                                     <signal name="configure-event" handler="on_configure_da" swapped="no"/>
                                     <signal name="draw" handler="on_draw" swapped="no"/>
                                     <signal name="motion-notify-event" handler="track_motions" swapped="no"/>
-                                    <signal name="enter-notify-event" handler="track_enter_leave" swapped="no"/>
-                                    <signal name="leave-notify-event" handler="track_enter_leave" swapped="no"/>
-                                    <signal name="visibility-notify-event" handler="track_visibility" swapped="no"/>
+                                    <signal name="enter-notify-event" handler="laser.track_enter_leave" swapped="no"/>
+                                    <signal name="leave-notify-event" handler="laser.track_enter_leave" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="index">-1</property>

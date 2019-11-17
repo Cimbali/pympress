@@ -42,8 +42,8 @@
                 <signal name="motion-notify-event" handler="track_motions" swapped="no"/>
                 <signal name="draw" handler="on_draw" swapped="no"/>
                 <signal name="configure-event" handler="on_configure_da" swapped="no"/>
-                <signal name="enter-notify-event" handler="track_enter_leave" swapped="no"/>
-                <signal name="leave-notify-event" handler="track_enter_leave" swapped="no"/>
+                <signal name="enter-notify-event" handler="laser.track_enter_leave" swapped="no"/>
+                <signal name="leave-notify-event" handler="laser.track_enter_leave" swapped="no"/>
               </object>
             </child>
           </object>

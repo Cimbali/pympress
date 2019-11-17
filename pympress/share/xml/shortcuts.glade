@@ -177,8 +177,8 @@
             </child>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_pointermode">
-                <property name="name">shortcut_pointermode</property>
+              <object class="GtkShortcutsShortcut" id="shortcut_toggle_pointermode">
+                <property name="name">shortcut_toggle_pointermode</property>
                 <property name="visible">1</property>
                 <property name="accelerator">l</property>
                 <property name="title" translatable="yes" context="shortcut window">Toggle laserpointer</property>
