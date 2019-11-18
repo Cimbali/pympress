@@ -51,5 +51,5 @@ jobs:
         rm pympress-docs.tar.gz
         git add .
         git -c user.email=me@cimba.li -c user.name="${GITHUB_ACTOR}" commit -m "Github Action-built docs update"
-        git push "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY.git" HEAD:gh-pages
+        git push "https://Cimbali:${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" HEAD:gh-pages
 
