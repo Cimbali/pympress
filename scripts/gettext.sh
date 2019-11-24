@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-p=`realpath $0`
-cd `dirname $p`
+cd `git rev-parse --show-toplevel`
 pot=pympress/share/locale/pympress.pot
 translated=`ls pympress/share/locale/*/*.po`
 version=`git describe --tags --abbrev=0`

@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Pympress v1.2.1\n"
+"Project-Id-Version: Pympress v1.5.0-b4\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
 "POT-Creation-Date: 2016-10-24 15:50+0200\n"
 "PO-Revision-Date: 2017-04-23 15:22+0200\n"
@@ -81,6 +81,9 @@ msgstr "nie można ustawić stanu wygaszacza ekranu: otrzymany status "
 msgid "Current slide"
 msgstr "Bieżący slajd"
 
+msgid "ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system."
+msgstr ""
+
 msgid "Error loading icon for about window"
 msgstr "Błąd ładowania ikony dla okna \"O\""
 
@@ -91,6 +94,17 @@ msgctxt "shortcut window"
 msgid "First slide"
 msgstr "Pierwszy slajd"
 
+msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Go back in slide history"
+msgstr ""
+
+msgctxt "shortcut window"
+msgid "Go forward in slide history"
+msgstr ""
+
 msgctxt "shortcut window"
 msgid "Go to page number"
 msgstr "Idź do strony o numerze"
@@ -100,6 +114,9 @@ msgstr "Odtwarzacz gifa GtkImage"
 
 msgid "Highlight"
 msgstr "Zakreślacz"
+
+msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
+msgstr ""
 
 msgid "Invalid log level \"{}\", try one of {}"
 msgstr "Nieprawidłowy poziom dziennikowania \"{}\", wypróbuj jeden z {}"
@@ -181,9 +198,15 @@ msgstr "Uruchom / wstrzymaj licznik czasu"
 msgid "Pointer"
 msgstr "Wskaźnik"
 
+msgid "Portable installation"
+msgstr ""
+
 msgctxt "shortcut window"
 msgid "Presentation"
 msgstr "Prezentacja"
+
+msgid "Presentation timing breakdown"
+msgstr ""
 
 msgid "Presenter fullscreen"
 msgstr "Okno prelegenta w trybie pełnego ekranu"
@@ -269,6 +292,9 @@ msgstr "Zamień okna"
 msgid "The estimated (intended) talk time in minutes"
 msgstr "Przewidywany (spodziewany) czas trwania wystąpienia (prelekcji) w minutach"
 
+msgid "The log is written to "
+msgstr ""
+
 msgid "This help"
 msgstr "Niniejsza pomoc"
 
@@ -281,6 +307,9 @@ msgstr "Przewidziany czas"
 msgctxt "shortcut window"
 msgid "Timers"
 msgstr "Liczniki czasu"
+
+msgid "Timing breakdown"
+msgstr ""
 
 msgctxt "shortcut window"
 msgid "Toggle annotations"
@@ -295,12 +324,19 @@ msgid "Toggle highlighting"
 msgstr "Przełącz zakreślanie"
 
 msgctxt "shortcut window"
+msgid "Toggle laserpointer"
+msgstr ""
+
+msgctxt "shortcut window"
 msgid "Toggle notes mode"
 msgstr "Przełącz tryb notatek"
 
 msgctxt "shortcut window"
 msgid "Undo highlight stroke"
 msgstr "Cofnij wyróżnienie obrysu"
+
+msgid "Unexpected action in index \"{}\""
+msgstr ""
 
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr "Nie mogę uruchomić w trybie pełnego ekranu, nieznanego widżetu {}, przerywam działanie."
@@ -314,6 +350,10 @@ msgstr "Cofnij powiększanie"
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Sposób użycia: {} [opcje] <plik_z_prezentacją>"
+
+msgctxt "shortcut window"
+msgid "Validate goto/jump destination"
+msgstr ""
 
 msgid "Video support using {} is disabled."
 msgstr "Obsługa wideo przy użyciu {} jest wyłączona."
@@ -374,6 +414,9 @@ msgstr "_Ostatni"
 msgid "_Left"
 msgstr "_Lewo"
 
+msgid "_Manual"
+msgstr ""
+
 msgid "_Navigation"
 msgstr "_Nawigacja"
 
@@ -385,6 +428,9 @@ msgstr "_Tryb notatek"
 
 msgid "_Pause timer"
 msgstr "_Wstrzymaj timer"
+
+msgid "_Permanent"
+msgstr ""
 
 msgid "_Presentation"
 msgstr "_Prezentacja"
@@ -422,14 +468,35 @@ msgstr "_Zbliżenie"
 msgid "access denied when trying to access screen saver settings in registry!"
 msgstr "odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"
 
+msgid "column"
+msgstr ""
+
+msgid "duration"
+msgstr ""
+
+msgid "name"
+msgstr ""
+
 msgid "no action defined for this link!"
 msgstr "nie określono działania dla tego odnośnika!"
 
 msgid "page label"
 msgstr "etykieta strony"
 
+msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
+msgstr ""
+
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress jest małym czytnikiem PDF napisanym w Pythonie, używającym Popplera do renderowania plików PDF oraz GTK do tworzenia GUI.\n"
+
+msgid "slide"
+msgstr ""
+
+msgid "slide #"
+msgstr ""
+
+msgid "time"
+msgstr ""
 
 msgid "{}, {}, {}, {}, or {}"
 msgstr "{}, {}, {}, {} lub {}"

@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Pympress v1.2.1\n"
+"Project-Id-Version: Pympress v1.5.0-b4\n"
 "Report-Msgid-Bugs-To: me@cimba.li\n"
 "POT-Creation-Date: 2016-10-24 15:50+0200\n"
 "PO-Revision-Date: 2016-07-30 19:34+0200\n"
@@ -81,6 +81,9 @@ msgstr "Attention: Impossible de récupérer l'état de l'économiseur d'écran:
 msgid "Current slide"
 msgstr "Diapo actuelle"
 
+msgid "ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system."
+msgstr "ERREUR: le module Gobject Introspections est manquant, assurez vous que les dépendances Gtk et pygobject sont installées sur votre système."
+
 msgid "Error loading icon for about window"
 msgstr "Erreur de chargement des icônes"
 
@@ -91,6 +94,17 @@ msgctxt "shortcut window"
 msgid "First slide"
 msgstr "Première diapo"
 
+msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
+msgstr "Des instructions sont disponibles (en anglais) à https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
+
+msgctxt "shortcut window"
+msgid "Go back in slide history"
+msgstr "Aller à la diapo précédente chronologiquement"
+
+msgctxt "shortcut window"
+msgid "Go forward in slide history"
+msgstr "Aller à la diapo suivante chronologiquement"
+
 msgctxt "shortcut window"
 msgid "Go to page number"
 msgstr "Aller au numéro de page"
@@ -100,6 +114,9 @@ msgstr "lecteur de gif GtkImage"
 
 msgid "Highlight"
 msgstr "Feutre"
+
+msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
+msgstr "Si vous utilisez virtualenv ou anaconda, vous pouvez autoriser l'accès aux modules du système, ou lancer: pip install pygobject"
 
 msgid "Invalid log level \"{}\", try one of {}"
 msgstr "Mauvais niveau de log \"{}\", choisissez l'un de {}"
@@ -181,9 +198,15 @@ msgstr "Mettre le minuteur en pause"
 msgid "Pointer"
 msgstr "Pointeur"
 
+msgid "Portable installation"
+msgstr "Installation portative"
+
 msgctxt "shortcut window"
 msgid "Presentation"
 msgstr "Présentation"
+
+msgid "Presentation timing breakdown"
+msgstr "Analyse de la durée de la présentation"
 
 msgid "Presenter fullscreen"
 msgstr "Présenteur en plein écran"
@@ -269,6 +292,9 @@ msgstr "Intervertir les fenêtres"
 msgid "The estimated (intended) talk time in minutes"
 msgstr "Durée estimée (prévue) de la présentation, en minutes"
 
+msgid "The log is written to "
+msgstr "Le journal est disponible à "
+
 msgid "This help"
 msgstr "Ce message d'aide"
 
@@ -281,6 +307,9 @@ msgstr "Temps estimé"
 msgctxt "shortcut window"
 msgid "Timers"
 msgstr "Minuteurs"
+
+msgid "Timing breakdown"
+msgstr "Analyse du chronométrage"
 
 msgctxt "shortcut window"
 msgid "Toggle annotations"
@@ -295,12 +324,19 @@ msgid "Toggle highlighting"
 msgstr "Mode feutre"
 
 msgctxt "shortcut window"
+msgid "Toggle laserpointer"
+msgstr "Activer le pointeur laser"
+
+msgctxt "shortcut window"
 msgid "Toggle notes mode"
 msgstr "Mode note"
 
 msgctxt "shortcut window"
 msgid "Undo highlight stroke"
 msgstr "Annuler trait de feutre"
+
+msgid "Unexpected action in index \"{}\""
+msgstr "Action inattendue dans l'index \"{}\""
 
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr "Élement visuel {} inconnu à mettre en plein écran, abandonnée."
@@ -314,6 +350,10 @@ msgstr "Annuler le zoom"
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr "Usage: {} [options] <fichier de présentation>"
+
+msgctxt "shortcut window"
+msgid "Validate goto/jump destination"
+msgstr "Valider la page de destination"
 
 msgid "Video support using {} is disabled."
 msgstr "La prise en charge vidéo grâce à {} est désactivée"
@@ -374,6 +414,9 @@ msgstr "_Dernier"
 msgid "_Left"
 msgstr "Gauche"
 
+msgid "_Manual"
+msgstr "_Manuel"
+
 msgid "_Navigation"
 msgstr "_Navigation"
 
@@ -385,6 +428,9 @@ msgstr "Mode _note"
 
 msgid "_Pause timer"
 msgstr "Mettre le minuteur en _pause"
+
+msgid "_Permanent"
+msgstr "_Permanent"
 
 msgid "_Presentation"
 msgstr "_Présentation"
@@ -422,14 +468,35 @@ msgstr "_Zoomer"
 msgid "access denied when trying to access screen saver settings in registry!"
 msgstr "accès refusé lors de la modification des paramètres d'économiseur d'écran dans le registre !"
 
+msgid "column"
+msgstr "colonne"
+
+msgid "duration"
+msgstr "durée"
+
+msgid "name"
+msgstr "nom"
+
 msgid "no action defined for this link!"
 msgstr "pas d'action définie pour ce lien !"
 
 msgid "page label"
 msgstr "nom de page"
 
+msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
+msgstr "pip téléchargera et compilera pygobject, ce pour quoi vous aurez besoin des fichiers d'en-tête Gtk (ou du pacquet logiciel de développement)"
+
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr "pympress est un lecteur de PDF léger écrit en Python, utilisant Poppler pour afficher les PDF et GTK pour l'interface graphique.\n"
+
+msgid "slide"
+msgstr "diapo"
+
+msgid "slide #"
+msgstr "diapo #"
+
+msgid "time"
+msgstr "temps"
 
 msgid "{}, {}, {}, {}, or {}"
 msgstr "{}, {}, {}, {}, ou {}"
