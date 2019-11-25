@@ -228,8 +228,9 @@ def get_log_path():
         base_dir = os.path.expanduser('~/Library/Logs')
     else:
         base_dir = os.getenv('XDG_CACHE_HOME', os.path.expanduser('~/.cache'))
-        if not os.path.isdir(base_dir):
-            os.mkdir(base_dir)
+
+    if not os.path.isdir(base_dir):
+        os.makedirs(base_dir)
 
     return os.path.join(base_dir, 'pympress.log')
 
