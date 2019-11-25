@@ -78,9 +78,6 @@ def layout_from_json(layout_string):
     Args:
         layout_string (`str`): A JSON string to be loaded.
     """
-    if not layout_string:
-        raise ValueError('No layout string passed. Ignore this error if you just upgraded pympress or reset your configuration file.')
-
     return recursive_unicode_to_str(json.loads(layout_string))
 
 
