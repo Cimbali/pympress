@@ -95,21 +95,7 @@ def usage():
     print("")
 
 
-def main(argv = sys.argv[1:]):
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-    # prefere X11 on posix systems because Wayland still has some shortcomings for us,
-    # specifically libVLC and the ability to disable screensavers
-    if util.IS_POSIX:
-        Gdk.set_allowed_backends('x11,*')
-    Gtk.init(argv)
-
-    try:
-        opts, args = getopt.getopt(argv, "hn:t:", ["help", "notes=", "talk-time=", "log="])
-    except getopt.GetoptError:
-        usage()
-        sys.exit(2)
-
+def parse_opts(opts):
     ett = 0
     log_level = logging.ERROR
     notes_pos = None
@@ -145,6 +131,17 @@ def main(argv = sys.argv[1:]):
                     arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"
                 ))
 
+    return ett, log_level, notes_pos
+
+
+def main(argv = sys.argv[1:]):
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+    # prefere X11 on posix systems because Wayland still has some shortcomings for us,
+    # specifically libVLC and the ability to disable screensavers
+    if util.IS_POSIX:
+        Gdk.set_allowed_backends('x11,*')
+    Gtk.init(argv)
 
     pympress_meta = util.get_pympress_meta().__version__
     logger.info(' '.join(['Pympress:', pympress_meta,
@@ -157,6 +154,13 @@ def main(argv = sys.argv[1:]):
             '; Media:', extras.Media.backend_version()
         ]))
 
+    try:
+        opts, args = getopt.getopt(argv, "hn:t:", ["help", "notes=", "talk-time=", "log="])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+
+    ett, log_level, notes_pos = parse_opts(opts)
     logger.setLevel(log_level)
 
     # Create windows
