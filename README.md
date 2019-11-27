@@ -125,6 +125,9 @@ This strategy has not been used successfully yet, due to problems building Poppl
 
 # Contributing
 
+**Be respectful of everyone and keep this community friendly, welcoming, and harrasment-free.
+Abusive behaviour will not be tolerated, and can be reported by email at me@cimba.li − wrongdoers may be permanently banned.**
+
 Feel free to clone this repo and use it, modify it, redistribute it, etc, under the GPLv2+.
 Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.org/en/latest/ext/example_google.html), contains rst syntax), and the [docs folder](https://github.com/Cimbali/pympress/tree/master/docs/) contains the documentation generated from it, hosted on [the github pages of this repo](https://cimbali.github.io/pympress/pympress.html).
 
