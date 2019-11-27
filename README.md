@@ -1,8 +1,7 @@
 # ![Pympress logo](https://raw.githubusercontent.com/Cimbali/pympress/master/pympress/share/pixmaps/pympress-32.png) What is Pympress?
 
-Pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK+ for the GUI.
-
-It is designed to be a dual-screen reader used for presentations and public talks, with two displays: the *Content window* for a projector, and the *Presenter window* for your laptop. It is portable and has been tested on various Mac, Windows and Linux systems.
+Pympress is a PDF presentation tool designed for dual-screen setups such as presentations and public talks.
+Highly configurable, fully-featured, and portable
 
 It comes with many great features ([more below](#functionalities)):
 - supports embedded gifs and videos
@@ -66,7 +65,7 @@ A few of the fancier functionalities are listed here:
 - **Estimated talk time**: Click the `Time estimation` box and set your planned talk duration. The color will allow you to see at a glance how much time you have left.
 - **Adjust screen centering**: If your slides' form factor doesn't fit the projectors' and you don't want the slide centered in the window, use the "Screen Center" option in the "Presentation" menu.
 - **Resize Current/Next slide**: You can drag the bar between both slides on the Presenter window to adjust their relative sizes to your liking.
-- **Preferences**: Some of your choices are saved in a configuration file, in *~/.config/pympress* or *~/.pympress* on linux, and in *%APPDATA%/pympress.ini* on windows.
+- **Preferences**: Some of your choices are saved in a configuration file, and more options are accessible there. See the [configuration file documentation](docs/options.md) for more details.
 - **Caching**: For efficiency, Pympress caches rendered pages (up to 200 by default). If this is too memory consuming for you, you can change this number in the configuration file.
 
 ## Command line arguments
