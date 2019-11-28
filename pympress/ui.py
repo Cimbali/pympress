@@ -497,8 +497,8 @@ class UI(builder.Builder):
         about = Gtk.AboutDialog(transient_for = self.p_win)
         pympress = util.get_pympress_meta()
         about.set_program_name('pympress')
-        about.set_version(pympress.__version__)
-        about.set_copyright(_('Contributors:') + '\n' + pympress.__author__)
+        about.set_version(pympress['version'])
+        about.set_copyright(_('Contributors:') + '\n' + pympress['contributors'])
         about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n')
                          + _('Some preferences are saved in ') + self.config.path_to_config() + '\n'
                          + _('Resources are loaded from ') + os.path.dirname(util.get_locale_dir()) + '\n'

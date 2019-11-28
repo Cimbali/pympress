@@ -143,7 +143,7 @@ def main(argv = sys.argv[1:]):
         Gdk.set_allowed_backends('x11,*')
     Gtk.init(argv)
 
-    pympress_meta = util.get_pympress_meta().__version__
+    pympress_meta = util.get_pympress_meta()['version']
     logger.info(' '.join(['Pympress:', pympress_meta,
             '; Python:', platform.python_version(),
             '; OS:', platform.system(), platform.release(), #platform.version(),

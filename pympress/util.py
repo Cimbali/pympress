@@ -32,9 +32,11 @@ logger = logging.getLogger(__name__)
 
 import subprocess
 import importlib
-import pkg_resources
 import os, sys
 
+if not getattr(sys, 'frozen', False):
+    # doesn’t play too well with cx_Freeze
+    import pkg_resources
 
 IS_POSIX = os.name == 'posix'
 IS_MAC_OS = sys.platform == 'darwin'
@@ -59,27 +61,30 @@ def get_pympress_meta():
     """ Get metadata (version, etc) from pympress' __init__.py
     """
     module = importlib.import_module('pympress.__init__')
-    try:
-        dist = pkg_resources.get_distribution('pympress')
-    except:
-        return module
+    info = {'version': module.__version__, 'contributors': module.__author__}
 
-    module.__version__ = dist.version
-    command = [c.format(dir = dist.module_path) for c in 'git -C {dir} describe --tags --long --dirty'.split()]
+    if getattr(sys, 'frozen', False):
+        return info
 
+    # Try and get a git describe output in case we are on a dirty/editable version
     try:
+        path = pkg_resources.get_distribution('pympress').module_path
+
+        command = 'git --git-dir={}/.git describe --tags --long --dirty'.split()
+        command[1] = command[1].format(path)  # after spliting in case path has whitespace
+
         git_version = subprocess.check_output(command, stderr = subprocess.DEVNULL)
-    except:
-        return module
 
-    # answer format is: {last tag}-{commit count since tag}-g{commit sha1 hash}[-dirty]
-    parts = git_version.decode('utf-8').strip().split('-', 4)
-    tag, count, sha = parts[:3]
-    if count == '0' and not len(parts) > 3:
-        return tag
-    module.__version__ = '{}+{}@{}'.format(tag.lstrip('v'), count, sha.lstrip('g'))
+        # answer format is: {last tag}-{commit count since tag}-g{commit sha1 hash}[-dirty]
+        tag, count, sha, *dirty = git_version.decode('utf-8').strip().split('-', 4)
+        if count != '0' or dirty:
+            info['version'] = '{}+{}@{}'.format(tag.lstrip('v'), count, sha.lstrip('g'))
 
-    return module
+    except (pkg_resources.DistributionNotFound, subprocess.CalledProcessError):
+        logger.debug('Failed to get git describe output', exc_info = True)
+
+    finally:
+        return info
 
 
 def __get_resource_path(*path_parts):
