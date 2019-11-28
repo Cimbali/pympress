@@ -138,6 +138,12 @@ class TimeLabelColorer(object):
 
 
 class TimeCounter(object):
+    """ A double counter, that displays the time elapsed in the talk and a clock.
+
+    Args:
+        builder (builder.Builder): The builder from which to load widgets.
+        ett (`int`): the estimated time for the talk, in seconds.
+    """
     #: Elapsed time :class:`~Gtk.Label`.
     label_time = None
     #: Clock :class:`~Gtk.Label`.
@@ -159,12 +165,6 @@ class TimeCounter(object):
     ett = None
 
     def __init__(self, builder, ett):
-        """ Setup the talk time.
-
-        Args:
-            builder (builder.Builder): The builder from which to load widgets.
-            ett (`int`): the estimated time for the talk, in seconds.
-        """
         super(TimeCounter, self).__init__()
 
         self.label_colorer = TimeLabelColorer(builder.get_object('label_time'))

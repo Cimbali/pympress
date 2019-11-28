@@ -730,6 +730,8 @@ class Document(object):
 
     @staticmethod
     def path_to_uri(path):
+        """ Transform a path to a file URI, and maintains others URIs.
+        """
         # Do not trust urlsplit, manually check we have an URI
         pos = path.index(':') if ':' in path else -1
         if path[pos:pos + 3] == '://' or (pos > 1 and set(path[:pos]) <= scheme_chars):

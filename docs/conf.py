@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# pympress documentation build configuration file, created by
-# sphinx-quickstart on Fri Dec  9 19:03:18 2016.
-#
 # This file is execfile()d with the current directory set to its
 # containing dir.
 #
@@ -12,6 +9,9 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
+
+""" pympress documentation build configuration file for sphinx_build.
+"""
 
 from __future__ import print_function
 
@@ -61,7 +61,7 @@ source_suffix = ['.md']
 github_doc_root = 'https://cimbali.github.io/pympress/'
 
 def rewrite_link(url):
-    """ Make relative links in README relative to docs/ or absolute
+    """ Make relative links in README relative to "docs/" or absolute.
     """
     split_url = urlsplit(url)
     if split_url.netloc or not split_url.path:
@@ -172,7 +172,7 @@ todo_include_todos = True
 
 
 def load_epydoc_as_intersphinx_v2(url):
-    """ Get an epydoc objects list from an URL and convert it to intershphinx v2 format
+    """ Get an epydoc objects list from an URL and convert it to intershphinx v2 format.
 
     Arguments:
         url (`str`): the URL where the documentation is available. In particular url + '/api-objects.txt'

@@ -37,6 +37,13 @@ from pympress import builder, extras
 
 
 class Scribbler(builder.Builder):
+    """ UI that allows to draw free-hand on top of the current slide.
+
+    Args:
+        config (:class:`~pympress.config.Config`): A config object containing preferences
+        builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+        notes_mode (`bool`): The current notes mode, i.e. whether we display the notes on second slide
+    """
     #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
     scribbling_mode = False
     #: `list` of scribbles to be drawn, as tuples of color :class:`~Gdk.RGBA`, width `int`, and a `list` of points.
@@ -91,13 +98,6 @@ class Scribbler(builder.Builder):
     stop_zooming = lambda: None
 
     def __init__(self, config, builder, notes_mode):
-        """ Setup all the necessary for scribbling.
-
-        Args:
-            config (:class:`~pympress.config.Config`): A config object containing preferences
-            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
-            notes_mode (`bool`): The current notes mode, i.e. whether we display the notes on second slide
-        """
         super(Scribbler, self).__init__()
 
         self.load_ui('highlight')

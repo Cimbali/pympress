@@ -34,6 +34,8 @@ from gi.repository import Gtk, Gdk, GLib
 
 
 class EditableLabel(object):
+    """ A label that can switch between simply displaying a value, and allowing user input to edit this value.
+    """
     #: :class:`~Gtk.EventBox` around the label, used to sense clicks
     event_box = None
 
@@ -85,14 +87,20 @@ class EditableLabel(object):
 
 
     def validate(self):
+        """ Validate the input to the label. Needs to be reimplemented by children classes.
+        """
         raise NotImplementedError
 
 
     def cancel(self):
+        """ Cancel editing the label. Needs to be reimplemented by children classes.
+        """
         pass
 
 
     def more_actions(self, event, name):
+        """ Perform actions based on passed key strokes or other events. Needs to be reimplemented by children classes.
+        """
         raise NotImplementedError
 
 
@@ -156,6 +164,11 @@ class EditableLabel(object):
 
 
 class PageNumber(EditableLabel):
+    """ A label that displays "current page / max page", that can be edited to select a page to which to go.
+
+    Args:
+        builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+    """
     #: Slide counter :class:`~Gtk.Label` for the current slide.
     label_cur = None
     #: Slide counter :class:`~Gtk.Label` for the last slide.
@@ -192,11 +205,6 @@ class PageNumber(EditableLabel):
     stop_editing_est_time = lambda: None
 
     def __init__(self, builder, page_num_scroll):
-        """ Load all the widgets we need from the spinner.
-
-        Args:
-            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
-        """
         super(PageNumber, self).__init__()
 
         # The spinner's scroll is with page numbers, invert to scroll with pages
@@ -422,6 +430,15 @@ class PageNumber(EditableLabel):
 
 
 class EstimatedTalkTime(EditableLabel):
+    """ A label that displays the time elapsed since the start of the talk, that can be edited to select talk duration.
+
+    The duration of the talk will cause the label to blink and change colour as the elapsed time gets closer to the
+    targeted talk duration.
+
+    Args:
+        builder (builder.Builder): The builder from which to load widgets.
+        ett (`int`): the estimated time for the talk, in seconds.
+    """
     #: Elapsed time :class:`~Gtk.Label`.
     label_time = None
     #: Estimated talk time :class:`~Gtk.Label` for the talk.
@@ -439,12 +456,6 @@ class EstimatedTalkTime(EditableLabel):
 
 
     def __init__(self, builder, ett = 0):
-        """ Setup the talk time.
-
-        Args:
-            builder (builder.Builder): The builder from which to load widgets.
-            ett (`int`): the estimated time for the talk, in seconds.
-        """
         super(EstimatedTalkTime, self).__init__()
 
         self.entry_ett = Gtk.Entry()
@@ -470,7 +481,7 @@ class EstimatedTalkTime(EditableLabel):
 
 
     def validate(self):
-        """ Update estimated talk time from the input/.
+        """ Update estimated talk time from the input.
         """
         text = self.entry_ett.get_text()
 

@@ -21,7 +21,6 @@
 """
 :mod:`pympress.config` -- Configuration
 ---------------------------------------
-
 """
 
 from __future__ import print_function, unicode_literals
@@ -69,6 +68,10 @@ try:
 
 except NameError:
     def recursive_unicode_to_str(obj):
+        """ Dummy function that does nothing, for python3.
+
+        For python2 the equivalent function transforms strings to unicode.
+        """
         return obj
 
 

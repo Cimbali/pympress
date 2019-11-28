@@ -38,6 +38,8 @@ from pympress import util, extras
 
 
 class PointerMode(enum.Enum):
+    """ Possible values for the pointer.
+    """
     #: Pointer switched on continuously
     CONTINUOUS = 2
     #: Pointer switched on only manual
@@ -47,6 +49,15 @@ class PointerMode(enum.Enum):
 
 
 class Pointer(object):
+    """ Manage and draw the software “laser pointer” to point at the slide.
+
+    Displays a pointer of chosen color on the current slide (in both windows), either on all the time or only when
+    clicking while ctrl pressed.
+
+    Args:
+        config (:class:`~pympress.config.Config`): A config object containing preferences
+        builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+    """
     #: :class:`~GdkPixbuf.Pixbuf` to read XML descriptions of GUIs and load them.
     pointer = GdkPixbuf.Pixbuf()
     #: `(float, float)` of position relative to slide, where the pointer should appear
@@ -72,12 +83,6 @@ class Pointer(object):
     redraw_current_slide = lambda: None
 
     def __init__(self, config, builder):
-        """ Setup the pointer management, and load the default pointer.
-
-        Args:
-            config (:class:`~pympress.config.Config`): A config object containing preferences
-            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
-        """
         super(Pointer, self).__init__()
         self.config = config
 

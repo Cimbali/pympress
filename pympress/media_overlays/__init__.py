@@ -19,7 +19,7 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-""" Backends for video overlay widgets
+""" Backends for video overlay widgets.
 """
 
 __all__ = ['base', 'gif_backend', 'gst_backend', 'vlc_backend']

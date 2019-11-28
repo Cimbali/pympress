@@ -19,6 +19,10 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
+"""
+:mod:`pympress.__main__` -- The entry point of pympress
+-------------------------------------------------------
+"""
 
 from __future__ import print_function, unicode_literals
 
@@ -41,6 +45,8 @@ logging.basicConfig(filename=util.get_log_path(), level=logging.DEBUG)
 
 
 def uncaught_handler(*exc_info):
+    """ Exception handler, to log uncuaght exceptiosn to our log file.
+    """
     logger.critical('Uncaught exception:\n{}'.format(logging.Formatter().formatException(exc_info)))
     sys.__excepthook__(*exc_info)
 
@@ -89,6 +95,8 @@ from pympress import extras, document, ui
 
 
 def usage():
+    """ Display how to use the command line options.
+    """
     print(_('Usage: {} [options] <presentation_file>').format(sys.argv[0]))
     print('')
     print(_('Options:'))
@@ -110,6 +118,11 @@ def usage():
 
 
 def parse_opts(opts):
+    """ Parse command line options, returned from getopt.getopt().
+
+    Returns:
+        `tuple`: estimated talk time, log level, notes positions.
+    """
     ett = 0
     log_level = logging.ERROR
     notes_pos = None
@@ -149,6 +162,8 @@ def parse_opts(opts):
 
 
 def main(argv = sys.argv[1:]):
+    """ Entry point of pympress. Parse command line arguments, instantiate the UI, and start the main loop.
+    """
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     # prefere X11 on posix systems because Wayland still has some shortcomings for us,

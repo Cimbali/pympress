@@ -45,6 +45,8 @@ from pympress.media_overlays.base import VideoOverlay
 
 
 class TimingReport(builder.Builder):
+    """ Widget tracking and displaying hierachically how much time was spent in each page/section of the presentation.
+    """
     #: `list` of time at which each page was reached
     page_time = []
     #: `int` the time at which the clock was reset
@@ -157,6 +159,11 @@ class TimingReport(builder.Builder):
 
 
 class Annotations(object):
+    """ Widget displaying a PDF’s text annotations into a tree view.
+
+    Args:
+        annotations (`list`): A list of strings, that are the annotations to be displayed
+    """
     #: The containing widget for the annotations
     scrollable_treelist = None
     #: Making the annotations list scroll if it's too long
@@ -165,11 +172,6 @@ class Annotations(object):
     annotation_renderer = None
 
     def __init__(self, builder):
-        """ Load the widgets and setup for the annotations' display.
-
-        Args:
-            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
-        """
         super(Annotations, self).__init__()
         builder.load_widgets(self)
 
@@ -177,10 +179,7 @@ class Annotations(object):
 
 
     def add_annotations(self, annotations):
-        """ Insert text annotations into the tree view that displays them.
-
-        Args:
-            annotations (`list`): A list of strings, that are the annotations to be displayed
+        """ Add annotations to be displayed (typically on going to a new slide).
         """
         prev_annots = self.scrollable_treelist.get_model()
         if prev_annots:
@@ -226,6 +225,12 @@ class Annotations(object):
 
 
 class Media(object):
+    """ Class managing statically the medias and media player backends, to enable play/pause callbacks.
+
+    Args:
+        builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+        conf (:class:`~pympress.config.Config`): An object containing the preferences
+    """
     #: `dict` of :class:`~pympress.media_overlays.base.VideoOverlay` ready to be added on top of the slides
     _media_overlays = {}
 
@@ -243,12 +248,6 @@ class Media(object):
     _backend_versions = []
 
     def __init__(self, builder, conf):
-        """ Set up the required widgets and queue an initial draw.
-
-        Args:
-            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
-            conf (:class:`~pympress.config.Config`): An object containing the preferences
-        """
         super(Media, self).__init__()
         self._setup_backends(conf)
         builder.load_widgets(self)
@@ -473,6 +472,8 @@ class Media(object):
 
 
 class Cursor(object):
+    """ Class managing cursors statically for displays, so we can select the mouse cursor with a simple string.
+    """
     #: a static `dict` of :class:`~Gdk.Cursor`s, ready to use
     _cursors = {
         'parent': None,
@@ -505,6 +506,11 @@ class Cursor(object):
 
 
 class Zoom(object):
+    """ Manage the zoom level (using a cairo matrix), draw area that will be zoomed while it is being selected.
+
+    Args:
+        builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+    """
     #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
     zoom_selecting = False
     zoom_points = None
@@ -524,11 +530,6 @@ class Zoom(object):
     clear_cache = lambda: None
 
     def __init__(self, builder):
-        """ Setup all the necessary for zooming.
-
-        Args:
-            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
-        """
         super(Zoom, self).__init__()
         builder.load_widgets(self)
 

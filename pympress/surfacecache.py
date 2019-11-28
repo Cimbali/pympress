@@ -48,6 +48,10 @@ class OrderedDict(collections.OrderedDict):
     """ OrderedDict for python2 compatibility, adding move_to_end().
     """
     def move_to_end(self, key):
+        """ Move an existing key to either end of an ordered dictionary.
+
+        Forward or reimplement :meth:`~collections.OrderedDict.move_to_end`
+        """
         try:
             collections.OrderedDict.move_to_end(self, key)
         except AttributeError:

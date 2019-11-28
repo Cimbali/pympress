@@ -20,6 +20,12 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
+""" pympress setup script.
+
+Mostly wrapping logic for freezing (with cx_Freeze for windows builds).
+All configuration is in setup.cfg.
+"""
+
 import os
 import sys
 import glob

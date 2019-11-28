@@ -50,10 +50,9 @@ if IS_WINDOWS:
         import _winreg as winreg
 
 try:
-    PermissionError()
+    PermissionError
 except NameError:
-    class PermissionError(Exception):
-        pass
+    PermissionError = OSError
 
 
 
