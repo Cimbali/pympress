@@ -544,13 +544,13 @@ class UI(builder.Builder):
 
         # Guess notes mode by default if the document has notes
         if not reloading:
-            target_mode = self.chosen_notes_mode = self.doc.guess_notes()
+            hpref = self.config.get('notes position', 'horizontal')
+            vpref = self.config.get('notes position', 'vertical')
+            self.chosen_notes_mode = target_mode = self.doc.guess_notes(hpref, vpref)
 
-            # Special cases: don't let us toggle with NONE, give A4 documents the benefit of the doubt?
+            # don't toggle from NONE to NONE
             if self.chosen_notes_mode == document.PdfPage.NONE:
                 self.chosen_notes_mode = document.PdfPage.RIGHT
-            elif self.chosen_notes_mode == document.PdfPage.BOTTOM:
-                target_mode = document.PdfPage.NONE
 
             if self.notes_mode != target_mode:
                 self.switch_mode('swap_document', docpath, target_mode = target_mode)
@@ -1302,7 +1302,7 @@ class UI(builder.Builder):
 
 
     def change_notes_pos(self, widget, event = None, force_change = False):
-        """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
+        """ Switch the position of the nodes in the slide.
 
         Returns:
             `bool`: whether the mode has been toggled.
@@ -1326,6 +1326,7 @@ class UI(builder.Builder):
         if target_mode:
             self.chosen_notes_mode = target_mode
             self.get_object('notes_' + target_mode.name.lower()).set_active(True)
+            self.config.set('notes position', target_mode.direction(), target_mode.name.lower())
 
         # Change the notes arrangement if they are enabled or if we are forced to
         if self.notes_mode or force_change:
@@ -1345,7 +1346,7 @@ class UI(builder.Builder):
             # Exit to not risk double-toggling. Button is now in sync and can be toggled again correctly.
             return False
 
-        if not target_mode:
+        if target_mode is None:
             target_mode = document.PdfPage.NONE if self.notes_mode else self.chosen_notes_mode
 
         if target_mode == self.notes_mode:

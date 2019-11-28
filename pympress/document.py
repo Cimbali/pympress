@@ -40,6 +40,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import os
+import math
 import enum
 import tempfile
 import mimetypes
@@ -102,6 +103,15 @@ class PdfPage(enum.IntEnum):
         """ Return the enum value that does only scaling not shifting
         """
         return PdfPage(val | 1)
+
+
+    def direction(val):
+        """ Returns whether the pdf page/notes mode is horizontal or vertical
+
+        Returns:
+            `str`: a string representing the direction that can be used as the key in the config section
+        """
+        return 'horizontal' if val >= 4 else 'vertical'
 
 
     def from_screen(val, x, y, x2 = None, y2 = None):
@@ -605,8 +615,6 @@ class Document(object):
     nb_pages = -1
     #: Number of the current page
     cur_page = -1
-    #: :class:`~pympress.document.PdfPage` representing our best guess for the notes position in this document
-    notes = PdfPage.NONE
     #: Pages cache (`dict` of :class:`~pympress.document.Page`). This makes
     #: navigation in the document faster by avoiding calls to Poppler when loading
     #: a page that has already been loaded.
@@ -648,20 +656,6 @@ class Document(object):
 
         # Pages cache
         self.pages_cache = {}
-
-        # Guess if the document has notes
-        page0 = self.page(page)
-        if page0 is not None:
-            # "Regular" pages will have an apsect ratio of 4/3, 16/9, 16/10...
-            # Full A4 pages will have an aspect ratio < 1.
-            # So if the aspect ratio is >= 2, we can assume it is a document with notes.
-            ar = page0.get_aspect_ratio()
-            if ar >= 2:
-                self.notes = PdfPage.RIGHT
-            elif ar < 1:
-                self.notes = PdfPage.BOTTOM
-            else:
-                self.notes = PdfPage.NONE
 
 
     def get_structure(self, index_iter = None):
@@ -765,13 +759,42 @@ class Document(object):
         return doc
 
 
-    def guess_notes(self):
+    def guess_notes(self, horizontal, vertical):
         """ Get our best guess for the document mode.
+
+        Args:
+            horizontal (`str`): A string representing the preference for horizontal slides
+            vertical (`str`): A string representing the preference for vertical slides
 
         Returns:
             :class:`~pympress.document.PdfPage`: the notes mode
         """
-        return self.notes
+        page = self.page(self.cur_page) or self.page(0)
+        if page is None:
+            return PdfPage.NONE
+
+        ar = page.get_aspect_ratio()
+
+        # "Regular" slides will have an aspect ratio of 4/3, 16/9, 16/10... i.e. in the range [1..2]
+        # So if the aspect ratio is >= 2, we can assume it is a document with notes on the side.
+        if ar >= 2:
+            try:
+                return PdfPage[horizontal.upper()]
+            except KeyError:
+                return PdfPage.RIGHT
+
+        # Make exception for classic american letter format and ISO (A4, B5, etc.)
+        if abs(ar - 8.5 / 11) < 1e-3 or abs(ar - 1 / math.sqrt(2)) < 1e-3:
+            return PdfPage.NONE
+
+        # If the aspect ratio is < 1, we can assume it is a document with notes above or below.
+        if ar < 1:
+            try:
+                return PdfPage[vertical.upper()]
+            except KeyError:
+                return PdfPage.BOTTOM
+
+        return PdfPage.NONE
 
 
     def page(self, number):
