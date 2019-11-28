@@ -141,7 +141,7 @@ class UI(builder.Builder):
     #: Software-implemented laser pointer, :class:`~pympress.pointer.Pointer`
     laser = None
 
-    #: :class:`~pympress.editable_label.PageNumber` displaying current and max page numbers and setting current page number
+    #: :class:`~pympress.editable_label.PageNumber` displaying and setting current page numbers
     page_number = None
 
     #: :class:`~pympress.editable_label.EstimatedTalkTime` to set estimated/remaining talk time
@@ -324,7 +324,8 @@ class UI(builder.Builder):
             c_full = self.config.getboolean('content', 'start_fullscreen')
 
             if c_monitor == p_monitor and (c_full or p_full):
-                logger.warning(_("Content and presenter window must not be on the same monitor if you start full screen!"))
+                warning = _('Content and presenter window must not be on the same monitor if you start full screen!')
+                logger.warning(warning)
                 p_monitor = 0 if c_monitor > 0 else 1
         else:
             c_monitor = 0
@@ -332,8 +333,10 @@ class UI(builder.Builder):
             c_full = False
             p_full = False
 
-            if self.config.getboolean('presenter', 'start_fullscreen') or self.config.getboolean('content', 'start_fullscreen'):
-                logger.warning(_("Not starting content or presenter window full screen because there is only one monitor"))
+            if self.config.getboolean('presenter', 'start_fullscreen') \
+                    or self.config.getboolean('content', 'start_fullscreen'):
+                logger.warning(_('Not starting content or presenter window full screen ' +
+                                 'because there is only one monitor'))
 
         p_bounds = screen.get_monitor_geometry(p_monitor)
         self.p_win.move(p_bounds.x, p_bounds.y)
@@ -425,7 +428,9 @@ class UI(builder.Builder):
 
 
     def redraw_panes(self):
-        """ Handler for :class:`~Gtk.Paned`'s resizing signal, used for delayed drawing events of drawing areas inside the panes.
+        """ Handler for :class:`~Gtk.Paned`'s resizing signal.
+
+        Used for delayed drawing events of drawing areas inside the panes.
 
         This is very useful on windows where resizing gets sluggish if we try to redraw while resizing.
         """
@@ -499,7 +504,8 @@ class UI(builder.Builder):
         about.set_program_name('pympress')
         about.set_version(pympress['version'])
         about.set_copyright(_('Contributors:') + '\n' + pympress['contributors'])
-        about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n') +
+        about.set_comments(_('pympress is a little PDF reader written in Python ' +
+                             'using Poppler for PDF rendering and GTK for the GUI.\n') +
                            _('Some preferences are saved in ') + self.config.path_to_config() + '\n' +
                            _('Resources are loaded from ') + os.path.dirname(util.get_locale_dir()) + '\n' +
                            _('The log is written to ') + util.get_log_path() + '\n\n' +

@@ -236,7 +236,8 @@ class Media(object):
 
     #: static `bool` tracking whether we've already done the one-time setup
     _backends_setup = False
-    #: `dict` of mime type as `str` to the `type` of a class inheriting from :class:`~pympress.media_overlays.base.VideoOverlay`
+    #: `dict` containing the mapping from mime types (as `str`)
+    #: to classes inheriting from :class:`~pympress.media_overlays.base.VideoOverlay`
     _backends = {}
     # `list` of info on backend versions
     _backend_versions = []
@@ -290,7 +291,8 @@ class Media(object):
                 factory = self.get_factory(mime_type)
 
                 if not factory:
-                    logger.warning('No available overlay for mime type {}, ignoring media {}'.format(mime_type, filename))
+                    logger.warning('No available overlay for mime type {}, ignoring media {}'
+                                   .format(mime_type, filename))
                     continue
 
                 def get_curryfied_callback(name, media_id = media_id):

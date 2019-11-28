@@ -67,10 +67,13 @@ try:
     from gi.repository import Gtk, Gdk, GLib
 except ModuleNotFoundError:
     logger.critical('Gobject Introspections module is missing', exc_info = True)
-    print('\n' + _('ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system.'))
-    print('\n' + _('For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies'))
-    print(_('If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject'))
-    print(_('pip will then download and compile pygobject, for which you need the Gtk headers (or development package).') + '\n')
+    print('\n' + _('ERROR: Gobject Introspections module is missing, ' +
+                   'make sure Gtk and pygobject are installed on your system.') + '\n')
+    print(_('For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies'))
+    print(_('If using a virtualenv or anaconda, you can either allow system site packages, ' +
+            'or run: pip install pygobject'))
+    print(_('pip will then download and compile pygobject, ' +
+            'for which you need the Gtk headers (or development package).') + '\n')
     exit(1)
 
 
@@ -80,17 +83,24 @@ from pympress import extras, document, ui
 
 
 def usage():
-    print(_("Usage: {} [options] <presentation_file>").format(sys.argv[0]))
-    print("")
-    print(_("Options:"))
-    print("    -h, --help                       " + _("This help"))
-    print("    -t mm[:ss], --talk-time=mm[:ss]  " + _("The estimated (intended) talk time in minutes"))
-    print("                                       " + _("(and optionally seconds)"))
-    print("    -n position, --notes=position    " + _("Set the position of notes on the pdf page (none, left, right, top, or bottom)."))
-    print("                                       " + _("Overrides the detection from the file."))
-    print("    --log=level                      " + _("Set level of verbosity in log file:"))
-    print("                                       " + _("{}, {}, {}, {}, or {}").format("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"))
-    print("")
+    print(_('Usage: {} [options] <presentation_file>').format(sys.argv[0]))
+    print('')
+    print(_('Options:'))
+    print('    -h, --help                       ', end='')
+    print(_('This help'))
+    print('    -t mm[:ss], --talk-time=mm[:ss]  ', end='')
+    print(_('The estimated (intended) talk time in minutes'))
+    print('                                       ', end='')
+    print(_('(and optionally seconds)'))
+    print('    -n position, --notes=position    ', end='')
+    print(_('Set the position of notes on the pdf page (none, left, right, top, or bottom).'))
+    print('                                       ', end='')
+    print(_('Overrides the detection from the file.'))
+    print('    --log=level                      ', end='')
+    print(_('Set level of verbosity in log file:'))
+    print('                                       ', end='')
+    print(_('{}, {}, {}, {}, or {}').format('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'))
+    print()
 
 
 def parse_opts(opts):
@@ -150,7 +160,7 @@ def main(argv = sys.argv[1:]):
         '; GLib {}.{}.{}'.format(GLib.MAJOR_VERSION, GLib.MINOR_VERSION, GLib.MICRO_VERSION),
         '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
         '; Cairo', ui.cairo.cairo_version_string(), ', pycairo', ui.cairo.version,
-        '; Media:', extras.Media.backend_version
+        '; Media:', extras.Media.backend_version()
     ]))
 
     try:

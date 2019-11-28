@@ -99,8 +99,8 @@ class EditableLabel(object):
     def on_keypress(self, widget, event, name = None, command = None):
         """ Manage key presses for the editable label.
 
-        If we are editing the label, intercept some key presses (to validate or cancel editing or other specific behaviour),
-        otherwise pass the key presses on to the button for normal behaviour.
+        If we are editing the label, intercept some key presses (to validate or cancel editing or other specific
+        behaviour), otherwise pass the key presses on to the button for normal behaviour.
 
         Args:
             widget (:class:`~Gtk.Widget`):  the widget which has received the event.
@@ -278,7 +278,9 @@ class PageNumber(EditableLabel):
 
 
     def more_actions(self, event, name):
-        """ Implement directions (left/right/home/end) keystrokes, otherwise pass on to :func:`~Gtk.SpinButton.do_key_press_event()`.
+        """ Implement directions (left/right/home/end) keystrokes.
+
+        Otherwise pass on to :func:`~Gtk.SpinButton.do_key_press_event()`.
         """
         modified = event.get_state() & Gdk.ModifierType.CONTROL_MASK or event.get_state() & Gdk.ModifierType.SHIFT_MASK
 

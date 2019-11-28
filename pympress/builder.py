@@ -150,7 +150,7 @@ class Builder(Gtk.Builder):
     def get_callback_handler(self, handler_name):
         """ Convenience non-static wrapper function for :func:`find_callback_handler` to search in the builder object.
 
-        The `handler_name` function must be a method of this builder (realistically, of an inherited UI class' instance).
+        The `handler_name` function must be a method of this builder (realistically, of an inherited UI class instance).
 
         Args:
             handler_name (`str`): The name of the function to be connected to a signal
@@ -184,10 +184,11 @@ class Builder(Gtk.Builder):
 
 
     def connect_signals(self, base_target):
-        """ Override default signal connector so we can map signals to the methods of (any depth of) object that are properties of self.
+        """ Signal connector connecting to properties of `base_target`, or properties of its properties, etc.
 
         Args:
-            base_target (:class:`~pympress.builder.Builder`): The target object, that has functions to be connected to signals loaded in this builder.
+            base_target (:class:`~pympress.builder.Builder`): The target object, that has functions to be connected to
+            signals loaded in this builder.
         """
         Builder.connect_signals_full(base_target, self.signal_connector)
 
@@ -196,7 +197,7 @@ class Builder(Gtk.Builder):
         """ Loads the UI defined in the file named resource_name using the builder.
 
         Args:
-            resource_name (`str`): the name of the glade file (basename without extension), identifying which resource to load.
+            resource_name (`str`): the basename of the glade file (without extension), identifying the resource to load.
         """
         self.add_from_file(util.get_ui_resource_file(resource_name))
 
@@ -208,7 +209,8 @@ class Builder(Gtk.Builder):
             # pass new objects to manual translation
             self.__translate_widget_strings(obj)
 
-            # instrospectively load objects. If we have a self.attr == None and this attr is the name of a built object, link it together.
+            # Instrospectively load objects. If we have a self.attr == None and this attr is the name of a built object,
+            # link it together.
             if issubclass(type(obj), Gtk.Buildable):
                 obj_id = Gtk.Buildable.get_name(obj)
 
@@ -233,10 +235,10 @@ class Builder(Gtk.Builder):
     def load_widgets(self, target):
         """ Fill in target with the missing elements introspectively.
 
-        This means that all attributes of target that are None at this time must exist under the same name in the builder.
+        This means that all attributes of `target` that are None now must exist under the same name in the builder.
 
         Args:
-            target (`dict`): An object with None-valued attributes that have the same name as built widgets, loaded from the glade file.
+            target (`dict`): An object with None-valued properties whose names correspond to ids of built widgets.
         """
         for attr in self.list_attributes(target):
             setattr(target, attr, self.get_object(attr))
@@ -252,7 +254,7 @@ class Builder(Gtk.Builder):
             pane_resize_handler (function): callback function to be called when the panes are resized
 
         Returns:
-            `dict`: The mapping of the used :class:`~Gtk.Paned` widgets to their relative handle position (float between 0 and 1)
+            `dict`: The mapping of the used :class:`~Gtk.Paned` widgets to their relative handle position (in 0..1).
         """
         # take apart the previous/default layout
         containers = []
@@ -345,12 +347,13 @@ class Builder(Gtk.Builder):
 
 
     def resize_paned(self, paned, rect, relpos):
-        """ Resize `~paned` to have its handle at `~relpos`, then disconnect this signal handler.
+        """ Resize `paned` to have its handle at `relpos`, then disconnect this signal handler.
 
         Called from the :func:`Gtk.Widget.signals.size_allocate` signal.
 
         Args:
-            paned (:class:`~Gtk.Paned`): Panel whose size has just been allocated, and whose handle needs initial placement.
+            paned (:class:`~Gtk.Paned`): Panel whose size has just been allocated, and whose handle needs initial
+                                         placement.
             rect (:class:`~Gdk.Rectangle`): The rectangle specifying the size that has just been allocated to `~paned`
             relpos (`float`): A number between `0.` and `1.` that specifies the handle position
 
