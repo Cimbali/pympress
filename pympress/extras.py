@@ -71,7 +71,7 @@ class TimingReport(builder.Builder):
         """
         if self.reset_time >= 0:
             self.reset_time = -1
-            self.page_time.clear()
+            del self.page_time[:]
         self.page_time.append((page, time))
 
 

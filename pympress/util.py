@@ -79,7 +79,7 @@ def get_pympress_meta():
         git_version = subprocess.check_output(command, stderr = subprocess.DEVNULL)
 
         # answer format is: {last tag}-{commit count since tag}-g{commit sha1 hash}[-dirty]
-        tag, count, sha, *dirty = git_version.decode('utf-8').strip().split('-', 4)
+        tag, count, sha, dirty = (git_version + '-').decode('utf-8').strip().split('-', 3)
         if count != '0' or dirty:
             info['version'] = '{}+{}@{}'.format(tag.lstrip('v'), count, sha.lstrip('g'))
 

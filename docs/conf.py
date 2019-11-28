@@ -13,9 +13,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-# Get package version
-import importlib
-pkg_meta = importlib.import_module('pympress.__init__')
+from __future__ import print_function
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -28,6 +26,8 @@ from recommonmark.transform import AutoStructify
 import os
 import re
 import subprocess
+import importlib
+
 from urllib.parse import urlsplit, urlunsplit, urljoin
 
 # -- General configuration ------------------------------------------------
@@ -104,6 +104,7 @@ def setup(app):
 master_doc = 'index'
 
 # General information about the project.
+pkg_meta = importlib.import_module('pympress.__init__')
 project = 'Pympress'
 copyright = '2009-2011, Thomas Jost; 2015-2017 Cimbali'
 author = 'Thomas Jost, Cimbali'

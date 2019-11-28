@@ -57,6 +57,12 @@ locale.setlocale(locale.LC_ALL, '')
 gettext.install('pympress', util.get_locale_dir())
 
 
+try:
+    # python 2.7 does not have this
+    ModuleNotFoundError
+except NameError:
+    ModuleNotFoundError = ImportError
+
 
 # Load python bindings for gobject introspections, aka pygobject, aka gi.
 # This is a dependency that is not specified in the setup.py, so we need to start here
