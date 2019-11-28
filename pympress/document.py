@@ -19,7 +19,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-
 """
 :mod:`pympress.document` -- document handling
 ---------------------------------------------
@@ -65,7 +64,7 @@ def get_extension(mime_type):
     """ Returns a valid filename extension (recognized by python) for a given mime type.
 
     Args:
-        mimetype (`str`): The mime type for which to find an extension
+        mime_type (`str`): The mime type for which to find an extension
 
     Returns:
         `str`: A file extension used for the given mimetype
@@ -100,13 +99,13 @@ class PdfPage(enum.IntEnum):
 
 
     def scale(val):
-        """ Return the enum value that does only scaling not shifting
+        """ Return the enum value that does only scaling not shifting.
         """
         return PdfPage(val | 1)
 
 
     def direction(val):
-        """ Returns whether the pdf page/notes mode is horizontal or vertical
+        """ Returns whether the pdf page/notes mode is horizontal or vertical.
 
         Returns:
             `str`: a string representing the direction that can be used as the key in the config section
@@ -209,12 +208,13 @@ class Link(object):
         Returns:
             `bool`: `True` if the input coordinates are within the link rectangle, `False` otherwise
         """
-        return ( (self.x1 <= x) and (x <= self.x2) and (self.y1 <= y) and (y <= self.y2) )
+        return ((self.x1 <= x) and (x <= self.x2) and (self.y1 <= y) and (y <= self.y2))
 
 
     @staticmethod
     def build_closure(fun, *args, **kwargs):
-        """ Return a lambda that calls fun(\*args, \**kwargs), with the current value of args and kwargs.
+        r""" Return a lambda that calls fun(\*args, \**kwargs), with the current value of args and kwargs.
+
         By creating the lambda in a new scope, we bind the arguments, thus creating a closure and remember the arguments.
 
         Args:
@@ -291,10 +291,10 @@ class Page(object):
                 if filepath:
                     # TODO there is no autoplay, or repeatCount
                     relative_margins = Poppler.Rectangle()
-                    relative_margins.x1 = annotation.area.x1 / self.pw       # left
-                    relative_margins.x2 = 1.0 - annotation.area.x2 / self.pw # right
-                    relative_margins.y1 = annotation.area.y1 / self.ph       # bottom
-                    relative_margins.y2 = 1.0 - annotation.area.y2 / self.ph # top
+                    relative_margins.x1 = annotation.area.x1 / self.pw        # left
+                    relative_margins.x2 = 1.0 - annotation.area.x2 / self.pw  # right
+                    relative_margins.y1 = annotation.area.y1 / self.ph        # bottom
+                    relative_margins.y2 = 1.0 - annotation.area.y2 / self.ph  # top
                     media = (relative_margins, filepath, movie.show_controls())
                     self.medias.append(media)
                     action = Link.build_closure(self.parent.play_media, hash(media))
@@ -313,7 +313,7 @@ class Page(object):
                 prefix, ext = os.path.splitext(attachment.name)
                 with tempfile.NamedTemporaryFile('wb', suffix=ext, prefix=prefix, delete=False) as f:
                     # now the file name is shotgunned
-                    filename=f.name
+                    filename = f.name
                     self.parent.remove_on_exit(filename)
                 if not attachment.save(filename):
                     logger.error(_("Pympress can not extract attached file"))
@@ -390,11 +390,11 @@ class Page(object):
                 # Same as the 'G' action which allows to pick a page to jump to
                 fun = Link.build_closure(self.parent.start_editing_page_number, )
             elif dest_name == "Find":
-                #TODO popup a text box and search results with Page.find_text
+                # TODO popup a text box and search results with Page.find_text
                 # http://lazka.github.io/pgi-docs/Poppler-0.18/classes/Page.html#Poppler.Page.find_text
                 fun = Link.build_closure(logger.warning, _("Pympress does not yet support link type \"{}\" to \"{}\"").format(link_type, dest_name))
             else:
-                #TODO find out other possible named actions?
+                # TODO find out other possible named actions?
                 fun = Link.build_closure(logger.warning, _("Pympress does not recognize link type \"{}\" to \"{}\"").format(link_type, dest_name))
 
         elif link_type == Poppler.ActionType.LAUNCH:
@@ -409,9 +409,9 @@ class Page(object):
             else:
                 fun = Link.build_closure(fileopen, filepath)
 
-        elif link_type == Poppler.ActionType.RENDITION: # Poppler 0.22
+        elif link_type == Poppler.ActionType.RENDITION:  # Poppler 0.22
             fun = Link.build_closure(logger.warning, _("Pympress does not yet support link type \"{}\"").format(link_type))
-        elif link_type == Poppler.ActionType.MOVIE: # Poppler 0.20
+        elif link_type == Poppler.ActionType.MOVIE:  # Poppler 0.20
             fun = Link.build_closure(logger.warning, _("Pympress does not yet support link type \"{}\"").format(link_type))
         elif link_type == Poppler.ActionType.URI:
             fun = Link.build_closure(webbrowser.open_new_tab, action.uri.uri)
@@ -446,7 +446,7 @@ class Page(object):
                 ext = get_extension(media.get_mime_type())
                 with tempfile.NamedTemporaryFile('wb', suffix=ext, prefix='pdf_embed_', delete=False) as f:
                     # now the file name is shotgunned
-                    filename=f.name
+                    filename = f.name
                     self.parent.remove_on_exit(filename)
                 if not media.save(filename):
                     logger.error(_("Pympress can not extract embedded media"))
@@ -454,15 +454,15 @@ class Page(object):
             else:
                 filename = self.parent.get_full_path(media.get_filename())
                 if not filename:
-                    logger.error(_("Pympress can not find file ")+media.get_filename())
+                    logger.error(_("Pympress can not find file ") + media.get_filename())
                     return None
 
             # TODO grab the show_controls, autoplay, repeat
             relative_margins = Poppler.Rectangle()
-            relative_margins.x1 = rect.x1 / self.pw       # left
-            relative_margins.x2 = 1.0 - rect.x2 / self.pw # right
-            relative_margins.y1 = rect.y1 / self.ph       # bottom
-            relative_margins.y2 = 1.0 - rect.y2 / self.ph # top
+            relative_margins.x1 = rect.x1 / self.pw        # left
+            relative_margins.x2 = 1.0 - rect.x2 / self.pw  # right
+            relative_margins.y1 = rect.y1 / self.ph        # bottom
+            relative_margins.y2 = 1.0 - rect.y2 / self.ph  # top
 
             media = (relative_margins, filename, False)
             self.medias.append(media)
@@ -485,8 +485,9 @@ class Page(object):
 
 
     def get_link_at(self, x, y, dtype=PdfPage.FULL):
-        """ Get the :class:`~pympress.document.Link` corresponding to the given
-        position, or `None` if there is no link at this position.
+        """ Get the :class:`~pympress.document.Link` corresponding to the given position.
+
+        Returns `None` if there is no link at this position.
 
         Args:
             x (`float`):  horizontal coordinate
@@ -561,13 +562,12 @@ class Page(object):
             wh (`int`):  target height in pixels
             dtype (:class:`~pympress.document.PdfPage`):  the type of document that should be rendered
         """
-
         pw, ph = self.get_size(dtype)
 
         cr.set_source_rgb(1, 1, 1)
 
         # Scale
-        scale = min(ww/pw, wh/ph)
+        scale = min(ww / pw, wh / ph)
         cr.scale(scale, scale)
 
         cr.rectangle(0, 0, pw, ph)
@@ -586,12 +586,13 @@ class Page(object):
 
 
     def can_render(self):
-        """ Informs that rendering *is* necessary (avoids checking the type)
+        """ Informs that rendering *is* necessary (avoids checking the type).
 
         Returns:
             `bool`: `True`, do rendering
         """
         return True
+
 
 
 class Document(object):
@@ -693,7 +694,7 @@ class Document(object):
                         page = action.goto_dest.dest.page_num - 1
                 else:
                     raise AssertionError('Unexpected type of action')
-            except:
+            except Exception:
                 logger.error(_('Unexpected action in index "{}"').format(action.type))
                 page = None
 
@@ -715,7 +716,7 @@ class Document(object):
 
                     try:
                         page = min(l for l, n in enumerate(self.page_labels) if n == self.page_labels[page] and l > lower_bound)
-                    except ValueError: # empty iterator
+                    except ValueError:  # empty iterator
                         page = lower_bound + 1
 
 
@@ -731,7 +732,7 @@ class Document(object):
     def path_to_uri(path):
         # Do not trust urlsplit, manually check we have an URI
         pos = path.index(':') if ':' in path else -1
-        if path[pos:pos+3] == '://' or (pos > 1 and set(path[:pos]) <= scheme_chars):
+        if path[pos:pos + 3] == '://' or (pos > 1 and set(path[:pos]) <= scheme_chars):
             return path
         else:
             return urljoin('file:', pathname2url(path))
@@ -739,7 +740,7 @@ class Document(object):
 
     @staticmethod
     def create(builder, path, page=0):
-        """ Initializes a Document by passing it a :class:`~Poppler.Document`
+        """ Initializes a Document by passing it a :class:`~Poppler.Document`.
 
         Args:
             builder (:class:`pympress.builder.Builder`):  A builder to load callbacks
@@ -809,7 +810,7 @@ class Document(object):
         if number >= self.nb_pages or number < 0:
             return None
 
-        if not number in self.pages_cache:
+        if number not in self.pages_cache:
             self.pages_cache[number] = Page(self.doc.get_page(number), number, self)
         return self.pages_cache[number]
 
@@ -859,11 +860,11 @@ class Document(object):
         Returns:
             `bool`: False iff there are no labels or they are just the page numbers
         """
-        return self.page_labels != [str(n+1) for n in range(self.nb_pages)]
+        return self.page_labels != [str(n + 1) for n in range(self.nb_pages)]
 
 
     def lookup_label(self, label, prefix_unique = True):
-        """ Find a page from its label
+        """ Find a page from its label.
 
         Args:
             label (`str`): the label we are searching for
@@ -872,8 +873,8 @@ class Document(object):
         Returns:
             `int`: the page
         """
-        # somehow this always returns None
-        #page = self.doc.get_page_by_label(label).get_index()
+        # somehow this always returns None:
+        # page = self.doc.get_page_by_label(label).get_index()
 
         # make a shortlist: squash synonymous labels, keeping the last one
         compatible_labels = {l: n for n, l in enumerate(self.page_labels) if l.lower().startswith(label.lower())}
@@ -882,8 +883,10 @@ class Document(object):
             return set(compatible_labels.values()).pop()
 
         # try exact match
-        try: return compatible_labels[label]
-        except KeyError: pass
+        try:
+            return compatible_labels[label]
+        except KeyError:
+            pass
 
         # try case-insensitive match, prefix case-sensitive match, prefix case-insensitive match (if prefix_unique = False)
         full = len(label)
@@ -939,11 +942,12 @@ class Document(object):
     def goto_end(self, *args):
         """ Switch to the last page.
         """
-        self.goto(self.nb_pages-1)
+        self.goto(self.nb_pages - 1)
 
 
     def label_after(self, page):
         """ Switch to the next page with different label.
+
         If we're within a set of pages with the same label we want to go to the last one.
         """
         labels_after = enumerate(self.page_labels[page + 1:], page + 1)
@@ -965,7 +969,8 @@ class Document(object):
 
 
     def label_before(self, page):
-        """ Switch to the previous page with different label
+        """ Switch to the previous page with different label.
+
         If we're within a set of pages with the same label we want to go *before* the first one.
         """
         # will stop as soon as we find a different label or due to end of iterator
@@ -977,19 +982,19 @@ class Document(object):
 
 
     def label_next(self, *args):
-        """ Switch to the next page with different label
+        """ Switch to the next page with different label.
         """
         self.goto(self.label_after(self.cur_page))
 
 
     def label_prev(self, *args):
-        """ Switch to the previous page with different label
+        """ Switch to the previous page with different label.
         """
         self.goto(self.label_before(self.cur_page))
 
 
     def hist_next(self, *args):
-        """ Switch to the page we viewed next
+        """ Switch to the page we viewed next.
         """
         if self.hist_pos + 1 == len(self.history):
             return
@@ -999,7 +1004,7 @@ class Document(object):
 
 
     def hist_prev(self, *args):
-        """ Switch to the page we viewed before
+        """ Switch to the page we viewed before.
         """
         if self.hist_pos == 0:
             return
@@ -1009,7 +1014,7 @@ class Document(object):
 
 
     def get_uri(self):
-        """
+        """ Gives access to the URI, rather than the path, of this document.
 
         Returns:
             `str`: the URI to the file currently opened.
@@ -1018,8 +1023,7 @@ class Document(object):
 
 
     def get_full_path(self, filename):
-        """ Returns full path, extrapolated from a path relative to this document
-        or to the current directory.
+        """ Returns full path, extrapolated from a path relative to this document or to the current directory.
 
         Args:
             filename (`str`):  Name of the file or relative path to it
@@ -1038,7 +1042,7 @@ class Document(object):
 
 
     def remove_on_exit(self, filename):
-        """ Remember a temporary file to delete later
+        """ Remember a temporary file to delete later.
 
         Args:
             filename (`str`): The path to the file to delete
@@ -1047,7 +1051,7 @@ class Document(object):
 
 
     def cleanup_media_files(self):
-        """ Removes all files that were extracted from the pdf into the filesystem
+        """ Removes all files that were extracted from the pdf into the filesystem.
         """
         for f in self.temp_files:
             os.remove(f)
@@ -1075,7 +1079,7 @@ class EmptyPage(Page):
 
 
     def render_cairo(self, cr, ww, wh, dtype=PdfPage.FULL):
-        """ Overriding this purely for safety: make sure we do not accidentally try to render
+        """ Overriding this purely for safety: make sure we do not accidentally try to render.
 
         Args:
             cr (:class:`~Gdk.CairoContext`):  target surface
@@ -1087,7 +1091,7 @@ class EmptyPage(Page):
 
 
     def can_render(self):
-        """ Informs that rendering is *not* necessary (avoids checking the type)
+        """ Informs that rendering is *not* necessary (avoids checking the type).
 
         Returns:
             `bool`: `False`, no rendering

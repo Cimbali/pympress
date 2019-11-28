@@ -18,7 +18,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-
 """
 :mod:`pympress.talk_time` -- Manages the clock of elapsed talk time
 -------------------------------------------------------------------
@@ -31,15 +30,15 @@ logger = logging.getLogger(__name__)
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GLib
+from gi.repository import Gtk, GLib
 import time
-
-from pympress import editable_label
 
 
 class TimeLabelColorer(object):
-    """ Manage the colors of a label with a set of colors between which to fade, based on how much time remains (<0 has run out of time).
-    Times are given in seconds. In between timestamps the color will interpolated linearly, outside of the intervals the closest color will be used.
+    """ Manage the colors of a label with a set of colors between which to fade, based on how much time remains.
+
+    Times are given in seconds (<0 has run out of time). In between timestamps the color will interpolated linearly,
+    outside of the intervals the closest color will be used.
 
     Args:
         label_time (:class:`Gtk.Label`): the label where the talk time is displayed
@@ -54,7 +53,8 @@ class TimeLabelColorer(object):
     #: :class:`~Gtk.CssProvider` affecting the style context of the labels
     color_override = None
 
-    #: `list` of tuples (`int`, :class:`~Gdk.RGBA`), which are the desired colors at the corresponding timestamps. Sorted on the timestamps.
+    #: `list` of tuples (`int`, :class:`~Gdk.RGBA`), which are the desired colors at the corresponding timestamps.
+    #: Sorted on the timestamps.
     color_map = []
 
     def __init__(self, label_time):
@@ -91,7 +91,7 @@ class TimeLabelColorer(object):
         if class_name:
             style_context.add_class(class_name)
 
-        self.label_time.show();
+        self.label_time.show()
         color = style_context.get_color(Gtk.StateType.NORMAL)
 
         if class_name:
@@ -155,7 +155,7 @@ class TimeCounter(object):
     #: :class:`~Gtk.CheckMenuItem` that shows whether the time is toggled
     pres_pause = None
 
-    #: :class:`~editable_label.EstimatedTalkTime` that handles changing the ett
+    #: :class:`~pympress.editable_label.EstimatedTalkTime` that handles changing the ett
     ett = None
 
     def __init__(self, builder, ett):
@@ -240,7 +240,7 @@ class TimeCounter(object):
             `bool`: `True` (to prevent the timer from stopping)
         """
         # Current time
-        clock = time.strftime("%X") #"%H:%M:%S"
+        clock = time.strftime("%X")  # "%H:%M:%S"
 
         # Time elapsed since the beginning of the presentation
         if not self.paused:
@@ -258,5 +258,3 @@ class TimeCounter(object):
             self.label_colorer.default_color()
 
         return True
-
-

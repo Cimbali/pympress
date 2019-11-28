@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 #
-#!/usr/bin/env python
-#
 #       pympress
 #
 #       Copyright 2009, 2010 Thomas Jost <thomas.jost@gmail.com>
@@ -46,6 +44,7 @@ def uncaught_handler(*exc_info):
     logger.critical('Uncaught exception:\n{}'.format(logging.Formatter().formatException(exc_info)))
     sys.__excepthook__(*exc_info)
 
+
 sys.excepthook = uncaught_handler
 
 
@@ -73,7 +72,6 @@ except ModuleNotFoundError:
     print(_('If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject'))
     print(_('pip will then download and compile pygobject, for which you need the Gtk headers (or development package).') + '\n')
     exit(1)
-
 
 
 
@@ -144,15 +142,16 @@ def main(argv = sys.argv[1:]):
     Gtk.init(argv)
 
     pympress_meta = util.get_pympress_meta()['version']
-    logger.info(' '.join(['Pympress:', pympress_meta,
-            '; Python:', platform.python_version(),
-            '; OS:', platform.system(), platform.release(), #platform.version(),
-            '; Gtk {}.{}.{}'.format(Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version()),
-            '; GLib {}.{}.{}'.format(GLib.MAJOR_VERSION, GLib.MINOR_VERSION, GLib.MICRO_VERSION),
-            '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
-            '; Cairo', ui.cairo.cairo_version_string(), ', pycairo', ui.cairo.version,
-            '; Media:', extras.Media.backend_version()
-        ]))
+    logger.info(' '.join([
+        'Pympress:', pympress_meta,
+        '; Python:', platform.python_version(),
+        '; OS:', platform.system(), platform.release(), platform.version(),
+        '; Gtk {}.{}.{}'.format(Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version()),
+        '; GLib {}.{}.{}'.format(GLib.MAJOR_VERSION, GLib.MINOR_VERSION, GLib.MICRO_VERSION),
+        '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
+        '; Cairo', ui.cairo.cairo_version_string(), ', pycairo', ui.cairo.version,
+        '; Media:', extras.Media.backend_version
+    ]))
 
     try:
         opts, args = getopt.getopt(argv, "hn:t:", ["help", "notes=", "talk-time=", "log="])
@@ -167,7 +166,8 @@ def main(argv = sys.argv[1:]):
     gui = ui.UI()
 
     # pass command line args
-    if ett: gui.est_time.set_time(ett)
+    if ett:
+        gui.est_time.set_time(ett)
 
     gui.swap_document(os.path.abspath(args[0])) if args else gui.pick_file()
 

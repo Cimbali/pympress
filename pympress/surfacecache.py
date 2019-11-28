@@ -19,7 +19,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-
 """
 :mod:`pympress.surfacecache` -- pages prerendering and caching
 --------------------------------------------------------------
@@ -37,13 +36,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 import threading
-import time
 import collections
 
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GLib
+from gi.repository import GLib
 
 
 class OrderedDict(collections.OrderedDict):
@@ -74,8 +72,8 @@ class SurfaceCache(object):
     #: popped from the start of the cache.
     surface_cache = {}
 
-    #: `dict` containing functions that return a :class:`~cairo.Surface` given a :class:`~cairo.Context`, width `int` and height `int`
-    #: see :meth:`~cairo.Surface.create_similar`
+    #: `dict` containing functions that return a :class:`~cairo.Surface` given a :class:`~cairo.Context`,
+    #: width `int` and height `int`, see :meth:`~cairo.Surface.create_similar`
     surface_factory = {}
 
     #: Size of the different managed widgets, as a `dict` of tuples
@@ -136,7 +134,6 @@ class SurfaceCache(object):
         Args:
             new_doc (:class:`~pympress.document.Document`):  the new document
         """
-
         with self.doc_lock:
             self.doc = new_doc
 
@@ -171,7 +168,7 @@ class SurfaceCache(object):
             wtype (`int`):  type of document handled by the widget (see :attr:`surface_type`)
         """
         with self.locks[widget_name]:
-            if self.surface_type[widget_name] != wtype :
+            if self.surface_type[widget_name] != wtype:
                 self.surface_type[widget_name] = wtype
                 self.surface_cache[widget_name].clear()
 
@@ -275,7 +272,6 @@ class SurfaceCache(object):
             widget_name (`str`):  name of the concerned widget
             page_nb (`int`):  number of the page to store in the cache
         """
-
         with self.locks[widget_name]:
             if page_nb in self.surface_cache[widget_name]:
                 # Already in cache
@@ -305,7 +301,7 @@ class SurfaceCache(object):
         # Save if possible and necessary
         with self.locks[widget_name]:
             pc = self.surface_cache[widget_name]
-            if (ww, wh) == self.surface_size[widget_name] and not page_nb in pc:
+            if (ww, wh) == self.surface_size[widget_name] and page_nb not in pc:
                 pc[page_nb] = surface
                 pc.move_to_end(page_nb)
 

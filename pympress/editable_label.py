@@ -18,7 +18,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-
 """
 :mod:`pympress.editable_label` -- A label that can be swapped out for an editable entry
 ---------------------------------------------------------------------------------------
@@ -32,7 +31,6 @@ logger = logging.getLogger(__name__)
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib
-import time
 
 
 class EditableLabel(object):
@@ -137,6 +135,7 @@ class EditableLabel(object):
 
     def restore_label(self):
         """ Make sure that the editable label is not in entry mode.
+
         If it is an entry, then replace it with the label.
         """
         raise NotImplementedError
@@ -243,7 +242,7 @@ class PageNumber(EditableLabel):
 
 
     def changed_page_label(self, *args):
-        """ Get the page number from the spinner and go to that page
+        """ Get the page number from the spinner and go to that page.
         """
         if not self.page_labels or not self.edit_label.is_focus() or not self.edit_label.get_text():
             return
@@ -257,7 +256,7 @@ class PageNumber(EditableLabel):
 
 
     def validate(self):
-        """ Get the page number from the spinner and go to that page
+        """ Get the page number from the spinner and go to that page.
         """
         page_nb = None
         if self.page_labels and self.edit_label.is_focus():
@@ -279,7 +278,7 @@ class PageNumber(EditableLabel):
 
 
     def more_actions(self, event, name):
-        """ Implement directions (left/right/home/end) keystrokes, otherwise pass on to :func:`~Gtk.SpinButton.do_key_press_event()`
+        """ Implement directions (left/right/home/end) keystrokes, otherwise pass on to :func:`~Gtk.SpinButton.do_key_press_event()`.
         """
         modified = event.get_state() & Gdk.ModifierType.CONTROL_MASK or event.get_state() & Gdk.ModifierType.SHIFT_MASK
 
@@ -380,6 +379,7 @@ class PageNumber(EditableLabel):
 
     def restore_label(self):
         """ Make sure that the current page number is displayed in a label and not in an entry.
+
         If it is an entry, then replace it with the label.
         """
         if self.spin_cur in self.hb_cur:
@@ -458,6 +458,7 @@ class EstimatedTalkTime(EditableLabel):
 
     def delayed_callback_connection(self, builder):
         """ Connect callbacks later than at init, due to circular dependencies.
+
         Call this when the page_number module is initialized, but before needing the callback.
 
         Args:
@@ -467,7 +468,7 @@ class EstimatedTalkTime(EditableLabel):
 
 
     def validate(self):
-        """ Update estimated talk time from the input/
+        """ Update estimated talk time from the input/.
         """
         text = self.entry_ett.get_text()
 
@@ -496,7 +497,7 @@ class EstimatedTalkTime(EditableLabel):
 
 
     def more_actions(self, event, name):
-        """ Pass on keystrokes to :func:`~Gtk.Entry.do_key_press_event()`
+        """ Pass on keystrokes to :func:`~Gtk.Entry.do_key_press_event()`.
         """
         return Gtk.Entry.do_key_press_event(self.entry_ett, event)
 
@@ -520,6 +521,7 @@ class EstimatedTalkTime(EditableLabel):
 
     def restore_label(self):
         """ Make sure that the current page number is displayed in a label and not in an entry.
+
         If it is an entry, then replace it with the label.
         """
         child = self.eb_ett.get_child()
@@ -528,6 +530,3 @@ class EstimatedTalkTime(EditableLabel):
             self.eb_ett.add(self.label_ett)
 
         self.editing = False
-
-
-

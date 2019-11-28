@@ -18,7 +18,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 #
-
 """
 :mod:`pympress.media_overlays.gif` -- widget to play gif images as videos
 -------------------------------------------------------------------------
@@ -77,20 +76,21 @@ class GifOverlay(base.VideoOverlay):
 
 
     def set_transform(self, *args):
-        """ Compute the transform to scale (not stretch nor crop) the gif
+        """ Compute the transform to scale (not stretch nor crop) the gif.
         """
         widget_size = (self.movie_zone.get_allocated_width(), self.movie_zone.get_allocated_height())
         scale = min(widget_size[0] / self.base_size[0], widget_size[1] / self.base_size[1])
         dx = widget_size[0] - scale * self.base_size[0]
         dy = widget_size[1] - scale * self.base_size[1]
 
-        self.transform = cairo.Matrix(xx = scale, yy = scale, x0 = dx / 2, y0 = dy /2)
+        self.transform = cairo.Matrix(xx = scale, yy = scale, x0 = dx / 2, y0 = dy / 2)
 
 
     def draw(self, widget, ctx):
         """ Simple resized drawing: get the pixbuf, set the transform, draw the image.
         """
-        if self.iter is None: return False
+        if self.iter is None:
+            return False
 
         try:
             ctx.transform(self.transform)
@@ -113,6 +113,7 @@ class GifOverlay(base.VideoOverlay):
 
     def do_set_time(self, t):
         """ Set the player at time t.
+
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Args:
@@ -129,7 +130,7 @@ class GifOverlay(base.VideoOverlay):
         return False
 
 
-    # a bunch of inherited functions that do nothing for gifs
+    # a bunch of inherited functions that do nothing, for gifs
     def mute(self, *args): pass
     def is_playing(self): return True
     def do_stop(self): pass
@@ -138,4 +139,6 @@ class GifOverlay(base.VideoOverlay):
 
     @classmethod
     def setup_backend(cls):
+        """ Returns the name of this backend.
+        """
         return _('GtkImage gif player')

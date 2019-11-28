@@ -19,7 +19,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-
 """
 :mod:`pympress.util` -- various utility functions
 -------------------------------------------------
@@ -32,7 +31,8 @@ logger = logging.getLogger(__name__)
 
 import subprocess
 import importlib
-import os, sys
+import os
+import sys
 
 if not getattr(sys, 'frozen', False):
     # doesn’t play too well with cx_Freeze
@@ -58,7 +58,10 @@ except NameError:
 
 
 def get_pympress_meta():
-    """ Get metadata (version, etc) from pympress' __init__.py
+    """ Get metadata (version, etc) from pympress' __init__.py or git describe.
+
+    Returns:
+        `dict`: metadata properties (version, contributors) mapped to their values
     """
     module = importlib.import_module('pympress.__init__')
     info = {'version': module.__version__, 'contributors': module.__author__}
@@ -89,6 +92,7 @@ def get_pympress_meta():
 
 def __get_resource_path(*path_parts):
     """ Return the resource path based on whether its frozen or not.
+
     Paths parts given should be relative to the pympress package dir.
 
     Args:
@@ -107,6 +111,7 @@ def __get_resource_path(*path_parts):
 
 def __get_resource_list(*path_parts):
     """ Return the list of elements in a directory based on whether its frozen or not.
+
     Paths parts given should be relative to the pympress package dir.
 
     Args:
@@ -124,7 +129,7 @@ def __get_resource_list(*path_parts):
 
 
 def get_locale_dir():
-    """ Returns the path to the locale directory
+    """ Returns the path to the locale directory.
 
     Returns:
         str: The path to the locale directory
@@ -264,7 +269,7 @@ def set_screensaver(must_disable, window):
     if IS_MAC_OS:
         # On Mac OS X we can use caffeinate to prevent the display from sleeping
         if must_disable:
-            if set_screensaver.dpms_was_enabled == None or set_screensaver.dpms_was_enabled.poll():
+            if set_screensaver.dpms_was_enabled is None or set_screensaver.dpms_was_enabled.poll():
                 set_screensaver.dpms_was_enabled = subprocess.Popen(['caffeinate', '-d', '-w', str(os.getpid())])
         else:
             if set_screensaver.dpms_was_enabled and not set_screensaver.dpms_was_enabled.poll():
@@ -278,12 +283,12 @@ def set_screensaver(must_disable, window):
         cmd = "suspend" if must_disable else "resume"
         status = os.system("xdg-screensaver {} {}".format(cmd, window.get_xid()))
         if status != 0:
-            logger.warning(_("Could not set screensaver status: got status ")+str(status))
+            logger.warning(_("Could not set screensaver status: got status ") + str(status))
 
         # Also manage screen blanking via DPMS
         if must_disable:
             # Get current DPMS status
-            pipe = os.popen("xset q") # TODO: check if this works on all locales
+            pipe = os.popen("xset q")  # TODO: check if this works on all locales
             dpms_status = "Disabled"
             for line in pipe.readlines():
                 if line.count("DPMS is") > 0:
@@ -296,7 +301,7 @@ def set_screensaver(must_disable, window):
                 set_screensaver.dpms_was_enabled = True
                 status = os.system("xset -dpms")
                 if status != 0:
-                    logger.warning(_("Could not disable DPMS screen blanking: got status ")+str(status))
+                    logger.warning(_("Could not disable DPMS screen blanking: got status ") + str(status))
             else:
                 set_screensaver.dpms_was_enabled = False
 
@@ -304,13 +309,14 @@ def set_screensaver(must_disable, window):
             # Re-enable DPMS
             status = os.system("xset +dpms")
             if status != 0:
-                logger.warning(_("Could not enable DPMS screen blanking: got status ")+str(status))
+                logger.warning(_("Could not enable DPMS screen blanking: got status ") + str(status))
 
     elif IS_WINDOWS:
         try:
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'Control Panel\Desktop', 0, winreg.KEY_QUERY_VALUE|winreg.KEY_SET_VALUE) as key:
+            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Control Panel\Desktop', 0,
+                                winreg.KEY_QUERY_VALUE | winreg.KEY_SET_VALUE) as key:
                 if must_disable:
-                    (value,regtype) = winreg.QueryValueEx(key, "ScreenSaveActive")
+                    value, regtype = winreg.QueryValueEx(key, "ScreenSaveActive")
                     assert(regtype == winreg.REG_SZ)
                     set_screensaver.dpms_was_enabled = (value == "1")
                     if set_screensaver.dpms_was_enabled:

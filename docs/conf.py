@@ -34,7 +34,7 @@ from urllib.parse import urlsplit, urlunsplit, urljoin
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-needs_sphinx = '1.3' # for sphinx.ext.napoleon
+needs_sphinx = '1.3'  # for sphinx.ext.napoleon
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -58,7 +58,6 @@ templates_path = ['_template']
 #
 source_suffix = ['.md']
 
-
 github_doc_root = 'https://cimbali.github.io/pympress/'
 
 def rewrite_link(url):
@@ -77,12 +76,12 @@ def setup(app):
     """ Function called by sphinx to setup this documentation.
     """
     app.add_config_value('recommonmark_config', {
-            'url_resolver': lambda url: url[3:] if url.startswith('../README') else url,
-            'enable_auto_toc_tree': True,
-            'auto_toc_maxdepth': 2,
-            'auto_toc_tree_section': 'Contents',
-            'enable_eval_rst': True
-            }, True)
+        'url_resolver': lambda url: url[3:] if url.startswith('../README') else url,
+        'enable_auto_toc_tree': True,
+        'auto_toc_maxdepth': 2,
+        'auto_toc_tree_section': 'Contents',
+        'enable_eval_rst': True
+    }, True)
     app.add_transform(AutoStructify)
 
     # get the README.md as a source, but we need to move it here and adjust the relative links into docs/
@@ -114,7 +113,7 @@ author = 'Thomas Jost, Cimbali'
 # built documents.
 #
 # The short X.Y version.
-version=pkg_meta.__version__
+version = pkg_meta.__version__
 # The full version, including alpha/beta/rc tags.
 release = str(subprocess.check_output(["git", "describe"])[1:].strip())
 
@@ -181,7 +180,9 @@ def load_epydoc_as_intersphinx_v2(url):
     Returns:
         a (url, filename) tuple where the file contains the intersphinx list of objects
     """
-    import codecs, requests, tempfile
+    import codecs
+    import requests
+    import tempfile
 
     def guess_epydoc_role(name, uri):
         if '#' in uri:
@@ -209,10 +210,12 @@ def load_epydoc_as_intersphinx_v2(url):
 
     if objects_inv:
         with tempfile.NamedTemporaryFile(mode = 'wb', delete = False) as translated:
-            translated.write('\n'.join(["# Sphinx inventory version 2",
+            translated.write('\n'.join([
+                "# Sphinx inventory version 2",
                 "# Project: {} {}".format('python-vlc', '2.2'),
                 "# Version: {}".format('2.2.0-git-14816-gda488a7751100'),
-                "# The remainder of this file is compressed using zlib.", ""]).encode('ascii'))
+                "# The remainder of this file is compressed using zlib.", ""
+            ]).encode('ascii'))
             translated.write(codecs.encode('\n'.join(objects_inv + [""]).encode('ascii'), 'zlib'))
 
             filename = translated.name
@@ -362,28 +365,28 @@ htmlhelp_basename = 'pympressdoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-     # The paper size ('letterpaper' or 'a4paper').
-     #
-     # 'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #
+    # 'papersize': 'letterpaper',
 
-     # The font size ('10pt', '11pt' or '12pt').
-     #
-     # 'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #
+    # 'pointsize': '10pt',
 
-     # Additional stuff for the LaTeX preamble.
-     #
-     # 'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #
+    # 'preamble': '',
 
-     # Latex figure (float) alignment
-     #
-     # 'figure_align': 'htbp',
+    # Latex figure (float) alignment
+    #
+    # 'figure_align': 'htbp',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'pympress.tex', u'pympress documentation', u'Thomas Jost, Cimbali', 'manual'),
+    ('index', 'pympress.tex', u'pympress documentation', u'Thomas Jost, Cimbali', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -408,7 +411,7 @@ latex_documents = [
 #
 # latex_appendices = []
 
-# It false, will not define \strong, \code, 	itleref, \crossref ... but only
+# It false, will not define \strong, \code,     itleref, \crossref ... but only
 # \sphinxstrong, ..., \sphinxtitleref, ... To help avoid clash with user added
 # packages.
 #

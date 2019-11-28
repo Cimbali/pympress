@@ -18,7 +18,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-
 """
 :mod:`pympress.ui_builder` -- abstract GUI management
 -----------------------------------------------------
@@ -78,8 +77,8 @@ class Builder(Gtk.Builder):
         Builder.__translate_widget_strings(a_widget)
 
         if issubclass(type(a_widget), Gtk.Container):
-            #NB: Parent-loop in widgets would cause infinite loop here, but that's absurd (right?)
-            #NB2: maybe forall instead of foreach if we miss some strings?
+            # NB: Parent-loop in widgets would cause infinite loop here, but that's absurd (right?)
+            # NB2: maybe forall instead of foreach if we miss some strings?
             a_widget.foreach(Builder.__recursive_translate_widgets)
 
         if issubclass(type(a_widget), Gtk.MenuItem) and a_widget.get_submenu() is not None:
@@ -90,24 +89,26 @@ class Builder(Gtk.Builder):
     def signal_resolver(target, attr_list):
         """ Dynamically resolves a signal that is target.a.b.c() when attr_list is ['a', 'b', 'c'].
 
-        This allows to specify multi-level signals in the XML files, instead of targeting everything at the main UI object.
+        This allows to specify multi-level signals in the XML files, instead of targeting everything at the main UI
+        object.
 
-        Also, resolving signals dynamically means the object properties of the top-level object can be replaced, and the signal
-        will still connect to something meaningful. The downside is that this connection is done at runtime, thus probably less
-        efficient and might fail to find the target if any attribute along the way has an unexpected value.
+        Also, resolving signals dynamically means the object properties of the top-level object can be replaced, and the
+        signal will still connect to something meaningful. The downside is that this connection is done at runtime, thus
+        probably less efficient and might fail to find the target if any attribute along the way has an unexpected
+        value.
 
         Args:
-            attr_list (`list`): a list of attribute names, designating objects except the last one designating a function
+            attr_list (`list`): a list of attribute names, designating objects except the last one which is a function
 
         Returns:
-            function: The function to which we want to connect
+            `function`: The function to which we want to connect
         """
         top = target
 
         for attr in attr_list:
             try:
                 target = getattr(target, attr)
-            except AttributeError as e:
+            except AttributeError:
                 logger.error('Can not reach target of signal {}.{}()'.format(top, '.'.join(attr_list)), exc_info = True)
                 target = None
 
@@ -116,41 +117,47 @@ class Builder(Gtk.Builder):
 
     @staticmethod
     def find_callback_handler(target, handler_name):
-        """ Returns the handler from its name, searching in target. Parse handler names and split on '.' to use recursion.
+        """ Returns the handler from its name, searching in target.
+
+        Parse handler names and split on '.' to use recursion.
 
         Args:
             target (`object`): An object that has a method called `handler_name`
             handler_name (`str`): The name of the function to be connected to a signal
 
         Returns:
-            `function`: A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object
+            `function`: A function bound to an object or, if the object may change, a lambda calling
+            :meth:`~pympress.Builder.signal_resolver` to get said function bound to an object
         """
         try:
             return getattr(target, handler_name)
 
         except AttributeError:
-            attr_list =  handler_name.split('.')
+            attr_list = handler_name.split('.')
 
             if len(attr_list) == 1:
-                logger.error('Handler name not in target object. Expected "." but got: {}'.format(handler_name), exc_info = True)
+                logger.error('Handler name not in target object. Expected "." but got: {}'.format(handler_name),
+                             exc_info = True)
                 raise
 
             # Dynamically resolved handler for 'doc' (only) since target.doc may change
             if 'doc' in attr_list:
                 return lambda *args, **kwargs: Builder.signal_resolver(target, attr_list)(*args, **kwargs)
             else:
-                return  Builder.signal_resolver(target, attr_list)
+                return Builder.signal_resolver(target, attr_list)
 
 
     def get_callback_handler(self, handler_name):
         """ Convenience non-static wrapper function for :func:`find_callback_handler` to search in the builder object.
-        The `handler_name` function must be a method of this builder (realistically, a method of an inherited UI class' instance).
+
+        The `handler_name` function must be a method of this builder (realistically, of an inherited UI class' instance).
 
         Args:
             handler_name (`str`): The name of the function to be connected to a signal
 
         Returns:
-            `function`: A function bound to an object or, if the object may change, a lambda calling Builder.signal_resolver to get said function bound to an object
+            `function`: A function bound to an object or, if the object may change, a lambda calling
+            :meth:`~pympress.Builder.signal_resolver` to get said function bound to an object
         """
         return self.find_callback_handler(self, handler_name)
 
@@ -171,12 +178,13 @@ class Builder(Gtk.Builder):
             handler = self.get_callback_handler(handler_name)
             object.connect(signal_name, handler, *user_data)
 
-        except:
-            logger.critical('Impossible to connect signal {} from object {} to handler {}'.format(signal_name, object, handler_name), exc_info = True)
+        except Exception:
+            logger.critical('Impossible to connect signal {} from object {} to handler {}'
+                            .format(signal_name, object, handler_name), exc_info = True)
 
 
     def connect_signals(self, base_target):
-        """ Override default signal connector so we can map signals to the methods of (any depth of) object that are properties of self
+        """ Override default signal connector so we can map signals to the methods of (any depth of) object that are properties of self.
 
         Args:
             base_target (:class:`~pympress.builder.Builder`): The target object, that has functions to be connected to signals loaded in this builder.
@@ -224,6 +232,7 @@ class Builder(Gtk.Builder):
 
     def load_widgets(self, target):
         """ Fill in target with the missing elements introspectively.
+
         This means that all attributes of target that are None at this time must exist under the same name in the builder.
 
         Args:
@@ -317,7 +326,8 @@ class Builder(Gtk.Builder):
 
             if issubclass(type(parent), Gtk.Box):
                 parent.pack_start(w, True, True, 0)
-            else: #it's a Gtk.Paned
+            else:
+                # it's a Gtk.Paned
                 if parent.get_child2() is None:
                     parent.pack2(w, True, True)
                     if parent.get_orientation() == Gtk.Orientation.HORIZONTAL:
@@ -336,6 +346,7 @@ class Builder(Gtk.Builder):
 
     def resize_paned(self, paned, rect, relpos):
         """ Resize `~paned` to have its handle at `~relpos`, then disconnect this signal handler.
+
         Called from the :func:`Gtk.Widget.signals.size_allocate` signal.
 
         Args:
@@ -352,4 +363,3 @@ class Builder(Gtk.Builder):
 
         paned.disconnect(self.pending_pane_resizes.pop(paned.get_name()))
         return True
-

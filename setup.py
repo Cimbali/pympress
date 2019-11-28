@@ -20,19 +20,23 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import os, sys
-from ctypes.util import find_library
+import os
+import sys
 import glob
+from ctypes.util import find_library
 
-try: read_input = raw_input
-except NameError: read_input = input
+try:
+    # python 2.7 version of input()
+    read_input = raw_input
+except NameError:
+    read_input = input
 
 
 
 # All functions listing resources return a list of pairs: (system path, distribution relative path)
 def gtk_resources():
-    ''' Returns a list of the non-DLL Gtk resources to include in a frozen/binary package.
-    '''
+    """ Returns a list of the non-DLL Gtk resources to include in a frozen/binary package.
+    """
     base, last = os.path.split(os.path.dirname(find_library('libgtk-3-0')))
     include_path = base if last in {'bin', 'lib', 'lib64'} else os.path.join(base, last)
 
@@ -60,11 +64,12 @@ def gtk_resources():
 
 
 def dlls():
-    ''' Returns a list of all DLL files we need to include, in a frozen/binary package on windows.
+    """ Returns a list of all DLL files we need to include, in a frozen/binary package on windows.
 
     Relies on a hardcoded list tested for the appveyor build setup.
-    '''
-    if os.name != 'nt': return []
+    """
+    if os.name != 'nt':
+        return []
 
     libs = 'libatk-1.0-0.dll libbrotlicommon.dll libbrotlidec.dll libcurl-4.dll libdatrie-1.dll \
     libepoxy-0.dll libfribidi-0.dll libgdk-3-0.dll libgdk_pixbuf-2.0-0.dll libgif-7.dll \
@@ -90,7 +95,7 @@ def dlls():
 
 
 def check_vlc_redistribution():
-    ''' We might want to redistribute the VLC library (DLLs etc.) with pympress.
+    """ We might want to redistribute the VLC library (DLLs etc.) with pympress.
 
         NB: we always depend on the vlc python package. That way, installing
         pympress on a system that has VLC installed works out of the box,
@@ -98,7 +103,7 @@ def check_vlc_redistribution():
 
     Returns (bool): whether to include VLC redistributables
                     (decided from command line arguments or prompt).
-    '''
+    """
     opts = {'--with-vlc': True, '--without-vlc': False}
 
     for opt, val in opts.items():
@@ -114,10 +119,10 @@ def check_vlc_redistribution():
 
 
 def vlc_resources():
-    ''' Return the list of VLC resources (DLLs, plugins, license file...) to redistribute
-    '''
+    """ Return the list of VLC resources (DLLs, plugins, license file...) to redistribute.
+    """
     import vlc
-    print('Found VLC at '+vlc.plugin_path)
+    print('Found VLC at ' + vlc.plugin_path)
 
     include_files = []
     for f in glob.glob(os.path.join(vlc.plugin_path, '*.txt')):
@@ -134,11 +139,12 @@ def vlc_resources():
 
 
 def pympress_resources():
-    ''' Return pympress resources. Only for frozen packages, as this is redundant with package_data.
-    '''
-    resources = [os.path.join('share', 'xml'), os.path.join('share', 'pixmaps'), os.path.join('share', 'css'), os.path.join('share', 'defaults.conf')]
+    """ Return pympress resources. Only for frozen packages, as this is redundant with package_data.
+    """
+    resources = [os.path.join('pympress', 'share', 'xml'), os.path.join('pympress', 'share', 'pixmaps'),
+                 os.path.join('pympress', 'share', 'css'), os.path.join('pympress', 'share', 'defaults.conf')]
     translations = glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))
-    return [(os.path.join('pympress', f), f) for f in resources] + [(t, t.split(os.path.sep, 1)[1]) for t in translations]
+    return [(f, f.split(os.path.sep, 1)[1]) for f in resources + translations]
 
 
 if __name__ == '__main__':
@@ -152,19 +158,19 @@ if __name__ == '__main__':
 
         # List all resources we'll distribute
         setup_opts = {
-            'name': 'pympress', # force repetition from setup.cfg otherwise cx_Freeze throws TypeError
+            'name': 'pympress',  # force repetition from setup.cfg, otherwise cx_Freeze throws TypeError
             'options': {
-                'build_exe':{
+                'build_exe': {
                     'includes': [],
                     'excludes': [],
                     'packages': ['codecs', 'gi', 'vlc', 'watchdog'],
                     'include_files': gtk_resources() + dlls() + pympress_resources(),
                     'silent': True
-                    }
-                },
-            'executables': [Executable(os.path.join('pympress', '__main__.py'), targetName='pympress.exe', base='Win32GUI',
-                                    shortcutDir='ProgramMenuFolder', shortcutName='pympress',
-                                    icon=os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico'))]
+                }
+            },
+            'executables': [Executable(os.path.join('pympress', '__main__.py'), targetName='pympress.exe',
+                                       base='Win32GUI', shortcutDir='ProgramMenuFolder', shortcutName='pympress',
+                                       icon=os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico'))]
         }
 
         if check_vlc_redistribution():

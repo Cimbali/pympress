@@ -18,7 +18,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-
 """
 :mod:`pympress.config` -- Configuration
 ---------------------------------------
@@ -42,25 +41,27 @@ except ImportError:
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk
 
 from pympress import util
 
 
 try:
-    unicode # trigger NameError in python3
+    unicode  # trigger NameError in python3
 
     def recursive_unicode_to_str(obj):
-        """ Recursively convert unicode to str (for python2)
+        """Recursively convert unicode to str (for python2).
+
         Raises NameError in python3 as 'unicode' is undefined
 
         Args:
-            obj (`unicode` or `str` or `dict` or `list`): A unicode string to transform, or a container whose children to transform
+            obj (`unicode` or `str` or `dict` or `list`): A unicode string to transform,
+                                                          or a container whose children to transform
         """
         if isinstance(obj, unicode):
             return str(obj)
         elif isinstance(obj, dict):
-            return {recursive_unicode_to_str(k):recursive_unicode_to_str(obj[k]) for k in obj}
+            return {recursive_unicode_to_str(k): recursive_unicode_to_str(obj[k]) for k in obj}
         elif isinstance(obj, list):
             return [recursive_unicode_to_str(i) for i in obj]
         else:
@@ -72,7 +73,8 @@ except NameError:
 
 
 def layout_from_json(layout_string):
-    """ Load the layout from config, with all strings cast to type `str` (even on python2 where they default to `unicode`)
+    """ Load the layout from config, with all strings cast to type `str` (even on python2 where they default to `unicode`).
+
     Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on invalid input.
 
     Args:
@@ -81,14 +83,16 @@ def layout_from_json(layout_string):
     return recursive_unicode_to_str(json.loads(layout_string))
 
 
-class Config(configparser.ConfigParser, object): # python 2 fix
+class Config(configparser.ConfigParser, object):  # python 2 fix
     """ Manage configuration :Get the configuration from its file and store its back.
     """
     #: `dict`-tree of presenter layouts for various modes
     layout = {}
 
-    #: `dict` of strings that are the valid representations of widgets from the presenter window that can be dynamically rearranged, mapping to their names
-    placeable_widgets = {"notes": "p_frame_notes", "current": "p_frame_cur", "next": "p_frame_next", "annotations": "p_frame_annot", "highlight": "scribble_overlay"}
+    #: `dict` of strings that are the valid representations of widgets from the presenter window
+    #: that can be dynamically rearranged, mapping to their names
+    placeable_widgets = {"notes": "p_frame_notes", "current": "p_frame_cur", "next": "p_frame_next",
+                         "annotations": "p_frame_annot", "highlight": "scribble_overlay"}
 
     #: Map of (keyval, Gdk.ModifierType) to string, which representing the shortcuts for each command
     shortcuts = {}
@@ -127,13 +131,13 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         if Config.using_portable_config():
             os.remove(util.get_portable_config())
         else:
-            with open(util.get_portable_config(), 'w') as f:
+            with open(util.get_portable_config(), 'w'):
                 pass
 
 
     @staticmethod
     def using_portable_config():
-        """ Checks which configuration file location is in use
+        """ Checks which configuration file location is in use.
 
         Returns:
             `bool`: `True` iff we are using the portable (i.e. in install dir) location
@@ -165,7 +169,7 @@ class Config(configparser.ConfigParser, object): # python 2 fix
 
 
     def upgrade(self):
-        """ Update obsolete config options when pympress updates
+        """ Update obsolete config options when pympress updates.
         """
         if self.get('presenter', 'pointer') == 'pointer_none':
             self.set('presenter', 'pointer', 'red')
@@ -222,22 +226,24 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         - children: `list` of size >= 2, containing `str`s or `dict`s (mandatory)
         - proportions: `list` of `float` with sum = 1, length == len(children), representing the relative sizes
         of all the resizeable items (if and only if resizeable).
-        """
 
+        """
         next_visits = deque([layout])
         widget_seen = set()
         while next_visits:
             w_desc = next_visits.popleft()
             if type(w_desc) is str:
                 if w_desc not in expected_widgets and w_desc not in optional_widgets:
-                    raise ValueError('Unrecognized widget "{}", pick one of: {}'.format(w_desc, ', '.join(expected_widgets)))
+                    raise ValueError('Unrecognized widget "{}", pick one of: {}'
+                                     .format(w_desc, ', '.join(expected_widgets)))
                 elif w_desc in widget_seen:
                     raise ValueError('Duplicate widget "{}", all expected_widgets can only appear once'.format(w_desc))
                 widget_seen.add(w_desc)
 
             elif type(w_desc) is dict:
                 if 'orientation' not in w_desc or w_desc['orientation'] not in ['horizontal', 'vertical']:
-                    raise ValueError('"orientation" is mandatory and must be "horizontal" or "vertical" at node {}'.format(w_desc))
+                    raise ValueError('"orientation" is mandatory and must be "horizontal" or "vertical" at node {}'
+                                     .format(w_desc))
                 elif 'children' not in w_desc or type(w_desc['children']) is not list or len(w_desc['children']) < 2:
                     raise ValueError('"children" is mandatory and must be a list of 2+ items at node {}'.format(w_desc))
                 elif 'resizeable' in w_desc and type(w_desc['resizeable']) is not bool:
@@ -246,12 +252,17 @@ class Config(configparser.ConfigParser, object): # python 2 fix
                 elif 'proportions' in w_desc:
                     if 'resizeable' not in w_desc or not w_desc['resizeable']:
                         raise ValueError('"proportions" is only valid for resizeable widgets at node {}'.format(w_desc))
-                    elif type(w_desc['proportions']) is not list or any(type(n) is not float for n in w_desc['proportions']) or len(w_desc['proportions']) != len(w_desc['children']) or abs(sum(w_desc['proportions']) - 1) > 1e-10:
-                        raise ValueError('"proportions" must be a list of floats (one per separator), between 0 and 1, at node {}'.format(w_desc))
+                    elif type(w_desc['proportions']) is not list or \
+                            any(type(n) is not float for n in w_desc['proportions']) or \
+                            len(w_desc['proportions']) != len(w_desc['children']) or \
+                            abs(sum(w_desc['proportions']) - 1) > 1e-10:
+                        raise ValueError('"proportions" must be a list of floats (one per separator), ' -
+                                         'between 0 and 1, at node {}'.format(w_desc))
 
                 next_visits.extend(w_desc['children'])
             else:
-                raise ValueError('Unexpected type {}, nodes must be dicts or strings, at node {}'.format(type(w_desc), w_desc))
+                raise ValueError('Unexpected type {}, nodes must be dicts or strings, at node {}'
+                                 .format(type(w_desc), w_desc))
         widget_missing = expected_widgets - widget_seen
         if widget_missing:
             raise ValueError('Following placeable_widgets were not specified: {}'.format(', '.join(widget_missing)))
@@ -272,22 +283,23 @@ class Config(configparser.ConfigParser, object): # python 2 fix
                 loaded_layout = layout_from_json(self.get('layout', layout_name))
                 self.validate_layout(loaded_layout, *widget_reqs[layout_name])
                 self.layout[layout_name] = loaded_layout
-            except ValueError as e:
+            except ValueError:
                 logger.exception('Invalid layout')
 
 
     def widget_layout_to_tree(self, widget, pane_handle_pos):
         """ Build a tree representing a widget hierarchy, leaves are strings and nodes are `dict`.
+
         Recursive function. See validate_layout() for more info on the tree structure.
 
         Args:
             widget (:class:`~Gtk.Widget`): the widget where to start
-            pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative position (float between 0 and 1) of its handle
+            pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative handle position (float in 0..1)
 
         Returns:
             `dict`: A tree of dicts reprensenting the widget hierarchy
         """
-        orientation_names = {Gtk.Orientation.HORIZONTAL:'horizontal', Gtk.Orientation.VERTICAL:'vertical'}
+        orientation_names = {Gtk.Orientation.HORIZONTAL: 'horizontal', Gtk.Orientation.VERTICAL: 'vertical'}
 
         name = widget.get_name()
         matching_widget_names = [k for k, v in self.placeable_widgets.items() if v == name]
@@ -296,14 +308,17 @@ class Config(configparser.ConfigParser, object): # python 2 fix
             return matching_widget_names[0]
 
         elif issubclass(type(widget), Gtk.Box):
-            return {'resizeable': False, 'children': [self.widget_layout_to_tree(c, pane_handle_pos) for c in widget.get_children()],
-                    'orientation': orientation_names[widget.get_orientation()]}
+            return {'resizeable': False, 'orientation': orientation_names[widget.get_orientation()],
+                    'children': [self.widget_layout_to_tree(c, pane_handle_pos) for c in widget.get_children()]}
 
         elif issubclass(type(widget), Gtk.Paned):
             proportions = [1]
             reverse_children = []
             orientation = widget.get_orientation()
-            get_size = Gtk.Widget.get_allocated_width if orientation == Gtk.Orientation.HORIZONTAL else Gtk.Widget.get_allocated_height
+            if orientation == Gtk.Orientation.HORIZONTAL:
+                get_size = Gtk.Widget.get_allocated_width
+            else:
+                get_size = Gtk.Widget.get_allocated_height
 
             while issubclass(type(widget), Gtk.Paned) and orientation == widget.get_orientation():
                 left_pane = widget.get_child1()
@@ -325,10 +340,11 @@ class Config(configparser.ConfigParser, object): # python 2 fix
 
             reverse_children.append(left_pane)
 
-            return {'resizeable': True, 'children': [self.widget_layout_to_tree(c, pane_handle_pos) for c in reversed(reverse_children)],
-                    'proportions': proportions, 'orientation': orientation_names[orientation]}
+            return {'resizeable': True, 'proportions': proportions, 'orientation': orientation_names[orientation],
+                    'children': [self.widget_layout_to_tree(c, pane_handle_pos) for c in reversed(reverse_children)]}
 
-        raise ValueError('Error serializing layout: widget of type {} is not an expected container or named widget: "{}"'.format(type(widget), name))
+        raise ValueError('Error serializing layout: widget of type {} '.format(type(widget)) +
+                         'is not an expected container or named widget: "{}"'.format(name))
 
 
     def get_layout(self, layout_name):
@@ -343,6 +359,6 @@ class Config(configparser.ConfigParser, object): # python 2 fix
         Args:
             layout_name (`str`): the name of the layout to update
             widget (:class:`~Gtk.Widget`): the widget that will contain the layout.
-            pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative position (float between 0 and 1) of its handle
+            pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative handle position (float in 0..1)
         """
         self.layout[layout_name] = self.widget_layout_to_tree(widget, pane_handle_pos)

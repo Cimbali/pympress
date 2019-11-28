@@ -18,7 +18,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-
 """
 :mod:`pympress.extras` -- Manages the display of fancy extras such as annotations, videos and cursors
 -----------------------------------------------------------------------------------------------------
@@ -33,7 +32,7 @@ import os.path
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GLib, Pango
+from gi.repository import Gtk, Gdk, GLib
 
 import mimetypes
 from collections import defaultdict
@@ -64,12 +63,12 @@ class TimingReport(builder.Builder):
 
 
     def transition(self, page, time):
-        ''' Record a transition time between slides
+        """ Record a transition time between slides.
 
         Args:
             page (`int`): the page number of the current slide
             time (`int`): the number of seconds elapsed since the beginning of the presentation
-        '''
+        """
         if self.reset_time >= 0:
             self.reset_time = -1
             self.page_time.clear()
@@ -77,19 +76,28 @@ class TimingReport(builder.Builder):
 
 
     def reset(self, reset_time):
-        ''' A timer reset. Clear the history as soon as we start changing pages again.
-        '''
+        """ A timer reset. Clear the history as soon as we start changing pages again.
+        """
         self.reset_time = reset_time
 
 
+    def format_time(secs):
+        """ Formats a number of seconds as `minutes:seconds`.
+
+        Returns:
+            `str`: The formatted time, with 2+ digits for minutes and 2 digits for seconds.
+        """
+        return '{:02}:{:02}'.format(*divmod(secs, 60))
+
+
     def show(self, current_time, doc_structure, page_labels):
-        ''' Show the popup with the timing infortmation
+        """ Show the popup with the timing infortmation.
 
         Args:
             current_time (`int`): the number of seconds elapsed since the beginning of the presentation
             doc_structure (`dict`): the structure of the document
             page_labels (`list`): the page labels for each of the pages
-        '''
+        """
         times = [time for page, time in self.page_time] + [current_time if self.reset_time < 0 else self.reset_time]
         durations = (e - s for e, s in zip(times[1:], times[:-1]))
 
@@ -117,12 +125,12 @@ class TimingReport(builder.Builder):
                     cur_info_pos['children'][-1]['duration'] += duration
                 else:
                     cur_info_pos['children'].append({'page': pos, 'title': item['title'], 'children': [],
-                                        'duration': duration, 'time': start_time})
+                                                     'duration': duration, 'time': start_time})
                 cur_info_pos = cur_info_pos['children'][-1]
 
             # add the actual page as a leaf node
             cur_info_pos['children'].append({'page': page, 'title': _('slide #') + page_labels[page],
-                                        'duration': duration, 'time': start_time})
+                                             'duration': duration, 'time': start_time})
 
 
         treemodel = self.timing_treeview.get_model()
@@ -134,9 +142,8 @@ class TimingReport(builder.Builder):
         dfs_info = [(None, infos)]
         while dfs_info:
             first_it, first = dfs_info.pop()
-            fmt = lambda val: '{:02}:{:02}'.format(*divmod(val, 60))
             last_col = '{} ({}/{})'.format(page_labels[first['page']], first['page'], len(page_labels))
-            row = [first['title'], fmt(first['time']), fmt(first['duration']), last_col]
+            row = [first['title'], self.format_time(first['time']), self.format_time(first['duration']), last_col]
             it = treemodel.append(first_it, row)
 
             if 'children' in first:
@@ -309,7 +316,7 @@ class Media(object):
 
 
     def resize(self, which = None):
-        """ Resize all media overlays that are a child of an overlay
+        """ Resize all media overlays that are a child of an overlay.
         """
         needs_resizing = (which == 'content', which == 'presenter') if which is not None else (True, True)
         for media_id in self._media_overlays:
@@ -382,7 +389,7 @@ class Media(object):
 
     @classmethod
     def _setup_backends(cls, conf = None):
-        """ Load the backends for video overlays
+        """ Load the backends for video overlays.
         """
         if cls._backends_setup:
             return
@@ -400,7 +407,8 @@ class Media(object):
             cls._backends['image/svg+xml'] = GifOverlay
             cls._backend_versions.append(version)
 
-        except: logger.exception(_('Video support using {} is disabled.').format('Overlay'))
+        except Exception:
+            logger.exception(_('Video support using {} is disabled.').format('Overlay'))
 
 
         try:
@@ -417,7 +425,8 @@ class Media(object):
                 if not types_list:
                     cls._backends = defaultdict(lambda: GstOverlay, cls._backends)
 
-        except: logger.exception(_('Video support using {} is disabled.').format('GStreamer'))
+        except Exception:
+            logger.exception(_('Video support using {} is disabled.').format('GStreamer'))
 
 
         try:
@@ -434,7 +443,8 @@ class Media(object):
                 if not types_list:
                     cls._backends = defaultdict(lambda: VlcOverlay, cls._backends)
 
-        except: logger.exception(_("Video support using {} is disabled.").format('VLC'))
+        except Exception:
+            logger.exception(_("Video support using {} is disabled.").format('VLC'))
 
 
     @classmethod
@@ -450,10 +460,10 @@ class Media(object):
 
     @classmethod
     def get_factory(cls, mime_type):
-        """ Returns a class of type :attr:`~_backend`
+        """ Returns a class of type :attr:`~_backend`.
         """
         cls._setup_backends()
-        try: # NB don't get(mime_type, None) so that a default can be set
+        try:  # NB don't get(mime_type, None) so that a default can be set
             return cls._backends[mime_type]
         except KeyError:
             return None
@@ -477,7 +487,7 @@ class Cursor(object):
 
     @classmethod
     def set_cursor(cls, widget, cursor_name = 'parent'):
-        """ Set the cursor named cursor_name'
+        """ Set the cursor named cursor_name'.
 
         Args:
             widget (:class:`~Gtk.Widget`): The widget triggering the cursor change, used to retrieve a Gdk.Window
@@ -512,7 +522,7 @@ class Zoom(object):
     clear_cache = lambda: None
 
     def __init__(self, builder):
-        """ Setup all the necessary for zooming
+        """ Setup all the necessary for zooming.
 
         Args:
             builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
@@ -526,6 +536,7 @@ class Zoom(object):
 
     def delayed_callback_connection(self, scribble_builder):
         """ Connect callbacks later than at init, due to circular dependencies.
+
         Call this when the page_number module is initialized, but before needing the callback.
 
         Args:
@@ -663,7 +674,7 @@ class Zoom(object):
 
                 # make center of drawn rectangle the center of the zoomed slide
                 self.shift = (.5 - self.scale * (xmin + xmax) / 2,
-                                    .5 - self.scale * (ymin + ymax) / 2)
+                              .5 - self.scale * (ymin + ymax) / 2)
             except ZeroDivisionError:
                 self.scale = 1.
                 self.shift = (0, 0)
@@ -757,7 +768,7 @@ class FileWatcher(object):
 
     @classmethod
     def call(cls, callback, *args, **kwargs):
-        """ Call the callback
+        """ Call the callback.
 
         Args:
             callback (`function`): callback to call with all the further arguments
@@ -769,14 +780,14 @@ class FileWatcher(object):
 
     @classmethod
     def stop_watching(cls):
-        """ Remove all files that are being watched
+        """ Remove all files that are being watched.
         """
         cls.observer.unschedule_all()
 
 
     @classmethod
     def start_daemon(cls):
-        """ Start the watchdog observer thread
+        """ Start the watchdog observer thread.
         """
         if not cls.observer.is_alive():
             cls.observer.start()
