@@ -16,13 +16,27 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install flake8 flake8-docstrings
+        python -m pip install flake8
     - name: Lint with flake8
       run: |
         # Reduced list of ignores, show as warnings
-        flake8 . --count --show-source --statistics --exit-zero --ignore=D200,D210,D413,E251,E302,E303,W504
+        flake8 . --count --show-source --statistics --select=E,F,W,C --exit-zero --ignore=E251,E302,E303,W504
         # Full list of ignores, fail on errors. No Docs errors.
         flake8 . --count --show-source --statistics --select=E,F,W,C
+
+    - name: Lint docstrings dependencies
+      if: matrix.python-version == 3.8
+      run: |
+        python -m pip install flake8-docstrings
+
+    - name: Lint docstrings
+      if: matrix.python-version == 3.8
+      run: |
+        # Reduced list of ignores, show as warnings
+        flake8 . --count --show-source --statistics --select=D --exit-zero --ignore=D200,D210,D413
+        # Full list of ignores, fail on errors. No Docs errors.
+        flake8 . --count --show-source --statistics --select=D
