@@ -17,6 +17,9 @@ build_script:
 - cmd: C:\msys64\msys2_shell.cmd -%mingw% -defterm -here -no-start -c "pacman -Syu --noprogressbar --noconfirm"
 - cmd: C:\msys64\msys2_shell.cmd -%mingw% -defterm -here -no-start scripts\build_msi_mingw.sh
 
+test_script:
+- cmd: scripts/test_msi.bat
+
 artifacts:
 - path: dist/*
 
