@@ -17,12 +17,13 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 
 # Installing
 
-- Linux, macOS: `pip install pympress` − requires [python, gtk+3, poppler, and their python bindings](#dependencies).
+- Linux: `pip install pympress` − requires [python, gtk+3, poppler, and their python bindings](#dependencies).
+- macOS: `brew install pympress` − using [Homebrew](https://brew.sh/)
 - Windows: `choco install pympress` with [Chocolatey](https://chocolatey.org/) or download the installer from the [latest Github release](https://github.com/Cimbali/pympress/releases/latest).
 
 ### Notes
 - To support playing embedded videos in the PDFs, your system must have VLC installed (with the same bitness as pympress). VLC is not distributed with pympress, but it is certainly available in your system’s package manager and [on their website](https://www.videolan.org/vlc/).
-- On Linux and macOS, make sure you have all [the dependencies](#dependencies), as they do not come via pip. (On Windows, they are included in the binary package.)
+- On Linux, make sure you have all [the dependencies](#dependencies), as they do not come via pip. (On Windows and macOS, they are included in the package.)
 - Using pip, you may want to use `python3 -m pip` as the command if `pip` points to the python 2.x pip. You may also want to install with the `--user` option, or install from github or downloaded sources. See [the python documentation on installing](https://docs.python.org/3.7/installing/index.html) for more details.
 
 ### Troubleshooting
@@ -101,7 +102,7 @@ Different distributions might have different package naming conventions, for exa
 
 Dependencies can be installed using [Homebrew](https://brew.sh/):
 
-    brew install gtk+3 poppler gobject-introspection pygobject3
+    brew install --only-dependencies pympress
 
 ### On windows
 The [binary installer for windows](#installing) comes with pympress and all its dependencies packaged.
