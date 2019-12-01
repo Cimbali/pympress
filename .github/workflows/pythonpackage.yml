@@ -37,6 +37,6 @@ jobs:
       if: matrix.python-version == 3.8
       run: |
         # Reduced list of ignores, show as warnings
-        flake8 . --count --show-source --statistics --select=D --exit-zero --ignore=D200,D210,D413
+        flake8 . --count --show-source --statistics --select=D --exit-zero --ignore=D107,D200,D210,D413
         # Full list of ignores, fail on errors. No Docs errors.
         flake8 . --count --show-source --statistics --select=D
