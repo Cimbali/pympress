@@ -23,6 +23,7 @@
 import os, sys
 from ctypes.util import find_library
 import glob
+import setuptools
 
 try: read_input = raw_input
 except NameError: read_input = input
@@ -180,10 +181,7 @@ if __name__ == '__main__':
         setup(**setup_opts)
     else:
         # Normal behaviour: use setuptools, load options from setup.cfg
-        print('Using setuptools.setup():')
-        from setuptools import setup
-
-        setup()
+        setuptools.setup()
 
 
 ##
