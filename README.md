@@ -134,8 +134,14 @@ Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.o
 
 ## Translations
 
-If you want to add a translation, check if `pympress/share/locale/<language>/pympress.po` already exists. If not, take [the template file](https://github.com/Cimbali/pympress/tree/master/pympress/share/locale/pympress.pot) as input and translate all the strings, then add it to the repo in `pympress/share/locale/<language>/pympress.po`.
-Finally pass this .po file to msgfmt and add the output to the repo at `pympress/share/locale/<language>/LC_MESSAGES/pympress.mo`.
+If you want to add or contribute to a translation, check [pympress’ page on POEditor](https://poeditor.com/join/project/nKfRxeN8pS).
+
+![Czech: 100%](https://img.shields.io/badge/%F0%9F%87%A8%F0%9F%87%BF%20Czech-100%25-0f0)
+![French: 100%](https://img.shields.io/badge/%F0%9F%87%AB%F0%9F%87%B7%20French-100%25-0f0)
+![German: 87%](https://img.shields.io/badge/%F0%9F%87%A9%F0%9F%87%AA%20German-87%25-4f0)
+![Polish: 86%](https://img.shields.io/badge/%F0%9F%87%B5%F0%9F%87%B1%20Polish-86%25-5f0)
+![Spanish: 86%](https://img.shields.io/badge/%F0%9F%87%AA%F0%9F%87%B8%20Spanish-86%25-5f0)
+<!-- insert badge -->
 
 ## Packages
 

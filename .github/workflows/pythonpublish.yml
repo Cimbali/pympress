@@ -17,6 +17,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install setuptools wheel twine
+        pip install -e .[babel]
+    - name: Build catalogs
+      run: |
+        ./scripts/poedit.sh download
+        python setup.py compile_catalog
+      with:
+        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
     - name: Build and publish
       env:
         TWINE_USERNAME: __token__

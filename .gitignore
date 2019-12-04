@@ -4,4 +4,4 @@ dist/
 
 pympress.egg-info/
 
-docs/_build
+pympress/share/locale/*/LC_MESSAGES/pympress.mo

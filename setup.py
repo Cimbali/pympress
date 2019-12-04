@@ -25,9 +25,24 @@ from ctypes.util import find_library
 import glob
 import setuptools
 
+from setuptools.command.develop import develop
+from setuptools.command.install import install
+
 try: read_input = raw_input
 except NameError: read_input = input
 
+
+class PatchedDevelop(develop):
+    """ Patched installation for development mode to build translations .mo files. """
+    def run(self):
+        self.distribution.run_command('compile_catalog')
+        develop.run(self)
+
+class PatchedInstall(install):
+    """Patched installation for installation mode to build translations .mo files. """
+    def run(self):
+        self.distribution.run_command('compile_catalog')
+        install.run(self)
 
 
 # All functions listing resources return a list of pairs: (system path, distribution relative path)
@@ -181,7 +196,9 @@ if __name__ == '__main__':
         setup(**setup_opts)
     else:
         # Normal behaviour: use setuptools, load options from setup.cfg
-        setuptools.setup()
+        print('Using setuptools.setup():')
+
+        setuptools.setup(cmdclass = {'develop': PatchedDevelop, 'install': PatchedInstall})
 
 
 ##

@@ -53,3 +53,23 @@ jobs:
         git -c user.email=me@cimba.li -c user.name="${GITHUB_ACTOR}" commit -m "Github Action-built docs update"
         git push "https://Cimbali:${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" HEAD:gh-pages
 
+  strings:
+    name: Upload translatable strings
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -qy jq python3-pip python3-setuptools python3-wheel
+        pip install -e .[babel]
+    - name: Extract
+      run: python setup.py extract_messages
+    - name: Upload
+      run: ./scripts/poedit.sh upload
+      with:
+        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}

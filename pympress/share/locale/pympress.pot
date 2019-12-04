@@ -1,23 +1,9 @@
-msgid ""
-msgstr ""
-"Project-Id-Version: Pympress v1.5.0-b4\n"
-"Report-Msgid-Bugs-To: me@cimba.li\n"
-"POT-Creation-Date: 2016-10-24 15:50+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-
 msgid "(and optionally seconds)"
 msgstr ""
 
 msgid "(paused)"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Additional features"
 msgstr ""
 
@@ -33,21 +19,18 @@ msgstr ""
 msgid "Big buttons"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Blank screen"
 msgstr ""
 
 msgid "Cairo can not draw gif"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Cancel goto/jump/highlighting/zooming"
 msgstr ""
 
 msgid "Clock"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Close file"
 msgstr ""
 
@@ -87,22 +70,18 @@ msgstr ""
 msgid "Error opening the file \"{}\""
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "First slide"
 msgstr ""
 
 msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Go back in slide history"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Go forward in slide history"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Go to page number"
 msgstr ""
 
@@ -121,33 +100,24 @@ msgstr ""
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Jump to page label"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Last slide"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Manage files"
 msgstr ""
 
 msgid "Media support uses {}."
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Navigating"
 msgstr ""
 
 msgid "Next slide"
 msgstr ""
 
-msgctxt "shortcut window"
-msgid "Next slide"
-msgstr ""
-
-msgctxt "shortcut window"
 msgid "Next slide with different label"
 msgstr ""
 
@@ -166,7 +136,6 @@ msgstr ""
 msgid "Open _Recent"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Open file"
 msgstr ""
 
@@ -188,7 +157,6 @@ msgstr ""
 msgid "Play"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Play/pause timer"
 msgstr ""
 
@@ -198,7 +166,6 @@ msgstr ""
 msgid "Portable installation"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Presentation"
 msgstr ""
 
@@ -208,11 +175,9 @@ msgstr ""
 msgid "Presenter fullscreen"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Previous slide"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Previous slide with different label"
 msgstr ""
 
@@ -249,18 +214,15 @@ msgstr ""
 msgid "Python version {}"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Quit"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Reset timer"
 msgstr ""
 
 msgid "Resources are loaded from "
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Set estimated talk time"
 msgstr ""
 
@@ -282,7 +244,6 @@ msgstr ""
 msgid "Stop"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Swap windows"
 msgstr ""
 
@@ -301,34 +262,27 @@ msgstr ""
 msgid "Time estimation"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Timers"
 msgstr ""
 
 msgid "Timing breakdown"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Toggle annotations"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Toggle fullscreen"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Toggle highlighting"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Toggle laserpointer"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Toggle notes mode"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Undo highlight stroke"
 msgstr ""
 
@@ -341,25 +295,21 @@ msgstr ""
 msgid "Unsupported OS: can't enable/disable screensaver"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Unzoom"
 msgstr ""
 
 msgid "Usage: {} [options] <presentation_file>"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Validate goto/jump destination"
 msgstr ""
 
 msgid "Video support using {} is disabled."
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Windows"
 msgstr ""
 
-msgctxt "shortcut window"
 msgid "Zoom"
 msgstr ""
 
@@ -497,3 +447,4 @@ msgstr ""
 
 msgid "{}, {}, {}, {}, or {}"
 msgstr ""
+
