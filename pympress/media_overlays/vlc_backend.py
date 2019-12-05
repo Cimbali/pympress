@@ -18,7 +18,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 #
-
 """
 :mod:`pympress.media_overlays.vlc` -- widget to play videos using VLC
 ---------------------------------------------------------------------
@@ -30,17 +29,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 import os
+import vlc
 
 import gi
-import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib
 
-from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
+from pympress.util import IS_WINDOWS
 from pympress.media_overlays import base
 
-
-import vlc
 
 class VlcOverlay(base.VideoOverlay):
     """ Simple VLC widget.
@@ -52,23 +49,25 @@ class VlcOverlay(base.VideoOverlay):
     _instance = None
 
     def __init__(self, *args, **kwargs):
-        self.player = self._instance.media_player_new() # before loading UI, needed to connect "map" signal
+        self.player = self._instance.media_player_new()  # before loading UI, needed to connect "map" signal
 
         super(VlcOverlay, self).__init__(*args, **kwargs)
 
         event_manager = self.player.event_manager()
         event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.hide))
-        event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged, lambda e: self.update_range(self.player.get_length() / 1000. or 1.))
-        event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged, lambda e: self.update_progress(self.player.get_time() / 1000. or 1.))
+        event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged,
+                                   lambda e: self.update_range(self.player.get_length() / 1000. or 1.))
+        event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged,
+                                   lambda e: self.update_progress(self.player.get_time() / 1000. or 1.))
 
 
     def handle_embed(self, mapped_widget):
-        """ Handler to embed the VLC player in the correct window, connected to the :attr:`~.Gtk.Widget.signals.map` signal
+        """ Handler to embed the VLC player in the window, connected to the :attr:`~.Gtk.Widget.signals.map` signal.
         """
         # Do we need to be on the main thread? (especially for the mess from the win32 window handle)
-        #assert(isinstance(threading.current_thread(), threading._MainThread))
+        # assert(isinstance(threading.current_thread(), threading._MainThread))
         if IS_WINDOWS:
-            self.player.set_hwnd(base.get_window_handle(self.movie_zone.get_window())) # get_property('window')
+            self.player.set_hwnd(base.get_window_handle(self.movie_zone.get_window()))  # get_property('window')
         else:
             self.player.set_xwindow(self.movie_zone.get_window().get_xid())
         return False
@@ -104,6 +103,7 @@ class VlcOverlay(base.VideoOverlay):
 
     def do_play(self):
         """ Start playing the media file.
+
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Returns:
@@ -115,6 +115,7 @@ class VlcOverlay(base.VideoOverlay):
 
     def do_play_pause(self):
         """ Toggle pause mode of the media.
+
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Returns:
@@ -132,6 +133,7 @@ class VlcOverlay(base.VideoOverlay):
 
     def do_set_time(self, t):
         """ Set the player at time t.
+
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Args:
@@ -146,7 +148,7 @@ class VlcOverlay(base.VideoOverlay):
 
     @classmethod
     def setup_backend(cls, vlc_opts = ['--no-video-title-show']):
-        """ Prepare/check the VLC backend
+        """ Prepare/check the VLC backend.
 
         Args:
             vlc_opts (`list`): the arguments for starting vlc

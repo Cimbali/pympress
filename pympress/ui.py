@@ -19,7 +19,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-
 """
 :mod:`pympress.ui` -- GUI management
 ------------------------------------
@@ -37,7 +36,8 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
-import os.path, sys
+import os.path
+import sys
 
 import gi
 import cairo
@@ -141,7 +141,7 @@ class UI(builder.Builder):
     #: Software-implemented laser pointer, :class:`~pympress.pointer.Pointer`
     laser = None
 
-    #: :class:`~pympress.editable_label.PageNumber` displaying current and max page numbers and setting current page number
+    #: :class:`~pympress.editable_label.PageNumber` displaying and setting current page numbers
     page_number = None
 
     #: :class:`~pympress.editable_label.EstimatedTalkTime` to set estimated/remaining talk time
@@ -234,11 +234,11 @@ class UI(builder.Builder):
 
 
     def load_icons(self):
-        """ Set the icon list for both windows
+        """ Set the icon list for both windows.
         """
         try:
             icon_list = [GdkPixbuf.Pixbuf.new_from_file(i) for i in util.list_icons()]
-        except Exception as e:
+        except Exception:
             logger.exception('Error loading icons')
             return
 
@@ -313,7 +313,7 @@ class UI(builder.Builder):
 
 
     def setup_screens(self):
-        """ Sets up the position of the windows
+        """ Sets up the position of the windows.
         """
         # If multiple monitors, apply windows to monitors according to config
         screen = self.p_win.get_screen()
@@ -324,7 +324,8 @@ class UI(builder.Builder):
             c_full = self.config.getboolean('content', 'start_fullscreen')
 
             if c_monitor == p_monitor and (c_full or p_full):
-                logger.warning(_("Content and presenter window must not be on the same monitor if you start full screen!"))
+                warning = _('Content and presenter window must not be on the same monitor if you start full screen!')
+                logger.warning(warning)
                 p_monitor = 0 if c_monitor > 0 else 1
         else:
             c_monitor = 0
@@ -332,8 +333,10 @@ class UI(builder.Builder):
             c_full = False
             p_full = False
 
-            if self.config.getboolean('presenter', 'start_fullscreen') or self.config.getboolean('content', 'start_fullscreen'):
-                logger.warning(_("Not starting content or presenter window full screen because there is only one monitor"))
+            if self.config.getboolean('presenter', 'start_fullscreen') \
+                    or self.config.getboolean('content', 'start_fullscreen'):
+                logger.warning(_('Not starting content or presenter window full screen ' +
+                                 'because there is only one monitor'))
 
         p_bounds = screen.get_monitor_geometry(p_monitor)
         self.p_win.move(p_bounds.x, p_bounds.y)
@@ -393,7 +396,6 @@ class UI(builder.Builder):
             widget (:class:`~Gtk.Widget`):  the widget which has been resized
             event (:class:`~Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
-
         # Don't trust those
         if not event.send_event:
             return
@@ -426,7 +428,10 @@ class UI(builder.Builder):
 
 
     def redraw_panes(self):
-        """ Handler for :class:`~Gtk.Paned`'s resizing signal, used for delayed drawing events of drawing areas inside the panes.
+        """ Handler for :class:`~Gtk.Paned`'s resizing signal.
+
+        Used for delayed drawing events of drawing areas inside the panes.
+
         This is very useful on windows where resizing gets sluggish if we try to redraw while resizing.
         """
         self.resize_panes = False
@@ -442,7 +447,7 @@ class UI(builder.Builder):
 
 
     def on_pane_event(self, widget, evt):
-        """ Signal handler for gtk.paned events
+        """ Signal handler for gtk.paned events.
 
         This function allows to delay drawing events when resizing, and to speed up redrawing when
         moving the middle pane is done (which happens at the end of a mouse resize)
@@ -499,16 +504,17 @@ class UI(builder.Builder):
         about.set_program_name('pympress')
         about.set_version(pympress['version'])
         about.set_copyright(_('Contributors:') + '\n' + pympress['contributors'])
-        about.set_comments(_('pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n')
-                         + _('Some preferences are saved in ') + self.config.path_to_config() + '\n'
-                         + _('Resources are loaded from ') + os.path.dirname(util.get_locale_dir()) + '\n'
-                         + _('The log is written to ') + util.get_log_path() + '\n\n'
-                         + (_('Media support uses {}.').format(self.medias.backend_version())) + '\n'
-                         + _('Python version {}').format(sys.version))
+        about.set_comments(_('pympress is a little PDF reader written in Python ' +
+                             'using Poppler for PDF rendering and GTK for the GUI.\n') +
+                           _('Some preferences are saved in ') + self.config.path_to_config() + '\n' +
+                           _('Resources are loaded from ') + os.path.dirname(util.get_locale_dir()) + '\n' +
+                           _('The log is written to ') + util.get_log_path() + '\n\n' +
+                           _('Media support uses {}.').format(self.medias.backend_version()) + '\n' +
+                           _('Python version {}').format(sys.version))
         about.set_website('https://github.com/Cimbali/pympress')
         try:
             about.set_logo(GdkPixbuf.Pixbuf.new_from_file(util.get_icon_path('pympress-128.png')))
-        except Exception as e:
+        except Exception:
             logger.exception(_('Error loading icon for about window'))
         about.run()
         about.destroy()
@@ -519,7 +525,7 @@ class UI(builder.Builder):
     ##############################################################################
 
     def swap_document(self, docpath, page = 0, reloading = False):
-        """ Replace the currently open document with a new one
+        """ Replace the currently open document with a new one.
 
         The new document is possibly and EmptyDocument if docpath is None.
         The state of the ui and cache are updated accordingly.
@@ -537,7 +543,8 @@ class UI(builder.Builder):
                 extras.FileWatcher.watch_file(docpath, self.reload_document)
 
         except GLib.Error:
-            if reloading: return
+            if reloading:
+                return
             self.doc = document.Document.create(self, None)
             self.error_opening_file(docpath)
             extras.FileWatcher.stop_watching()
@@ -631,7 +638,6 @@ class UI(builder.Builder):
 
         response = dialog.run()
 
-        path = None
         if response == Gtk.ResponseType.OK:
             self.swap_document(os.path.abspath(dialog.get_filename()))
 
@@ -643,11 +649,11 @@ class UI(builder.Builder):
         """
         # Check if the path is valid
         if not os.path.exists(filename):
-            msg=_('Could not find the file "{}"').format(filename)
+            msg = _('Could not find the file "{}"').format(filename)
         else:
-            msg=_('Error opening the file "{}"').format(filename)
+            msg = _('Error opening the file "{}"').format(filename)
         dialog = Gtk.MessageDialog(transient_for = self.p_win, flags = Gtk.DialogFlags.MODAL,
-                                    message_type = Gtk.MessageType.ERROR, message_format = msg)
+                                   message_type = Gtk.MessageType.ERROR, message_format = msg)
         dialog.add_buttons(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         dialog.set_position(Gtk.WindowPosition.CENTER)
         dialog.run()
@@ -683,7 +689,7 @@ class UI(builder.Builder):
         """
         try:
             widget.set_value(int(widget.get_buffer().get_text()))
-        except:
+        except Exception:
             pass
 
         page_nb = int(widget.get_value()) - 1
@@ -719,7 +725,7 @@ class UI(builder.Builder):
         cur = page_cur.number()
         page_max = min(self.doc.pages_number(), cur + 5)
         page_min = max(0, cur - 2)
-        for p in list(range(cur+1, page_max)) + list(range(cur, page_min, -1)):
+        for p in list(range(cur + 1, page_max)) + list(range(cur, page_min, -1)):
             self.cache.prerender(p)
 
 
@@ -778,7 +784,7 @@ class UI(builder.Builder):
         # Prerender the 4 next pages and the 2 previous ones
         page_max = min(self.doc.pages_number(), self.page_preview_nb + 5)
         page_min = max(0, self.page_preview_nb - 2)
-        for p in list(range(self.page_preview_nb+1, page_max)) + list(range(self.page_preview_nb, page_min, -1)):
+        for p in list(range(self.page_preview_nb + 1, page_max)) + list(range(self.page_preview_nb, page_min, -1)):
             self.cache.prerender(p)
 
         self.medias.replace_media_overlays(self.doc.current_page(), page_type)
@@ -796,7 +802,6 @@ class UI(builder.Builder):
             widget (:class:`~Gtk.Widget`):  the widget to update
             cairo_context (:class:`~cairo.Context`):  the Cairo context (or `None` if called directly)
         """
-
         if widget is self.c_da:
             # Current page
             if self.blanked:
@@ -819,8 +824,8 @@ class UI(builder.Builder):
         wtype = self.cache.get_widget_type(name)
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
-        if self.zoom.scale != 1. and (widget is self.p_da_cur or widget is self.c_da
-                                      or widget is self.scribbler.scribble_p_da):
+        if self.zoom.scale != 1. and (widget is self.p_da_cur or widget is self.c_da or
+                                      widget is self.scribbler.scribble_p_da):
             zoom_matrix = self.zoom.get_matrix(ww, wh)
             name += '_zoomed'
         else:
@@ -871,7 +876,7 @@ class UI(builder.Builder):
 
 
     def redraw_current_slide(self):
-        """ Callback to queue a redraw of the current slides (in both winows)
+        """ Callback to queue a redraw of the current slides (in both winows).
         """
         self.c_da.queue_draw()
         self.p_da_cur.queue_draw()
@@ -883,7 +888,7 @@ class UI(builder.Builder):
     ##############################################################################
 
     def on_navigation(self, widget, event):
-        """ Manage key presses for both windows
+        """ Manage key presses for both windows.
 
         Args:
             widget (:class:`~Gtk.Widget`):  the widget in which the event occured (ignored)
@@ -968,9 +973,9 @@ class UI(builder.Builder):
             self.laser.toggle_pointermode()
         else:
             if command:
-                logger.error('ERROR: missing command "{}" for {}{}{}{}'.format(command,
-                    'ctrl + ' if ctrl_pressed else '', 'shift + ' if shift_pressed else '',
-                    'meta + ' if meta_pressed else '', name))
+                logger.error('ERROR: missing command "{}" for {}{}{}{}'.format(command,  # noqa: E128
+                             'ctrl + ' if ctrl_pressed else '', 'shift + ' if shift_pressed else '',
+                             'meta + ' if meta_pressed else '', name))
 
             return False
 
@@ -978,7 +983,7 @@ class UI(builder.Builder):
 
 
     def on_scroll(self, widget, event):
-        """ Manage scroll events
+        """ Manage scroll events.
 
         Args:
             widget (:class:`~Gtk.Widget`):  the widget in which the event occured (ignored)
@@ -1000,7 +1005,7 @@ class UI(builder.Builder):
 
 
     def track_motions(self, widget, event):
-        """ Track mouse motion events
+        """ Track mouse motion events.
 
         Handles mouse motions on the "about" menu.
 
@@ -1022,7 +1027,7 @@ class UI(builder.Builder):
 
 
     def track_clicks(self, widget, event):
-        """ Track mouse press and release events
+        """ Track mouse press and release events.
 
         Handles clicks on the slides.
 
@@ -1045,6 +1050,7 @@ class UI(builder.Builder):
 
     def click_link(self, widget, event):
         """ Check whether a link was clicked and follow it.
+
         Handles a click on a slide.
 
         Args:
@@ -1054,7 +1060,6 @@ class UI(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
-
         if event.type == Gdk.EventType.BUTTON_RELEASE:
             return False
 
@@ -1078,8 +1083,7 @@ class UI(builder.Builder):
 
 
     def hover_link(self, widget, event):
-        """ Manage events related to hyperlinks, setting the cursor to a pointer if
-        the hovered region is clickable.
+        """ Manage events related to hyperlinks, setting the cursor to a pointer if the hovered region is clickable.
 
         Args:
             widget (:class:`~Gtk.Widget`):  the widget in which the event occured
@@ -1088,7 +1092,6 @@ class UI(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
-
         if event.type != Gdk.EventType.MOTION_NOTIFY:
             return False
 
@@ -1112,8 +1115,7 @@ class UI(builder.Builder):
 
 
     def switch_fullscreen(self, widget):
-        """ Switch the Content window to fullscreen (if in normal mode)
-        or to normal mode (if fullscreen).
+        """ Switch the Content window to fullscreen (if in normal mode) or to normal mode (if fullscreen).
 
         Screensaver will be disabled when entering fullscreen mode, and enabled
         when leaving fullscreen mode.
@@ -1211,10 +1213,10 @@ class UI(builder.Builder):
 
 
     def show_timing_report(self, *args):
-        ''' Show the popup with information on timing of the talk.
+        """ Show the popup with information on timing of the talk.
 
         Gather current time, document structure, page labels etc. and pass it to timing popup for display.
-        '''
+        """
         self.timing.show(int(self.talk_time.delta), self.doc.get_structure(), self.doc.page_labels)
 
 
@@ -1245,7 +1247,7 @@ class UI(builder.Builder):
         if (p_win_state & Gdk.WindowState.MAXIMIZED) != 0:
             self.p_win.unmaximize()
 
-        p_monitor, c_monitor = (c_monitor, p_monitor)
+        p_monitor, c_monitor = c_monitor, p_monitor
 
         cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
         px, py, pw, ph = self.p_win.get_position() + self.p_win.get_size()
@@ -1282,7 +1284,7 @@ class UI(builder.Builder):
 
 
     def swap_layout(self, old, new):
-        """ Save the old layout in the prefs, load the new layout
+        """ Save the old layout in the prefs, load the new layout.
 
         Args:
             old (`str`): the name of the layout to save, `None` to use plain or notes automatically
@@ -1307,7 +1309,6 @@ class UI(builder.Builder):
         Returns:
             `bool`: whether the mode has been toggled.
         """
-
         if issubclass(type(widget), Gtk.CheckMenuItem):
             # if this widget is not the active one do nothing
             if not widget.get_active():
@@ -1414,7 +1415,7 @@ class UI(builder.Builder):
 
 
     def switch_bigbuttons(self, *args):
-        """ Toggle the display of big buttons (nice for touch screens)
+        """ Toggle the display of big buttons (nice for touch screens).
         """
         self.show_bigbuttons = not self.show_bigbuttons
 

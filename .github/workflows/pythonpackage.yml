@@ -1,0 +1,42 @@
+name: Python linting
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install flake8
+    - name: Lint with flake8
+      run: |
+        # Reduced list of ignores, show as warnings
+        flake8 . --count --show-source --statistics --select=E,F,W,C --exit-zero --ignore=E251,E302,E303,W504
+        # Full list of ignores, fail on errors. No Docs errors.
+        flake8 . --count --show-source --statistics --select=E,F,W,C
+
+    - name: Lint docstrings dependencies
+      if: matrix.python-version == 3.8
+      run: |
+        python -m pip install flake8-docstrings
+
+    - name: Lint docstrings
+      if: matrix.python-version == 3.8
+      run: |
+        # Reduced list of ignores, show as warnings
+        flake8 . --count --show-source --statistics --select=D --exit-zero --ignore=D107,D200,D210,D413
+        # Full list of ignores, fail on errors. No Docs errors.
+        flake8 . --count --show-source --statistics --select=D

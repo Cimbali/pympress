@@ -22,7 +22,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 #
-
 """
 :mod:`pympress.media_overlays.base` -- widget to play videos with a backend like VLC
 ------------------------------------------------------------------------------------
@@ -33,26 +32,14 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
-import gi
-import cairo
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject, GLib, GdkPixbuf
-
-try:
-    gi.require_version('GdkX11', '3.0')
-    from gi.repository import GdkX11
-except:
-    pass
-
 import ctypes
 
-from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
 from pympress import builder
 
 
 def get_window_handle(window):
-    """ Uses ctypes to call gdk_win32_window_get_handle which is not available
-    in python gobject introspection porting (yet ?)
+    """ Uses ctypes to call gdk_win32_window_get_handle which is not available in python gobject introspection porting.
+
     Solution from http://stackoverflow.com/a/27236258/1387346
 
     Args:
@@ -132,13 +119,13 @@ class VideoOverlay(builder.Builder):
 
 
     def handle_embed(self, mapped_widget):
-        """ Handler to embed the video player in the correct window, connected to the :attr:`~.Gtk.Widget.signals.map` signal
+        """ Handler to embed the video player in the window, connected to the :attr:`~.Gtk.Widget.signals.map` signal.
         """
         return False
 
 
     def format_millis(self, sc, prog):
-        """ Callback to format the current timestamp (in milliseconds) as minutes:seconds
+        """ Callback to format the current timestamp (in milliseconds) as minutes:seconds.
 
         Args:
             sc (:class:`~Gtk.Scale`): The scale whose position we are formatting
@@ -181,7 +168,8 @@ class VideoOverlay(builder.Builder):
 
 
     def update_margins_for_page(self, page_type):
-        """
+        """ Recalculate the margins around the media in the event of a page type change.
+
         Arguments:
             page_type (:class:`~pympress.document.PdfPage`): the part of the page to display
         """
@@ -250,7 +238,7 @@ class VideoOverlay(builder.Builder):
 
 
     def do_hide(self):
-        """ Remove widget from overlays. Needs to be callded via GLib.idle_add
+        """ Remove widget from overlays. Needs to be called via :func:`~GLib.idle_add`.
 
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
@@ -265,6 +253,7 @@ class VideoOverlay(builder.Builder):
 
     def do_play(self):
         """ Start playing the media file.
+
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Returns:
@@ -275,6 +264,7 @@ class VideoOverlay(builder.Builder):
 
     def do_play_pause(self):
         """ Toggle pause mode of the media.
+
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Returns:
@@ -285,6 +275,7 @@ class VideoOverlay(builder.Builder):
 
     def do_set_time(self, t):
         """ Set the player at time t.
+
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Args:

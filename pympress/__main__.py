@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 #
-#!/usr/bin/env python
-#
 #       pympress
 #
 #       Copyright 2009, 2010 Thomas Jost <thomas.jost@gmail.com>
@@ -21,6 +19,10 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
+"""
+:mod:`pympress.__main__` -- The entry point of pympress
+-------------------------------------------------------
+"""
 
 from __future__ import print_function, unicode_literals
 
@@ -43,8 +45,11 @@ logging.basicConfig(filename=util.get_log_path(), level=logging.DEBUG)
 
 
 def uncaught_handler(*exc_info):
+    """ Exception handler, to log uncuaght exceptiosn to our log file.
+    """
     logger.critical('Uncaught exception:\n{}'.format(logging.Formatter().formatException(exc_info)))
     sys.__excepthook__(*exc_info)
+
 
 sys.excepthook = uncaught_handler
 
@@ -58,6 +63,12 @@ locale.setlocale(locale.LC_ALL, '')
 gettext.install('pympress', util.get_locale_dir())
 
 
+try:
+    # python 2.7 does not have this
+    ModuleNotFoundError
+except NameError:
+    ModuleNotFoundError = ImportError
+
 
 # Load python bindings for gobject introspections, aka pygobject, aka gi.
 # This is a dependency that is not specified in the setup.py, so we need to start here
@@ -68,12 +79,14 @@ try:
     from gi.repository import Gtk, Gdk, GLib
 except ModuleNotFoundError:
     logger.critical('Gobject Introspections module is missing', exc_info = True)
-    print('\n' + _('ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system.'))
-    print('\n' + _('For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies'))
-    print(_('If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject'))
-    print(_('pip will then download and compile pygobject, for which you need the Gtk headers (or development package).') + '\n')
+    print('\n' + _('ERROR: Gobject Introspections module is missing, ' +
+                   'make sure Gtk and pygobject are installed on your system.') + '\n')
+    print(_('For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies'))
+    print(_('If using a virtualenv or anaconda, you can either allow system site packages, ' +
+            'or run: pip install pygobject'))
+    print(_('pip will then download and compile pygobject, ' +
+            'for which you need the Gtk headers (or development package).') + '\n')
     exit(1)
-
 
 
 
@@ -82,20 +95,34 @@ from pympress import extras, document, ui
 
 
 def usage():
-    print(_("Usage: {} [options] <presentation_file>").format(sys.argv[0]))
-    print("")
-    print(_("Options:"))
-    print("    -h, --help                       " + _("This help"))
-    print("    -t mm[:ss], --talk-time=mm[:ss]  " + _("The estimated (intended) talk time in minutes"))
-    print("                                       " + _("(and optionally seconds)"))
-    print("    -n position, --notes=position    " + _("Set the position of notes on the pdf page (none, left, right, top, or bottom)."))
-    print("                                       " + _("Overrides the detection from the file."))
-    print("    --log=level                      " + _("Set level of verbosity in log file:"))
-    print("                                       " + _("{}, {}, {}, {}, or {}").format("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"))
-    print("")
+    """ Display how to use the command line options.
+    """
+    print(_('Usage: {} [options] <presentation_file>').format(sys.argv[0]))
+    print('')
+    print(_('Options:'))
+    print('    -h, --help                       ', end='')
+    print(_('This help'))
+    print('    -t mm[:ss], --talk-time=mm[:ss]  ', end='')
+    print(_('The estimated (intended) talk time in minutes'))
+    print('                                       ', end='')
+    print(_('(and optionally seconds)'))
+    print('    -n position, --notes=position    ', end='')
+    print(_('Set the position of notes on the pdf page (none, left, right, top, or bottom).'))
+    print('                                       ', end='')
+    print(_('Overrides the detection from the file.'))
+    print('    --log=level                      ', end='')
+    print(_('Set level of verbosity in log file:'))
+    print('                                       ', end='')
+    print(_('{}, {}, {}, {}, or {}').format('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'))
+    print()
 
 
 def parse_opts(opts):
+    """ Parse command line options, returned from getopt.getopt().
+
+    Returns:
+        `tuple`: estimated talk time, log level, notes positions.
+    """
     ett = 0
     log_level = logging.ERROR
     notes_pos = None
@@ -135,6 +162,8 @@ def parse_opts(opts):
 
 
 def main(argv = sys.argv[1:]):
+    """ Entry point of pympress. Parse command line arguments, instantiate the UI, and start the main loop.
+    """
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     # prefere X11 on posix systems because Wayland still has some shortcomings for us,
@@ -144,15 +173,16 @@ def main(argv = sys.argv[1:]):
     Gtk.init(argv)
 
     pympress_meta = util.get_pympress_meta()['version']
-    logger.info(' '.join(['Pympress:', pympress_meta,
-            '; Python:', platform.python_version(),
-            '; OS:', platform.system(), platform.release(), #platform.version(),
-            '; Gtk {}.{}.{}'.format(Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version()),
-            '; GLib {}.{}.{}'.format(GLib.MAJOR_VERSION, GLib.MINOR_VERSION, GLib.MICRO_VERSION),
-            '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
-            '; Cairo', ui.cairo.cairo_version_string(), ', pycairo', ui.cairo.version,
-            '; Media:', extras.Media.backend_version()
-        ]))
+    logger.info(' '.join([
+        'Pympress:', pympress_meta,
+        '; Python:', platform.python_version(),
+        '; OS:', platform.system(), platform.release(), platform.version(),
+        '; Gtk {}.{}.{}'.format(Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version()),
+        '; GLib {}.{}.{}'.format(GLib.MAJOR_VERSION, GLib.MINOR_VERSION, GLib.MICRO_VERSION),
+        '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
+        '; Cairo', ui.cairo.cairo_version_string(), ', pycairo', ui.cairo.version,
+        '; Media:', extras.Media.backend_version()
+    ]))
 
     try:
         opts, args = getopt.getopt(argv, "hn:t:", ["help", "notes=", "talk-time=", "log="])
@@ -167,7 +197,8 @@ def main(argv = sys.argv[1:]):
     gui = ui.UI()
 
     # pass command line args
-    if ett: gui.est_time.set_time(ett)
+    if ett:
+        gui.est_time.set_time(ett)
 
     gui.swap_document(os.path.abspath(args[0])) if args else gui.pick_file()
 

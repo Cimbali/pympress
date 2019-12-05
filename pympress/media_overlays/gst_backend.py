@@ -18,7 +18,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 #
-
 """
 :mod:`pympress.media_overlays.gst` -- widget to play videos using Gstreamer's GstPlayer
 ---------------------------------------------------------------------------------------
@@ -30,14 +29,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 import gi
-import cairo
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
 gi.require_version('GstPlayer', '1.0')
 from gi.repository import GLib, Gst, GstPlayer
 
 
-from pympress.util import IS_POSIX, IS_MAC_OS, IS_WINDOWS
+from pympress.util import IS_WINDOWS
 from pympress.media_overlays import base
 
 
@@ -61,7 +59,7 @@ class GstOverlay(base.VideoOverlay):
 
 
     def track_state(self, player, state):
-        """ Update the current state of the player for easy reference
+        """ Update the current state of the player for easy reference.
 
         Args:
             player (:class:`~GstPlayer.Player`): The player for which the position changed
@@ -131,6 +129,7 @@ class GstOverlay(base.VideoOverlay):
 
     def do_play_pause(self):
         """ Toggle pause mode of the media.
+
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Returns:
@@ -150,6 +149,7 @@ class GstOverlay(base.VideoOverlay):
 
     def do_set_time(self, t):
         """ Set the player at time t.
+
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Args:
@@ -162,10 +162,9 @@ class GstOverlay(base.VideoOverlay):
         return False
 
 
-
     @classmethod
     def setup_backend(cls, gst_opts = []):
-        """ Prepare/check the Gst backend
+        """ Prepare/check the Gst backend.
 
         Returns:
             `str`: the version of Gst used by the backend

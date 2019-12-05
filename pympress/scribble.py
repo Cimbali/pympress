@@ -18,7 +18,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-
 """
 :mod:`pympress.scribble` -- Manage user drawings on the current slide
 ---------------------------------------------------------------------
@@ -34,10 +33,17 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
-from pympress import builder, surfacecache, document, extras
+from pympress import builder, extras
 
 
 class Scribbler(builder.Builder):
+    """ UI that allows to draw free-hand on top of the current slide.
+
+    Args:
+        config (:class:`~pympress.config.Config`): A config object containing preferences
+        builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+        notes_mode (`bool`): The current notes mode, i.e. whether we display the notes on second slide
+    """
     #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
     scribbling_mode = False
     #: `list` of scribbles to be drawn, as tuples of color :class:`~Gdk.RGBA`, width `int`, and a `list` of points.
@@ -49,7 +55,7 @@ class Scribbler(builder.Builder):
     #: `int` current stroke width of the scribbling tool
     scribble_width = 1
 
-    #: :class:`~Gtk.HBox` that is replaces normal panes when scribbling is toggled, contains buttons and scribble drawing area
+    #: :class:`~Gtk.HBox` that replaces normal panes when scribbling is on, contains buttons and scribble drawing area.
     scribble_overlay = None
     #: :class:`~Gtk.DrawingArea` for the scribbles in the Presenter window. Actually redraws the slide.
     scribble_p_da = None
@@ -92,13 +98,6 @@ class Scribbler(builder.Builder):
     stop_zooming = lambda: None
 
     def __init__(self, config, builder, notes_mode):
-        """ Setup all the necessary for scribbling
-
-        Args:
-            config (:class:`~pympress.config.Config`): A config object containing preferences
-            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
-            notes_mode (`bool`): The current notes mode, i.e. whether we display the notes on second slide
-        """
         super(Scribbler, self).__init__()
 
         self.load_ui('highlight')
@@ -182,7 +181,7 @@ class Scribbler(builder.Builder):
             return False
 
         if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
-            self.scribble_list.append( (self.scribble_color, self.scribble_width, []) )
+            self.scribble_list.append((self.scribble_color, self.scribble_width, []))
             self.scribble_drawing = True
 
             return self.track_scribble(widget, event)
@@ -217,7 +216,7 @@ class Scribbler(builder.Builder):
 
 
     def update_color(self, widget):
-        """ Callback for the color chooser button, to set scribbling color
+        """ Callback for the color chooser button, to set scribbling color.
 
         Args:
             widget (:class:`~Gtk.ColorButton`):  the clicked button to trigger this event, if any
@@ -227,7 +226,7 @@ class Scribbler(builder.Builder):
 
 
     def update_width(self, widget, event, value):
-        """ Callback for the width chooser slider, to set scribbling width
+        """ Callback for the width chooser slider, to set scribbling width.
 
         Args:
             widget (:class:`~Gtk.Scale`): The slider control used to select the scribble width
@@ -239,7 +238,7 @@ class Scribbler(builder.Builder):
 
 
     def clear_scribble(self, *args):
-        """ Callback for the scribble clear button, to remove all scribbles
+        """ Callback for the scribble clear button, to remove all scribbles.
         """
         del self.scribble_list[:]
 
@@ -247,7 +246,7 @@ class Scribbler(builder.Builder):
 
 
     def pop_scribble(self, *args):
-        """ Callback for the scribble undo button, to undo the last scribble
+        """ Callback for the scribble undo button, to undo the last scribble.
         """
         if self.scribble_list:
             self.scribble_list.pop()
@@ -270,7 +269,7 @@ class Scribbler(builder.Builder):
 
 
     def switch_scribbling(self, widget, event = None):
-        """ Starts the mode where one can read on top of the screen
+        """ Starts the mode where one can read on top of the screen.
 
         Args:
             widget (:class:`~Gtk.Widget`):  the widget which has received the event.
@@ -309,7 +308,6 @@ class Scribbler(builder.Builder):
 
         self.off_render.remove(self.scribble_overlay)
         self.swap_layout(None, 'highlight')
-        p_layout = self.p_central.get_children()[0]
 
         self.p_central.queue_draw()
         self.scribble_overlay.queue_draw()
@@ -330,7 +328,6 @@ class Scribbler(builder.Builder):
             return False
 
         self.swap_layout('highlight', None)
-        p_layout = self.p_central.get_children()[0]
 
         self.off_render.add(self.scribble_overlay)
         self.scribbling_mode = False
@@ -340,5 +337,3 @@ class Scribbler(builder.Builder):
         extras.Cursor.set_cursor(self.p_central)
 
         return True
-
-

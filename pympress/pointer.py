@@ -18,7 +18,6 @@
 #       along with this program; if not, write to the Free Software
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
-
 """
 :mod:`pympress.pointer` -- Manage when and where to draw a software-emulated laser pointer on screen
 ----------------------------------------------------------------------------------------------------
@@ -39,6 +38,8 @@ from pympress import util, extras
 
 
 class PointerMode(enum.Enum):
+    """ Possible values for the pointer.
+    """
     #: Pointer switched on continuously
     CONTINUOUS = 2
     #: Pointer switched on only manual
@@ -48,6 +49,15 @@ class PointerMode(enum.Enum):
 
 
 class Pointer(object):
+    """ Manage and draw the software “laser pointer” to point at the slide.
+
+    Displays a pointer of chosen color on the current slide (in both windows), either on all the time or only when
+    clicking while ctrl pressed.
+
+    Args:
+        config (:class:`~pympress.config.Config`): A config object containing preferences
+        builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
+    """
     #: :class:`~GdkPixbuf.Pixbuf` to read XML descriptions of GUIs and load them.
     pointer = GdkPixbuf.Pixbuf()
     #: `(float, float)` of position relative to slide, where the pointer should appear
@@ -73,12 +83,6 @@ class Pointer(object):
     redraw_current_slide = lambda: None
 
     def __init__(self, config, builder):
-        """ Setup the pointer management, and load the default pointer
-
-        Args:
-            config (:class:`~pympress.config.Config`): A config object containing preferences
-            builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
-        """
         super(Pointer, self).__init__()
         self.config = config
 
@@ -111,7 +115,7 @@ class Pointer(object):
 
 
     def load_pointer(self, name):
-        """ Perform the change of pointer using its color name
+        """ Perform the change of pointer using its color name.
 
         Args:
             name (`str`): Name of the pointer to load
@@ -123,7 +127,7 @@ class Pointer(object):
 
 
     def change_pointercolor(self, widget):
-        """ Callback for a radio item selection as pointer color
+        """ Callback for a radio item selection as pointer color.
 
         Args:
             widget (:class:`~Gtk.RadioMenuItem`): the selected radio item in the pointer type selection menu
@@ -135,7 +139,7 @@ class Pointer(object):
 
 
     def activate_pointermode(self, mode = None):
-        """ Activate the pointer as given by mode
+        """ Activate the pointer as given by mode.
 
         Depending on the given mode, shows or hides the laser pointer and the normal mouse pointer.
 
@@ -172,7 +176,7 @@ class Pointer(object):
 
 
     def change_pointermode(self, widget):
-        """ Callback for a radio item selection as pointer mode (continuous, manual, none)
+        """ Callback for a radio item selection as pointer mode (continuous, manual, none).
 
         Args:
             widget (:class:`~Gtk.RadioMenuItem`): the selected radio item in the pointer type selection menu
@@ -183,7 +187,7 @@ class Pointer(object):
 
 
     def toggle_pointermode(self):
-        """ callback for shortcut to switch on/off continuous pointer
+        """ Callback for shortcut to switch on/off continuous pointer.
         """
         mode = self.old_pointer_mode if self.pointer_mode == PointerMode.CONTINUOUS else PointerMode.CONTINUOUS
         self.activate_pointermode(mode)
@@ -191,7 +195,7 @@ class Pointer(object):
 
 
     def render_pointer(self, cairo_context, ww, wh):
-        """ Draw the laser pointer on screen
+        """ Draw the laser pointer on screen.
 
         Args:
             cairo_context (:class:`~cairo.Context`): The canvas on which to render the pointer
@@ -227,7 +231,7 @@ class Pointer(object):
 
 
     def track_enter_leave(self, widget, event):
-        """ Switches laser off/on in continuous mode on leave/enter slides
+        """ Switches laser off/on in continuous mode on leave/enter slides.
 
         In continuous mode, the laser pointer is switched off when the mouse leaves the slide
         (otherwise the laser pointer "sticks" to the edge of the slide).
@@ -286,5 +290,3 @@ class Pointer(object):
 
         else:
             return False
-
-
