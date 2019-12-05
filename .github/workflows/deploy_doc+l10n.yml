@@ -1,4 +1,4 @@
-name: Update docs
+name: Update docs and translatable strings
 
 on:
   push:

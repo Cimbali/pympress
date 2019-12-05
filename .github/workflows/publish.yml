@@ -1,11 +1,11 @@
-name: Upload Python Package
+name: Upload python package
 
 on:
   release:
     types: [published]
 
 jobs:
-  deploy:
+  pypi:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -31,3 +31,20 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
         twine upload dist/*
+
+  brew:
+    name: Request new pypi package be pulled into Homebrew
+    needs: pypi
+    runs-on: macos-latest
+
+    steps:
+    - name: Install dependencies
+      run: brew install jq
+
+    - name: Wait a reasonable amount of time for pypi to update its info
+      run: sleep 60  # be patient with pypi
+
+    - name: Make a brew PR from pypi’s metadata
+      run: |
+        jq_script=`printf '.releases."%s"[]? | select(.python_version == "source") | @sh "--url=\(.url) --sha256=\(.digests.sha256)"' ${GITHUB_REF#v}`
+        curl -s https://pypi.org/pypi/pympress/json | jq -r "$jq_script" | xargs brew bump-formula-pr --strict
