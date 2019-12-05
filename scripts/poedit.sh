@@ -43,6 +43,17 @@ EOF
         done
 }
 
+
+contributors() {
+    curl -sX POST https://api.poeditor.com/v2/contributors/list \
+          -F api_token="$poeditor_api_token" \
+          -F id="301055" | jq -r 'select(.response.code == "200") | .result.contributors[].name' |
+        while read name; do
+            # hold "name,", hold & delete any line matching name, at the last translator insert the hold space
+            sed -e "1{h;s/.*/${name},/;x}" -e "/\<${name}\>/{h;d}" -e '/<!-- last translator -->/{x;G}' -i README.md
+        done
+}
+
 download() {
     lang=$1
     printf "Updating %s:\n" "$lang"
@@ -62,25 +73,35 @@ getpass() {
 }
 
 
-
-if test "$1" = "upload"; then
-    getpass
-    upload
-elif test "$1" = "languages"; then
-    getpass
-    languages
-elif test "$1" = "download"; then
-    getpass
-    for lang in `languages`; do
-        download $lang
-    done
-    badges
-elif test "$1" = "progress"; then
-    getpass
-    badges
-else
+if [ $# -eq 0 ]; then
     echo "Usage: $0 <command>"
-    echo "Where command is one of: upload, languages, download, progress"
+    echo "Where command is one of: upload, languages, download, progress, contributors"
     echo "requires curl and jq"
-    test -z "$1" && exit 1
 fi
+
+while [ $# -gt 0 ]; do
+    if test "$1" = "upload"; then
+        getpass
+        upload
+    elif test "$1" = "languages"; then
+        getpass
+        languages
+    elif test "$1" = "download"; then
+        getpass
+        for lang in `languages`; do
+            download $lang
+        done
+        contributors
+        badges
+    elif test "$1" = "progress"; then
+        getpass
+        badges
+    elif test "$1" = "contributors"; then
+        getpass
+        contributors
+    else
+        echo "Unrecognised command $1 use one of: upload, languages, download, progress, contributors"
+        exit 1
+    fi
+    shift
+done

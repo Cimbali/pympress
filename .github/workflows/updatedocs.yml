@@ -6,8 +6,8 @@ on:
       - master
 
 jobs:
-  build:
-    name: Generate docs
+  strings:
+    name: Upload translatable strings
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -18,10 +18,35 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update -q
-        sudo apt-get install -qy gobject-introspection libgirepository-1.0-1 gir1.2-gtk-3.0 gir1.2-glib-2.0 gir1.2-gstreamer-1.0 gir1.2-poppler-0.18 python3-pip python3-setuptools python3-wheel libgirepository1.0-dev
+        sudo apt-get install -qy jq
+        pip install -e .[babel]
+    - name: Extract
+      run: python setup.py extract_messages
+    - name: Upload
+      env:
+        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
+      run: ./scripts/poedit.sh upload
+
+  build:
+    name: Generate docs
+    needs: strings
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -qy jq gobject-introspection libgirepository-1.0-1 gir1.2-gtk-3.0 gir1.2-glib-2.0 gir1.2-gstreamer-1.0 gir1.2-poppler-0.18 python3-pip python3-setuptools python3-wheel libgirepository1.0-dev
         pip install pygobject pycairo .[build_sphinx]
     - name: Build
+      env:
+        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
       run: |
+        ./scripts/poedit.sh contributors progress
         python setup.py build_sphinx
         tar czf pympress-docs.tar.gz -C build/sphinx/html/ .
     - name: Upload
@@ -52,24 +77,3 @@ jobs:
         git add .
         git -c user.email=me@cimba.li -c user.name="${GITHUB_ACTOR}" commit -m "Github Action-built docs update"
         git push "https://Cimbali:${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" HEAD:gh-pages
-
-  strings:
-    name: Upload translatable strings
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python
-      uses: actions/setup-python@v1
-      with:
-        python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        sudo apt-get update -q
-        sudo apt-get install -qy jq python3-pip python3-setuptools python3-wheel
-        pip install -e .[babel]
-    - name: Extract
-      run: python setup.py extract_messages
-    - name: Upload
-      run: ./scripts/poedit.sh upload
-      with:
-        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}

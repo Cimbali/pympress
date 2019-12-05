@@ -126,15 +126,15 @@ This strategy has not been used successfully yet, due to problems building Poppl
 
 # Contributing
 
+Feel free to clone this repo and use it, modify it, redistribute it, etc, under the GPLv2+.
+A [number of contributors](https://github.com/Cimbali/pympress/graphs/contributors) have taken part in the development of pympress and submitted pull requests to improve it.
+
 **Be respectful of everyone and keep this community friendly, welcoming, and harrasment-free.
 Abusive behaviour will not be tolerated, and can be reported by email at me@cimba.li − wrongdoers may be permanently banned.**
 
-Feel free to clone this repo and use it, modify it, redistribute it, etc, under the GPLv2+.
-Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.org/en/latest/ext/example_google.html), contains rst syntax), and the [docs folder](https://github.com/Cimbali/pympress/tree/master/docs/) contains the documentation generated from it, hosted on [the github pages of this repo](https://cimbali.github.io/pympress/pympress.html).
+Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.org/en/latest/ext/example_google.html), contains rst syntax), and the [docs generated from it are hosted on the github pages of this repo](https://cimbali.github.io/pympress/).
 
 ## Translations
-
-If you want to add or contribute to a translation, check [pympress’ page on POEditor](https://poeditor.com/join/project/nKfRxeN8pS).
 
 ![Czech: 100%](https://img.shields.io/badge/%F0%9F%87%A8%F0%9F%87%BF%20Czech-100%25-0f0)
 ![French: 100%](https://img.shields.io/badge/%F0%9F%87%AB%F0%9F%87%B7%20French-100%25-0f0)
@@ -143,8 +143,16 @@ If you want to add or contribute to a translation, check [pympress’ page on PO
 ![Spanish: 86%](https://img.shields.io/badge/%F0%9F%87%AA%F0%9F%87%B8%20Spanish-86%25-5f0)
 <!-- insert badge -->
 
+If you want to add or contribute to a translation, check [pympress’ page on POEditor](https://poeditor.com/join/project/nKfRxeN8pS) and add your efforts to make pympress available in your own language to those of
+[@Vulpeculus](https://github.com/Vulpeculus),
+[@polaksta](https://github.com/polaksta),
+[@susobaco](https://github.com/susobaco),
+[Friedrich Fröbel](https://github.com/FriedrichFroebel),
+[Jaroslav Svoboda](https://github.com/multiflexi),
+and <!-- last translator --> Cimbali.
+
 ## Packages
 
-Official releases are made to [PyPI](https://pypi.org/) and with [github releases](https://github.com/Cimbali/pympress/releases). The community maintains a number of other packages or recipes to install pympress (and more can be added to this list):
+Official releases are made to [PyPI](https://pypi.org/) and with [github releases](https://github.com/Cimbali/pympress/releases). The community maintains a number of other packages or recipes to install pympress (additions welcome):
 - [@Jose1711](https://github.com/jose1711) made the [AUR pympress package](https://aur.archlinux.org/packages/python-pympress/)
 - [@ComFreek](https://github.com/ComFreek) maintains the [Chocolatey pympress package](https://chocolatey.org/packages/pympress)
