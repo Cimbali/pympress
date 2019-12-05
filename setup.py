@@ -45,12 +45,14 @@ except NameError:
 class PatchedDevelop(develop):
     """ Patched installation for development mode to build translations .mo files. """
     def run(self):
+        """ Run compile_catalog before running (parent) develop command. """
         self.distribution.run_command('compile_catalog')
         develop.run(self)
 
 class PatchedInstall(install):
     """Patched installation for installation mode to build translations .mo files. """
     def run(self):
+        """ Run compile_catalog before running (parent) install command. """
         self.distribution.run_command('compile_catalog')
         install.run(self)
 
@@ -180,7 +182,6 @@ if __name__ == '__main__':
 
         # List all resources we'll distribute
         setup_opts = {
-            'name': 'pympress',  # force repetition from setup.cfg, otherwise cx_Freeze throws TypeError
             'options': {
                 'build_exe': {
                     'includes': [],
