@@ -138,7 +138,7 @@ Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.o
 
 ![Czech: 100%](https://img.shields.io/badge/%F0%9F%87%A8%F0%9F%87%BF%20Czech-100%25-0f0)
 ![French: 100%](https://img.shields.io/badge/%F0%9F%87%AB%F0%9F%87%B7%20French-100%25-0f0)
-![German: 87%](https://img.shields.io/badge/%F0%9F%87%A9%F0%9F%87%AA%20German-87%25-4f0)
+![German: 100%](https://img.shields.io/badge/%F0%9F%87%A9%F0%9F%87%AA%20German-100%25-0f0)
 ![Polish: 86%](https://img.shields.io/badge/%F0%9F%87%B5%F0%9F%87%B1%20Polish-86%25-5f0)
 ![Spanish: 86%](https://img.shields.io/badge/%F0%9F%87%AA%F0%9F%87%B8%20Spanish-86%25-5f0)
 <!-- insert badge -->
@@ -147,7 +147,7 @@ If you want to add or contribute to a translation, check [pympress’ page on PO
 [@Vulpeculus](https://github.com/Vulpeculus),
 [@polaksta](https://github.com/polaksta),
 [@susobaco](https://github.com/susobaco),
-[Friedrich Fröbel](https://github.com/FriedrichFroebel),
+[FriedrichFröbel](https://github.com/FriedrichFroebel),
 [Jaroslav Svoboda](https://github.com/multiflexi),
 and <!-- last translator --> Cimbali.
 

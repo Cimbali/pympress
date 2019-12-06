@@ -69,7 +69,7 @@ msgstr "Die Datei \"{}\" konnte nicht gefunden werden"
 
 #: 
 msgid "Could not set screensaver status: got status "
-msgstr "Bildschirmschoner-Status kann nicht gesetzt werden: Status"
+msgstr "Bildschirmschoner-Status kann nicht gesetzt werden: Status "
 
 #: 
 msgid "Current slide"
@@ -77,7 +77,7 @@ msgstr "Aktuelle Folie"
 
 #: 
 msgid "ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system."
-msgstr ""
+msgstr "FEHLER: Gobject Introspections Modul fehlt. Stelle sicher, dass Gtk und pygobject auf dem System installiert sind."
 
 #: 
 msgid "Error loading icon for about window"
@@ -89,7 +89,7 @@ msgstr "Die Datei \"{}\" konnte nicht geöffnet werden"
 
 #: 
 msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
-msgstr ""
+msgstr "Hinweise dazu gibt es unter https://github.com/Cimbali/pympress/blob/master/README.md#dependencies (engl.)"
 
 #: 
 msgid "GtkImage gif player"
@@ -101,7 +101,7 @@ msgstr "Hervorheben"
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
-msgstr ""
+msgstr "Bei der Verwendung von virtualenv oder anaconda können entweder systemweit verfügbare Pakete verwendet werden, ansonsten führe den Befehl aus: pip install pygobject"
 
 #: 
 msgid "Invalid log level \"{}\", try one of {}"
@@ -169,11 +169,11 @@ msgstr "Zeiger"
 
 #: 
 msgid "Portable installation"
-msgstr ""
+msgstr "Portable Installation"
 
 #: 
 msgid "Presentation timing breakdown"
-msgstr ""
+msgstr "Aufschlüsselung der Präsentationszeit"
 
 #: 
 msgid "Presenter fullscreen"
@@ -257,7 +257,7 @@ msgstr "Die geschätzte (angestrebte) Redezeit in Minuten"
 
 #: 
 msgid "The log is written to "
-msgstr ""
+msgstr "Der Log wird geschrieben nach "
 
 #: 
 msgid "This help"
@@ -273,11 +273,11 @@ msgstr "Geschätzte Zeit"
 
 #: 
 msgid "Timing breakdown"
-msgstr ""
+msgstr "Zeitaufschlüsselung"
 
 #: 
 msgid "Unexpected action in index \"{}\""
-msgstr ""
+msgstr "Unerwartete Aktion bei Index \"{}\""
 
 #: 
 msgid "Unknow widget {} to be fullscreened, aborting."
@@ -433,15 +433,15 @@ msgstr "Zugriff auf die Bildschirmschoner-Einstellungen der Registry nicht erlau
 
 #: 
 msgid "column"
-msgstr ""
+msgstr "Spalte"
 
 #: 
 msgid "duration"
-msgstr ""
+msgstr "Dauer"
 
 #: 
 msgid "name"
-msgstr ""
+msgstr "Name"
 
 #: 
 msgid "no action defined for this link!"
@@ -453,7 +453,7 @@ msgstr "Seitenlabel"
 
 #: 
 msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
-msgstr ""
+msgstr "pip wird dann pygobject herunterladen und kompilieren, wozu die Gtk-Header benötigt werden (oder das Entwicklungspaket)."
 
 #: 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
@@ -463,15 +463,15 @@ msgstr "pympress ist ein kleiner PDF-Reader, geschrieben in Python unter Verwend
 
 #: 
 msgid "slide"
-msgstr ""
+msgstr "Folie"
 
 #: 
 msgid "slide #"
-msgstr ""
+msgstr "Folie #"
 
 #: 
 msgid "time"
-msgstr ""
+msgstr "Zeit"
 
 #: 
 msgid "{}, {}, {}, {}, or {}"
@@ -499,11 +499,11 @@ msgstr "Erste Folie"
 
 #: 
 msgid "Go back in slide history"
-msgstr ""
+msgstr "Zurück im Folienverlauf"
 
 #: 
 msgid "Go forward in slide history"
-msgstr ""
+msgstr "Vorwärts im Folienverlauf"
 
 #: 
 msgid "Go to page number"
@@ -583,7 +583,7 @@ msgstr "Hervorhebungen umschalten"
 
 #: 
 msgid "Toggle laserpointer"
-msgstr ""
+msgstr "Laserpointer umschalten"
 
 #: 
 msgid "Toggle notes mode"
@@ -599,7 +599,7 @@ msgstr "Zoom rückgängig machen"
 
 #: 
 msgid "Validate goto/jump destination"
-msgstr ""
+msgstr "Goto-/Sprung-Ziel validieren"
 
 #: 
 msgid "Windows"
