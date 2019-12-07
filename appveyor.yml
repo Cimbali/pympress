@@ -3,7 +3,7 @@ version: '{build}'
 branches:
   only:
   - master
-skip_non_tags: true
+clone_depth: 1
 
 environment:
   py: python3
@@ -34,3 +34,5 @@ deploy:
     secure: 99OQhliIMiV/Z1/kuZQ3TxR55Qb7Y2zaD7ZV6/JUaUGDbAxHzep97/yBLfM21Jzw
   draft: true
   force_update: false
+  on:
+    appveyor_repo_tag: true
