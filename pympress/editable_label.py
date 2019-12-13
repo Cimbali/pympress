@@ -48,8 +48,8 @@ class EditableLabel(object):
         This function triggers replacing the label with an entry when clicked or otherwise toggled.
 
         Args:
-            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
-            event (:class:`~Gtk.Event` or None):  the event that occured, None if tf we called from a menu item
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occurred
+            event (:class:`~Gtk.Event` or None):  the event that occurred, None if tf we called from a menu item
             name (`str`): name of the key in the casae of a key press
 
         Returns:
@@ -240,7 +240,7 @@ class PageNumber(EditableLabel):
 
 
     def enable_labels(self, enable):
-        """ Allow to use or ignore labels.
+        """ Allow one to use or ignore labels.
 
         Args:
             enable (`bool`): Whether to enable labels

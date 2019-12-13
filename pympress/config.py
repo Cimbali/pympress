@@ -223,7 +223,7 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         Layout must have all self.placeable_widgets (leaves of the tree, as `str`) and only allowed properties
         on the nodes of the tree (as `dict`).
 
-        Contraints on the only allowed properties of the nodes are:
+        Constraints on the only allowed properties of the nodes are:
         - resizeable: `bool` (optional, defaults to no),
         - orientation: `str`, either "vertical" or "horizontal" (mandatory)
         - children: `list` of size >= 2, containing `str`s or `dict`s (mandatory)

@@ -27,7 +27,7 @@ This module contains several classes that are used for managing documents (only
 PDF documents are supported at the moment, but other formats may be added in the
 future).
 
-An important point is that this module is *completely* independant from the GUI:
+An important point is that this module is *completely* independent from the GUI:
 there should not be any GUI-related code here, except for page rendering (and
 only rendering itself: the preparation of the target surface must be done
 elsewhere).
@@ -385,7 +385,7 @@ class Page(object):
             elif dest_name == "LastPage":
                 return Link.build_closure(self.parent.goto, self.parent.pages_number() - 1)
             elif dest_name == "GoToPage":
-                # Same as the 'G' action which allows to pick a page to jump to
+                # Same as the 'G' action which allows one to pick a page to jump to
                 return Link.build_closure(self.parent.start_editing_page_number, )
             elif dest_name == "Find":
                 # TODO popup a text box and search results with Page.find_text
@@ -1115,10 +1115,10 @@ class EmptyDocument(Document):
 
 
     def page(self, number):
-        """ Retreive a page from the document.
+        """ Retrieve a page from the document.
 
         Args:
-            number (`int`): page number to be retreived
+            number (`int`): page number to be retrieved
 
         Returns:
             :class:`~pympress.document.EmptyPage` or `None`: -1 returns the empty page so we can display something.

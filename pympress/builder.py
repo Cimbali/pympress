@@ -89,7 +89,7 @@ class Builder(Gtk.Builder):
     def signal_resolver(target, attr_list):
         """ Dynamically resolves a signal that is target.a.b.c() when attr_list is ['a', 'b', 'c'].
 
-        This allows to specify multi-level signals in the XML files, instead of targeting everything at the main UI
+        This allows one to specify multi-level signals in the XML files, instead of targeting everything at the main UI
         object.
 
         Also, resolving signals dynamically means the object properties of the top-level object can be replaced, and the

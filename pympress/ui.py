@@ -389,8 +389,8 @@ class UI(builder.Builder):
         We tell the local :class:`~pympress.surfacecache.SurfaceCache` cache about it, so that it can
         invalidate its internal cache for the specified widget and pre-render next pages at a correct size.
 
-        Warning: Some not-explicitely sent signals contain wrong values! Just don't resize in that case,
-        since these always seem to happen after a correct signal that was sent explicitely.
+        Warning: Some not-explicitly sent signals contain wrong values! Just don't resize in that case,
+        since these always seem to happen after a correct signal that was sent explicitly.
 
         Args:
             widget (:class:`~Gtk.Widget`):  the widget which has been resized
@@ -449,12 +449,12 @@ class UI(builder.Builder):
     def on_pane_event(self, widget, evt):
         """ Signal handler for gtk.paned events.
 
-        This function allows to delay drawing events when resizing, and to speed up redrawing when
+        This function allows one to delay drawing events when resizing, and to speed up redrawing when
         moving the middle pane is done (which happens at the end of a mouse resize)
 
         Args:
-            widget (:class:`~Gtk.Widget`):  the widget in which the event occured (ignored)
-            evt (:class:`~Gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occurred (ignored)
+            evt (:class:`~Gdk.Event`):  the event that occurred
         """
         if type(evt) == Gdk.EventButton and evt.type == Gdk.EventType.BUTTON_RELEASE:
             self.redraw_panes()
@@ -891,8 +891,8 @@ class UI(builder.Builder):
         """ Manage key presses for both windows.
 
         Args:
-            widget (:class:`~Gtk.Widget`):  the widget in which the event occured (ignored)
-            event (:class:`~Gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occurred (ignored)
+            event (:class:`~Gdk.Event`):  the event that occurred
 
         Returns:
             `bool`: whether the event was consumed
@@ -986,8 +986,8 @@ class UI(builder.Builder):
         """ Manage scroll events.
 
         Args:
-            widget (:class:`~Gtk.Widget`):  the widget in which the event occured (ignored)
-            event (:class:`~Gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occurred (ignored)
+            event (:class:`~Gdk.Event`):  the event that occurred
 
         Returns:
             `bool`: whether the event was consumed
@@ -1054,8 +1054,8 @@ class UI(builder.Builder):
         Handles a click on a slide.
 
         Args:
-            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
-            event (:class:`~Gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occurred
+            event (:class:`~Gdk.Event`):  the event that occurred
 
         Returns:
             `bool`: whether the event was consumed
@@ -1086,8 +1086,8 @@ class UI(builder.Builder):
         """ Manage events related to hyperlinks, setting the cursor to a pointer if the hovered region is clickable.
 
         Args:
-            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
-            event (:class:`~Gdk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occurred
+            event (:class:`~Gdk.Event`):  the event that occurred
 
         Returns:
             `bool`: whether the event was consumed
@@ -1121,7 +1121,7 @@ class UI(builder.Builder):
         when leaving fullscreen mode.
 
         Args:
-            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occurred
 
         Returns:
             `bool`: whether some window's full screen status got toggled
@@ -1156,8 +1156,8 @@ class UI(builder.Builder):
         """ Track whether the preview window is maximized.
 
         Args:
-            widget (:class:`~Gtk.Widget`):  the widget in which the event occured
-            event (:class:`~Gtk.Event`):  the event that occured
+            widget (:class:`~Gtk.Widget`):  the widget in which the event occurred
+            event (:class:`~Gtk.Event`):  the event that occurred
 
         Returns:
             `bool`: whether the event was consumed.
@@ -1169,11 +1169,11 @@ class UI(builder.Builder):
 
 
     def update_frame_position(self, widget, user_data):
-        """ Callback to preview the frame alignement, called from the Gtk.SpinButton.
+        """ Callback to preview the frame alignment, called from the Gtk.SpinButton.
 
         Args:
-            widget (:class:`~Gtk.SpinButton`): The button updating the slide alignement in the drawing area widget
-            user_data (`str`): The property being set, either the x or y alignement (resp. xalign and yalign).
+            widget (:class:`~Gtk.SpinButton`): The button updating the slide alignment in the drawing area widget
+            user_data (`str`): The property being set, either the x or y alignment (resp. xalign and yalign).
         """
         self.c_frame.set_property(user_data, widget.get_value())
 
