@@ -428,7 +428,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'pympress', u'pympress documentation', [u'Thomas Jost, Cimbali'], 6)
+    ('index', 'pympress', u'pympress documentation', [u'Thomas Jost, Cimbali'], 1)
 ]
 
 # If true, show URL addresses after external links.
