@@ -8,4 +8,4 @@ $py -m pip install --disable-pip-version-check --upgrade pip
 $py -m pip install watchdog python-vlc babel babelgladeextractor
 $py setup.py compile_catalog
 $py setup.py --freeze --$vlc build_exe
-$py setup.py --freeze --$vlc bdist_msi --add-to-path True --target-name pympress-$(git describe --tags)-$arch.msi
+$py setup.py --freeze --$vlc bdist_msi --add-to-path True --target-name pympress-`git describe --tags --always`-$arch.msi
