@@ -49,6 +49,9 @@ if IS_WINDOWS:
     except ImportError:
         import _winreg as winreg
 
+if IS_POSIX:
+    from gi.repository import Gio
+
 try:
     PermissionError
 except NameError:
@@ -310,6 +313,24 @@ def set_screensaver(must_disable, window):
             if status != 0:
                 logger.warning(_("Could not enable DPMS screen blanking: got status ") + str(status))
 
+    elif IS_POSIX and type(window).__name__ == 'GdkWaylandWindow':
+        # On Linux and Wayland we can use a dbus interface to tell the screensaver
+        # to not lock the screen, should work on all freedesktop compliant desktops
+        # eg. Gnome, KDE,...
+        bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+        iface = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE, None,
+                                       'org.freedesktop.ScreenSaver',
+                                       '/org/freedesktop/ScreenSaver',
+                                       'org.freedesktop.ScreenSaver', None)
+
+        if must_disable and not set_screensaver.dpms_was_enabled:
+            set_screensaver.dbus_cookie = iface.Inhibit("(ss)", "pympress", _("Fullscreen Presentation running"))
+            set_screensaver.dpms_was_enabled = True
+        if not must_disable and set_screensaver.dpms_was_enabled:
+            iface.UnInhibit("(u)", set_screensaver.dbus_cookie)
+            set_screensaver.dbus_cookie = None
+            set_screensaver.dpms_was_enabled = False
+
     elif IS_WINDOWS:
         try:
             with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Control Panel\Desktop', 0,
@@ -331,7 +352,7 @@ def set_screensaver(must_disable, window):
 
 #: remember DPMS setting before we change it
 set_screensaver.dpms_was_enabled = None
-
+set_screensaver.dbus_cookie = None
 
 ##
 # Local Variables:
