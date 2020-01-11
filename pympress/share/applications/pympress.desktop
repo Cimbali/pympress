@@ -1,0 +1,10 @@
+[Desktop Entry]
+Categories=Office;Viewer;Presentation;
+Comment=A simple yet powerful PDF reader designed for dual-screen presentations
+Exec=pympress %f
+Icon=pympress
+MimeType=application/pdf;
+Name=pympress
+Terminal=false
+Type=Application
+Version=1.0
