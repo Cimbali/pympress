@@ -181,12 +181,7 @@ def load_style_provider(style_provider):
     Returns:
         :class:`~Gtk.CssProvider`: The style provider with CSS loaded
     """
-    if IS_MAC_OS:
-        css_fn = __get_resource_path('share', 'css', 'macos.css')
-    else:
-        css_fn = __get_resource_path('share', 'css', 'default.css')
-
-    style_provider.load_from_path(css_fn)
+    style_provider.load_from_path(__get_resource_path('share', 'css', 'default.css'))
     return style_provider
 
 
