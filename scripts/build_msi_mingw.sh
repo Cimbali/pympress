@@ -7,5 +7,9 @@ pacman -S --noprogressbar --noconfirm --needed mingw-w64-$arch-$py-{pip,gobject,
 $py -m pip install --disable-pip-version-check --upgrade pip
 $py -m pip install watchdog python-vlc babel babelgladeextractor
 $py setup.py compile_catalog
-$py setup.py --freeze --$vlc build_exe
+$py setup.py --freeze --$vlc build_exe -b build/pympress
 $py setup.py --freeze --$vlc bdist_msi --add-to-path True --target-name pympress-`git describe --tags --always`-$arch.msi
+
+# Build a zip from the build_exe outputs
+cp pympress/share/defaults.conf build/pympress/pympress.conf
+7z a -tzip -r -y dist/pympress-`git describe --tags --always`-$arch.zip ./build/pympress
