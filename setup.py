@@ -100,7 +100,7 @@ def dlls():
     libgio-2.0-0.dll libgirepository-1.0-1.dll libglib-2.0-0.dll libgobject-2.0-0.dll libgtk-3-0.dll \
     libidn2-0.dll libjpeg-8.dll liblcms2-2.dll libnghttp2-14.dll libnspr4.dll libopenjp2-7.dll \
     libpango-1.0-0.dll libpangocairo-1.0-0.dll libpangoft2-1.0-0.dll libpangowin32-1.0-0.dll \
-    libplc4.dll libplds4.dll libpoppler-92.dll libpoppler-cpp-0.dll libpoppler-glib-8.dll libpsl-5.dll \
+    libplc4.dll libplds4.dll libpoppler-94.dll libpoppler-cpp-0.dll libpoppler-glib-8.dll libpsl-5.dll \
     libpython3.8.dll libstdc++-6.dll libthai-0.dll libtiff-5.dll libunistring-2.dll libwinpthread-1.dll \
     libzstd.dll nss3.dll nssutil3.dll smime3.dll'
     # these appear superfluous, though unexpectedly so:
@@ -185,7 +185,7 @@ if __name__ == '__main__':
             'options': {
                 'build_exe': {
                     'includes': [],
-                    'excludes': [],
+                    'excludes': ['tkinter'],
                     'packages': ['codecs', 'gi', 'vlc', 'watchdog'],
                     'include_files': gtk_resources() + dlls() + pympress_resources(),
                     'silent': True
