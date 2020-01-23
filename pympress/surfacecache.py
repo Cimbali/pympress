@@ -119,6 +119,7 @@ class SurfaceCache(object):
             widget (:class:`~Gtk.Widget`):  The widget for which we need to cache
             wtype (`int`):  type of document handled by the widget (see :attr:`surface_type`)
             prerender_enabled (`bool`):  whether this widget is initially in the list of widgets to prerender
+            zoomed (`bool`): whether we will cache a zoomed portion of the widget
         """
         widget_name = widget.get_name() + ('_zoomed' if zoomed else '')
         with self.locks.setdefault(widget_name, threading.Lock()):

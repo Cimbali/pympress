@@ -63,7 +63,7 @@ class GstOverlay(base.VideoOverlay):
 
         Args:
             player (:class:`~GstPlayer.Player`): The player for which the position changed
-            duration (:class:`~GstPlayer.PlayerState`): The player's new state
+            state (:class:`~GstPlayer.PlayerState`): The player's new state
         """
         self.player_state = state
         if not self.is_playing() and self.renderer:

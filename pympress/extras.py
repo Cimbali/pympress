@@ -340,7 +340,8 @@ class Media(object):
         """ Starts playing a media. Used as a callback.
 
         Args:
-            media_id (`int`): A unique idientifier of the media to start playing
+            media_id (`int`): A unique identifier of the media to start playing
+            button (:class:`~Gtk.Button`): the button clicked to cause the media to play, if any.
         """
         if media_id in self._media_overlays:
             c, p = self._media_overlays[media_id]
@@ -353,7 +354,8 @@ class Media(object):
         """ Stops playing a media and hides the player. Used as a callback.
 
         Args:
-            media_id (`int`): A unique idientifier of the media to start playing
+            media_id (`int`): A unique identifier of the media to start playing
+            button (:class:`~Gtk.Button`): the button clicked to cause the media to stop, if any.
         """
         if media_id in self._media_overlays:
             c, p = self._media_overlays[media_id]
@@ -543,7 +545,7 @@ class Zoom(object):
         Call this when the page_number module is initialized, but before needing the callback.
 
         Args:
-            builder (builder.Builder): The builder from which to load widgets for scribble
+            scribble_builder (builder.Builder): The builder from which to load widgets for scribble
         """
         self.set_scribble_zoomout_sensitive = scribble_builder.get_callback_handler('zoom_stop_button.set_sensitive')
 

@@ -601,11 +601,11 @@ class UI(builder.Builder):
         Args:
             widget (:class:`~Gtk.Widget`): The widget on which the dragged item was dropped
             drag_context (:class:`~Gdk.DragContext`):
-            x (`float`):
-            y (`float`):
+            x (`float`): position of the drop
+            y (`float`):  position of the drop
             data (:class:`~Gtk.SelectionData`): container for the dropped data
-            info (`int`):
-            time (`int`):
+            info (`int`): info on the target
+            time (`int`): time of the drop
         """
         received = data.get_text()
         if received.startswith('file://'):

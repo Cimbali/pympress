@@ -418,6 +418,7 @@ class PageNumber(EditableLabel):
 
         Args:
             cur_nb (`int`): The current page number, in documentation numbering (range [0..max - 1])
+            label (`str`): The current page label
         """
         cur = str(cur_nb + 1)
 

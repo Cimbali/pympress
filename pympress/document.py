@@ -120,8 +120,8 @@ class PdfPage(enum.IntEnum):
         i.e. the second pair of coordinates is taken from the opposite corner.
 
         Args:
-            x1 (`float`): x coordinate on the screen, on a scale 0..1
-            y1 (`float`): y coordinate on the screen, on a scale 0..1
+            x (`float`): x coordinate on the screen, on a scale 0..1
+            y (`float`): y coordinate on the screen, on a scale 0..1
             x2 (`float`): second x coordinate on the screen, from the other side, on a scale 0..1
             y2 (`float`): second y coordinate on the screen, from the other side, on a scale 0..1
         """
@@ -149,8 +149,8 @@ class PdfPage(enum.IntEnum):
         i.e. the second pair of coordinates is taken from the opposite corner.
 
         Args:
-            x1 (`float`): x coordinate on the page, on a scale 0..1
-            y1 (`float`): y coordinate on the page, on a scale 0..1
+            x (`float`): x coordinate on the page, on a scale 0..1
+            y (`float`): y coordinate on the page, on a scale 0..1
             x2 (`float`): second x coordinate on the page, from the other side, on a scale 0..1
             y2 (`float`): second y coordinate on the page, from the other side, on a scale 0..1
         """
