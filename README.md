@@ -17,9 +17,35 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 
 # Installing
 
-- Linux: `pip install pympress` − requires [python, gtk+3, poppler, and their python bindings](#dependencies).
-- macOS: `brew install pympress` − using [Homebrew](https://brew.sh/)
-- Windows: `choco install pympress` with [Chocolatey](https://chocolatey.org/) or download the installer from the [latest Github release](https://github.com/Cimbali/pympress/releases/latest).
+- Ubuntu 20.04 focal or newer, Debian 11 Bullseye or newer:
+
+      apt-get install pympress libgtk-3-0 libpoppler-glib8 libcairo2 python3-gi python3-gi-cairo gobject-introspection libgirepository-1.0-1 gir1.2-gtk-3.0 gir1.2-poppler-0.18
+
+- Arch Linux (from AUR):
+
+      git clone https://aur.archlinux.org/python-pympress.git
+      cd python-pympress
+      makepkg -si
+      pacman -S poppler-glib  # dependency temporarily missing from AUR package
+
+  Or using any other tool to manage AUR packages (yay, pacaur, etc.):
+
+      yay -S pympress
+      pacman -S poppler-glib  # dependency temporarily missing from AUR package
+
+- Other Linux, requires [python, gtk+3, poppler, and their python bindings](#dependencies):
+
+      pip install pympress
+
+- macOS, using [Homebrew](https://brew.sh/):
+
+      brew install pympress
+
+- Windows, with [Chocolatey](https://chocolatey.org/):
+
+      choco install pympress
+
+  Or download the installer from the [latest Github release](https://github.com/Cimbali/pympress/releases/latest).
 
 ### Notes
 - To support playing embedded videos in the PDFs, your system must have VLC installed (with the same bitness as pympress). VLC is not distributed with pympress, but it is certainly available in your system’s package manager and [on their website](https://www.videolan.org/vlc/).
@@ -96,7 +122,16 @@ For example, on ubuntu, you can run the following as root to make sure you have 
 
 Different distributions might have different package naming conventions, for example the equivalent on OpenSUSE would be:
 
-    zypper in python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gobject python3-gobject-Gdk python3-cairo python3-gobject-cairo typelib-1_0-GdkPixbuf-2_0 typelib-1_0-Gtk-3_0 typelib-1_0-Poppler-0_18
+    zypper install python3 python3-pip libgtk-3-0 libpoppler-glib8 libcairo2 python3-gobject python3-gobject-Gdk python3-cairo python3-gobject-cairo typelib-1_0-GdkPixbuf-2_0 typelib-1_0-Gtk-3_0 typelib-1_0-Poppler-0_18
+
+On CentOS/RHEL/Fedora the dependencies would be:
+
+    yum install python36 python3-pip gtk3 poppler-glib cairo gdk-pixbuf2 python3-gobject python3-cairo
+
+And on Arch Linux:
+
+    pacman -S --needed python python-pip gtk3 poppler cairo gobject-introspection poppler-glib python-gobject
+
 
 ### On macOS
 
@@ -156,3 +191,4 @@ and <!-- last translator --> Cimbali.
 Official releases are made to [PyPI](https://pypi.org/) and with [github releases](https://github.com/Cimbali/pympress/releases). The community maintains a number of other packages or recipes to install pympress (additions welcome):
 - [@Jose1711](https://github.com/jose1711) made the [AUR pympress package](https://aur.archlinux.org/packages/python-pympress/)
 - [@ComFreek](https://github.com/ComFreek) maintains the [Chocolatey pympress package](https://chocolatey.org/packages/pympress)
+- [@mans0954](https://github.com/mans0954) maintains the [Debian pympress package](https://packages.debian.org/bullseye/pympress) and the [Ubuntu pympress package](https://packages.ubuntu.com/focal/pympress)
