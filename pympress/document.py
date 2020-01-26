@@ -363,6 +363,8 @@ class Page(object):
                 dest = self.parent.doc.find_dest(action.goto_dest.dest.named_dest)
                 if dest:
                     return Link.build_closure(self.parent.goto, dest.page_num - 1)
+                else:
+                    warning = _('Unrecognized named destination: ') + str(action.goto_dest.dest.named_dest)
             elif dest_type != Poppler.DestType.UNKNOWN:
                 return Link.build_closure(self.parent.goto, action.goto_dest.dest.page_num - 1)
 
@@ -425,7 +427,8 @@ class Page(object):
         else:
             warning = _("Pympress does not recognize link type \"{}\"").format(link_type)
 
-        return Link.build_closure(logger.warning, warning)
+        logger.info(warning)
+        return Link.build_closure(logger.warning, _('Unsupported link clicked. ') + warning)
 
 
     def get_annot_action(self, link_type, action, rect):
