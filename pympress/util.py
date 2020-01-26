@@ -279,41 +279,7 @@ def set_screensaver(must_disable, window):
                 set_screensaver.dpms_was_enabled.poll()
                 set_screensaver.dpms_was_enabled = None
 
-    elif IS_POSIX and type(window).__name__ == 'X11Window':
-        # On Linux, set screensaver with xdg-screensaver
-        # (compatible with xscreensaver, gnome-screensaver and ksaver or whatever)
-        cmd = "suspend" if must_disable else "resume"
-        status = os.system("xdg-screensaver {} {}".format(cmd, window.get_xid()))
-        if status != 0:
-            logger.warning(_("Could not set screensaver status: got status ") + str(status))
-
-        # Also manage screen blanking via DPMS
-        if must_disable:
-            # Get current DPMS status
-            pipe = os.popen("xset q")  # TODO: check if this works on all locales
-            dpms_status = "Disabled"
-            for line in pipe.readlines():
-                if line.count("DPMS is") > 0:
-                    dpms_status = line.split()[-1]
-                    break
-            pipe.close()
-
-            # Set the new value correctly
-            if dpms_status == "Enabled":
-                set_screensaver.dpms_was_enabled = True
-                status = os.system("xset -dpms")
-                if status != 0:
-                    logger.warning(_("Could not disable DPMS screen blanking: got status ") + str(status))
-            else:
-                set_screensaver.dpms_was_enabled = False
-
-        elif set_screensaver.dpms_was_enabled:
-            # Re-enable DPMS
-            status = os.system("xset +dpms")
-            if status != 0:
-                logger.warning(_("Could not enable DPMS screen blanking: got status ") + str(status))
-
-    elif IS_POSIX and type(window).__name__ == 'GdkWaylandWindow':
+    elif IS_POSIX:
         # On Linux and Wayland we can use a dbus interface to tell the screensaver
         # to not lock the screen, should work on all freedesktop compliant desktops
         # eg. Gnome, KDE,...
