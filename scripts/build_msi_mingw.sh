@@ -11,6 +11,7 @@ $py setup.py --freeze --$vlc build_exe
 $py setup.py --freeze --$vlc bdist_msi --add-to-path True --target-name pympress-`git describe --tags --always`-$arch.msi
 
 # Build a zip from the build_exe outputs
-mv build/exe.mingw-* build/pympress
-cp pympress/share/defaults.conf build/pympress/pympress.conf
-7z a -tzip -r -y dist/pympress-`git describe --tags --always`-$arch.zip ./build/pympress
+cd build
+mv exe.mingw-* pympress
+cp ../pympress/share/defaults.conf pympress/pympress.conf
+7z a -tzip -r -y ../dist/pympress-`git describe --tags --always`-$arch.zip pympress
