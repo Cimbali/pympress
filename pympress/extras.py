@@ -83,6 +83,7 @@ class TimingReport(builder.Builder):
         self.reset_time = reset_time
 
 
+    @staticmethod
     def format_time(secs):
         """ Formats a number of seconds as `minutes:seconds`.
 
