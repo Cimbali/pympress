@@ -448,3 +448,5 @@ msgstr ""
 msgid "{}, {}, {}, {}, or {}"
 msgstr ""
 
+msgid "Fullscreen Presentation running"
+msgstr ""
