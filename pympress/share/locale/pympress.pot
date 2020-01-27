@@ -46,16 +46,7 @@ msgstr ""
 msgid "Contributors:"
 msgstr ""
 
-msgid "Could not disable DPMS screen blanking: got status "
-msgstr ""
-
-msgid "Could not enable DPMS screen blanking: got status "
-msgstr ""
-
 msgid "Could not find the file \"{}\""
-msgstr ""
-
-msgid "Could not set screensaver status: got status "
 msgstr ""
 
 msgid "Current slide"
@@ -74,6 +65,9 @@ msgid "First slide"
 msgstr ""
 
 msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
+msgstr ""
+
+msgid "Fullscreen Presentation running"
 msgstr ""
 
 msgid "Go back in slide history"
@@ -119,9 +113,6 @@ msgid "Next slide"
 msgstr ""
 
 msgid "Next slide with different label"
-msgstr ""
-
-msgid "No action was defined for this link"
 msgstr ""
 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
@@ -292,7 +283,13 @@ msgstr ""
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr ""
 
+msgid "Unrecognized named destination: "
+msgstr ""
+
 msgid "Unsupported OS: can't enable/disable screensaver"
+msgstr ""
+
+msgid "Unsupported link clicked. "
 msgstr ""
 
 msgid "Unzoom"
@@ -448,5 +445,3 @@ msgstr ""
 msgid "{}, {}, {}, {}, or {}"
 msgstr ""
 
-msgid "Fullscreen Presentation running"
-msgstr ""

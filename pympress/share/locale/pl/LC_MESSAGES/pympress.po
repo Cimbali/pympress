@@ -609,3 +609,15 @@ msgstr "Okna"
 msgid "Zoom"
 msgstr "Powiększanie"
 
+#: 
+msgid "Unrecognized named destination: "
+msgstr ""
+
+#: 
+msgid "Unsupported link clicked. "
+msgstr ""
+
+#: 
+msgid "Fullscreen Presentation running"
+msgstr ""
+

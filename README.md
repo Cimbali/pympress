@@ -171,11 +171,11 @@ Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.o
 
 ## Translations
 
-![Czech: 100%](https://img.shields.io/badge/%F0%9F%87%A8%F0%9F%87%BF%20Czech-100%25-0f0)
+![Czech: 98%](https://img.shields.io/badge/%F0%9F%87%A8%F0%9F%87%BF%20Czech-98%25-1f0)
 ![French: 100%](https://img.shields.io/badge/%F0%9F%87%AB%F0%9F%87%B7%20French-100%25-0f0)
-![German: 100%](https://img.shields.io/badge/%F0%9F%87%A9%F0%9F%87%AA%20German-100%25-0f0)
-![Polish: 86%](https://img.shields.io/badge/%F0%9F%87%B5%F0%9F%87%B1%20Polish-86%25-5f0)
-![Spanish: 86%](https://img.shields.io/badge/%F0%9F%87%AA%F0%9F%87%B8%20Spanish-86%25-5f0)
+![German: 98%](https://img.shields.io/badge/%F0%9F%87%A9%F0%9F%87%AA%20German-98%25-1f0)
+![Polish: 84%](https://img.shields.io/badge/%F0%9F%87%B5%F0%9F%87%B1%20Polish-84%25-5f0)
+![Spanish: 84%](https://img.shields.io/badge/%F0%9F%87%AA%F0%9F%87%B8%20Spanish-84%25-5f0)
 <!-- insert badge -->
 
 If you want to add or contribute to a translation, check [pympress’ page on POEditor](https://poeditor.com/join/project/nKfRxeN8pS) and add your efforts to make pympress available in your own language to those of

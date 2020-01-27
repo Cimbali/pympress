@@ -609,3 +609,15 @@ msgstr "Fenster"
 msgid "Zoom"
 msgstr "Zoom"
 
+#: 
+msgid "Unrecognized named destination: "
+msgstr ""
+
+#: 
+msgid "Unsupported link clicked. "
+msgstr ""
+
+#: 
+msgid "Fullscreen Presentation running"
+msgstr ""
+
