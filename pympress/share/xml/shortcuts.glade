@@ -8,20 +8,20 @@
       <object class="GtkShortcutsSection">
         <property name="visible">1</property>
         <property name="section-name">navigating</property>
-        <property name="title" translatable="yes" context="shortcut window">Presentation</property>
+        <property name="title" translatable="yes">Presentation</property>
         <property name="max-height">16</property>
 
         <child>
           <object class="GtkShortcutsGroup">
             <property name="visible">1</property>
-            <property name="title" translatable="yes" context="shortcut window">Navigating</property>
+            <property name="title" translatable="yes">Navigating</property>
 
             <child>
               <object class="GtkShortcutsShortcut" id="shortcut_next">
                 <property name="name">shortcut_next</property>
                 <property name="visible">1</property>
                 <property name="accelerator">Right Down Page_Down space</property>
-                <property name="title" translatable="yes" context="shortcut window">Next slide</property>
+                <property name="title" translatable="yes">Next slide</property>
               </object>
             </child>
 
@@ -30,7 +30,7 @@
                 <property name="name">shortcut_prev</property>
                 <property name="visible">1</property>
                 <property name="accelerator">Left Up Page_Up</property>
-                <property name="title" translatable="yes" context="shortcut window">Previous slide</property>
+                <property name="title" translatable="yes">Previous slide</property>
               </object>
             </child>
 
@@ -39,7 +39,7 @@
                 <property name="name">shortcut_next_label</property>
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;shift&gt;Right &lt;shift&gt;Down &lt;shift&gt;Page_Up</property>
-                <property name="title" translatable="yes" context="shortcut window">Next slide with different label</property>
+                <property name="title" translatable="yes">Next slide with different label</property>
               </object>
             </child>
 
@@ -48,7 +48,7 @@
                 <property name="name">shortcut_prev_label</property>
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;shift&gt;Left &lt;shift&gt;Up &lt;shift&gt;Page_Up</property>
-                <property name="title" translatable="yes" context="shortcut window">Previous slide with different label</property>
+                <property name="title" translatable="yes">Previous slide with different label</property>
               </object>
             </child>
 
@@ -57,7 +57,7 @@
                 <property name="name">shortcut_first</property>
                 <property name="visible">1</property>
                 <property name="accelerator">Home</property>
-                <property name="title" translatable="yes" context="shortcut window">First slide</property>
+                <property name="title" translatable="yes">First slide</property>
               </object>
             </child>
 
@@ -66,7 +66,7 @@
                 <property name="name">shortcut_last</property>
                 <property name="visible">1</property>
                 <property name="accelerator">End</property>
-                <property name="title" translatable="yes" context="shortcut window">Last slide</property>
+                <property name="title" translatable="yes">Last slide</property>
               </object>
             </child>
 
@@ -75,7 +75,7 @@
                 <property name="name">shortcut_hist_back</property>
                 <property name="visible">1</property>
                 <property name="accelerator">BackSpace</property>
-                <property name="title" translatable="yes" context="shortcut window">Go back in slide history</property>
+                <property name="title" translatable="yes">Go back in slide history</property>
               </object>
             </child>
 
@@ -84,7 +84,7 @@
                 <property name="name">shortcut_hist_forward</property>
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;shift&gt;BackSpace</property>
-                <property name="title" translatable="yes" context="shortcut window">Go forward in slide history</property>
+                <property name="title" translatable="yes">Go forward in slide history</property>
               </object>
             </child>
 
@@ -93,7 +93,7 @@
                 <property name="name">shortcut_goto_page</property>
                 <property name="visible">1</property>
                 <property name="accelerator">g</property>
-                <property name="title" translatable="yes" context="shortcut window">Go to page number</property>
+                <property name="title" translatable="yes">Go to page number</property>
               </object>
             </child>
 
@@ -102,7 +102,7 @@
                 <property name="name">shortcut_jumpto_label</property>
                 <property name="visible">1</property>
                 <property name="accelerator">j</property>
-                <property name="title" translatable="yes" context="shortcut window">Jump to page label</property>
+                <property name="title" translatable="yes">Jump to page label</property>
               </object>
             </child>
 
@@ -112,14 +112,14 @@
         <child>
           <object class="GtkShortcutsGroup">
             <property name="visible">1</property>
-            <property name="title" translatable="yes" context="shortcut window">Timers</property>
+            <property name="title" translatable="yes">Timers</property>
 
             <child>
               <object class="GtkShortcutsShortcut" id="shortcut_pause_timer">
                 <property name="name">shortcut_pause_timer</property>
                 <property name="visible">1</property>
                 <property name="accelerator">p Pause</property>
-                <property name="title" translatable="yes" context="shortcut window">Play/pause timer</property>
+                <property name="title" translatable="yes">Play/pause timer</property>
               </object>
             </child>
 
@@ -128,7 +128,7 @@
                 <property name="name">shortcut_reset_timer</property>
                 <property name="visible">1</property>
                 <property name="accelerator">r</property>
-                <property name="title" translatable="yes" context="shortcut window">Reset timer</property>
+                <property name="title" translatable="yes">Reset timer</property>
               </object>
             </child>
 
@@ -137,7 +137,7 @@
                 <property name="name">shortcut_talk_time</property>
                 <property name="visible">1</property>
                 <property name="accelerator">t</property>
-                <property name="title" translatable="yes" context="shortcut window">Set estimated talk time</property>
+                <property name="title" translatable="yes">Set estimated talk time</property>
               </object>
             </child>
 
@@ -147,14 +147,14 @@
         <child>
           <object class="GtkShortcutsGroup">
             <property name="visible">1</property>
-            <property name="title" translatable="yes" context="shortcut window">Additional features</property>
+            <property name="title" translatable="yes">Additional features</property>
 
             <child>
               <object class="GtkShortcutsShortcut" id="shortcut_annotations">
                 <property name="name">shortcut_annotations</property>
                 <property name="visible">1</property>
                 <property name="accelerator">a</property>
-                <property name="title" translatable="yes" context="shortcut window">Toggle annotations</property>
+                <property name="title" translatable="yes">Toggle annotations</property>
               </object>
             </child>
 
@@ -163,7 +163,7 @@
                 <property name="name">shortcut_notes_mode</property>
                 <property name="visible">1</property>
                 <property name="accelerator">n</property>
-                <property name="title" translatable="yes" context="shortcut window">Toggle notes mode</property>
+                <property name="title" translatable="yes">Toggle notes mode</property>
               </object>
             </child>
 
@@ -172,7 +172,7 @@
                 <property name="name">shortcut_highlighting</property>
                 <property name="visible">1</property>
                 <property name="accelerator">h</property>
-                <property name="title" translatable="yes" context="shortcut window">Toggle highlighting</property>
+                <property name="title" translatable="yes">Toggle highlighting</property>
               </object>
             </child>
 
@@ -181,7 +181,7 @@
                 <property name="name">shortcut_toggle_pointermode</property>
                 <property name="visible">1</property>
                 <property name="accelerator">l</property>
-                <property name="title" translatable="yes" context="shortcut window">Toggle laserpointer</property>
+                <property name="title" translatable="yes">Toggle laserpointer</property>
               </object>
             </child>
 
@@ -190,7 +190,7 @@
                 <property name="name">shortcut_zoom</property>
                 <property name="visible">1</property>
                 <property name="accelerator">z</property>
-                <property name="title" translatable="yes" context="shortcut window">Zoom</property>
+                <property name="title" translatable="yes">Zoom</property>
               </object>
             </child>
 
@@ -199,7 +199,7 @@
                 <property name="name">shortcut_unzoom</property>
                 <property name="visible">1</property>
                 <property name="accelerator">u</property>
-                <property name="title" translatable="yes" context="shortcut window">Unzoom</property>
+                <property name="title" translatable="yes">Unzoom</property>
               </object>
             </child>
 
@@ -208,7 +208,7 @@
                 <property name="name">shortcut_undo_scribble</property>
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;ctrl&gt;z</property>
-                <property name="title" translatable="yes" context="shortcut window">Undo highlight stroke</property>
+                <property name="title" translatable="yes">Undo highlight stroke</property>
               </object>
             </child>
 
@@ -217,7 +217,7 @@
                 <property name="name">shortcut_validate</property>
                 <property name="visible">1</property>
                 <property name="accelerator">Return</property>
-                <property name="title" translatable="yes" context="shortcut window">Validate goto/jump destination</property>
+                <property name="title" translatable="yes">Validate goto/jump destination</property>
               </object>
             </child>
 
@@ -226,7 +226,7 @@
                 <property name="name">shortcut_cancel</property>
                 <property name="visible">1</property>
                 <property name="accelerator">Escape</property>
-                <property name="title" translatable="yes" context="shortcut window">Cancel goto/jump/highlighting/zooming</property>
+                <property name="title" translatable="yes">Cancel goto/jump/highlighting/zooming</property>
               </object>
             </child>
 
@@ -236,14 +236,14 @@
         <child>
           <object class="GtkShortcutsGroup">
             <property name="visible">1</property>
-            <property name="title" translatable="yes" context="shortcut window">Manage files</property>
+            <property name="title" translatable="yes">Manage files</property>
 
             <child>
               <object class="GtkShortcutsShortcut" id="shortcut_open_file">
                 <property name="name">shortcut_open_file</property>
                 <property name="visible">1</property>
                 <property name="accelerator">o</property>
-                <property name="title" translatable="yes" context="shortcut window">Open file</property>
+                <property name="title" translatable="yes">Open file</property>
               </object>
             </child>
 
@@ -252,7 +252,7 @@
                 <property name="name">shortcut_close_file</property>
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;ctrl&gt;w</property>
-                <property name="title" translatable="yes" context="shortcut window">Close file</property>
+                <property name="title" translatable="yes">Close file</property>
               </object>
             </child>
 
@@ -261,7 +261,7 @@
                 <property name="name">shortcut_quit</property>
                 <property name="visible">1</property>
                 <property name="accelerator">q</property>
-                <property name="title" translatable="yes" context="shortcut window">Quit</property>
+                <property name="title" translatable="yes">Quit</property>
               </object>
             </child>
 
@@ -271,14 +271,14 @@
         <child>
           <object class="GtkShortcutsGroup">
             <property name="visible">1</property>
-            <property name="title" translatable="yes" context="shortcut window">Windows</property>
+            <property name="title" translatable="yes">Windows</property>
 
             <child>
               <object class="GtkShortcutsShortcut" id="shortcut_fullscreen_content">
                 <property name="name">shortcut_fullscreen_content</property>
                 <property name="visible">1</property>
                 <property name="accelerator">f F11 &lt;ctrl&gt;l</property>
-                <property name="title" translatable="yes" context="shortcut window">Toggle fullscreen</property>
+                <property name="title" translatable="yes">Toggle fullscreen</property>
               </object>
             </child>
 
@@ -287,7 +287,7 @@
                 <property name="name">shortcut_swap_screens</property>
                 <property name="visible">1</property>
                 <property name="accelerator">s</property>
-                <property name="title" translatable="yes" context="shortcut window">Swap windows</property>
+                <property name="title" translatable="yes">Swap windows</property>
               </object>
             </child>
 
@@ -296,7 +296,7 @@
                 <property name="name">shortcut_blank_screen</property>
                 <property name="visible">1</property>
                 <property name="accelerator">b</property>
-                <property name="title" translatable="yes" context="shortcut window">Blank screen</property>
+                <property name="title" translatable="yes">Blank screen</property>
               </object>
             </child>
 
