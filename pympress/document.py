@@ -688,7 +688,7 @@ class Document(object):
                 if action.type == Poppler.ActionType.GOTO_DEST:
                     title = action.goto_dest.title
                     if action.goto_dest.dest.type == Poppler.DestType.NAMED:
-                        dest = self.parent.doc.find_dest(action.goto_dest.dest.named_dest)
+                        dest = self.doc.find_dest(action.goto_dest.dest.named_dest)
                         page = dest.page_num - 1
                     elif action.goto_dest.dest.type == Poppler.DestType.UNKNOWN:
                         raise AssertionError('Unknown type of destination')
