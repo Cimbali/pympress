@@ -410,12 +410,13 @@ class Page(object):
             else:
                 return Link.build_closure(fileopen, filepath)
 
+        elif link_type == Poppler.ActionType.URI:
+            return Link.build_closure(webbrowser.open_new_tab, action.uri.uri)
+
         elif link_type == Poppler.ActionType.RENDITION:  # Poppler 0.22
             warning = _("Pympress does not yet support link type \"{}\"").format(link_type)
         elif link_type == Poppler.ActionType.MOVIE:  # Poppler 0.20
             warning = _("Pympress does not yet support link type \"{}\"").format(link_type)
-        elif link_type == Poppler.ActionType.URI:
-            warning = Link.build_closure(webbrowser.open_new_tab, action.uri.uri)
         elif link_type == Poppler.ActionType.GOTO_REMOTE:
             warning = _("Pympress does not yet support link type \"{}\"").format(link_type)
         elif link_type == Poppler.ActionType.OCG_STATE:
