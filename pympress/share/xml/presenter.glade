@@ -851,6 +851,7 @@
                           <object class="GtkEntry" id="edit_label">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="width_chars">3</property>
                             <property name="placeholder_text" translatable="yes">page label</property>
                             <signal name="changed" handler="page_number.changed_page_label" swapped="no"/>
                             <style>
@@ -905,6 +906,7 @@
                           <object class="GtkSpinButton" id="spin_cur">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="width_chars">3</property>
                             <property name="xalign">1</property>
                             <property name="adjustment">spin_adjust</property>
                             <property name="climb_rate">1</property>
@@ -1018,6 +1020,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label">00:00</property>
+                    <property name="width_chars">15</property>
                     <style>
                       <class name="big-info-label"/>
                     </style>
@@ -1102,6 +1105,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label">00:00</property>
+                    <property name="width_chars">8</property>
                     <style>
                       <class name="info-label"/>
                     </style>
