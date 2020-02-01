@@ -864,25 +864,6 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="label_sep">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="halign">end</property>
-                            <property name="label">0</property>
-                            <property name="justify">right</property>
-                            <property name="single_line_mode">True</property>
-                            <property name="track_visited_links">False</property>
-                            <style>
-                              <class name="big-info-label"/>
-                            </style>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
                           <object class="GtkLabel" id="label_cur">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -898,7 +879,26 @@
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label_sep">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">end</property>
+                            <property name="label">0</property>
+                            <property name="justify">right</property>
+                            <property name="single_line_mode">True</property>
+                            <property name="track_visited_links">False</property>
+                            <style>
+                              <class name="big-info-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                         <child>
@@ -921,7 +921,7 @@
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">4</property>
                           </packing>
                         </child>
                         <child>
@@ -938,7 +938,7 @@
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">3</property>
+                            <property name="position">4</property>
                           </packing>
                         </child>
                       </object>
