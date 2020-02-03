@@ -5,7 +5,6 @@
     <property name="can_focus">False</property>
     <child>
       <object class="GtkBox" id="scribble_overlay">
-        <property name="name">scribble_overlay</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
@@ -26,7 +25,6 @@
                 <signal name="motion-notify-event" handler="track_motions" swapped="no"/>
                 <child>
                   <object class="GtkDrawingArea" id="scribble_p_da">
-                    <property name="name">scribble_p_da</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <signal name="draw" handler="on_draw" swapped="no"/>

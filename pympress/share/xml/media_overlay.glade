@@ -3,14 +3,12 @@
 <interface>
   <requires lib="gtk+" version="3.2"/>
   <object class="GtkBox" id="media_overlay">
-    <property name="name">media_overlay</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="orientation">vertical</property>
     <signal name="map" handler="handle_embed" swapped="no"/>
     <child>
       <object class="GtkDrawingArea" id="movie_zone">
-        <property name="name">movie_zone</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
@@ -32,7 +30,6 @@
             <property name="can_focus">False</property>
             <child>
               <object class="GtkToolButton" id="play">
-                <property name="name">play</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Play</property>
@@ -47,7 +44,6 @@
             </child>
             <child>
               <object class="GtkToolButton" id="pause">
-                <property name="name">pause</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Pause</property>
@@ -62,7 +58,6 @@
             </child>
             <child>
               <object class="GtkToolButton" id="stop">
-                <property name="name">stop</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Stop</property>
@@ -84,7 +79,6 @@
         </child>
         <child>
           <object class="GtkScale" id="progress">
-            <property name="name">progress</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="value_pos">right</property>

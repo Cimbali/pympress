@@ -15,7 +15,6 @@
     <property name="page_increment">1</property>
   </object>
   <object class="GtkWindow" id="p_win">
-    <property name="name">p_win</property>
     <property name="can_focus">False</property>
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
     <property name="title" translatable="yes">Pympress Presenter</property>
@@ -466,7 +465,6 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Content blanked</property>
                         <property name="use_underline">True</property>
-                        <property name="name">start_blanked</property>
                         <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
@@ -476,7 +474,6 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Content fullscreen</property>
                         <property name="use_underline">True</property>
-                        <property name="name">start_cwin_fullscreen</property>
                         <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
@@ -486,7 +483,6 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Presenter fullscreen</property>
                         <property name="use_underline">True</property>
-                        <property name="name">start_pwin_fullscreen</property>
                         <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
@@ -565,7 +561,6 @@
                 <signal name="button-release-event" handler="on_pane_event" swapped="no"/>
                 <child>
                   <object class="GtkAspectFrame" id="p_frame_notes">
-                    <property name="name">p_frame_notes</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_right">5</property>
@@ -575,7 +570,6 @@
                     <property name="obey_child">False</property>
                     <child>
                       <object class="GtkDrawingArea" id="p_da_notes">
-                        <property name="name">p_da_notes</property>
                         <property name="visible">True</property>
                         <property name="app_paintable">True</property>
                         <property name="can_focus">False</property>
@@ -621,7 +615,6 @@
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkAspectFrame" id="p_frame_cur">
-                            <property name="name">p_frame_cur</property>
                             <property name="height_request">200</property>
                             <property name="can_focus">False</property>
                             <property name="label_xalign">0</property>
@@ -631,14 +624,12 @@
                             <property name="obey_child">False</property>
                             <child>
                               <object class="GtkOverlay" id="p_overlay">
-                                <property name="name">p_overlay</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="hexpand">True</property>
                                 <property name="vexpand">True</property>
                                 <child>
                                   <object class="GtkDrawingArea" id="p_da_cur">
-                                    <property name="name">p_da_cur</property>
                                     <property name="visible">True</property>
                                     <property name="app_paintable">True</property>
                                     <property name="can_focus">False</property>
@@ -677,7 +668,6 @@
                         </child>
                         <child>
                           <object class="GtkAspectFrame" id="p_frame_next">
-                            <property name="name">p_frame_next</property>
                             <property name="height_request">200</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -688,7 +678,6 @@
                             <property name="obey_child">False</property>
                             <child>
                               <object class="GtkDrawingArea" id="p_da_next">
-                                <property name="name">p_da_next</property>
                                 <property name="visible">True</property>
                                 <property name="app_paintable">True</property>
                                 <property name="can_focus">False</property>
@@ -722,7 +711,6 @@
                     </child>
                     <child>
                       <object class="GtkFrame" id="p_frame_annot">
-                        <property name="name">p_frame_annot</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label_xalign">0</property>
@@ -736,7 +724,6 @@
                             <property name="min_content_height">10</property>
                             <child>
                               <object class="GtkTreeView" id="scrollable_treelist">
-                                <property name="name">scrollable_treelist</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="headers_visible">False</property>

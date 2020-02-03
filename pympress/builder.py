@@ -214,6 +214,10 @@ class Builder(Gtk.Builder):
             if issubclass(type(obj), Gtk.Buildable):
                 obj_id = Gtk.Buildable.get_name(obj)
 
+                # set Gtk.Widget.name property to the value of the Gtk.Buildable id
+                if issubclass(type(obj), Gtk.Widget):
+                    Gtk.Widget.set_name(obj, obj_id)
+
                 if hasattr(self, obj_id) and getattr(self, obj_id) is None:
                     setattr(self, obj_id, obj)
 

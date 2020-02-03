@@ -37,7 +37,6 @@
             <property name="shadow_type">in</property>
             <child>
               <object class="GtkTreeView" id="timing_treeview">
-                <property name="name">timing_treeview</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="vscroll_policy">natural</property>
