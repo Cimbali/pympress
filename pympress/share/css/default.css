@@ -58,13 +58,13 @@
 }
 
 .ett-reached {
-    color: #64c864;
+    color: @success_color;
 }
 .ett-info {
-    color: #FFBF00;
+    color: @warning_color;
 }
 .ett-warn {
-    color: #FF0000;
+    color: @error_color;
 }
 .time-warn {
     animation: blinker 250ms cubic-bezier(.5, 0, 1, 1) infinite alternate;
