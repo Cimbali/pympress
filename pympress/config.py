@@ -207,7 +207,12 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         Args:
             check_item (:class:`~Gtk.:CheckMenuItem`): the check button triggering the call
         """
-        window, start_conf = check_item.get_name().split('.')
+        # button is named start(_[pc]win)?_property
+        start, *win, prop = check_item.get_name().split('_')
+
+        window = {(): 'content', ('pwin',): 'presenter', ('cwin',): 'content'}[tuple(win)]
+        start_conf = 'start_' + prop
+
         self.set(window, start_conf, 'on' if check_item.get_active() else 'off')
 
 

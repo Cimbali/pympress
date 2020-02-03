@@ -466,27 +466,27 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Content blanked</property>
                         <property name="use_underline">True</property>
-                        <property name="name">content.start_blanked</property>
+                        <property name="name">start_blanked</property>
                         <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="start_cwin_full">
+                      <object class="GtkCheckMenuItem" id="start_cwin_fullscreen">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Content fullscreen</property>
                         <property name="use_underline">True</property>
-                        <property name="name">content.start_fullscreen</property>
+                        <property name="name">start_cwin_fullscreen</property>
                         <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="start_pwin_full">
+                      <object class="GtkCheckMenuItem" id="start_pwin_fullscreen">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Presenter fullscreen</property>
                         <property name="use_underline">True</property>
-                        <property name="name">presenter.start_fullscreen</property>
+                        <property name="name">start_pwin_fullscreen</property>
                         <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>

@@ -269,18 +269,18 @@ class UI(builder.Builder):
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
 
         init_checkstates = {
-            'pres_pause':      True,
-            'pres_fullscreen': bool(self.c_win.get_window().get_state() & Gdk.WindowState.FULLSCREEN),
-            'pres_notes':      bool(self.notes_mode),
-            'pres_blank':      self.blanked,
-            'pres_annot':      self.show_annotations,
-            'pres_buttons':    self.show_bigbuttons,
-            'pres_highlight':  False,
+            'pres_pause':            True,
+            'pres_fullscreen':       bool(self.c_win.get_window().get_state() & Gdk.WindowState.FULLSCREEN),
+            'pres_notes':            bool(self.notes_mode),
+            'pres_blank':            self.blanked,
+            'pres_annot':            self.show_annotations,
+            'pres_buttons':          self.show_bigbuttons,
+            'pres_highlight':        False,
 
-            'start_blanked':   self.config.getboolean('content', 'start_blanked'),
-            'start_cwin_full': self.config.getboolean('content', 'start_fullscreen'),
-            'start_pwin_full': self.config.getboolean('presenter', 'start_fullscreen'),
-            'portable_config': self.config.using_portable_config(),
+            'start_blanked':         self.config.getboolean('content', 'start_blanked'),
+            'start_cwin_fullscreen': self.config.getboolean('content', 'start_fullscreen'),
+            'start_pwin_fullscreen': self.config.getboolean('presenter', 'start_fullscreen'),
+            'portable_config':       self.config.using_portable_config(),
         }
 
         for n in init_checkstates:
