@@ -53,7 +53,8 @@ class PatchedInstall(install):
     """Patched installation for installation mode to build translations .mo files. """
     def run(self):
         """ Run compile_catalog before running (parent) install command. """
-        self.distribution.run_command('compile_catalog')
+        if not self.single_version_externally_managed:
+            self.distribution.run_command('compile_catalog')
         install.run(self)
 
 

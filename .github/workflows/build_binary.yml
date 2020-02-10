@@ -1,0 +1,39 @@
+name: Build rpm and release on push
+
+on: push
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+        pip install -e .[babel]
+
+    - name: Build catalogs
+      env:
+        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
+      run: |
+        ./scripts/poedit.sh download
+        python setup.py compile_catalog
+
+    - name: Build binaries
+      run: |
+        python setup.py bdist_rpm --requires python3-watchdog
+        find dist/ -type f -not -name '*.rpm' -delete
+
+    - name: Release
+      uses: fnkr/github-action-ghr@v1
+      env:
+        GHR_PATH: dist/
+        GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
