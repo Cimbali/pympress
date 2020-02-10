@@ -19,11 +19,11 @@ jobs:
         pip install setuptools wheel twine
         pip install -e .[babel]
     - name: Build catalogs
+      env:
+        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
       run: |
         ./scripts/poedit.sh download
         python setup.py compile_catalog
-      with:
-        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
     - name: Build and publish
       env:
         TWINE_USERNAME: __token__
@@ -44,7 +44,21 @@ jobs:
     - name: Wait a reasonable amount of time for pypi to update its info
       run: sleep 60  # be patient with pypi
 
+    - name: Configure brew repo
+      run: |
+        git="git -C `brew --repo`/Library/Taps/homebrew/homebrew-core/"
+        $git config user.name Cimbali
+        $git config user.email me@cimba.li
+        $git config credential.helper store
+        echo -e "protocol=https\nhost=github.com\nusername=Cimbali\npassword=$PASSWORD" | $git credential-store store
+      env:
+        PASSWORD: ${{ secrets.GITHUB_HOMEBREW_TOKEN }}
+
     - name: Make a brew PR from pypi’s metadata
       run: |
-        jq_script=`printf '.releases."%s"[]? | select(.python_version == "source") | @sh "--url=\(.url) --sha256=\(.digests.sha256)"' ${GITHUB_REF#v}`
-        curl -s https://pypi.org/pypi/pympress/json | jq -r "$jq_script" | xargs brew bump-formula-pr --strict
+        tag=${GITHUB_REF#refs/tags/}
+        jq_script=`printf '.releases."%s"[]? | select(.python_version == "source") | @text "--url=\(.url) --sha256=\(.digests.sha256)"' ${tag#v}`
+        brew bump-formula-pr --strict --no-browse `curl -s https://pypi.org/pypi/pympress/json | jq -r "$jq_script"` pympress
+      env:
+        HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_HOMEBREW_TOKEN }}
+        HUB_REMOTE: https://github.com/Cimbali/homebrew-core/
