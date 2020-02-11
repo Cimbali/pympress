@@ -178,7 +178,7 @@ if __name__ == '__main__':
     if '--freeze' in sys.argv[1:]:
         sys.argv.remove('--freeze')
 
-        print('Using cx_Freeze.setup():')
+        print('Using cx_Freeze.setup():', file=sys.stderr)
         from cx_Freeze import setup, Executable
 
         # List all resources we'll distribute
@@ -210,7 +210,7 @@ if __name__ == '__main__':
         setup(**setup_opts)
     else:
         # Normal behaviour: use setuptools, load options from setup.cfg
-        print('Using setuptools.setup():')
+        print('Using setuptools.setup():', file=sys.stderr)
 
         setuptools.setup(cmdclass = {'develop': PatchedDevelop, 'install': PatchedInstall})
 
