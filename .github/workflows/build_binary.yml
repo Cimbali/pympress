@@ -1,8 +1,6 @@
 name: Build RPMs
 
-on:
-  release:
-    types: [created]
+on: create
 
 jobs:
   source:
@@ -41,6 +39,7 @@ jobs:
 
     - name: Upload to GitHub Release
       uses: fnkr/github-action-ghr@v1
+      if: startsWith(github.ref, 'refs/tags/')
       env:
         GHR_PATH: build/rpm/SRPMS/
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
@@ -85,11 +84,12 @@ jobs:
         # Add python version to the pympress version, as different python versions mean incompatible bytecodes
         sed -i "1,20s/\<version\>/srcversion/g;/^Version:/s/$/_py${{ matrix.python-version }}/" ${BUILD_DIR}/SPECS/pympress.spec
 
-        rpmbuild --define "_topdir $PWD/${BUILD_DIR}" -bb ${BUILD_DIR}/SPECS/pympress.spec
+        rpmbuild --define "_topdir $PWD/${BUILD_DIR}" --define "python_version ${{ matrix.python-version }}" -bb ${BUILD_DIR}/SPECS/pympress.spec
 
 
     - name: Upload to GitHub Release
       uses: fnkr/github-action-ghr@v1
+      if: startsWith(github.ref, 'refs/tags/')
       env:
         GHR_PATH: build/rpm/RPMS/noarch/
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
