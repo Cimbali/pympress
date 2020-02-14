@@ -84,6 +84,9 @@ jobs:
         # Add python version to the pympress version, as different python versions mean incompatible bytecodes
         sed -i "1,20s/\<version\>/srcversion/g;/^Version:/s/$/_py${{ matrix.python-version }}/" ${BUILD_DIR}/SPECS/pympress.spec
 
+        sed -i "/%clean/imv -f \$RPM_BUILD_ROOT/usr/local/lib/python%{python_version}/dist-packages \$RPM_BUILD_ROOT/usr/lib/python%{python_version}/site-packages || :" ${BUILD_DIR}/SPECS/pympress.spec
+        sed -i "/%clean/ised -i \"s,/usr/local/lib/python%{python_version}/dist-packages,/usr/lib/python%{python_version}/site-packages,\" INSTALLED_FILES" ${BUILD_DIR}/SPECS/pympress.spec
+
         rpmbuild --define "_topdir $PWD/${BUILD_DIR}" --define "python_version ${{ matrix.python-version }}" -bb ${BUILD_DIR}/SPECS/pympress.spec
 
 
