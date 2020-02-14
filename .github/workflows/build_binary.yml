@@ -1,0 +1,99 @@
+name: Build RPMs
+
+on: create
+
+jobs:
+  source:
+    name: Source
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install setuptools wheel twine
+        python3 -m pip install -e .[babel]
+
+    - name: Build catalogs
+      env:
+        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
+      run: |
+        ./scripts/poedit.sh download
+        python3 setup.py compile_catalog
+
+    - name: Build binaries
+      env:
+        BUILD_DIR: build/rpm
+      run: |
+        mkdir -p ${BUILD_DIR}/SOURCES ${BUILD_DIR}/SPECS
+
+        python3 setup.py sdist --dist=${BUILD_DIR}/SOURCES
+        python3 setup.py bdist_rpm --dist-dir=${BUILD_DIR}/SPECS --spec-only
+
+        # Use pyname as the python package name, %{name} evaluates to the rpm package name: python3-${pythonname}
+        sed -Ei "s/\<name\>/pythonname/g;s/^(Name: )(%\{pythonname\})/\1python3-\2/;/^Group:/d" ${BUILD_DIR}/SPECS/pympress.spec
+
+        rpmbuild --define "_topdir $PWD/${BUILD_DIR}" -bs ${BUILD_DIR}/SPECS/pympress.spec
+
+
+    - name: Upload to GitHub Release
+      uses: fnkr/github-action-ghr@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        GHR_PATH: build/rpm/SRPMS/
+        GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+
+
+  binary:
+    name: Release
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y python${{ matrix.python-version }}
+        python${{ matrix.python-version }} -m pip install --upgrade pip
+        python${{ matrix.python-version }} -m pip install setuptools wheel twine
+        python${{ matrix.python-version }} -m pip install -e .[babel]
+
+    - name: Build catalogs
+      env:
+        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
+      run: |
+        ./scripts/poedit.sh download
+        python${{ matrix.python-version }} setup.py compile_catalog
+
+    - name: Build binaries
+      env:
+        BUILD_DIR: build/rpm
+      run: |
+        mkdir -p ${BUILD_DIR}/SOURCES ${BUILD_DIR}/SPECS
+
+        python${{ matrix.python-version }} setup.py sdist --dist=${BUILD_DIR}/SOURCES
+        python${{ matrix.python-version }} setup.py bdist_rpm --dist-dir=${BUILD_DIR}/SPECS --spec-only
+
+        # Use pyname as the python package name, %{name} evaluates to the rpm package name: python3-${pythonname}
+        sed -Ei "s/\<name\>/pythonname/g;s/^(Name: )(%\{pythonname\})/\1python3-\2/;/^Group:/d" ${BUILD_DIR}/SPECS/pympress.spec
+
+        # Add python version to the pympress version, as different python versions mean incompatible bytecodes
+        sed -i "1,20s/\<version\>/srcversion/g;/^Version:/s/$/_py${{ matrix.python-version }}/" ${BUILD_DIR}/SPECS/pympress.spec
+
+        sed -i "/%clean/imkdir -p \$RPM_BUILD_ROOT/usr/lib/python%{python_version}/site-packages" ${BUILD_DIR}/SPECS/pympress.spec
+        sed -i "/%clean/imv -f \$RPM_BUILD_ROOT/usr/local/lib/python%{python_version}/dist-packages/* \$RPM_BUILD_ROOT/usr/lib/python%{python_version}/site-packages/ || :" ${BUILD_DIR}/SPECS/pympress.spec
+        sed -i "/%clean/ised -i \"s,/usr/local/lib/python%{python_version}/dist-packages,/usr/lib/python%{python_version}/site-packages,\" INSTALLED_FILES" ${BUILD_DIR}/SPECS/pympress.spec
+
+        rpmbuild --define "_topdir $PWD/${BUILD_DIR}" --define "python_version ${{ matrix.python-version }}" -bb ${BUILD_DIR}/SPECS/pympress.spec
+
+
+    - name: Upload to GitHub Release
+      uses: fnkr/github-action-ghr@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        GHR_PATH: build/rpm/RPMS/noarch/
+        GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
