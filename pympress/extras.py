@@ -32,7 +32,7 @@ import os.path
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GLib
+from gi.repository import Gtk, Gdk, GLib, Pango
 
 import mimetypes
 from collections import defaultdict
@@ -165,44 +165,21 @@ class Annotations(object):
     Args:
         annotations (`list`): A list of strings, that are the annotations to be displayed
     """
-    #: The containing widget for the annotations
-    scrollable_treelist = None
-    #: Making the annotations list scroll if it's too long
+    #: The containing :class:`~Gtk.TextView` widget for the annotations
+    annotations_textview = None
+    #: :class:`~Gtk.ScrolledWindow` making the annotations list scroll if it's too long
     scrolled_window = None
-    #: :class:`~Gtk.CellRendererText` Text renderer for the annotations
-    annotation_renderer = None
 
     def __init__(self, builder):
         super(Annotations, self).__init__()
         builder.load_widgets(self)
 
-        self.scrolled_window.set_hexpand(True)
-
 
     def add_annotations(self, annotations):
         """ Add annotations to be displayed (typically on going to a new slide).
         """
-        prev_annots = self.scrollable_treelist.get_model()
-        if prev_annots:
-            prev_annots.clear()
-        list_annot = Gtk.ListStore(str)
-
-        for annot in annotations:
-            list_annot.append(('● ' + annot,))
-
-        self.scrollable_treelist.set_model(list_annot)
-
-
-    def on_configure_annot(self, widget, event):
-        """ Adjust wrap width in annotations when they are resized.
-
-        Args:
-            widget (:class:`~Gtk.Widget`):  the widget which was resized.
-            event (:class:`~Gdk.Event`):  the GTK event.
-        """
-        self.annotation_renderer.props.wrap_width = max(30, widget.get_allocated_width() - 10)
-        self.scrolled_window.queue_resize()
-        self.scrollable_treelist.get_column(0).queue_resize()
+        buf = self.annotations_textview.get_buffer()
+        buf.set_text('\n'.join(annotations))
 
 
     def on_scroll(self, widget, event):

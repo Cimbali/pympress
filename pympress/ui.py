@@ -442,9 +442,6 @@ class UI(builder.Builder):
         if self.redraw_timeout:
             self.redraw_timeout = 0
 
-        # Temporarily, while p_frame_annot's configure-event is not working
-        self.annotations.on_configure_annot(self.p_frame_annot, None)
-
 
     def on_pane_event(self, widget, evt):
         """ Signal handler for gtk.paned events.
