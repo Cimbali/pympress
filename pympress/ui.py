@@ -475,6 +475,9 @@ class UI(builder.Builder):
     def save_and_quit(self, *args):
         """ Save configuration and exit the main loop.
         """
+        if self.p_win.in_destruction() or self.c_win.in_destruction():
+            return
+
         self.scribbler.disable_scribbling()
         self.medias.hide_all()
 
@@ -488,6 +491,8 @@ class UI(builder.Builder):
             util.set_screensaver(False, self.c_win.get_window())
 
         self.config.save_config()
+        self.p_win.destroy()
+        self.c_win.destroy()
         Gtk.main_quit()
 
 
