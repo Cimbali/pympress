@@ -32,7 +32,7 @@ import os.path
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GLib, Pango
+from gi.repository import Gtk, Gdk, GLib
 
 import mimetypes
 from collections import defaultdict
@@ -160,10 +160,7 @@ class TimingReport(builder.Builder):
 
 
 class Annotations(object):
-    """ Widget displaying a PDF’s text annotations into a tree view.
-
-    Args:
-        annotations (`list`): A list of strings, that are the annotations to be displayed
+    """ Widget displaying a PDF’s text annotations.
     """
     #: The containing :class:`~Gtk.TextView` widget for the annotations
     annotations_textview = None
@@ -177,6 +174,9 @@ class Annotations(object):
 
     def add_annotations(self, annotations):
         """ Add annotations to be displayed (typically on going to a new slide).
+
+        Args:
+            annotations (`list`): A list of strings, that are the annotations to be displayed
         """
         buf = self.annotations_textview.get_buffer()
         buf.set_text('\n'.join(annotations))
