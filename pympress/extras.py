@@ -711,10 +711,10 @@ class FileWatcher(object):
     """ A class with only static methods that wraps object watchdogs, to trigger callbacks when a file changes.
     """
     #: A :class:`~watchdog.observers.Observer` to watch when the file changes
-    observer = Observer()
+    observer = None
 
     #: A :class:`~watchdog.events.FileSystemEventHandler` to get notified when the file changes
-    monitor = FileSystemEventHandler()
+    monitor = None
 
     # `int` that is a GLib timeout id to delay the callback
     timeout = 0
@@ -772,6 +772,10 @@ class FileWatcher(object):
     def start_daemon(cls):
         """ Start the watchdog observer thread.
         """
+        if cls.observer is None:
+            cls.observer = Observer()
+            cls.monitor = FileSystemEventHandler()
+
         if not cls.observer.is_alive():
             cls.observer.start()
 
@@ -789,3 +793,6 @@ class FileWatcher(object):
 
         while wait and cls.observer.is_alive():
             cls.observer.join()
+
+        cls.observer = None
+        cls.monitor = None
