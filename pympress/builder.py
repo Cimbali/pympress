@@ -62,7 +62,9 @@ class Builder(Gtk.Builder):
         """
         for str_prop in (prop.name for prop in a_widget.props if prop.value_type == GObject.TYPE_STRING):
             try:
-                setattr(a_widget.props, str_prop, _(getattr(a_widget.props, str_prop)))
+                str_val = getattr(a_widget.props, str_prop)
+                if str_val:
+                    setattr(a_widget.props, str_prop, _(str_val))
             except TypeError:
                 # Thrown when a string property is not readable
                 pass
