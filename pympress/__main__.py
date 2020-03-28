@@ -127,7 +127,7 @@ def parse_opts(opts):
     log_level = logging.ERROR
     notes_pos = None
 
-    for opt, arg in opts:
+    for opt, arg in opts.items():
         if opt in ("-h", "--help"):
             usage()
             sys.exit()
@@ -186,6 +186,7 @@ def main(argv = sys.argv[1:]):
 
     try:
         opts, args = getopt.getopt(argv, "hn:t:", ["help", "notes=", "talk-time=", "log="])
+        opts = dict(opts)
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -195,6 +196,9 @@ def main(argv = sys.argv[1:]):
 
     # Create windows
     gui = ui.UI()
+
+    # Connect proper exit function to interrupt
+    signal.signal(signal.SIGINT, gui.save_and_quit)
 
     # pass command line args
     if ett:
