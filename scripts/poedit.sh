@@ -17,33 +17,6 @@ languages() {
           -F id="301055" | jq -r 'select(.response.code == "200") | .result.languages[].code'
 }
 
-badges() {
-    curl -sX POST https://api.poeditor.com/v2/languages/list \
-          -F api_token="$poeditor_api_token" \
-          -F id="301055" | jq -r 'select(.response.code == "200") | .result.languages[] | [.name, .code, .percentage] |@tsv' |
-        while read name code percentage; do
-            # Locale code differs from country ISO code
-            if test "$name" = "Czech" -a "$code" = "cs"; then code=cz; fi
-
-            #printf %d 'N -> ord(N) -> %F0%9F%87%{ 0xA6 + N - ord('a') } the urlencoded ISO 3166 flag
-            flag=`echo $code | sed "s/./\\\\\\'& /g" | xargs printf "%d + 69\n" | bc | xargs printf '%%F0%%9F%%87%%%02X'`
-
-            # linearly interpolate FF0000 0% -> FFFF00 50% -> 00FF00 100%
-            colors=`bc <<EOF | xargs printf '%01x%01x%01x'
-                p = (30 * $percentage) / 100
-                if (p < 15) 15 else 2 * 15 - p
-                if (p < 15) p else 15
-                0
-EOF
-            `
-
-            image="![${name}: ${percentage}%](https://img.shields.io/badge/${flag}%20${name}-${percentage}%25-${colors})"
-            # delete + insert instead of change, so new images get added correctly
-            sed -Ei "/^\!\[${name}: [0-9]+%\]/d;/<!-- insert badge -->/i${image}" README.md
-        done
-}
-
-
 contributors() {
     curl -sX POST https://api.poeditor.com/v2/contributors/list \
           -F api_token="$poeditor_api_token" \
@@ -92,10 +65,6 @@ while [ $# -gt 0 ]; do
             download $lang
         done
         contributors
-        badges
-    elif test "$1" = "progress"; then
-        getpass
-        badges
     elif test "$1" = "contributors"; then
         getpass
         contributors
