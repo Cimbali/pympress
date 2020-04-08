@@ -46,7 +46,7 @@ jobs:
       env:
         poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
       run: |
-        ./scripts/poedit.sh contributors progress
+        ./scripts/poedit.sh contributors
         python setup.py build_sphinx
         tar czf pympress-docs.tar.gz -C build/sphinx/html/ .
     - name: Upload
