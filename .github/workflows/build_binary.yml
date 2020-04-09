@@ -32,7 +32,7 @@ jobs:
         python3 setup.py bdist_rpm --dist-dir=${BUILD_DIR}/SPECS --spec-only
 
         # Use pyname as the python package name, %{name} evaluates to the rpm package name: python3-${pythonname}
-        sed -Ei "s/\<name\>/pythonname/g;s/^(Name: )(%\{pythonname\})/\1python3-\2/;/^Group:/d" ${BUILD_DIR}/SPECS/pympress.spec
+        sed -Ei "s/\<name\>/pythonname/g;s/^(Name: )(%\{pythonname\})/\1python3-\2/;/^Group:/d;/^Requires/s/ = %python_version//" ${BUILD_DIR}/SPECS/pympress.spec
 
         rpmbuild --define "_topdir $PWD/${BUILD_DIR}" -bs ${BUILD_DIR}/SPECS/pympress.spec
 
