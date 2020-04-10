@@ -50,8 +50,12 @@ class PatchedRpmDist(bdist_rpm):
             for line in bdist_rpm._make_spec_file(self)
             if not line.startswith('Group:')
         ]
-        # add the provided python3 capability (only if the macro exists)
-        spec.insert(spec.index('', 6), '%{?python_provide:%python_provide python3-%{pythonname}}')
+        insert_pos = spec.index('', 6)
+        # Define what this package provides a little more specifically
+        spec.insert(insert_pos, 'Provides: python3dist(%{pythonname}) = %{version}')
+        spec.insert(insert_pos + 1, 'Provides: python%{python3_version}dist(%{pythonname}) = %{version}')
+        # For Fedora, this adds python-name to provides if python3 is the default
+        spec.insert(insert_pos + 2, '%{?python_provide:%python_provide python3-%{pythonname}}')
         return spec
 
 
