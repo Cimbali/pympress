@@ -28,7 +28,7 @@
 
 __version__ = '1.5.2'
 __author__ = """2009, 2010 Thomas Jost <thomas.jost@gmail.com>
-2015-2019 Cimbali <me@cimba.li>
+2015-2020 Cimbali <me@cimba.li>
 2016 Christoph Rath <christof.rath@iaik.tugraz.at>
 2016 Epithumia <endless@airelle.info>
 """

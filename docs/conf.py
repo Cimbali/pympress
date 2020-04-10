@@ -106,7 +106,7 @@ master_doc = 'index'
 # General information about the project.
 pkg_meta = importlib.import_module('pympress.__init__')
 project = 'Pympress'
-copyright = '2009-2011, Thomas Jost; 2015-2019 Cimbali'
+copyright = '2009-2011, Thomas Jost; 2015-2020 Cimbali'
 author = 'Thomas Jost, Cimbali'
 
 # The version info for the project you're documenting, acts as replacement for
