@@ -26,22 +26,14 @@ jobs:
       env:
         BUILD_DIR: build/rpm
       run: |
-        mkdir -p ${BUILD_DIR}/SOURCES ${BUILD_DIR}/SPECS
-
-        python3 setup.py sdist --dist=${BUILD_DIR}/SOURCES
-        python3 setup.py bdist_rpm --dist-dir=${BUILD_DIR}/SPECS --spec-only
-
-        # Use pyname as the python package name, %{name} evaluates to the rpm package name: python3-${pythonname}
-        sed -Ei "s/\<name\>/pythonname/g;s/^(Name: )(%\{pythonname\})/\1python3-\2/;/^Group:/d;/^Requires/s/ = %python_version//" ${BUILD_DIR}/SPECS/pympress.spec
-
-        rpmbuild --define "_topdir $PWD/${BUILD_DIR}" -bs ${BUILD_DIR}/SPECS/pympress.spec
-
+        mkdir srpm
+        python3 setup.py bdist_rpm --dist-dir=srpm/ --source-only
 
     - name: Upload to GitHub Release
       uses: fnkr/github-action-ghr@v1
       if: startsWith(github.ref, 'refs/tags/')
       env:
-        GHR_PATH: build/rpm/SRPMS/
+        GHR_PATH: srpm/
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
 
 
@@ -76,19 +68,17 @@ jobs:
         mkdir -p ${BUILD_DIR}/SOURCES ${BUILD_DIR}/SPECS
 
         python${{ matrix.python-version }} setup.py sdist --dist=${BUILD_DIR}/SOURCES
-        python${{ matrix.python-version }} setup.py bdist_rpm --dist-dir=${BUILD_DIR}/SPECS --spec-only
-
-        # Use pyname as the python package name, %{name} evaluates to the rpm package name: python3-${pythonname}
-        sed -Ei "s/\<name\>/pythonname/g;s/^(Name: )(%\{pythonname\})/\1python3-\2/;/^Group:/d" ${BUILD_DIR}/SPECS/pympress.spec
+        python${{ matrix.python-version }} setup.py bdist_rpm --dist-dir=${BUILD_DIR}/SPECS --spec-only --no-autoreq
 
         # Add python version to the pympress version, as different python versions mean incompatible bytecodes
-        sed -i "1,20s/\<version\>/srcversion/g;/^Version:/s/$/_py${{ matrix.python-version }}/" ${BUILD_DIR}/SPECS/pympress.spec
+        sed -i "1,20s/\<version\>/srcversion/g;/^Version:/s/$/_py${{ matrix.python-version }}/;s/^Requires:/& python(abi) = ${{ matrix.python-version }}/" ${BUILD_DIR}/SPECS/pympress.spec
 
+        # Patching build for weird install locations on ubuntu (dist-packages) to normal install location of other distros (site-packages)
         sed -i "/%clean/imkdir -p \$RPM_BUILD_ROOT/usr/lib/python%{python_version}/site-packages" ${BUILD_DIR}/SPECS/pympress.spec
         sed -i "/%clean/imv -f \$RPM_BUILD_ROOT/usr/local/lib/python%{python_version}/dist-packages/* \$RPM_BUILD_ROOT/usr/lib/python%{python_version}/site-packages/ || :" ${BUILD_DIR}/SPECS/pympress.spec
         sed -i "/%clean/ised -i \"s,/usr/local/lib/python%{python_version}/dist-packages,/usr/lib/python%{python_version}/site-packages,\" INSTALLED_FILES" ${BUILD_DIR}/SPECS/pympress.spec
 
-        rpmbuild --define "_topdir $PWD/${BUILD_DIR}" --define "python_version ${{ matrix.python-version }}" -bb ${BUILD_DIR}/SPECS/pympress.spec
+        rpmbuild --define "_topdir $PWD/${BUILD_DIR}" -bb ${BUILD_DIR}/SPECS/pympress.spec
 
 
     - name: Upload to GitHub Release
