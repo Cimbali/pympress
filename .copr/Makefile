@@ -3,7 +3,8 @@ deps:
 	python3 -m pip --disable-pip-version-check install -e .[babel]
 
 catalog: deps
-	./scripts/poedit.sh download
+	# public read-only token to download up-to-date translate strings
+	poeditor_api_token=7a666b44c0985d16a7b59748f488275c ./scripts/poedit.sh download
 	python3 setup.py compile_catalog
 
 srpm: catalog
