@@ -37,6 +37,15 @@ from setuptools.command.install import install
 from setuptools.command.bdist_rpm import bdist_rpm
 
 
+def find_index_startstring(l, s):
+    """ Return the index of the first string in l starting with s, or raise ValueError if none match.
+    """
+    try:
+        return next(n for n, v in enumerate(l) if v.startswith(s))
+    except StopIteration:
+        raise ValueError('No string starts with ' + s)
+
+
 class PatchedRpmDist(bdist_rpm):
     """ Patched bdist rpm to avoid running seds and breaking up the build system
     """
@@ -47,16 +56,26 @@ class PatchedRpmDist(bdist_rpm):
             line.replace('%{name}', '%{pythonname}')
                 .replace('define name ', 'define pythonname ')
                 .replace('Name: %{pythonname}', 'Name: python3-%{pythonname}')
-            for line in bdist_rpm._make_spec_file(self)
-            if not line.startswith('Group:')
+            for line in bdist_rpm._make_spec_file(self) if not line.startswith('Group:')
         ]
-        insert_pos = spec.index('', 6)
-        # Define what this package provides a little more specifically
-        spec.insert(insert_pos, 'Provides: python3dist(%{pythonname}) = %{version}')
-        spec.insert(insert_pos + 1, 'Provides: python%{python3_version}dist(%{pythonname}) = %{version}')
+
+        insert_pos = find_index_startstring(spec, 'Requires:')
+
+        # Define what this package provides in terms of capabilities
+        spec.insert(insert_pos + 1, 'Provides: python3dist(%{pythonname}) = %{version}')
+        spec.insert(insert_pos + 2, 'Provides: python%{python3_version}dist(%{pythonname}) = %{version}')
+
         # For Fedora, this adds python-name to provides if python3 is the default
-        spec.insert(insert_pos + 2, '%{?python_provide:%python_provide python3-%{pythonname}}')
-        return spec
+        spec.insert(insert_pos + 3, '%{?python_provide:%python_provide python3-%{pythonname}}')
+
+        # Roll our own py3_dist if it doesn’t exist on this platform, only for requires.
+        # Also define typelib_deps if we are on suse or mageia, to specify dependencies using typelib capabilities.
+        return [
+            '%define normalize() %(echo %* | tr "[:upper:]_ " "[:lower:]--")',
+            '%{?!py3_dist:%define py3_dist() (python%{python3_version}dist(%{normalize %1}) or python3-%1)}',
+            '%{?suse_version:%define typelib_deps 1}', '%{?mga_version:%define typelib_deps 1}', ''
+        ] + spec
+
 
 
 class PatchedDevelop(develop):
@@ -229,7 +248,17 @@ if __name__ == '__main__':
         # Normal behaviour: use setuptools, load options from setup.cfg
         print('Using setuptools.setup():', file=sys.stderr)
 
-        setuptools.setup(cmdclass = {'develop': PatchedDevelop, 'install': PatchedInstall, 'bdist_rpm': PatchedRpmDist})
+        options = {'cmdclass': {'develop': PatchedDevelop, 'install': PatchedInstall, 'bdist_rpm': PatchedRpmDist}}
+
+        setuptols_version = tuple(int(n) for n in setuptools.__version__.split('.'))
+        # older versions are missing out!
+        if setuptols_version >= (30, 5):
+            options['data_files'] = [
+                ('share/pixmaps/', ['pympress/share/pixmaps/pympress.png']),
+                ('share/applications/', ['pympress/share/applications/pympress.desktop']),
+            ]
+
+        setuptools.setup(**options)
 
 
 ##
