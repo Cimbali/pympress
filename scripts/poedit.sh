@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd `git rev-parse --show-toplevel`
+cd `git rev-parse --show-toplevel || readlink -f "$0" | xargs dirname | xargs dirname`
 pot=pympress/share/locale/pympress.pot
 
 upload() {

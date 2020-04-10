@@ -36,12 +36,6 @@ from setuptools.command.develop import develop
 from setuptools.command.install import install
 from setuptools.command.bdist_rpm import bdist_rpm
 
-try:
-    # python 2.7 version of input()
-    read_input = raw_input
-except NameError:
-    read_input = input
-
 
 class PatchedRpmDist(bdist_rpm):
     """ Patched bdist rpm to avoid running seds and breaking up the build system
@@ -49,13 +43,16 @@ class PatchedRpmDist(bdist_rpm):
     def _make_spec_file(self):
         # Make the package name python3-pympress instead of pympress
         # NB: %{name} evaluates to the RPM package name
-        return [
+        spec = [
             line.replace('%{name}', '%{pythonname}')
                 .replace('define name ', 'define pythonname ')
                 .replace('Name: %{pythonname}', 'Name: python3-%{pythonname}')
             for line in bdist_rpm._make_spec_file(self)
             if not line.startswith('Group:')
         ]
+        # add the provided python3 capability (only if the macro exists)
+        spec.insert(spec.index('', 6), '%{?python_provide:%python_provide python3-%{pythonname}}')
+        return spec
 
 
 class PatchedDevelop(develop):
@@ -154,7 +151,7 @@ def check_vlc_redistribution():
 
     # If unclear, interactively ask whether we include VLC
     while True:
-        answer = read_input('Include VLC in the package? [y/N] ').lower()
+        answer = input('Include VLC in the package? [y/N] ').lower()
         if answer in {'y', 'n', ''}:
             return answer == 'y'
 

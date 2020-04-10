@@ -71,7 +71,7 @@ jobs:
         python${{ matrix.python-version }} setup.py bdist_rpm --dist-dir=${BUILD_DIR}/SPECS --spec-only --no-autoreq
 
         # Add python version to the pympress version, as different python versions mean incompatible bytecodes
-        sed -i "1,20s/\<version\>/srcversion/g;/^Version:/s/$/_py${{ matrix.python-version }}/;s/^Requires:/& python(abi) = ${{ matrix.python-version }}/" ${BUILD_DIR}/SPECS/pympress.spec
+        sed -i "1,20s/\<version\>/srcversion/g;/^Version:/s/$/_py${{ matrix.python-version }}/;s/^Requires:\s*python3/&(abi) = ${{ matrix.python-version }}/" ${BUILD_DIR}/SPECS/pympress.spec
 
         # Patching build for weird install locations on ubuntu (dist-packages) to normal install location of other distros (site-packages)
         sed -i "/%clean/imkdir -p \$RPM_BUILD_ROOT/usr/lib/python%{python_version}/site-packages" ${BUILD_DIR}/SPECS/pympress.spec
