@@ -186,7 +186,7 @@ class Pointer(object):
             self.activate_pointermode(mode)
 
 
-    def toggle_pointermode(self):
+    def toggle_pointermode(self, *args):
         """ Callback for shortcut to switch on/off continuous pointer.
         """
         mode = self.old_pointer_mode if self.pointer_mode == PointerMode.CONTINUOUS else PointerMode.CONTINUOUS

@@ -104,6 +104,8 @@ class UI(builder.Builder):
     prev_button = None
     #: :class:`~Gtk.ToolButton` big button for touch screens, go to next slide
     next_button = None
+    #: :class:`~Gtk.ToolButton` big button for touch screens, go toggle the pointer
+    laser_button = None
     #: :class:`~Gtk.ToolButton` big button for touch screens, go to scribble on screen
     highlight_button = None
 
@@ -228,6 +230,7 @@ class UI(builder.Builder):
         # Adjust default visibility of items
         self.prev_button.set_visible(self.show_bigbuttons)
         self.next_button.set_visible(self.show_bigbuttons)
+        self.laser_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
         self.p_frame_annot.set_visible(self.show_annotations)
         self.laser.activate_pointermode()
@@ -1423,6 +1426,7 @@ class UI(builder.Builder):
 
         self.prev_button.set_visible(self.show_bigbuttons)
         self.next_button.set_visible(self.show_bigbuttons)
+        self.laser_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
         self.config.set('presenter', 'show_bigbuttons', 'on' if self.show_bigbuttons else 'off')
 
