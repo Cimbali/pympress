@@ -17,11 +17,24 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 
 # Installing
 
-- Ubuntu 20.04 focal or newer, Debian 11 Bullseye or newer:
+- Ubuntu ![ubuntu logo][ubuntu] 20.04 focal or newer, Debian ![debian logo][debian] 11 Bullseye or newer:
 
       apt-get install pympress libgtk-3-0 libpoppler-glib8 libcairo2 python3-gi python3-gi-cairo gobject-introspection libgirepository-1.0-1 gir1.2-gtk-3.0 gir1.2-poppler-0.18
 
-- Arch Linux (from AUR):
+- RPM-based Linux (Fedora ![fedora logo][fedora] CentOS ![centos logo][centos] Mageia ![mageia logo][mageia] OpenSuse ![suse logo][suse] RHEL)
+
+  You can get pympress from the [pympress COPR repo](https://copr.fedorainfracloud.org/coprs/cimbali/pympress/) of your system.
+  With yum or dnf, simply do:
+
+      dnf enable copr/cimbali
+      dnf install python3-pympress
+
+  With zypper, fetch the link of the .repo in the table at the bottom of the COPR page and add it as a source.
+
+      zypper addrepo https://copr.fedorainfracloud.org/coprs/cimbali/pympress/repo/opensuse-tumbleweed/cimbali-pympress-opensuse-tumbleweed.repo
+      zypper install python3-pympress
+
+- Arch Linux ![arch linux logo][arch_linux] (from AUR):
 
       git clone https://aur.archlinux.org/python-pympress.git
       cd python-pympress
@@ -33,15 +46,15 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
       yay -S pympress
       pacman -S poppler-glib  # dependency temporarily missing from AUR package
 
-- Other Linux, requires [python, gtk+3, poppler, and their python bindings](#dependencies):
+- Other Linux ![linux logo][linux] requires [python, gtk+3, poppler, and their python bindings](#dependencies):
 
       pip install pympress
 
-- macOS, using [Homebrew](https://brew.sh/):
+- macOS ![apple logo][apple] using [Homebrew](https://brew.sh/):
 
       brew install pympress
 
-- Windows, with [Chocolatey](https://chocolatey.org/):
+- Windows ![windows logo][windows] with [Chocolatey](https://chocolatey.org/):
 
       choco install pympress
 
@@ -191,3 +204,15 @@ Official releases are made to [PyPI](https://pypi.org/) and with [github release
 - [@Jose1711](https://github.com/jose1711) made the [AUR pympress package](https://aur.archlinux.org/packages/python-pympress/)
 - [@ComFreek](https://github.com/ComFreek) maintains the [Chocolatey pympress package](https://chocolatey.org/packages/pympress)
 - [@mans0954](https://github.com/mans0954) maintains the [Debian pympress package](https://packages.debian.org/bullseye/pympress) and the [Ubuntu pympress package](https://packages.ubuntu.com/focal/pympress)
+
+
+[ubuntu]: https://cimbali.github.io/pympress/os-icons/ubuntu.png
+[debian]: https://cimbali.github.io/pympress/os-icons/debian.png
+[centos]: https://cimbali.github.io/pympress/os-icons/centos.png
+[windows]: https://cimbali.github.io/pympress/os-icons/windows-10.png
+[suse]: https://cimbali.github.io/pympress/os-icons/suse.png
+[linux]: https://cimbali.github.io/pympress/os-icons/linux.png
+[fedora]: https://cimbali.github.io/pympress/os-icons/fedora.png
+[mageia]: https://cimbali.github.io/pympress/os-icons/mageia.png
+[arch_linux]: https://cimbali.github.io/pympress/os-icons/archlinux.png
+[apple]: https://cimbali.github.io/pympress/os-icons/apple.png

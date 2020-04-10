@@ -64,7 +64,7 @@ jobs:
       with:
         ref: gh-pages
     - name: Clean
-      run: rm -rf *
+      run: find . -maxdepth 1 -not -name os-icons -exec echo rm -rf {} +
     - name: Download
       uses: actions/download-artifact@v1
       with:
