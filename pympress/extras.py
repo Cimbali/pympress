@@ -388,8 +388,9 @@ class Media(object):
             cls._backends['image/svg+xml'] = GifOverlay
             cls._backend_versions.append(version)
 
-        except Exception:
+        except Exception as e:
             logger.exception(_('Video support using {} is disabled.').format('Overlay'))
+            logger.info(_('Caused by ') + type(e).__name__ + ': ' + str(e))
 
 
         try:
@@ -406,8 +407,9 @@ class Media(object):
                 if not types_list:
                     cls._backends = defaultdict(lambda: GstOverlay, cls._backends)
 
-        except Exception:
-            logger.exception(_('Video support using {} is disabled.').format('GStreamer'))
+        except Exception as e:
+            logger.error(_("Video support using {} is disabled.").format('GStreamer'))
+            logger.info(_('Caused by ') + type(e).__name__ + ': ' + str(e))
 
 
         try:
@@ -424,8 +426,9 @@ class Media(object):
                 if not types_list:
                     cls._backends = defaultdict(lambda: VlcOverlay, cls._backends)
 
-        except Exception:
-            logger.exception(_("Video support using {} is disabled.").format('VLC'))
+        except Exception as e:
+            logger.error(_("Video support using {} is disabled.").format('VLC'))
+            logger.info(_('Caused by ') + type(e).__name__ + ': ' + str(e))
 
 
     @classmethod
