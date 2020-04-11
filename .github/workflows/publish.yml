@@ -16,14 +16,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install setuptools wheel twine
-        pip install -e .[babel]
+        pip install setuptools wheel twine babel
     - name: Build catalogs
       env:
         poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
       run: |
         ./scripts/poedit.sh download
-        python setup.py compile_catalog
     - name: Build and publish
       env:
         TWINE_USERNAME: __token__
@@ -39,7 +37,9 @@ jobs:
 
     steps:
     - name: Install dependencies
-      run: brew install jq
+      run: |
+        brew update
+        brew install jq
 
     - name: Wait a reasonable amount of time for pypi to update its info
       run: sleep 60  # be patient with pypi
@@ -51,6 +51,7 @@ jobs:
         $git config user.email me@cimba.li
         $git config credential.helper store
         echo -e "protocol=https\nhost=github.com\nusername=Cimbali\npassword=$PASSWORD" | $git credential-store store
+        $git push -f "https://github.com/Cimbali/homebrew-core.git" master:master
       env:
         PASSWORD: ${{ secrets.GITHUB_HOMEBREW_TOKEN }}
 
