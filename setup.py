@@ -37,11 +37,11 @@ from setuptools.command.install import install
 from setuptools.command.bdist_rpm import bdist_rpm
 
 
-def find_index_startstring(l, s):
+def find_index_startstring(l, s, start = 0, stop = sys.maxsize):
     """ Return the index of the first string in l starting with s, or raise ValueError if none match.
     """
     try:
-        return next(n for n, v in enumerate(l) if v.startswith(s))
+        return next(n for n, v in enumerate(l[start:stop], start) if v.startswith(s))
     except StopIteration:
         raise ValueError('No string starts with ' + s)
 
@@ -49,6 +49,22 @@ def find_index_startstring(l, s):
 class PatchedRpmDist(bdist_rpm):
     """ Patched bdist rpm to avoid running seds and breaking up the build system
     """
+
+    user_options = bdist_rpm.user_options + [
+        ('recommends=', None, "capabilities recommendd by this package"),
+        ('suggests=', None, "capabilities suggestd by this package"),
+    ]
+
+    recommends = None
+    suggests = None
+
+    def finalize_package_data(self):
+        bdist_rpm.finalize_package_data(self)
+
+        self.ensure_string_list('recommends')
+        self.ensure_string_list('suggests')
+
+
     def _make_spec_file(self):
         # Make the package name python3-pympress instead of pympress
         # NB: %{name} evaluates to the RPM package name
@@ -59,14 +75,21 @@ class PatchedRpmDist(bdist_rpm):
             for line in bdist_rpm._make_spec_file(self) if not line.startswith('Group:')
         ]
 
-        insert_pos = find_index_startstring(spec, 'Requires:')
+        insert_pos = find_index_startstring(spec, 'Requires:') + 1
+        insert = [
+            # Define what this package provides in terms of capabilities
+            'Provides: python3dist(%{pythonname}) = %{version}',
+            'Provides: python%{python3_version}dist(%{pythonname}) = %{version}',
 
-        # Define what this package provides in terms of capabilities
-        spec.insert(insert_pos + 1, 'Provides: python3dist(%{pythonname}) = %{version}')
-        spec.insert(insert_pos + 2, 'Provides: python%{python3_version}dist(%{pythonname}) = %{version}')
+            # For Fedora, this adds python-name to provides if python3 is the default
+            '%{?python_provide:%python_provide python3-%{pythonname}}',
+        ]
 
-        # For Fedora, this adds python-name to provides if python3 is the default
-        spec.insert(insert_pos + 3, '%{?python_provide:%python_provide python3-%{pythonname}}')
+        if self.recommends:
+            insert.append('Recommends: ' + ' '.join(self.recommends))
+
+        if self.suggests:
+            insert.append('Suggests: ' + ' '.join(self.suggests))
 
         # Roll our own py3_dist if it doesn’t exist on this platform, only for requires.
         # Also define typelib_deps if we are on suse or mageia, to specify dependencies using typelib capabilities.
@@ -74,7 +97,7 @@ class PatchedRpmDist(bdist_rpm):
             '%define normalize() %(echo %* | tr "[:upper:]_ " "[:lower:]--")',
             '%{?!py3_dist:%define py3_dist() (python%{python3_version}dist(%{normalize %1}) or python3-%1)}',
             '%{?suse_version:%define typelib_deps 1}', '%{?mga_version:%define typelib_deps 1}', ''
-        ] + spec
+        ] + spec[:insert_pos] + insert + spec[insert_pos:]
 
 
 
