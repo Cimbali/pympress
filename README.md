@@ -15,13 +15,13 @@ Pympress was originally created and maintained by [Schnouki](https://github.com/
 Here is what the 2 screen setup looks like, with a big notes slide next to 2 small slides (current and next) on the presenter side:
 ![A screenshot with Pympress’ 2 screens](https://repository-images.githubusercontent.com/42637225/925da680-886b-11e9-9a12-28b48debbf19)
 
-# Installing
+# Installing [![github version badge][github_version]](https://github.com/Cimbali/pympress/releases/latest)
 
-- Ubuntu ![ubuntu logo][ubuntu] 20.04 focal or newer, Debian ![debian logo][debian] 11 Bullseye or newer:
+- Ubuntu ![ubuntu logo][ubuntu] 20.04 focal or newer, Debian ![debian logo][debian] 11 Bullseye or newer ![ubuntu version badge][ubuntu_version] ![debian version badge][debian_version]
 
       apt-get install pympress libgtk-3-0 libpoppler-glib8 libcairo2 python3-gi python3-gi-cairo gobject-introspection libgirepository-1.0-1 gir1.2-gtk-3.0 gir1.2-poppler-0.18
 
-- RPM-based Linux (Fedora ![fedora logo][fedora] CentOS ![centos logo][centos] Mageia ![mageia logo][mageia] OpenSuse ![suse logo][suse] RHEL)
+- RPM-based Linux (Fedora ![fedora logo][fedora] CentOS ![centos logo][centos] Mageia ![mageia logo][mageia] OpenSuse ![suse logo][suse] RHEL) ![Copr build status][copr_build_status]
 
   You can get pympress from the [pympress COPR repo](https://copr.fedorainfracloud.org/coprs/cimbali/pympress/) of your system.
   With yum or dnf, simply do:
@@ -34,7 +34,7 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
       zypper addrepo https://copr.fedorainfracloud.org/coprs/cimbali/pympress/repo/opensuse-tumbleweed/cimbali-pympress-opensuse-tumbleweed.repo
       zypper install python3-pympress
 
-- Arch Linux ![arch linux logo][arch_linux] (from AUR):
+- Arch Linux ![arch linux logo][arch_linux] from AUR ![AUR version badge][aur_version]
 
       git clone https://aur.archlinux.org/python-pympress.git
       cd python-pympress
@@ -46,31 +46,66 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
       yay -S pympress
       pacman -S poppler-glib  # dependency temporarily missing from AUR package
 
-- Other Linux ![linux logo][linux] requires [python, gtk+3, poppler, and their python bindings](#dependencies):
-
-      pip install pympress
-
-- macOS ![apple logo][apple] using [Homebrew](https://brew.sh/):
+- macOS ![apple logo][apple] using [Homebrew](https://brew.sh/) ![homebrew version badge][homebrew_version]
 
       brew install pympress
 
-- Windows ![windows logo][windows] with [Chocolatey](https://chocolatey.org/):
+- Windows ![windows logo][windows] with [Chocolatey](https://chocolatey.org/) ![chocolatey version badge][chocolatey_version]
 
       choco install pympress
 
-  Or download the installer from the [latest Github release](https://github.com/Cimbali/pympress/releases/latest).
+  Or download the latest installer from the [latest Github release](https://github.com/Cimbali/pympress/releases/latest).
+
+  <details><summary>Troubleshooting</summary>
+
+  - If you get an error message along the lines of "MSVCP100.dll is missing", get the Visual C++ 2010 redistributables from Microsoft
+    ([x86 (32 bit)](https://www.microsoft.com/en-in/download/details.aspx?id=5555) or [x64 (64 bits)](https://www.microsoft.com/en-us/download/details.aspx?id=14632)).
+    Those libraries really should already be installed on your system.
+
+  </details>
+
+
+- Other systems, directly from PyPI ![pypi version badge][pypi_version] − requires [python, gtk+3, poppler, and their python bindings](#dependencies):
+
+      pip install pympress
+
+  <details><summary>Troubleshooting</summary>
+
+  - Make sure you have all [the dependencies](#dependencies). (These are already included in binary packages or their dependencies.)
+  - Using pip, you may want to use `python3 -m pip` if `pip` points to the python 2.x pip. You may also want to install with the `--user` option,
+    or install from github or downloaded sources. See [the python documentation on installing](https://docs.python.org/3.7/installing/index.html).
+  - If your python environment lacks the Gobject Introspections module, try
+     1. using `--system-site-packages` for [virtual environments](https://docs.python.org/3.7/library/venv.html),
+     2. installing pygobject from pip (`pip install pygobject`, which requires the correct development/header packages.
+        See [the PyPI installation instructions of PyGObject for your system](https://pygobject.readthedocs.io/en/latest/getting_started.html)).
+
+  </details>
+
+
+[ubuntu]: https://cimbali.github.io/pympress/os-icons/ubuntu.png
+[debian]: https://cimbali.github.io/pympress/os-icons/debian.png
+[centos]: https://cimbali.github.io/pympress/os-icons/centos.png
+[windows]: https://cimbali.github.io/pympress/os-icons/windows-10.png
+[suse]: https://cimbali.github.io/pympress/os-icons/suse.png
+[linux]: https://cimbali.github.io/pympress/os-icons/linux.png
+[fedora]: https://cimbali.github.io/pympress/os-icons/fedora.png
+[mageia]: https://cimbali.github.io/pympress/os-icons/mageia.png
+[arch_linux]: https://cimbali.github.io/pympress/os-icons/archlinux.png
+[apple]: https://cimbali.github.io/pympress/os-icons/apple.png
+
+[copr_build_status]: https://copr.fedorainfracloud.org/coprs/cimbali/pympress/package/python3-pympress/status_image/last_build.png
+[pypi_version]: https://img.shields.io/pypi/v/pympress?logo=pypi
+[aur_version]: https://img.shields.io/aur/version/python-pympress?logo=arch%20linux
+[homebrew_version]: https://img.shields.io/homebrew/v/pympress?logo=data:image/png;base64,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
+[ubuntu_version]: https://img.shields.io/ubuntu/v/pympress?logo=ubuntu
+[debian_version]: https://img.shields.io/debian/v/pympress/bullseye?logo=debian
+[chocolatey_version]: https://img.shields.io/chocolatey/v/pympress?logo=chocolatey
+[github_version]: https://img.shields.io/github/v/release/Cimbali/pympress?label=Latest%20GitHub%20release&logo=github
+
 
 ### Notes
-- To support playing embedded videos in the PDFs, your system must have VLC installed (with the same bitness as pympress). VLC is not distributed with pympress, but it is certainly available in your system’s package manager and [on their website](https://www.videolan.org/vlc/).
-- On Linux, make sure you have all [the dependencies](#dependencies), as they do not come via pip. (On Windows and macOS, they are included in the package.)
-- Using pip, you may want to use `python3 -m pip` as the command if `pip` points to the python 2.x pip. You may also want to install with the `--user` option, or install from github or downloaded sources. See [the python documentation on installing](https://docs.python.org/3.7/installing/index.html) for more details.
-
-### Troubleshooting
-- If your python environment lacks the Gobject Introspections module, try
-   1. checking you have all [the dependencies](#dependencies),
-   2. using `--system-site-packages` for [virtual environments](https://docs.python.org/3.7/library/venv.html),
-   3. installing pygobject from pip (`pip install pygobject`, which requires the correct development/header packages. See [the PyPI installation instructions of PyGObject for your system](https://pygobject.readthedocs.io/en/latest/getting_started.html)).
-- For manually downloaded installers, if you get an error message along the lines of "MSVCP100.dll is missing", get the Visual C++ 2010 redistributables from Microsoft ([x86 (32 bit)](https://www.microsoft.com/en-in/download/details.aspx?id=5555) or [x64 (64 bits)](https://www.microsoft.com/en-us/download/details.aspx?id=14632)). Those libraries really should already be installed on your system.
+To support playing embedded videos in the PDFs, your system must have VLC installed (with the same bitness as pympress).
+VLC is not distributed with pympress, but it is certainly available in your system’s package manager and [on their website](https://www.videolan.org/vlc/).
 
 
 # Usage
@@ -204,15 +239,3 @@ Official releases are made to [PyPI](https://pypi.org/) and with [github release
 - [@Jose1711](https://github.com/jose1711) made the [AUR pympress package](https://aur.archlinux.org/packages/python-pympress/)
 - [@ComFreek](https://github.com/ComFreek) maintains the [Chocolatey pympress package](https://chocolatey.org/packages/pympress)
 - [@mans0954](https://github.com/mans0954) maintains the [Debian pympress package](https://packages.debian.org/bullseye/pympress) and the [Ubuntu pympress package](https://packages.ubuntu.com/focal/pympress)
-
-
-[ubuntu]: https://cimbali.github.io/pympress/os-icons/ubuntu.png
-[debian]: https://cimbali.github.io/pympress/os-icons/debian.png
-[centos]: https://cimbali.github.io/pympress/os-icons/centos.png
-[windows]: https://cimbali.github.io/pympress/os-icons/windows-10.png
-[suse]: https://cimbali.github.io/pympress/os-icons/suse.png
-[linux]: https://cimbali.github.io/pympress/os-icons/linux.png
-[fedora]: https://cimbali.github.io/pympress/os-icons/fedora.png
-[mageia]: https://cimbali.github.io/pympress/os-icons/mageia.png
-[arch_linux]: https://cimbali.github.io/pympress/os-icons/archlinux.png
-[apple]: https://cimbali.github.io/pympress/os-icons/apple.png

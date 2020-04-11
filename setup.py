@@ -235,6 +235,19 @@ def pympress_resources():
 
 if __name__ == '__main__':
 
+    options = {}
+
+    # subtle tweak: don’t put an install section in installed packages
+    with open('README.md') as f:
+        readme = f.readlines()
+
+        install_section = find_index_startstring(readme, '# Install')
+        next_section = find_index_startstring(readme, '# ', install_section + 1)
+        del readme[install_section:next_section]
+
+        options['long_description'] = ''.join(readme)
+
+
     # Check our options: whether to freeze, and whether to include VLC resources (DLLs, plugins, etc).
     if '--freeze' in sys.argv[1:]:
         sys.argv.remove('--freeze')
@@ -244,6 +257,7 @@ if __name__ == '__main__':
 
         # List all resources we'll distribute
         setup_opts = {
+            **options,
             'options': {
                 'build_exe': {
                     'includes': [],
@@ -273,7 +287,7 @@ if __name__ == '__main__':
         # Normal behaviour: use setuptools, load options from setup.cfg
         print('Using setuptools.setup():', file=sys.stderr)
 
-        options = {'cmdclass': {'develop': PatchedDevelop, 'install': PatchedInstall, 'bdist_rpm': PatchedRpmDist}}
+        options['cmdclass'] = {'develop': PatchedDevelop, 'install': PatchedInstall, 'bdist_rpm': PatchedRpmDist}
 
         setuptols_version = tuple(int(n) for n in setuptools.__version__.split('.'))
         # older versions are missing out!
