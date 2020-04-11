@@ -59,6 +59,8 @@ class PatchedRpmDist(bdist_rpm):
     suggests = None
 
     def finalize_package_data(self):
+        """ Add recommends/suggests option validation
+        """
         bdist_rpm.finalize_package_data(self)
 
         self.ensure_string_list('recommends')
