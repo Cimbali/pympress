@@ -15,15 +15,16 @@ Pympress was originally created and maintained by [Schnouki](https://github.com/
 Here is what the 2 screen setup looks like, with a big notes slide next to 2 small slides (current and next) on the presenter side:
 ![A screenshot with Pympress’ 2 screens](https://repository-images.githubusercontent.com/42637225/925da680-886b-11e9-9a12-28b48debbf19)
 
-# Installing [![github version badge][github_version]](https://github.com/Cimbali/pympress/releases/latest)
+# Installing [![github version badge][github_version]][github_release]
 
-- Ubuntu ![ubuntu logo][ubuntu] 20.04 focal or newer, Debian ![debian logo][debian] 11 Bullseye or newer ![ubuntu version badge][ubuntu_version] ![debian version badge][debian_version]
+- Ubuntu ![ubuntu logo][ubuntu] 20.04 focal or newer, Debian ![debian logo][debian] 11 Bullseye or newer
+  [![ubuntu version badge][ubuntu_version]][ubuntu_package] [![debian version badge][debian_version]][debian_package] (maintained by [@mans0954](https://github.com/mans0954))
 
       apt-get install pympress libgtk-3-0 libpoppler-glib8 libcairo2 python3-gi python3-gi-cairo gobject-introspection libgirepository-1.0-1 gir1.2-gtk-3.0 gir1.2-poppler-0.18
 
-- RPM-based Linux (Fedora ![fedora logo][fedora] CentOS ![centos logo][centos] Mageia ![mageia logo][mageia] OpenSuse ![suse logo][suse] RHEL) ![Copr build status][copr_build_status]
+- RPM-based Linux (Fedora ![fedora logo][fedora] CentOS ![centos logo][centos] Mageia ![mageia logo][mageia] OpenSuse ![suse logo][suse] RHEL) [![Copr build status][copr_build_status]][copr_package]
 
-  You can get pympress from the [pympress COPR repo](https://copr.fedorainfracloud.org/coprs/cimbali/pympress/) of your system.
+  You can get pympress from the [pympress COPR repo][copr_repo] of your system.
   With yum or dnf, simply do:
 
       dnf enable copr/cimbali
@@ -34,7 +35,7 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
       zypper addrepo https://copr.fedorainfracloud.org/coprs/cimbali/pympress/repo/opensuse-tumbleweed/cimbali-pympress-opensuse-tumbleweed.repo
       zypper install python3-pympress
 
-- Arch Linux ![arch linux logo][arch_linux] from AUR ![AUR version badge][aur_version]
+- Arch Linux ![arch linux logo][arch_linux] from AUR [![AUR version badge][aur_version]][aur_package] (maintained by [@Jose1711](https://github.com/jose1711))
 
       git clone https://aur.archlinux.org/python-pympress.git
       cd python-pympress
@@ -50,11 +51,11 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 
       brew install pympress
 
-- Windows ![windows logo][windows] with [Chocolatey](https://chocolatey.org/) ![chocolatey version badge][chocolatey_version]
+- Windows ![windows logo][windows] with [Chocolatey](https://chocolatey.org/) [![chocolatey version badge][chocolatey_version]][chocolatey_package] (maintained by [@ComFreek](https://github.com/ComFreek))
 
       choco install pympress
 
-  Or download the latest installer from the [latest Github release](https://github.com/Cimbali/pympress/releases/latest).
+  Or download the latest installer from the [latest Github release][github_release].
 
   <details><summary>Troubleshooting</summary>
 
@@ -92,6 +93,14 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 [mageia]: https://cimbali.github.io/pympress/os-icons/mageia.png
 [arch_linux]: https://cimbali.github.io/pympress/os-icons/archlinux.png
 [apple]: https://cimbali.github.io/pympress/os-icons/apple.png
+
+[ubuntu_package]: https://packages.ubuntu.com/focal/pympress
+[debian_package]: https://packages.debian.org/bullseye/pympress
+[copr_package]: https://copr.fedorainfracloud.org/coprs/cimbali/pympress/package/python3-pympress/
+[copr_repo]: https://copr.fedorainfracloud.org/coprs/cimbali/pympress/
+[aur_package]: https://aur.archlinux.org/packages/python-pympress/
+[chocolatey_package]: https://chocolatey.org/packages/pympress
+[github_release]: https://github.com/Cimbali/pympress/releases/latest
 
 [copr_build_status]: https://copr.fedorainfracloud.org/coprs/cimbali/pympress/package/python3-pympress/status_image/last_build.png
 [pypi_version]: https://img.shields.io/pypi/v/pympress?logo=pypi&logoColor=yellow
@@ -235,7 +244,5 @@ and <!-- last translator --> Cimbali.
 
 ## Packages
 
-Official releases are made to [PyPI](https://pypi.org/) and with [github releases](https://github.com/Cimbali/pympress/releases). The community maintains a number of other packages or recipes to install pympress (additions welcome):
-- [@Jose1711](https://github.com/jose1711) made the [AUR pympress package](https://aur.archlinux.org/packages/python-pympress/)
-- [@ComFreek](https://github.com/ComFreek) maintains the [Chocolatey pympress package](https://chocolatey.org/packages/pympress)
-- [@mans0954](https://github.com/mans0954) maintains the [Debian pympress package](https://packages.debian.org/bullseye/pympress) and the [Ubuntu pympress package](https://packages.ubuntu.com/focal/pympress)
+Official releases are made to [PyPI](https://pypi.org/) and with [github releases](https://github.com/Cimbali/pympress/releases).
+The community maintains a number of other packages or recipes to install pympress (see [Install section](#installing-)). Any additions welcome.
