@@ -70,22 +70,28 @@ except NameError:
     ModuleNotFoundError = ImportError
 
 
-# Load python bindings for gobject introspections, aka pygobject, aka gi.
-# This is a dependency that is not specified in the setup.py, so we need to start here
-# see https://github.com/Cimbali/pympress/issues/100
+# Load python bindings for gobject introspections, aka pygobject, aka gi, and pycairo.
+# These are dependencies that are not specified in the setup.py, so we need to start here.
+# They are not specified because:
+# - installing those via pip may require compiling (if no compatible wheels exist),
+# - compiling requires a compiling toolchain, development packages of the libraries, etc.,
+# - all of this makes more sense to be handled by the OS package manager,
+# - it is hard to make pretty error messages pointing this out at `pip install` time,
+#   as they would have to be printed when the dependency resolution happens.
+# See https://github.com/Cimbali/pympress/issues/100
 try:
-    import gi
+    import gi, cairo
     gi.require_version('Gtk', '3.0')
     from gi.repository import Gtk, Gdk, GLib
 except ModuleNotFoundError:
-    logger.critical('Gobject Introspections module is missing', exc_info = True)
-    print('\n' + _('ERROR: Gobject Introspections module is missing, ' +
-                   'make sure Gtk and pygobject are installed on your system.') + '\n')
+    logger.critical('Gobject Introspections and/or pycairo module is missing', exc_info = True)
+    print('\n' + _('ERROR: Gobject Introspections and/or pycairo module is missing, ' +
+                   'make sure Gtk, pygobject and pycairo are installed on your system.') + '\n')
     print(_('For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies'))
     print(_('If using a virtualenv or anaconda, you can either allow system site packages, ' +
-            'or run: pip install pygobject'))
+            'or run: pip install pygobject pycairo'))
     print(_('pip will then download and compile pygobject, ' +
-            'for which you need the Gtk headers (or development package).') + '\n')
+            'for which you need the Gtk and cairo headers (or development packages).') + '\n')
     exit(1)
 
 
