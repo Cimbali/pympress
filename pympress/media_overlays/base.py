@@ -183,10 +183,10 @@ class VideoOverlay(builder.Builder):
             return
 
         pw, ph = self.parent.get_allocated_width(), self.parent.get_allocated_height()
-        self.media_overlay.props.margin_left   = pw * self.relative_margins[0]
-        self.media_overlay.props.margin_right  = pw * self.relative_margins[2]
-        self.media_overlay.props.margin_bottom = ph * self.relative_margins[3]
-        self.media_overlay.props.margin_top    = ph * self.relative_margins[1]
+        self.media_overlay.props.margin_left   = pw * max(self.relative_margins[0], 0)
+        self.media_overlay.props.margin_right  = pw * max(self.relative_margins[2], 0)
+        self.media_overlay.props.margin_bottom = ph * max(self.relative_margins[3], 0)
+        self.media_overlay.props.margin_top    = ph * max(self.relative_margins[1], 0)
 
 
     def is_shown(self):
@@ -226,8 +226,7 @@ class VideoOverlay(builder.Builder):
         """ Bring the widget to the top of the overlays if necessary.
         """
         if min(self.relative_margins) < 0:
-            logger.warning('Not showing media with (some) negative margin(s): LTRB = {}'.format(self.relative_margins))
-            return
+            logger.warning('Negative margin(s) clipped to 0 (might alter the aspect ratio?): LTRB = {}'.format(self.relative_margins))
 
         if not self.media_overlay.get_parent():
             self.parent.add_overlay(self.media_overlay)
