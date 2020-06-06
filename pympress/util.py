@@ -49,9 +49,6 @@ if IS_WINDOWS:
     except ImportError:
         import _winreg as winreg
 
-if IS_POSIX:
-    from gi.repository import Gio
-
 try:
     PermissionError
 except NameError:
@@ -275,6 +272,9 @@ def set_screensaver(must_disable, window):
                 set_screensaver.dpms_was_enabled = None
 
     elif IS_POSIX:
+        # Import here because util should be imported without depending on gi
+        from gi.repository import Gio
+
         # On Linux and Wayland we can use a dbus interface to tell the screensaver
         # to not lock the screen, should work on all freedesktop compliant desktops
         # eg. Gnome, KDE,...
