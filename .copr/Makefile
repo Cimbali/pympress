@@ -1,5 +1,5 @@
 deps:
-	dnf -y install python3 python3-pip python3-setuptools python3-wheel python3-babel jq
+	dnf -y install python3 python3-pip python3-setuptools python3-wheel python3-babel python-vlc jq
 
 catalog: deps
 	# public read-only token to download up-to-date translate strings
