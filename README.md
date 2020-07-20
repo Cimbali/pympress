@@ -4,7 +4,7 @@ Pympress is a PDF presentation tool designed for dual-screen setups such as pres
 Highly configurable, fully-featured, and portable
 
 It comes with many great features ([more below](#functionalities)):
-- supports embedded gifs and videos
+- supports embedded gifs (out of the box), videos, and audios (with VLC or Gstreamer integration)
 - text annotations displayed in the presenter window
 - natively supports beamer's *notes on second screen*!
 
@@ -28,32 +28,35 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
   With yum or dnf, simply do:
 
       dnf enable copr/cimbali
-      dnf install python3-pympress
+      dnf install python3-pympress python3-vlc vlc  # both *vlc packages optional, required for VLC video support
 
   With zypper, fetch the link of the .repo in the table at the bottom of the COPR page and add it as a source.
 
       zypper addrepo https://copr.fedorainfracloud.org/coprs/cimbali/pympress/repo/opensuse-tumbleweed/cimbali-pympress-opensuse-tumbleweed.repo
-      zypper install python3-pympress
+      zypper install python3-pympress python3-python-vlc vlc  # both *vlc packages optional, required for VLC video support
+
+  If `python3-vlc` or `python3-python-vlc` are not available on your system, your can use `python3 -m pip install python-vlc`.
 
 - Arch Linux ![arch linux logo][arch_linux] from AUR [![AUR version badge][aur_version]][aur_package] (maintained by [@Jose1711](https://github.com/jose1711))
 
       git clone https://aur.archlinux.org/python-pympress.git
       cd python-pympress
       makepkg -si
-      pacman -S poppler-glib  # dependency temporarily missing from AUR package
+      pacman -S poppler-glib vlc  # dependency temporarily missing from AUR package, and VLC optional for video support
 
   Or using any other tool to manage AUR packages (yay, pacaur, etc.):
 
       yay -S python-pympress
-      pacman -S poppler-glib  # dependency temporarily missing from AUR package
+      pacman -S poppler-glib vlc  # dependency temporarily missing from AUR package, and VLC optional for video support
 
 - macOS ![apple logo][apple] using [Homebrew](https://brew.sh/) ![homebrew version badge][homebrew_version]
 
       brew install pympress
+      brew cask install vlc  # optional, to support playing videos with VLC integration
 
 - Windows ![windows logo][windows] with [Chocolatey](https://chocolatey.org/) [![chocolatey version badge][chocolatey_version]][chocolatey_package] (maintained by [@ComFreek](https://github.com/ComFreek))
 
-      choco install pympress
+      choco install pympress vlc  # vlc optional, to support playing videos with VLC integration
 
   Or download the latest installer from the [latest Github release][github_release].
 
@@ -68,7 +71,9 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 
 - Other systems, directly from PyPI ![pypi version badge][pypi_version] − requires [python, gtk+3, poppler, and their python bindings](#dependencies):
 
-      pip install pympress
+      pip install "pympress[vlc_video]"
+
+where `[vlc_video]` is optional and specifies the dependency on `python-vlc` for VLC video support.
 
   <details><summary>Troubleshooting</summary>
 
@@ -170,6 +175,7 @@ Pympress relies on:
 * [PyGi, the python bindings for Gtk+3](https://wiki.gnome.org/Projects/PyGObject). PyGi is also known as *pygobject3*, just *pygobject* or *python3-gi*.
   * Introspection bindings for poppler may be shipped separately, ensure you have those as well (`typelib-1_0-Poppler-0_18` on OpenSUSE, `gir1.2-poppler-0.18` on Ubuntu)
 * optionally [VLC](https://www.videolan.org/vlc/), to play videos (with the same bitness as Python)
+  and the [python-vlc](https://pypi.org/project/python-vlc/) bindings.
 
 ### On linux platforms
 The dependencies are often installed by default, or easily available through your package or software manager.
