@@ -226,7 +226,8 @@ class VideoOverlay(builder.Builder):
         """ Bring the widget to the top of the overlays if necessary.
         """
         if min(self.relative_margins) < 0:
-            logger.warning('Negative margin(s) clipped to 0 (might alter the aspect ratio?): LTRB = {}'.format(self.relative_margins))
+            logger.warning('Negative margin(s) clipped to 0 (might alter the aspect ratio?): ' +
+                           'LTRB = {}'.format(self.relative_margins))
 
         if not self.media_overlay.get_parent():
             self.parent.add_overlay(self.media_overlay)

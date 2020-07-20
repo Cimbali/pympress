@@ -978,9 +978,9 @@ class UI(builder.Builder):
             self.laser.toggle_pointermode()
         else:
             if command:
-                logger.error('ERROR: missing command "{}" for {}{}{}{}'.format(command,  # noqa: E128
-                             'ctrl + ' if ctrl_pressed else '', 'shift + ' if shift_pressed else '',
-                             'meta + ' if meta_pressed else '', name))
+                logger.error('ERROR: missing command "{}" for {}{}{}{}'
+                             .format(command, 'ctrl + ' if ctrl_pressed else '', 'shift + ' if shift_pressed else '',
+                                     'meta + ' if meta_pressed else '', name))
 
             return False
 

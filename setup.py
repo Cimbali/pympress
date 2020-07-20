@@ -37,13 +37,13 @@ from setuptools.command.install import install
 from setuptools.command.bdist_rpm import bdist_rpm
 
 
-def find_index_startstring(l, s, start = 0, stop = sys.maxsize):
-    """ Return the index of the first string in l starting with s, or raise ValueError if none match.
+def find_index_startstring(haystack, needle, start = 0, stop = sys.maxsize):
+    """ Return the index of the first string in haystack starting with needle, or raise ValueError if none match.
     """
     try:
-        return next(n for n, v in enumerate(l[start:stop], start) if v.startswith(s))
+        return next(n for n, v in enumerate(haystack[start:stop], start) if v.startswith(needle))
     except StopIteration:
-        raise ValueError('No string starts with ' + s)
+        raise ValueError('No string starts with ' + needle)
 
 
 class PatchedRpmDist(bdist_rpm):

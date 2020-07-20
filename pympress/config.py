@@ -162,7 +162,7 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         config.load_window_layouts()
 
         for command in all_commands:
-            parsed = {Gtk.accelerator_parse(l) for l in config.get('shortcuts', command).split()}
+            parsed = {Gtk.accelerator_parse(keys) for keys in config.get('shortcuts', command).split()}
 
             if (0, 0) in parsed:
                 logger.warning('Failed parsing 1 or more shortcuts for ' + command)

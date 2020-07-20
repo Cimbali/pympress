@@ -80,9 +80,10 @@ except NameError:
 #   as they would have to be printed when the dependency resolution happens.
 # See https://github.com/Cimbali/pympress/issues/100
 try:
-    import gi, cairo
+    import gi
     gi.require_version('Gtk', '3.0')
     from gi.repository import Gtk, Gdk, GLib
+    import cairo
 except ModuleNotFoundError:
     logger.critical('Gobject Introspections and/or pycairo module is missing', exc_info = True)
     print('\n' + _('ERROR: Gobject Introspections and/or pycairo module is missing, ' +
@@ -193,7 +194,7 @@ def main(argv = sys.argv[1:]):
         '; Gtk {}.{}.{}'.format(Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version()),
         '; GLib {}.{}.{}'.format(GLib.MAJOR_VERSION, GLib.MINOR_VERSION, GLib.MICRO_VERSION),
         '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
-        '; Cairo', ui.cairo.cairo_version_string(), ', pycairo', ui.cairo.version,
+        '; Cairo', cairo.cairo_version_string(), ', pycairo', cairo.version,
         '; Media:', extras.Media.backend_version()
     ]))
 

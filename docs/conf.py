@@ -90,8 +90,8 @@ def setup(app):
 
     here = os.path.dirname(__file__)
     with open(os.path.join(here, '..', 'README.md')) as fin, open(os.path.join(here, 'README.md'), 'w') as fout:
-        for l in fin:
-            print(find_links.sub(lambda m: '[{}]({})'.format(m[1], rewrite_link(m[2])), l), end='', file=fout)
+        for line in fin:
+            print(find_links.sub(lambda m: '[{}]({})'.format(m[1], rewrite_link(m[2])), line), end='', file=fout)
 
     app.connect('build-finished', lambda app, config: os.unlink(os.path.join(app.srcdir, 'README.md')))
 
@@ -205,7 +205,7 @@ def load_epydoc_as_intersphinx_v2(url):
 
     objects_inv = []
     with requests.get(urljoin(url, 'api-objects.txt')) as epy:
-        for name, uri in (l.strip().split() for l in epy.text.split('\n') if l.strip()):
+        for name, uri in (line.strip().split() for line in epy.text.split('\n') if line.strip()):
             role = guess_epydoc_role(name, uri)
             objects_inv.append('{name} py:{role} 1 {uri} -'.format(name = name, role = role, uri = uri))
 

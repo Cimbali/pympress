@@ -718,8 +718,8 @@ class Document(object):
                         find = find[lower_bound]
 
                     try:
-                        page = min(l for l, n in enumerate(self.page_labels)
-                                   if n == self.page_labels[page] and l > lower_bound)
+                        page = min(number for number, label in enumerate(self.page_labels)
+                                   if label == self.page_labels[page] and number > lower_bound)
                     except ValueError:  # empty iterator
                         page = lower_bound + 1
 
@@ -898,7 +898,7 @@ class Document(object):
         full = len(label)
         for filtering in [lambda l: len(l) == full, lambda l: l.startswith(label), lambda l: not prefix_unique]:
             try:
-                found = next(l for l in compatible_labels if filtering(l))
+                found = next(label for label in compatible_labels if filtering(label))
             except StopIteration:
                 continue
             return compatible_labels[found]
