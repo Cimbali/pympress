@@ -76,8 +76,8 @@ class SurfaceCache(object):
     #: popped from the start of the cache.
     surface_cache = {}
 
-    #: `dict` containing functions that return a :class:`~cairo.Surface` given a :class:`~cairo.Context`,
-    #: width `int` and height `int`, see :meth:`~cairo.Surface.create_similar`
+    #: `dict` containing functions that return a :class:`~cairo.Surface` given a :format:`~cairo.Format`,
+    #: width `int` and height `int`, see :meth:`~Gtk.Window.create_similar_image_surface`
     surface_factory = {}
 
     #: Size of the different managed widgets, as a `dict` of tuples
@@ -126,7 +126,7 @@ class SurfaceCache(object):
             self.surface_cache[widget_name] = OrderedDict()
             self.surface_size[widget_name] = (-1, -1)
             self.surface_type[widget_name] = wtype
-            self.surface_factory[widget_name] = lambda c, w, h: widget.get_window().create_similar_surface(c, w, h)
+            self.surface_factory[widget_name] = lambda f, w, h: widget.get_window().create_similar_image_surface(f, w, h, 0)
             if prerender_enabled and not zoomed:
                 self.enable_prerender(widget_name)
 
@@ -294,7 +294,7 @@ class SurfaceCache(object):
 
         # Render to a ImageSurface
         try:
-            surface = self.surface_factory[widget_name](cairo.CONTENT_COLOR, ww, wh)
+            surface = self.surface_factory[widget_name](cairo.Format.RGB24, ww, wh)
         except AttributeError:
             logger.warning('Widget {} was not mapped when rendering'.format(widget_name), exc_info = True)
             return False
