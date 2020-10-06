@@ -843,7 +843,7 @@ class UI(builder.Builder):
                 return
 
             # Cache miss: render the page, and save it to the cache
-            pb = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR, ww, wh)
+            pb = widget.get_window().create_similar_image_surface(cairo.Format.RGB24, ww, wh, 0)
 
             cairo_prerender = cairo.Context(pb)
             cairo_prerender.transform(zoom_matrix)
