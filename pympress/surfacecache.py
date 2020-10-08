@@ -126,7 +126,7 @@ class SurfaceCache(object):
             self.surface_cache[widget_name] = OrderedDict()
             self.surface_size[widget_name] = (-1, -1)
             self.surface_type[widget_name] = wtype
-            self.surface_factory[widget_name] = lambda f, w, h: widget.get_window().create_similar_image_surface(f, w, h, 0)
+            self.surface_factory[widget_name] = lambda *args: widget.get_window().create_similar_image_surface(*args, 0)
             if prerender_enabled and not zoomed:
                 self.enable_prerender(widget_name)
 
