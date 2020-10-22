@@ -631,6 +631,8 @@ class Document(object):
     hist_pos = -1
     #: `dict` of all the page labels
     page_labels = []
+    #: dict of highlights per page number
+    scribbles = {}
 
     #: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`
     page_change = lambda p: None

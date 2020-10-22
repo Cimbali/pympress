@@ -159,6 +159,11 @@ class UI(builder.Builder):
     #: A :class:`Gtk.AccelGroup` to store the shortcuts
     accel_group = None
 
+    #: highlight_mode: "clear" for clearing highlights on each page change (old behaviour),
+    #                  "single" for highlights not affected by page change,
+    #                  "page" for highlights saved and restored per page.
+    highlight_mode = "clear"
+
 
     ##############################################################################
     #############################      UI setup      #############################
@@ -775,7 +780,16 @@ class UI(builder.Builder):
 
         # Remove scribbles and scribbling/zooming modes
         self.scribbler.disable_scribbling()
-        self.scribbler.clear_scribble()
+        if self.highlight_mode == 'page' and len(self.doc.history) > 1:
+            self.doc.scribbles[self.doc.history[-2]] = self.scribbler.scribble_list[:]
+        if self.highlight_mode in ('clear', 'page'):
+            self.scribbler.clear_scribble()
+        if self.highlight_mode == 'page':
+            try:
+                if self.doc and self.page_preview_nb in self.doc.scribbles:
+                    self.scribbler.scribble_list = self.doc.scribbles[self.page_preview_nb][:]
+            except AttributeError:
+                pass
         self.zoom.stop_zooming()
 
         # Start counter if needed

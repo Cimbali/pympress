@@ -115,6 +115,7 @@ def usage():
     -n position, --notes=position    {notes}
                                          {notes_position}
                                          {notes_override}
+    -m mode, --highlight_mode=mode   {highlight_mode}
     --log=level                      {log_level}
                                          {log_levels_list}
 '''.format(
@@ -126,6 +127,7 @@ def usage():
         notes           = _('Set the position of notes on the pdf page'),
         notes_position  = _('(none, left, right, top, or bottom).'),
         notes_override  = _('Overrides the detection from the file.'),
+        highlight_mode  = _('Select highlighting mode (single, page, or clear)'),
         log_level       = _('Set level of verbosity in log file:'),
         log_levels_list = _('{}, {}, {}, {}, or {}').format('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'),
     ))
@@ -140,6 +142,7 @@ def parse_opts(opts):
     ett = 0
     log_level = logging.ERROR
     notes_pos = None
+    highlight_mode = "clear"
 
     for opt, arg in opts.items():
         if opt in ("-h", "--help"):
@@ -151,6 +154,13 @@ def parse_opts(opts):
             if arg.lower()[0] == 'r': notes_pos = document.PdfPage.RIGHT
             if arg.lower()[0] == 't': notes_pos = document.PdfPage.TOP
             if arg.lower()[0] == 'b': notes_pos = document.PdfPage.BOTTOM
+        elif opt in ("-m", "--mode"):
+            if arg.lower()[0] == 'c':
+                highlight_mode = 'clear'
+            if arg.lower()[0] == 'p':
+                highlight_mode = 'page'
+            if arg.lower()[0] == 's':
+                highlight_mode = 'single'
         elif opt in ("-t", "--talk-time"):
             t = ["0" + n.strip() for n in arg.split(':')]
             try:
@@ -172,7 +182,7 @@ def parse_opts(opts):
                     arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"
                 ))
 
-    return ett, log_level, notes_pos
+    return ett, log_level, notes_pos, highlight_mode
 
 
 def main(argv = sys.argv[1:]):
@@ -199,13 +209,13 @@ def main(argv = sys.argv[1:]):
     ]))
 
     try:
-        opts, args = getopt.getopt(argv, "hn:t:", ["help", "notes=", "talk-time=", "log="])
+        opts, args = getopt.getopt(argv, "hm:n:t:", ["help", "highlight-mode=", "notes=", "talk-time=", "log="])
         opts = dict(opts)
     except getopt.GetoptError:
         usage()
         sys.exit(2)
 
-    ett, log_level, notes_pos = parse_opts(opts)
+    ett, log_level, notes_pos, highlight_mode = parse_opts(opts)
     logger.setLevel(log_level)
 
     # Create windows
@@ -222,6 +232,8 @@ def main(argv = sys.argv[1:]):
 
     if notes_pos is not None:
         gui.change_notes_pos(notes_pos, force_change = True)
+
+    gui.highlight_mode = highlight_mode
 
     gui.run()
 
