@@ -35,6 +35,15 @@ from gi.repository import Gtk, Gdk
 
 from pympress import builder, extras
 
+def ccw(A, B, C):
+    """ Returns True if triangle ABC is counter clockwise
+    """
+    return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0])
+
+def segments_intersect(A, B, C, D):
+    """ Return true if line segments AB and CD intersect
+    """
+    return ccw(A, C, D) != ccw(B, C, D) and ccw(A, B, C) != ccw(A, B, D)
 
 class Scribbler(builder.Builder):
     """ UI that allows to draw free-hand on top of the current slide.
@@ -96,6 +105,11 @@ class Scribbler(builder.Builder):
     start_zooming = lambda: None
     #: callback, to be connected to :func:`~pympress.extras.Zoom.stop_zooming`
     stop_zooming = lambda: None
+
+    #: save button used to drag, since this info is only given on first drag event
+    drag_button = 0
+    #: previous point in right button drag event
+    last_del_point = None
 
     def __init__(self, config, builder, notes_mode):
         super(Scribbler, self).__init__()
@@ -159,12 +173,25 @@ class Scribbler(builder.Builder):
             `bool`: whether the event was consumed
         """
         if self.scribble_drawing:
-            self.scribble_list[-1][2].append(self.get_slide_point(widget, event))
+            if event.get_button()[0]:
+                self.drag_button = event.get_button()[1]
+            if self.drag_button == Gdk.BUTTON_PRIMARY:
+                self.scribble_list[-1][2].append(self.get_slide_point(widget, event))
+                self.redraw_current_slide()
+                return True
+            elif self.drag_button == Gdk.BUTTON_SECONDARY:
+                if self.last_del_point:
+                    A = self.get_slide_point(widget, event)
+                    for scribble in self.scribble_list[:]:
+                        for i in range(len(scribble[2]) - 1):
+                            if segments_intersect(A, self.last_del_point, scribble[2][i], scribble[2][i + 1]):
+                                self.scribble_list.remove(scribble)
+                                break
+                self.last_del_point = self.get_slide_point(widget, event)
+                self.redraw_current_slide()
+                return True
 
-            self.redraw_current_slide()
-            return True
-        else:
-            return False
+        return False
 
 
     def toggle_scribble(self, widget, event):
@@ -181,10 +208,13 @@ class Scribbler(builder.Builder):
             return False
 
         if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
-            self.scribble_list.append((self.scribble_color, self.scribble_width, []))
+            if event.get_button()[1] == Gdk.BUTTON_PRIMARY:
+                self.scribble_list.append((self.scribble_color, self.scribble_width, []))
+            elif event.get_button()[1] == Gdk.BUTTON_SECONDARY:
+                self.last_del_point = None
             self.scribble_drawing = True
-
             return self.track_scribble(widget, event)
+
         elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
             self.scribble_drawing = False
             return True
