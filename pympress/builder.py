@@ -30,6 +30,7 @@ to avoid dealing with all the mess of C/GNU gettext's bad portability.
 from __future__ import print_function, unicode_literals
 
 import logging
+import copy
 logger = logging.getLogger(__name__)
 
 from collections import deque
@@ -283,7 +284,7 @@ class Builder(Gtk.Builder):
         self.pending_pane_resizes.clear()
 
         # iterate over new layout to build it, using a BFS
-        widgets_to_add = deque([(top_widget, layout)])
+        widgets_to_add = deque([(top_widget, copy.deepcopy(layout))])
         pane_resize = set()
         pane_handle_pos = {}
 

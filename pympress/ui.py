@@ -290,7 +290,7 @@ class UI(builder.Builder):
             self.get_object(n).set_active(init_checkstates[n])
 
         default = 'notes_' + self.chosen_notes_mode.name.lower()
-        for radio_name in ['notes_right', 'notes_left', 'notes_top', 'notes_bottom']:
+        for radio_name in ['notes_right', 'notes_left', 'notes_top', 'notes_bottom', 'notes_after']:
             radio = self.get_object(radio_name)
             radio.set_name(radio_name)
             radio.set_active(radio_name == default)
@@ -558,14 +558,14 @@ class UI(builder.Builder):
         if not reloading:
             hpref = self.config.get('notes position', 'horizontal')
             vpref = self.config.get('notes position', 'vertical')
-            self.chosen_notes_mode = target_mode = self.doc.guess_notes(hpref, vpref)
-
-            # don't toggle from NONE to NONE
-            if self.chosen_notes_mode == document.PdfPage.NONE:
-                self.chosen_notes_mode = document.PdfPage.RIGHT
+            target_mode = self.doc.guess_notes(hpref, vpref)
 
             if self.notes_mode != target_mode:
-                self.switch_mode('swap_document', docpath, target_mode = target_mode)
+                self.switch_mode('swap_document', docpath, target_mode=target_mode)
+
+            # don't toggle from NONE to NONE
+            if target_mode:
+                self.change_notes_pos(target_mode)
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
@@ -701,22 +701,25 @@ class UI(builder.Builder):
         if page_nb >= self.doc.pages_number() or page_nb < 0:
             return
 
+        draw_notes = self.notes_mode
+        draw_page = draw_notes.complement()
+
         page_cur = self.doc.page(page_nb)
         page_next = self.doc.page(page_nb + 1)
 
         self.page_preview_nb = page_nb
 
         # Aspect ratios and queue redraws
-        if self.notes_mode:
-            self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(self.notes_mode))
+        if draw_notes:
+            page_notes = self.doc.notes_page(page_nb)
+            self.p_frame_notes.set_property('ratio', page_notes.get_aspect_ratio(draw_notes))
             self.p_da_notes.queue_draw()
 
-        page_type = self.notes_mode.complement()
-        self.p_frame_cur.set_property('ratio', page_cur.get_aspect_ratio(page_type))
+        self.p_frame_cur.set_property('ratio', page_cur.get_aspect_ratio(draw_page))
         self.p_da_cur.queue_draw()
 
         if page_next is not None:
-            pr = page_next.get_aspect_ratio(page_type)
+            pr = page_next.get_aspect_ratio(draw_notes)
             self.p_frame_next.set_property('ratio', pr)
 
         self.p_da_next.queue_draw()
@@ -743,8 +746,12 @@ class UI(builder.Builder):
         Args:
             unpause (`bool`):  `True` if the page change should unpause the timer, `False` otherwise
         """
+        draw_notes = self.notes_mode
+        draw_page = draw_notes.complement()
+
         page_cur = self.doc.current_page()
         page_next = self.doc.next_page()
+        page_notes = self.doc.current_notes_page()
 
         self.annotations.add_annotations(page_cur.get_annotations())
 
@@ -752,24 +759,24 @@ class UI(builder.Builder):
         self.page_preview_nb = page_cur.number()
 
         # Aspect ratios and queue redraws
-        self.p_frame_notes.set_property('ratio', page_cur.get_aspect_ratio(self.notes_mode))
+        note_pr = page_notes.get_aspect_ratio(draw_notes)
+        self.p_frame_notes.set_property('ratio', note_pr)
         self.p_da_notes.queue_draw()
 
-        page_type = self.notes_mode.complement()
-        pr = page_cur.get_aspect_ratio(page_type)
+        page_pr = page_cur.get_aspect_ratio(draw_page)
 
-        self.c_frame.set_property('ratio', pr)
+        self.c_frame.set_property('ratio', page_pr)
         self.c_da.queue_draw()
 
-        self.p_frame_cur.set_property('ratio', pr)
+        self.p_frame_cur.set_property('ratio', page_pr)
         self.p_da_cur.queue_draw()
 
-        self.scribbler.scribble_p_frame.set_property('ratio', pr)
+        self.scribbler.scribble_p_frame.set_property('ratio', page_pr)
         self.scribbler.scribble_p_frame.queue_draw()
 
         if page_next is not None:
-            pr = page_next.get_aspect_ratio(page_type)
-            self.p_frame_next.set_property('ratio', pr)
+            next_pr = page_next.get_aspect_ratio(draw_page)
+            self.p_frame_next.set_property('ratio', next_pr)
 
         self.p_da_next.queue_draw()
 
@@ -792,7 +799,7 @@ class UI(builder.Builder):
         for p in list(range(self.page_preview_nb + 1, page_max)) + list(range(self.page_preview_nb, page_min, -1)):
             self.cache.prerender(p)
 
-        self.medias.replace_media_overlays(self.doc.current_page(), page_type)
+        self.medias.replace_media_overlays(self.doc.current_page(), draw_page)
 
 
     def on_draw(self, widget, cairo_context):
@@ -812,9 +819,12 @@ class UI(builder.Builder):
             if self.blanked:
                 return
             page = self.doc.page(self.doc.current_page().number())
-        elif widget is self.p_da_notes or widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
+        elif widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
             # Current page 'preview'
             page = self.doc.page(self.page_preview_nb)
+        elif widget is self.p_da_notes:
+            # Notes page, aligned with preview
+            page = self.doc.notes_page(self.page_preview_nb)
         else:
             page = self.doc.page(self.page_preview_nb + 1)
             # No next page: just return so we won't draw anything
@@ -1071,13 +1081,17 @@ class UI(builder.Builder):
         # Where did the event occur?
         if widget is self.p_da_next:
             page = self.doc.next_page()
-            if page is None:
-                return False
+        elif widget is self.p_da_notes:
+            page = self.doc.current_notes_page()
         else:
             page = self.doc.current_page()
 
+        if page is None:
+            return False
+
         x, y = self.zoom.get_slide_point(widget, event)
         page_mode = self.notes_mode if widget is self.p_da_notes else self.notes_mode.complement()
+
         link = page.get_link_at(x, y, page_mode)
 
         if event.type == Gdk.EventType.BUTTON_PRESS and link is not None:
@@ -1103,10 +1117,13 @@ class UI(builder.Builder):
         # Where did the event occur?
         if widget is self.p_da_next:
             page = self.doc.next_page()
-            if page is None:
-                return
+        elif widget is self.p_da_notes:
+            page = self.doc.current_notes_page()
         else:
             page = self.doc.current_page()
+
+        if page is None:
+            return False
 
         x, y = self.zoom.get_slide_point(widget, event)
         page_mode = self.notes_mode if widget is self.p_da_notes else self.notes_mode.complement()
@@ -1288,6 +1305,17 @@ class UI(builder.Builder):
         return True
 
 
+    def layout_name(self, notes_mode):
+        """ Return the layout made for the selected notes_mode
+        """
+        if notes_mode.direction() == 'page number':
+            return 'note_pages'
+        elif notes_mode:
+            return 'notes'
+        else:
+            return 'plain'
+
+
     def swap_layout(self, old, new):
         """ Save the old layout in the prefs, load the new layout.
 
@@ -1295,8 +1323,8 @@ class UI(builder.Builder):
             old (`str`): the name of the layout to save, `None` to use plain or notes automatically
             new (`str`): the name of the layout to load, `None` to use plain or notes automatically
         """
-        if old is None: old = 'notes' if self.notes_mode else 'plain'
-        if new is None: new = 'notes' if self.notes_mode else 'plain'
+        if old is None: self.layout_name(self.notes_mode)
+        if new is None: self.layout_name(self.notes_mode)
 
         self.config.update_layout(old, self.p_central.get_children()[0], self.pane_handle_pos)
         pane_handles = self.replace_layout(self.config.get_layout(new), self.p_central,
@@ -1328,7 +1356,7 @@ class UI(builder.Builder):
         if target_mode == self.chosen_notes_mode:
             return False
 
-        # Update the choice, except for NONE
+        # Update the choice, except for NONE or BEFORE/AFTER
         if target_mode:
             self.chosen_notes_mode = target_mode
             self.get_object('notes_' + target_mode.name.lower()).set_active(True)
@@ -1341,7 +1369,7 @@ class UI(builder.Builder):
         return True
 
 
-    def switch_mode(self, widget, event = None, target_mode = None):
+    def switch_mode(self, widget, event=None, target_mode=None):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
 
         Returns:
@@ -1359,11 +1387,9 @@ class UI(builder.Builder):
             return False
 
         self.scribbler.disable_scribbling()
+        self.doc.set_notes_after(target_mode.direction() == 'page number')
 
-        if target_mode and not self.notes_mode:
-            self.swap_layout('plain', 'notes')
-        elif not target_mode and self.notes_mode:
-            self.swap_layout('notes', 'plain')
+        self.swap_layout(self.layout_name(self.notes_mode), self.layout_name(target_mode))
 
         self.notes_mode = target_mode
         page_type = self.notes_mode.complement()
@@ -1386,6 +1412,7 @@ class UI(builder.Builder):
         self.medias.adjust_margins_for_mode(page_type)
         self.on_page_change(False)
         self.pres_notes.set_active(self.notes_mode)
+        self.page_number.set_last(self.doc.pages_number())
 
         return True
 

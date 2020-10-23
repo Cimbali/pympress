@@ -325,7 +325,7 @@
                               <object class="GtkRadioMenuItem" id="notes_right">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_Right</property>
+                                <property name="label" translatable="yes">_Right half of slide</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <signal name="toggled" handler="change_notes_pos" swapped="no"/>
@@ -335,7 +335,7 @@
                               <object class="GtkRadioMenuItem" id="notes_bottom">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_Bottom</property>
+                                <property name="label" translatable="yes">_Bottom half of slide</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">notes_right</property>
@@ -346,7 +346,7 @@
                               <object class="GtkRadioMenuItem" id="notes_left">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_Left</property>
+                                <property name="label" translatable="yes">_Left half of slide</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">notes_right</property>
@@ -357,7 +357,18 @@
                               <object class="GtkRadioMenuItem" id="notes_top">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">_Top</property>
+                                <property name="label" translatable="yes">_Top half of slide</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_as_radio">True</property>
+                                <property name="group">notes_right</property>
+                                <signal name="toggled" handler="change_notes_pos" swapped="no"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkRadioMenuItem" id="notes_after">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">_After slide pages</property>
                                 <property name="use_underline">True</property>
                                 <property name="draw_as_radio">True</property>
                                 <property name="group">notes_right</property>

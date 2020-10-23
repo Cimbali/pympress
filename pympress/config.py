@@ -280,9 +280,10 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         """ Parse and validate layouts loaded from config, with fallbacks if needed.
         """
         widget_reqs = {
-            'notes':     (set(self.placeable_widgets.keys()) - {"annotations", "highlight"},),
-            'plain':     (set(self.placeable_widgets.keys()) - {"notes", "highlight"},),
-            'highlight': ({"highlight"}, set(self.placeable_widgets.keys()) - {"highlight"})
+            'notes':      (set(self.placeable_widgets.keys()) - {"annotations", "highlight"}, {"annotations"}),
+            'plain':      (set(self.placeable_widgets.keys()) - {"notes", "highlight"},),
+            'note_pages': (set(self.placeable_widgets.keys()) - {"current", "highlight"},),
+            'highlight':  ({"highlight"}, set(self.placeable_widgets.keys()) - {"highlight"})
         }
 
         for layout_name in widget_reqs:
@@ -292,7 +293,7 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
                 self.validate_layout(loaded_layout, *widget_reqs[layout_name])
                 self.layout[layout_name] = loaded_layout
             except ValueError:
-                logger.exception('Invalid layout')
+                logger.exception('Invalid layout for {}'.format(layout_name))
 
 
     def widget_layout_to_tree(self, widget, pane_handle_pos):

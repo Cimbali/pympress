@@ -91,6 +91,10 @@ class PdfPage(enum.IntEnum):
     RIGHT   = 4
     #: Left half of PDF page
     LEFT    = 5
+    #: Full page + draw another page for notes, which is after the slides
+    AFTER   = 6
+    #: Complemntary of AFTER: for a notes page, the slide page is BEFORE by half a document
+    BEFORE  = 7
 
     def complement(val):
         """ Return the enum value for the other part of the page.
@@ -110,7 +114,14 @@ class PdfPage(enum.IntEnum):
         Returns:
             `str`: a string representing the direction that can be used as the key in the config section
         """
-        return 'horizontal' if val >= 4 else 'vertical'
+        if val == PdfPage.LEFT or val == PdfPage.RIGHT:
+            return 'horizontal'
+        elif val == PdfPage.TOP or val == PdfPage.BOTTOM:
+            return 'vertical'
+        elif val == PdfPage.AFTER or val == PdfPage.BEFORE:
+            return 'page number'
+        else:
+            return None
 
 
     def from_screen(val, x, y, x2 = None, y2 = None):
@@ -385,7 +396,7 @@ class Page(object):
             elif dest_name == "NextPage":
                 return Link.build_closure(self.parent.goto, self.page_nb + 1)
             elif dest_name == "LastPage":
-                return Link.build_closure(self.parent.goto, self.parent.pages_number() - 1)
+                return Link.build_closure(self.parent.goto, self.parent.pages_number(0) - 1)
             elif dest_name == "GoToPage":
                 # Same as the 'G' action which allows one to pick a page to jump to
                 return Link.build_closure(self.parent.start_editing_page_number, )
@@ -631,6 +642,8 @@ class Document(object):
     hist_pos = -1
     #: `dict` of all the page labels
     page_labels = []
+    #: `bool` indicating whether the second half of pages are in fact notes pages
+    notes_after = False
 
     #: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`
     page_change = lambda p: None
@@ -782,6 +795,17 @@ class Document(object):
 
         ar = page.get_aspect_ratio()
 
+        # Check whether we have N slides with one aspect ratio then N slides with a different aspect ratio
+        # that is the sign if Libreoffice notes pages
+        if self.nb_pages % 2 == 0:
+            half_doc = self.nb_pages // 2
+            ar_slides = self.page(0).get_aspect_ratio()
+            ar_notes = self.page(half_doc).get_aspect_ratio()
+            if ar_slides != ar_notes and \
+                    all(self.page(p).get_aspect_ratio() == ar_slides for p in range(1, half_doc)) and \
+                    all(self.page(half_doc + p).get_aspect_ratio() == ar_notes for p in range(1, half_doc)):
+                return PdfPage.AFTER
+
         # "Regular" slides will have an aspect ratio of 4/3, 16/9, 16/10... i.e. in the range [1..2]
         # So if the aspect ratio is >= 2, we can assume it is a document with notes on the side.
         if ar >= 2:
@@ -804,6 +828,15 @@ class Document(object):
         return PdfPage.NONE
 
 
+    def set_notes_after(self, notes_after):
+        """ Set whether there are notes pages after normal pages (aka Libreoffice notes mode)
+
+        Args:
+            notes_after (`bool`):  Whether there are notes pages
+        """
+        self.notes_after = notes_after
+
+
     def page(self, number):
         """ Get the specified page.
 
@@ -813,8 +846,28 @@ class Document(object):
         Returns:
             :class:`~pympress.document.Page`: the wanted page, or `None` if it does not exist
         """
-        if number >= self.nb_pages or number < 0:
+        if number >= self.pages_number() or number < 0:
             return None
+
+        if number not in self.pages_cache:
+            self.pages_cache[number] = Page(self.doc.get_page(number), number, self)
+        return self.pages_cache[number]
+
+
+    def notes_page(self, number):
+        """ Get the specified page.
+
+        Args:
+            number (`int`):  number of the page to return
+
+        Returns:
+            :class:`~pympress.document.Page`: the wanted page, or `None` if it does not exist
+        """
+        if number >= self.pages_number() or number < 0:
+            return None
+
+        if self.notes_after:
+            number = number + self.pages_number()
 
         if number not in self.pages_cache:
             self.pages_cache[number] = Page(self.doc.get_page(number), number, self)
@@ -828,6 +881,15 @@ class Document(object):
             :class:`~pympress.document.Page`: the current page
         """
         return self.page(self.cur_page)
+
+
+    def current_notes_page(self):
+        """ Get the current page.
+
+        Returns:
+            :class:`~pympress.document.Page`: the current page
+        """
+        return self.notes_page(self.cur_page)
 
 
     def next_page(self):
@@ -845,7 +907,7 @@ class Document(object):
         Returns:
             `int`: the number of pages in the document
         """
-        return self.nb_pages
+        return (self.nb_pages // 2) if self.notes_after else self.nb_pages
 
 
     def _do_page_change(self, number):
@@ -914,8 +976,8 @@ class Document(object):
         """
         if number < 0:
             number = 0
-        if number >= self.nb_pages:
-            number = self.nb_pages - 1
+        if number >= self.pages_number():
+            number = self.pages_number() - 1
 
         if number != self.cur_page:
             # chop off history where we were and go to end
@@ -1115,10 +1177,21 @@ class EmptyDocument(Document):
         self.nb_pages = 0
         self.cur_page = -1
         self.pages_cache = {-1: EmptyPage()}
-        self.notes = False
 
 
     def page(self, number):
+        """ Retrieve a page from the document.
+
+        Args:
+            number (`int`): page number to be retrieved
+
+        Returns:
+            :class:`~pympress.document.EmptyPage` or `None`: -1 returns the empty page so we can display something.
+        """
+        return self.pages_cache[number] if number in self.pages_cache else None
+
+
+    def notes_page(self, number):
         """ Retrieve a page from the document.
 
         Args:

@@ -124,7 +124,7 @@ def usage():
         talk_time       = _('The estimated (intended) talk time in minutes'),
         talk_time_secs  = _('(and optionally seconds)'),
         notes           = _('Set the position of notes on the pdf page'),
-        notes_position  = _('(none, left, right, top, or bottom).'),
+        notes_position  = _('(none, left, right, top, bottom, or after).'),
         notes_override  = _('Overrides the detection from the file.'),
         log_level       = _('Set level of verbosity in log file:'),
         log_levels_list = _('{}, {}, {}, {}, or {}').format('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'),
@@ -151,6 +151,7 @@ def parse_opts(opts):
             if arg.lower()[0] == 'r': notes_pos = document.PdfPage.RIGHT
             if arg.lower()[0] == 't': notes_pos = document.PdfPage.TOP
             if arg.lower()[0] == 'b': notes_pos = document.PdfPage.BOTTOM
+            if arg.lower()[0] == 'a': notes_pos = document.PdfPage.AFTER
         elif opt in ("-t", "--talk-time"):
             t = ["0" + n.strip() for n in arg.split(':')]
             try:

@@ -9,8 +9,8 @@
     background-color: #fff;
 }
 
-#annotations_textview span text {
-  background: #555555;
+#annotations_textview {
+  font-size: 1.4em;
 }
 
 #p_win GtkPaned .pane-separator {
