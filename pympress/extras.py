@@ -811,6 +811,9 @@ else:
             Args:
                 wait (`bool`): whether to wait for the thread to have joined before returning
             """
+            if cls.observer is None:
+                return
+
             cls.observer.unschedule_all()
             if cls.observer.is_alive():
                 cls.observer.stop()
