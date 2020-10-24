@@ -48,6 +48,8 @@ class Scribbler(builder.Builder):
     scribbling_mode = False
     #: `list` of scribbles to be drawn, as tuples of color :class:`~Gdk.RGBA`, width `int`, and a `list` of points.
     scribble_list = []
+    #: `list` of undone scribbles to possibly redo
+    scribble_redo_list = []
     #: Whether the current mouse movements are drawing strokes or should be ignored
     scribble_drawing = False
     #: :class:`~Gdk.RGBA` current color of the scribbling tool
@@ -65,6 +67,13 @@ class Scribbler(builder.Builder):
     scribble_p_eb = None
     #: :class:`~Gtk.AspectFrame` for the slide in the Presenter's highlight mode
     scribble_p_frame = None
+
+    #: :class:`~Gtk.Button` for removing the last drawn scribble
+    scribble_undo = None
+    #: :class:`~Gtk.Button` for drawing the last removed scribble
+    scribble_redo = None
+    #: :class:`~Gtk.Button` for removing all drawn scribbles
+    scribble_clear = None
 
     #: A :class:`~Gtk.OffscreenWindow` where we render the scribbling interface when it's not shown
     off_render = None
@@ -141,6 +150,8 @@ class Scribbler(builder.Builder):
             return False
         elif command == 'undo_scribble':
             self.pop_scribble()
+        elif command == 'redo_scribble':
+            self.pop_scribble()
         elif command == 'cancel':
             self.disable_scribbling()
         else:
@@ -160,7 +171,9 @@ class Scribbler(builder.Builder):
         """
         if self.scribble_drawing:
             self.scribble_list[-1][2].append(self.get_slide_point(widget, event))
+            self.scribble_redo_list.clear()
 
+            self.adjust_buttons()
             self.redraw_current_slide()
             return True
         else:
@@ -201,18 +214,25 @@ class Scribbler(builder.Builder):
         """
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
+        cairo_context.push_group()
         cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
 
         for color, width, points in self.scribble_list:
             points = [(p[0] * ww, p[1] * wh) for p in points]
 
+            # alpha == 0 -> Eraser mode
+            cairo_context.set_operator(cairo.OPERATOR_OVER if color.alpha else cairo.OPERATOR_CLEAR)
             cairo_context.set_source_rgba(*color)
             cairo_context.set_line_width(width)
+
             cairo_context.move_to(*points[0])
 
             for p in points[1:]:
                 cairo_context.line_to(*p)
             cairo_context.stroke()
+
+        cairo_context.pop_group_to_source()
+        cairo_context.paint()
 
 
     def update_color(self, widget):
@@ -237,20 +257,40 @@ class Scribbler(builder.Builder):
         self.config.set('scribble', 'width', str(self.scribble_width))
 
 
+    def adjust_buttons(self):
+        """ Properly enable and disable buttons based on scribblings lists.
+        """
+        self.scribble_undo.set_sensitive(bool(self.scribble_list))
+        self.scribble_clear.set_sensitive(bool(self.scribble_list))
+        self.scribble_redo.set_sensitive(bool(self.scribble_redo_list))
+
+
     def clear_scribble(self, *args):
         """ Callback for the scribble clear button, to remove all scribbles.
         """
-        del self.scribble_list[:]
+        self.scribble_list.clear()
 
         self.redraw_current_slide()
+        self.adjust_buttons()
 
 
     def pop_scribble(self, *args):
         """ Callback for the scribble undo button, to undo the last scribble.
         """
         if self.scribble_list:
-            self.scribble_list.pop()
+            self.scribble_redo_list.append(self.scribble_list.pop())
 
+        self.adjust_buttons()
+        self.redraw_current_slide()
+
+
+    def redo_scribble(self, *args):
+        """ Callback for the scribble undo button, to undo the last scribble.
+        """
+        if self.scribble_redo_list:
+            self.scribble_list.append(self.scribble_redo_list.pop())
+
+        self.adjust_buttons()
         self.redraw_current_slide()
 
 

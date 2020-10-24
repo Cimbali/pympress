@@ -69,6 +69,7 @@
                 <property name="width_request">80</property>
                 <property name="height_request">80</property>
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="always_show_image">True</property>
@@ -87,6 +88,7 @@
                 <property name="width_request">80</property>
                 <property name="height_request">80</property>
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="always_show_image">True</property>
@@ -100,16 +102,17 @@
               </packing>
             </child>
             <child>
-              <object class="GtkColorButton" id="scribble_color">
+              <object class="GtkButton" id="scribble_redo">
+                <property name="label">gtk-redo</property>
                 <property name="width_request">80</property>
                 <property name="height_request">80</property>
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
                 <property name="always_show_image">True</property>
-                <property name="use_alpha">True</property>
-                <signal name="color-set" handler="update_color" swapped="no"/>
+                <signal name="clicked" handler="redo_scribble" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -118,21 +121,52 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScale" id="scribble_width">
-                <property name="width_request">80</property>
-                <property name="height_request">160</property>
+              <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can_focus">False</property>
+                <property name="valign">center</property>
                 <property name="orientation">vertical</property>
-                <property name="adjustment">scribble_width_adjust</property>
-                <property name="inverted">True</property>
-                <property name="digits">0</property>
-                <property name="draw_value">False</property>
-                <property name="value_pos">bottom</property>
-                <signal name="change-value" handler="update_width" swapped="no"/>
+                <child>
+                  <object class="GtkColorButton" id="scribble_color">
+                    <property name="width_request">80</property>
+                    <property name="height_request">80</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="use_stock">True</property>
+                    <property name="always_show_image">True</property>
+                    <property name="use_alpha">True</property>
+                    <signal name="color-set" handler="update_color" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScale" id="scribble_width">
+                    <property name="width_request">80</property>
+                    <property name="height_request">160</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="adjustment">scribble_width_adjust</property>
+                    <property name="inverted">True</property>
+                    <property name="digits">0</property>
+                    <property name="draw_value">False</property>
+                    <property name="value_pos">bottom</property>
+                    <signal name="change-value" handler="update_width" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">4</property>
               </packing>
@@ -154,7 +188,7 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="pack_type">end</property>
-                <property name="position">5</property>
+                <property name="position">7</property>
               </packing>
             </child>
             <child>
@@ -173,14 +207,14 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="pack_type">end</property>
-                <property name="position">6</property>
+                <property name="position">8</property>
               </packing>
             </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>

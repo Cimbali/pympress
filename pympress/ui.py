@@ -987,7 +987,7 @@ class UI(builder.Builder):
         elif command == 'toggle_pointermode':
             self.laser.toggle_pointermode()
         else:
-            if command and command not in {'cancel', 'validate', 'undo_scribble'}:
+            if command and command not in {'cancel', 'validate', 'undo_scribble', 'redo_scribble'}:
                 logger.error('ERROR: missing command "{}" for {}{}{}{}'
                              .format(command, 'ctrl + ' if ctrl_pressed else '', 'shift + ' if shift_pressed else '',
                                      'meta + ' if meta_pressed else '', name))
