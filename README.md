@@ -6,7 +6,7 @@ Highly configurable, fully-featured, and portable
 It comes with many great features ([more below](#functionalities)):
 - supports embedded gifs (out of the box), videos, and audios (with VLC or Gstreamer integration)
 - text annotations displayed in the presenter window
-- natively supports beamer's *notes on second screen*!
+- natively supports beamer's *notes on second screen*, as well as Libreoffice notes pages!
 
 Pympress is a free software, distributed under the terms of the GPL license (version 2 or, at your option, any later version).
 
@@ -156,13 +156,15 @@ All functionalities are available from the menus of the window with slide previe
 Keyboard shortcuts are also listed in these menus. Some more usual shortcuts are often available, for example `Ctrl`+`L`, and `F11` also toggle fullscreen, though the main shortcut is just `F`.
 
 A few of the fancier functionalities are listed here:
-- **Two-screen display**: See on your laptop or tablet display the current slide, the next slide, the talk time and wall-clock time, and annotations (either PDF annotations, beamer notes or Libreoffice presenter notes on second slide). The position of the beamer or Libreoffice notes in the slide is detected automatically and can be overridden via a menu option.
+- **Two-screen display**: See on your laptop or tablet display the current slide, the next slide, the talk time and wall-clock time, and annotations (either PDF annotations, beamer notes notes on second slide, or Libreoffice notes pages).
+  The position of the beamer or Libreoffice notes in the slide is detected automatically and can be overridden via a menu option.
 - **Media support**: supports playing video, audio, and gif files embedded in (or linked from) the PDF file.
 - **Highlight mode**: Allows one to draw freehand on the slide currently on screen.
 - **Go To Slide**: To jump to a selected slide without flashing through the whole presentation on the projector, press `G` or click the "current  slide" box.
   Using `J` or clicking the slide label will allow you to navigate slide labels instead of page numbers, useful e.g. for multi-page slides from beamer `\pause`.
 
-  A spin box will appear, and you will be able to navigate through your slides in the presenter window only by scrolling your mouse, with the `Home`/`Up`/`Down`/`End` keys, with the + and - buttons of the spin box, or simply by typing in the number of the slide. Press `Enter` to validate going to the new slide or `Esc` to cancel.
+  A spin box will appear, and you will be able to navigate through your slides in the presenter window only by scrolling your mouse, with the `Home`/`Up`/`Down`/`End` keys,
+  with the + and - buttons of the spin box, or simply by typing in the number of the slide. Press `Enter` to validate going to the new slide or `Esc` to cancel.
 
 - **Software pointer**: Clicking on the slide (in either window) while holding `ctrl` down will display a software laser pointer on the slide. Or press `L` to permanently switch on the laser pointer.
 - **Talk time breakdown**: The `Presentation > Timing Breakdown` menu item displays a breakdown of how much time was spent on each slide, with a hierarchical breakdown per chapters/sections/etc. if available in the PDF.
