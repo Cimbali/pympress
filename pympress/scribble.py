@@ -110,6 +110,10 @@ class Scribbler(builder.Builder):
     drag_button = 0
     #: previous point in right button drag event
     last_del_point = None
+    #: Indicates that dragging the cursor erases instead of draws. Requires scribbling_mode
+    erasing_mode = False
+    #: Save scribbling mode when enabling it for erasing mode, to restore when leaving ersing mode
+    before_erasing = None
 
     def __init__(self, config, builder, notes_mode):
         super(Scribbler, self).__init__()
@@ -175,11 +179,11 @@ class Scribbler(builder.Builder):
         if self.scribble_drawing:
             if event.get_button()[0]:
                 self.drag_button = event.get_button()[1]
-            if self.drag_button == Gdk.BUTTON_PRIMARY:
+            if not self.erasing_mode and self.drag_button == Gdk.BUTTON_PRIMARY:
                 self.scribble_list[-1][2].append(self.get_slide_point(widget, event))
                 self.redraw_current_slide()
                 return True
-            elif self.drag_button == Gdk.BUTTON_SECONDARY:
+            elif self.erasing_mode or self.drag_button == Gdk.BUTTON_SECONDARY:
                 if self.last_del_point:
                     A = self.get_slide_point(widget, event)
                     for scribble in self.scribble_list[:]:
@@ -208,9 +212,9 @@ class Scribbler(builder.Builder):
             return False
 
         if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
-            if event.get_button()[1] == Gdk.BUTTON_PRIMARY:
+            if not self.erasing_mode and event.get_button()[1] == Gdk.BUTTON_PRIMARY:
                 self.scribble_list.append((self.scribble_color, self.scribble_width, []))
-            elif event.get_button()[1] == Gdk.BUTTON_SECONDARY:
+            elif self.erasing_mode or event.get_button()[1] == Gdk.BUTTON_SECONDARY:
                 self.last_del_point = None
             self.scribble_drawing = True
             return self.track_scribble(widget, event)
@@ -321,6 +325,7 @@ class Scribbler(builder.Builder):
 
         # Perform the state toggle
         if self.scribbling_mode:
+            self.erasing_mode = False
             return self.disable_scribbling()
 
         else:
@@ -361,9 +366,53 @@ class Scribbler(builder.Builder):
 
         self.off_render.add(self.scribble_overlay)
         self.scribbling_mode = False
+        self.erasing_mode = False
         self.pres_highlight.set_active(self.scribbling_mode)
 
         self.p_central.queue_draw()
         extras.Cursor.set_cursor(self.p_central)
+
+        return True
+
+    def switch_erasing(self):
+        """ Toggle the erasing mode.
+        """
+        if self.erasing_mode:
+            return self.disable_erasing()
+        return self.enable_erasing()
+
+    def enable_erasing(self):
+        """ Enable the erasing mode.
+
+        Enables scribbling mode if needed.
+
+        Returns:
+            `bool`: whether it was possible to enable (thus if it was not enabled already)
+        """
+        if self.erasing_mode:
+            return False
+
+        self.before_erasing = self.scribbling_mode
+        self.erasing_mode = True
+        if not self.scribbling_mode:
+            self.enable_scribbling()
+
+        return True
+
+    def disable_erasing(self):
+        """ Disaable the erasing mode.
+
+        Disables scribbling mode if it was enabled by the corresponding
+        enable_erasing().
+
+        Returns:
+            `bool`: whether it was possible to disable (thus if it was not enabled already)
+        """
+        if not self.erasing_mode:
+            return False
+
+        self.erasing_mode = False
+        if not self.before_erasing:
+            self.disable_scribbling()
 
         return True
