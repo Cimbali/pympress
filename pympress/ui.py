@@ -487,7 +487,7 @@ class UI(builder.Builder):
         extras.FileWatcher.stop_daemon()
         self.doc.cleanup_media_files()
 
-        self.config.update_layout('notes' if self.notes_mode else 'plain',
+        self.config.update_layout(self.layout_name(self.notes_mode),
                                   self.p_central.get_children()[0], self.pane_handle_pos)
 
         if bool(self.c_win.get_window().get_state() & Gdk.WindowState.FULLSCREEN):
@@ -1320,11 +1320,13 @@ class UI(builder.Builder):
         """ Save the old layout in the prefs, load the new layout.
 
         Args:
-            old (`str`): the name of the layout to save, `None` to use plain or notes automatically
-            new (`str`): the name of the layout to load, `None` to use plain or notes automatically
+            old (`str`): the name of the layout to save, `None` to use current layout automatically
+            new (`str`): the name of the layout to load, `None` to use current layout automatically
         """
-        if old is None: self.layout_name(self.notes_mode)
-        if new is None: self.layout_name(self.notes_mode)
+        if old is None:
+            old = self.layout_name(self.notes_mode)
+        if new is None:
+            new = self.layout_name(self.notes_mode)
 
         self.config.update_layout(old, self.p_central.get_children()[0], self.pane_handle_pos)
         pane_handles = self.replace_layout(self.config.get_layout(new), self.p_central,
