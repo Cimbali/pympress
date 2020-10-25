@@ -156,7 +156,7 @@ All functionalities are available from the menus of the window with slide previe
 Keyboard shortcuts are also listed in these menus. Some more usual shortcuts are often available, for example `Ctrl`+`L`, and `F11` also toggle fullscreen, though the main shortcut is just `F`.
 
 A few of the fancier functionalities are listed here:
-- **Two-screen display**: See on your laptop or tablet display the current slide, the next slide, the talk time and wall-clock time, and annotations (either PDF annotations, beamer notes notes on second slide, or Libreoffice notes pages).
+- **Two-screen display**: See on your laptop or tablet display the current slide, the next slide, the talk time and wall-clock time, and annotations (either PDF annotations, beamer notes on second slide, or Libreoffice notes pages).
   The position of the beamer or Libreoffice notes in the slide is detected automatically and can be overridden via a menu option.
 - **Media support**: supports playing video, audio, and gif files embedded in (or linked from) the PDF file.
 - **Highlight mode**: Allows one to draw freehand on the slide currently on screen.
