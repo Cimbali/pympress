@@ -178,6 +178,16 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             self.set('presenter', 'pointer', 'red')
             self.set('presenter', 'pointer_mode', 'disabled')
 
+        if self.has_option('scribble', 'color'):
+            self.set('scribble', 'color_9', self.get('scribble', 'color'))
+            self.remove_option('scribble', 'color')
+            self.set('scribble', 'active_pen', '9')
+
+        if self.has_option('scribble', 'width'):
+            self.set('scribble', 'width_9', self.get('scribble', 'width'))
+            self.remove_option('scribble', 'width')
+            self.set('scribble', 'active_pen', '9')
+
 
     def getlist(self, *args):
         """ Parse a config value and return the list by splitting the value on commas.

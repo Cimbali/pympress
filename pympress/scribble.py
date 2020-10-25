@@ -33,7 +33,7 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
-from pympress import builder, extras
+from pympress import builder, extras, util
 
 
 class Scribbler(builder.Builder):
@@ -67,6 +67,13 @@ class Scribbler(builder.Builder):
     scribble_p_eb = None
     #: :class:`~Gtk.AspectFrame` for the slide in the Presenter's highlight mode
     scribble_p_frame = None
+
+    #:
+    scribble_color_selector = None
+    #:
+    scribble_width_selector = None
+    #:
+    scribble_preset_buttons = []
 
     #: :class:`~Gtk.Button` for removing the last drawn scribble
     scribble_undo = None
@@ -123,16 +130,23 @@ class Scribbler(builder.Builder):
         self.stop_zooming = builder.get_callback_handler('zoom.stop_zooming')
 
         self.connect_signals(self)
-
-        self.scribble_color = Gdk.RGBA()
-        self.scribble_color.parse(config.get('scribble', 'color'))
-        self.scribble_width = config.getint('scribble', 'width')
-
         self.config = config
 
-        # Presenter-size setup
-        self.get_object("scribble_color").set_rgba(self.scribble_color)
-        self.get_object("scribble_width").set_value(self.scribble_width)
+        # Prepare cairo surfaces for markers, with 3 different marker sizes, and for eraser
+        ms = [1, 2, 3]
+        icons = [cairo.ImageSurface.create_from_png(util.get_icon_path('marker_{}.png'.format(n))) for n in ms]
+        masks = [cairo.ImageSurface.create_from_png(util.get_icon_path('marker_fill_{}.png'.format(n))) for n in ms]
+
+        self.marker_surfaces = list(zip(icons, masks))
+        self.eraser_surface = cairo.ImageSurface.create_from_png(util.get_icon_path('eraser.png'))
+
+        # Load color and active pen preferences
+        self.color_width = list(zip(
+            [self.parse_color(config.get('scribble', 'color_{}'.format(pen))) for pen in range(1, 10)],
+            [config.getint('scribble', 'width_{}'.format(pen)) for pen in range(1, 10)],
+        ))
+        self.scribble_preset_buttons = [self.get_object('pen_preset_{}'.format(pen)) for pen in range(1, 10)]
+        self.load_preset(config.getint('scribble', 'active_pen') - 1)
 
 
     def nav_scribble(self, name, ctrl_pressed, command = None):
@@ -154,9 +168,26 @@ class Scribbler(builder.Builder):
             self.pop_scribble()
         elif command == 'cancel':
             self.disable_scribbling()
+        elif command and command[:-1] == 'scribble_preset_' and command[-1] in list('0123456789'):
+            self.load_preset(int(command[-1]) - 1)
         else:
             return False
         return True
+
+
+    @staticmethod
+    def parse_color(text):
+        """ Transform a string to a Gdk object in a single function call
+
+        Args:
+            text (`str`): A string describing a color
+
+        Returns:
+            :class:`~Gdk.RGBA`: A new color object parsed from the string
+        """
+        color = Gdk.RGBA()
+        color.parse(text)
+        return color
 
 
     def track_scribble(self, widget, event):
@@ -242,7 +273,7 @@ class Scribbler(builder.Builder):
             widget (:class:`~Gtk.ColorButton`):  the clicked button to trigger this event, if any
         """
         self.scribble_color = widget.get_rgba()
-        self.config.set('scribble', 'color', self.scribble_color.to_string())
+        self.update_active_color_width()
 
 
     def update_width(self, widget, event, value):
@@ -254,7 +285,18 @@ class Scribbler(builder.Builder):
             value (`int`): the width of the scribbles to be drawn
         """
         self.scribble_width = int(value)
-        self.config.set('scribble', 'width', str(self.scribble_width))
+        self.update_active_color_width()
+
+
+    def update_active_color_width(self):
+        """ Update modifications to the active scribble color and width, on the pen button and config object
+        """
+        self.color_width[self.active_preset] = self.scribble_color, self.scribble_width
+        self.scribble_preset_buttons[self.active_preset].queue_draw()
+
+        pen = self.active_preset + 1
+        self.config.set('scribble', 'color_{}'.format(pen), self.scribble_color.to_string())
+        self.config.set('scribble', 'width_{}'.format(pen), str(self.scribble_width))
 
 
     def adjust_buttons(self):
@@ -377,3 +419,130 @@ class Scribbler(builder.Builder):
         extras.Cursor.set_cursor(self.p_central)
 
         return True
+
+
+    def load_preset(self, widget, event=None):
+        """ Loads the preset color of a given number or designed by a given widget, as an event handler.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event, or an `int` for the selected preset
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the preset was loaded
+        """
+        if isinstance(widget, Gtk.RadioButton):
+            if not widget.get_active():
+                return False
+            elif widget.get_name() == 'eraser':
+                preset_number = -1
+            else:
+                preset_number = int(widget.get_name().split('_')[-1]) - 1
+        elif type(widget) is int:
+            preset_number = widget
+        else:
+            return False
+
+        self.active_preset = preset_number
+        self.config.set('scribble', 'active_pen', str(self.active_preset + 1))
+
+        if preset_number < 0:
+            self.scribble_color, self.scribble_width = Gdk.RGBA(0, 0, 0, 0), 50
+            self.get_object('eraser').set_active(True)
+        else:
+            self.scribble_color, self.scribble_width = self.color_width[preset_number]
+            self.get_object('pen_preset_{}'.format(preset_number + 1)).set_active(True)
+
+        # Presenter-side setup
+        self.scribble_color_selector.set_rgba(self.scribble_color)
+        self.scribble_width_selector.set_value(self.scribble_width)
+        self.scribble_color_selector.set_sensitive(preset_number >= 0)
+        self.scribble_width_selector.set_sensitive(preset_number >= 0)
+
+        return True
+
+
+    def on_eraser_button_draw(self, widget, cairo_context):
+        """ Handle drawing the eraser button.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget to update
+            cairo_context (:class:`~cairo.Context`):  the Cairo context (or `None` if called directly)
+        """
+        cairo_context.push_group()
+        scale = widget.get_allocated_height() / self.eraser_surface.get_height()
+        cairo_context.scale(scale, scale)
+
+        cairo_context.set_source_surface(self.eraser_surface)
+        cairo_context.paint()
+
+        cairo_context.pop_group_to_source()
+        cairo_context.paint()
+
+
+    def on_preset_button_draw(self, widget, cairo_context):
+        """ Handle drawing the marker/pencil buttons, with appropriate thickness and color.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget to update
+            cairo_context (:class:`~cairo.Context`):  the Cairo context (or `None` if called directly)
+        """
+        button_number = int(widget.get_name().split('_')[-1])
+        color, width = self.color_width[button_number - 1]
+        icon, mask = self.marker_surfaces[(width - 1) // 10]
+
+        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+        scale = wh / icon.get_height()
+
+
+        cairo_context.push_group()
+
+        # A line demonstrating the scribble style
+        cairo_context.set_source_rgba(*color)
+        cairo_context.set_line_width(width)
+        cairo_context.move_to(0, wh - width / 2)
+        cairo_context.line_to(ww, wh - width / 2)
+        cairo_context.stroke()
+
+        cairo_context.set_operator(cairo.OPERATOR_DEST_OUT)
+
+        # Clip the line to the lower triangle
+        cairo_context.set_source_rgba(0, 0, 0, 1)
+        cairo_context.set_line_width(0)
+        cairo_context.move_to(0, 0)
+        cairo_context.line_to(0, wh)
+        cairo_context.line_to(ww, 0)
+        cairo_context.close_path()
+        cairo_context.fill()
+
+        # Also clip the colored part of the marker
+        cairo_context.scale(scale, scale)
+        cairo_context.set_source_surface(mask)
+        cairo_context.paint()
+
+        cairo_context.pop_group_to_source()
+        cairo_context.paint()
+
+
+        cairo_context.push_group()
+
+        # Fill with desired color
+        cairo_context.set_source_rgba(*color)
+        cairo_context.rectangle(0, 0, ww, wh)
+        cairo_context.fill()
+
+        # Transform for surfaces
+        cairo_context.scale(scale, scale)
+
+        # Clip color to the mask
+        cairo_context.set_operator(cairo.OPERATOR_DEST_IN)
+        cairo_context.set_source_surface(mask)
+        cairo_context.paint()
+
+        # Add the rest of the marker
+        cairo_context.set_operator(cairo.OPERATOR_OVER)
+        cairo_context.set_source_surface(icon)
+        cairo_context.paint()
+
+        cairo_context.pop_group_to_source()
+        cairo_context.paint()
