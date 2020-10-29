@@ -115,6 +115,7 @@ def usage():
     -n position, --notes=position    {notes}
                                          {notes_position}
                                          {notes_override}
+    -o section:key=value, --option   {config_option}
     --log=level                      {log_level}
                                          {log_levels_list}
 '''.format(
@@ -126,6 +127,7 @@ def usage():
         notes           = _('Set the position of notes on the pdf page'),
         notes_position  = _('(none, left, right, top, bottom, or after).'),
         notes_override  = _('Overrides the detection from the file.'),
+        config_option   = _('Overrides config file option.'),
         log_level       = _('Set level of verbosity in log file:'),
         log_levels_list = _('{}, {}, {}, {}, or {}').format('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'),
     ))
@@ -140,6 +142,7 @@ def parse_opts(opts):
     ett = 0
     log_level = logging.ERROR
     notes_pos = None
+    config_override = {}
 
     for opt, arg in opts.items():
         if opt in ("-h", "--help"):
@@ -172,8 +175,15 @@ def parse_opts(opts):
                 print(_("Invalid log level \"{}\", try one of {}").format(
                     arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"
                 ))
+        elif opt in ("-o", "--option"):
+            sect, rest = arg.split(':', 1)
+            key, value = rest.split('=', 1)
+            if sect in config_override:
+                config_override[sect][key] = value
+            else:
+                config_override[sect] = {key: value}
 
-    return ett, log_level, notes_pos
+    return ett, log_level, notes_pos, config_override
 
 
 def main(argv = sys.argv[1:]):
@@ -200,17 +210,18 @@ def main(argv = sys.argv[1:]):
     ]))
 
     try:
-        opts, args = getopt.getopt(argv, "hn:t:", ["help", "notes=", "talk-time=", "log="])
+        opts, args = getopt.getopt(argv, "m:n:o:t:",
+                                   ["help", "notes=", "talk-time=", "log=", "option"])
         opts = dict(opts)
     except getopt.GetoptError:
         usage()
         sys.exit(2)
 
-    ett, log_level, notes_pos = parse_opts(opts)
+    ett, log_level, notes_pos, config_override = parse_opts(opts)
     logger.setLevel(log_level)
 
     # Create windows
-    gui = ui.UI()
+    gui = ui.UI(config_override)
 
     # Connect proper exit function to interrupt
     signal.signal(signal.SIGINT, gui.save_and_quit)

@@ -164,8 +164,9 @@ class UI(builder.Builder):
     #############################      UI setup      #############################
     ##############################################################################
 
-    def __init__(self):
+    def __init__(self, config_override):
         super(UI, self).__init__()
+        self.config.read_dict(config_override)
         self.blanked = self.config.getboolean('content', 'start_blanked')
 
         Gtk.StyleContext.add_provider_for_screen(
