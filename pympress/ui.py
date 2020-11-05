@@ -419,14 +419,14 @@ class UI(builder.Builder):
             event (:class:`~Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
         if widget is self.p_win:
-            p_monitor = self.p_win.get_screen().get_monitor_at_window(self.p_central.get_parent_window())
+            p_monitor = self.p_win.get_display().get_monitor_at_window(self.p_central.get_parent_window())
             self.config.set('presenter', 'monitor', str(p_monitor))
             cw = self.p_central.get_allocated_width()
             ch = self.p_central.get_allocated_height()
             self.scribbler.off_render.set_size_request(cw, ch)
 
         elif widget is self.c_win:
-            c_monitor = self.c_win.get_screen().get_monitor_at_window(self.c_frame.get_parent_window())
+            c_monitor = self.c_win.get_display().get_monitor_at_window(self.c_frame.get_parent_window())
             self.config.set('content', 'monitor', str(c_monitor))
 
 

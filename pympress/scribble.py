@@ -245,6 +245,9 @@ class Scribbler(builder.Builder):
         """
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
 
+        monitor = widget.get_display().get_monitor_at_window(widget.get_parent_window()).get_geometry()
+        pen_scale_factor = max(ww / monitor.width, wh / monitor.height) # or sqrt of product
+
         cairo_context.push_group()
         cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
 
@@ -254,7 +257,7 @@ class Scribbler(builder.Builder):
             # alpha == 0 -> Eraser mode
             cairo_context.set_operator(cairo.OPERATOR_OVER if color.alpha else cairo.OPERATOR_CLEAR)
             cairo_context.set_source_rgba(*color)
-            cairo_context.set_line_width(width)
+            cairo_context.set_line_width(width * pen_scale_factor)
 
             cairo_context.move_to(*points[0])
             if len(points) > 2:
@@ -493,11 +496,15 @@ class Scribbler(builder.Builder):
         """
         button_number = int(widget.get_name().split('_')[-1])
         color, width = self.color_width[button_number - 1]
-        icon, mask = self.marker_surfaces[(width - 1) // 10]
+        icon, mask = self.marker_surfaces[(width - 1) // 30]
 
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
         scale = wh / icon.get_height()
 
+        dw, dh = self.scribble_p_da.get_allocated_width(), self.scribble_p_da.get_allocated_height()
+        monitor = widget.get_display().get_monitor_at_window(widget.get_parent_window()).get_geometry()
+        pen_scale_factor = max(dw / monitor.width, dh / monitor.height)
+        width *= pen_scale_factor
 
         cairo_context.push_group()
 
