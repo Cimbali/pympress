@@ -28,6 +28,8 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
+import math
+
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
@@ -74,6 +76,9 @@ class Scribbler(builder.Builder):
     scribble_width_selector = None
     #:
     scribble_preset_buttons = []
+
+    #:
+    mouse_pos = None
 
     #: :class:`~Gtk.Button` for removing the last drawn scribble
     scribble_undo = None
@@ -150,7 +155,7 @@ class Scribbler(builder.Builder):
 
 
     def nav_scribble(self, name, ctrl_pressed, command = None):
-        """ Handles an key press event: undo or disable scribbling.
+        """ Handles a key press event: undo or disable scribbling.
 
         Args:
             name (`str`): The name of the key pressed
@@ -200,15 +205,16 @@ class Scribbler(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
+        pos = self.get_slide_point(widget, event)
         if self.scribble_drawing:
-            self.scribble_list[-1][2].append(self.get_slide_point(widget, event))
+            self.scribble_list[-1][2].append(pos)
             self.scribble_redo_list.clear()
 
             self.adjust_buttons()
-            self.redraw_current_slide()
-            return True
-        else:
-            return False
+
+        self.mouse_pos = pos
+        self.redraw_current_slide()
+        return self.scribble_drawing
 
 
     def toggle_scribble(self, widget, event):
@@ -271,6 +277,19 @@ class Scribbler(builder.Builder):
 
         cairo_context.pop_group_to_source()
         cairo_context.paint()
+
+        if widget.get_name() == 'scribble_p_da' and self.mouse_pos is not None:
+            cairo_context.set_source_rgba(0, 0, 0, 1)
+            cairo_context.set_line_width(1)
+
+            mx, my = self.mouse_pos
+            cairo_context.arc(mx * ww, my * wh, self.scribble_width * pen_scale_factor / 2, 0, 2 * math.pi)
+
+            cairo_context.stroke_preserve()
+
+            cairo_context.set_source_rgba(*list(self.scribble_color)[:3], self.scribble_color.alpha * .5)
+            cairo_context.close_path()
+            cairo_context.fill()
 
 
     def update_color(self, widget):
@@ -404,6 +423,7 @@ class Scribbler(builder.Builder):
         self.scribbling_mode = True
         self.pres_highlight.set_active(self.scribbling_mode)
 
+        extras.Cursor.set_cursor(self.scribble_p_da, 'invisible')
         return True
 
 
@@ -416,6 +436,7 @@ class Scribbler(builder.Builder):
         if not self.scribbling_mode:
             return False
 
+        extras.Cursor.set_cursor(self.scribble_p_da, 'default')
         self.swap_layout('highlight', None)
 
         self.off_render.add(self.scribble_overlay)
@@ -424,6 +445,7 @@ class Scribbler(builder.Builder):
 
         self.p_central.queue_draw()
         extras.Cursor.set_cursor(self.p_central)
+        self.mouse_pos = None
 
         return True
 
