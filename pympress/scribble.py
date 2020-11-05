@@ -476,7 +476,7 @@ class Scribbler(builder.Builder):
         self.config.set('scribble', 'active_pen', str(self.active_preset + 1))
 
         if preset_number < 0:
-            self.scribble_color, self.scribble_width = Gdk.RGBA(0, 0, 0, 0), 50
+            self.scribble_color, self.scribble_width = Gdk.RGBA(0, 0, 0, 0), 150
             self.get_object('eraser').set_active(True)
         else:
             self.scribble_color, self.scribble_width = self.color_width[preset_number]
