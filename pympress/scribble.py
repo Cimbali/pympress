@@ -257,9 +257,13 @@ class Scribbler(builder.Builder):
             cairo_context.set_line_width(width)
 
             cairo_context.move_to(*points[0])
+            if len(points) > 2:
+                c1 = points[1]
+                for c2, pt in zip(points[2::2], points[3::2]):
+                    cairo_context.curve_to(*c1, *c2, *pt)
+                    c1 = (pt[0] * 2 - c2[0], pt[1] * 2 - c2[1])
 
-            for p in points[1:]:
-                cairo_context.line_to(*p)
+            cairo_context.line_to(*points[-1])
             cairo_context.stroke()
 
         cairo_context.pop_group_to_source()
