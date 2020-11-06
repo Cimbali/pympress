@@ -79,6 +79,8 @@ class Scribbler(builder.Builder):
 
     #:
     mouse_pos = None
+    #:
+    current_scribble_points = []
 
     #: :class:`~Gtk.Button` for removing the last drawn scribble
     scribble_undo = None
@@ -195,6 +197,32 @@ class Scribbler(builder.Builder):
         return color
 
 
+    def points_to_curves(self, points):
+        if len(points) <= 2:
+            return points
+
+        curves = []
+        curves.append(points[0])
+
+        c1 = points[1]
+        for c2, pt in zip(points[2:-1:2], points[3:-1:2]):
+            half_c2pt = (pt[0] - c2[0]) / 2, (pt[1] - c2[1]) / 2
+
+            curves.append((*c1, c2[0] + half_c2pt[0], c2[1] + half_c2pt[1], *pt))
+            c1 = (pt[0] + half_c2pt[0], pt[1] + half_c2pt[1])
+
+        if len(points) % 2 == 0:
+            curves.append((*c1, *points[-2], *points[-1]))
+        else:
+            curves.append(points[-1])
+
+        return curves
+
+
+    def get_current_scribble(self):
+        return (self.scribble_color, self.scribble_width, self.points_to_curves(self.current_scribble_points))
+
+
     def track_scribble(self, widget, event):
         """ Draw the scribble following the mouse's moves.
 
@@ -205,9 +233,14 @@ class Scribbler(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
+        last = getattr(self, 'last_time', None)
+        self.last_time = event.get_time()
+        print(self.last_time - last)
+
         pos = self.get_slide_point(widget, event)
         if self.scribble_drawing:
-            self.scribble_list[-1][2].append(pos)
+            self.current_scribble_points.append(pos)
+            self.scribble_list[-1] = self.get_current_scribble()
             self.scribble_redo_list.clear()
 
             self.adjust_buttons()
@@ -231,11 +264,14 @@ class Scribbler(builder.Builder):
             return False
 
         if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
-            self.scribble_list.append((self.scribble_color, self.scribble_width, []))
+            self.current_scribble_points.clear()
+            self.scribble_list.append(self.get_current_scribble())
             self.scribble_drawing = True
 
             return self.track_scribble(widget, event)
         elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
+            self.scribble_list[-1] = self.get_current_scribble()
+            self.current_scribble_points.clear()
             self.scribble_drawing = False
             return True
 
@@ -257,22 +293,21 @@ class Scribbler(builder.Builder):
         cairo_context.push_group()
         cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
 
-        for color, width, points in self.scribble_list:
-            points = [(p[0] * ww, p[1] * wh) for p in points]
+        for color, width, curves in self.scribble_list:
+            curves = [[coord * size for coord, size in zip(curve, [ww, wh] * (len(curve) // 2))] for curve in curves]
 
             # alpha == 0 -> Eraser mode
             cairo_context.set_operator(cairo.OPERATOR_OVER if color.alpha else cairo.OPERATOR_CLEAR)
             cairo_context.set_source_rgba(*color)
             cairo_context.set_line_width(width * pen_scale_factor)
 
-            cairo_context.move_to(*points[0])
-            if len(points) > 2:
-                c1 = points[1]
-                for c2, pt in zip(points[2::2], points[3::2]):
-                    cairo_context.curve_to(*c1, *c2, *pt)
-                    c1 = (pt[0] * 2 - c2[0], pt[1] * 2 - c2[1])
+            cairo_context.move_to(*curves[0])
+            for curve in curves[1:]:
+                if len(curve) == 2:
+                    cairo_context.line_to(*curve)
+                else:
+                    cairo_context.curve_to(*curve)
 
-            cairo_context.line_to(*points[-1])
             cairo_context.stroke()
 
         cairo_context.pop_group_to_source()
@@ -310,7 +345,7 @@ class Scribbler(builder.Builder):
             event (:class:`~Gdk.Event`):  the GTK event triggering this update.
             value (`int`): the width of the scribbles to be drawn
         """
-        self.scribble_width = int(value)
+        self.scribble_width = max(5, min(90, int(value)))
         self.update_active_color_width()
 
 
@@ -518,7 +553,7 @@ class Scribbler(builder.Builder):
         """
         button_number = int(widget.get_name().split('_')[-1])
         color, width = self.color_width[button_number - 1]
-        icon, mask = self.marker_surfaces[(width - 1) // 30]
+        icon, mask = self.marker_surfaces[int((width - 1) / 30)]
 
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
         scale = wh / icon.get_height()
