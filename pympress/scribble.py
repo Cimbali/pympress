@@ -69,6 +69,8 @@ class Scribbler(builder.Builder):
     scribble_p_eb = None
     #: :class:`~Gtk.AspectFrame` for the slide in the Presenter's highlight mode
     scribble_p_frame = None
+    #:
+    c_da = None
 
     #:
     scribble_color_selector = None
@@ -80,7 +82,9 @@ class Scribbler(builder.Builder):
     #:
     mouse_pos = None
     #:
-    current_scribble_points = []
+    scribble_cache = None
+    #:
+    next_render = 0
 
     #: :class:`~Gtk.Button` for removing the last drawn scribble
     scribble_undo = None
@@ -198,11 +202,10 @@ class Scribbler(builder.Builder):
 
 
     def points_to_curves(self, points):
-        if len(points) <= 2:
-            return points
-
         curves = []
-        curves.append(points[0])
+
+        if len(points) <= 2:
+            return curves
 
         c1 = points[1]
         for c2, pt in zip(points[2:-1:2], points[3:-1:2]):
@@ -213,14 +216,12 @@ class Scribbler(builder.Builder):
 
         if len(points) % 2 == 0:
             curves.append((*c1, *points[-2], *points[-1]))
-        else:
-            curves.append(points[-1])
 
         return curves
 
 
     def get_current_scribble(self):
-        return (self.scribble_color, self.scribble_width, self.points_to_curves(self.current_scribble_points))
+        return
 
 
     def track_scribble(self, widget, event):
@@ -233,14 +234,9 @@ class Scribbler(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
-        last = getattr(self, 'last_time', None)
-        self.last_time = event.get_time()
-        print(self.last_time - last)
-
         pos = self.get_slide_point(widget, event)
         if self.scribble_drawing:
-            self.current_scribble_points.append(pos)
-            self.scribble_list[-1] = self.get_current_scribble()
+            self.scribble_list[-1][-1].append(pos)
             self.scribble_redo_list.clear()
 
             self.adjust_buttons()
@@ -264,18 +260,67 @@ class Scribbler(builder.Builder):
             return False
 
         if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
-            self.current_scribble_points.clear()
-            self.scribble_list.append(self.get_current_scribble())
+            self.scribble_list.append((self.scribble_color, self.scribble_width, []))
             self.scribble_drawing = True
 
             return self.track_scribble(widget, event)
         elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
-            self.scribble_list[-1] = self.get_current_scribble()
-            self.current_scribble_points.clear()
             self.scribble_drawing = False
+            self.prerender()
             return True
 
         return False
+
+
+    def reset_scribble_cache(self):
+        ww, wh = self.c_da.get_allocated_width(), self.c_da.get_allocated_height()
+        window = self.c_da.get_window()
+        self.scribble_cache = window.create_similar_image_surface(cairo.FORMAT_ARGB32, ww, wh, 0)
+        self.next_render = 0
+
+
+    def prerender(self):
+        if self.scribble_cache is None:
+            self.reset_scribble_cache()
+
+        ww, wh = self.scribble_cache.get_width(), self.scribble_cache.get_height()
+
+        monitor = self.c_da.get_display().get_monitor_at_window(self.c_da.get_parent_window()).get_geometry()
+        pen_scale_factor = max(ww / monitor.width, wh / monitor.height) # or sqrt of product
+
+        cairo_context = cairo.Context(self.scribble_cache)
+        cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
+
+        draw = slice(self.next_render, -1 if self.scribble_drawing else None)
+
+        for color, width, points in self.scribble_list[draw]:
+            self.render_scribble(cairo_context, color, width * pen_scale_factor, [(x * ww, y * wh) for x, y in points])
+
+        del cairo_context
+
+        self.next_render = len(self.scribble_list) + (draw.stop if draw.stop else 0)
+
+
+    def render_scribble(self, cairo_context, color, width, points):
+        if not points:
+            return
+
+        # alpha == 0 -> Eraser mode
+        cairo_context.set_operator(cairo.OPERATOR_OVER if color.alpha else cairo.OPERATOR_CLEAR)
+        cairo_context.set_source_rgba(*color)
+        cairo_context.set_line_width(width)
+
+        cairo_context.move_to(*points[0])
+
+        for curve in self.points_to_curves(points):
+            cairo_context.curve_to(*curve)
+
+        path = cairo_context.copy_path()
+
+        cairo_context.line_to(*points[-1])
+        cairo_context.stroke()
+
+        return path
 
 
     def draw_scribble(self, widget, cairo_context):
@@ -286,32 +331,29 @@ class Scribbler(builder.Builder):
             cairo_context (:class:`~cairo.Context`): The canvas on which to render the drawings
         """
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+        cw, ch = self.scribble_cache.get_width(), self.scribble_cache.get_height()
+
+        cairo_context.push_group()
+
+        cairo_context.save()
+
+        cairo_context.scale(ww / cw, wh / ch)
+        cairo_context.set_source_surface(self.scribble_cache)
+        cairo_context.paint()
+
+        cairo_context.restore()
 
         monitor = widget.get_display().get_monitor_at_window(widget.get_parent_window()).get_geometry()
         pen_scale_factor = max(ww / monitor.width, wh / monitor.height) # or sqrt of product
 
-        cairo_context.push_group()
-        cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
-
-        for color, width, curves in self.scribble_list:
-            curves = [[coord * size for coord, size in zip(curve, [ww, wh] * (len(curve) // 2))] for curve in curves]
-
-            # alpha == 0 -> Eraser mode
-            cairo_context.set_operator(cairo.OPERATOR_OVER if color.alpha else cairo.OPERATOR_CLEAR)
-            cairo_context.set_source_rgba(*color)
-            cairo_context.set_line_width(width * pen_scale_factor)
-
-            cairo_context.move_to(*curves[0])
-            for curve in curves[1:]:
-                if len(curve) == 2:
-                    cairo_context.line_to(*curve)
-                else:
-                    cairo_context.curve_to(*curve)
-
-            cairo_context.stroke()
+        if self.scribble_drawing:
+            cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
+            color, width, points = self.scribble_list[-1]
+            self.render_scribble(cairo_context, color, width * pen_scale_factor, [(x * ww, y * wh) for x, y in points])
 
         cairo_context.pop_group_to_source()
         cairo_context.paint()
+
 
         if widget.get_name() == 'scribble_p_da' and self.mouse_pos is not None:
             cairo_context.set_source_rgba(0, 0, 0, 1)
@@ -373,6 +415,7 @@ class Scribbler(builder.Builder):
         """
         self.scribble_list.clear()
 
+        self.reset_scribble_cache()
         self.redraw_current_slide()
         self.adjust_buttons()
 
@@ -384,6 +427,8 @@ class Scribbler(builder.Builder):
             self.scribble_redo_list.append(self.scribble_list.pop())
 
         self.adjust_buttons()
+        self.reset_scribble_cache()
+        self.prerender()
         self.redraw_current_slide()
 
 
@@ -394,6 +439,7 @@ class Scribbler(builder.Builder):
             self.scribble_list.append(self.scribble_redo_list.pop())
 
         self.adjust_buttons()
+        self.prerender()
         self.redraw_current_slide()
 
 

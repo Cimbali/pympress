@@ -407,6 +407,8 @@ class UI(builder.Builder):
 
         if widget is self.c_da:
             self.medias.resize('content')
+            self.scribbler.reset_scribble_cache()
+            self.scribbler.prerender()
         elif widget is self.p_da_cur:
             self.medias.resize('presenter')
 
