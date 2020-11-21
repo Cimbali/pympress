@@ -98,7 +98,7 @@ class EditableLabel(object):
         pass
 
 
-    def more_actions(self, event, name):
+    def more_actions(self, event, command):
         """ Perform actions based on passed key strokes or other events. Needs to be reimplemented by children classes.
         """
         raise NotImplementedError
@@ -131,7 +131,7 @@ class EditableLabel(object):
             self.restore_label()
 
         else:
-            return self.more_actions(event, name)
+            return self.more_actions(event, command)
 
         return True
 
@@ -285,27 +285,22 @@ class PageNumber(EditableLabel):
         GLib.idle_add(self.page_change, False)
 
 
-    def more_actions(self, event, name):
+    def more_actions(self, event, command):
         """ Implement directions (left/right/home/end) keystrokes.
 
         Otherwise pass on to :func:`~Gtk.SpinButton.do_key_press_event()`.
         """
-        modified = event.get_state() & Gdk.ModifierType.CONTROL_MASK or event.get_state() & Gdk.ModifierType.SHIFT_MASK
+        editing_labels = self.page_labels and self.edit_label.is_focus() or command and command.endswith('_label')
+        cur_page = int(self.spin_cur.get_value())
 
-        if name == 'home':
+        if command == 'first':
             self.spin_cur.set_value(1)
-        elif name == 'end':
+        elif command == 'last':
             self.spin_cur.set_value(self.max_page_number)
-        elif modified and name == 'up':
-            cur_page = int(self.spin_cur.get_value()) - 1
-            self.spin_cur.set_value(1 + self.label_before(cur_page))
-        elif modified and name == 'down':
-            cur_page = int(self.spin_cur.get_value()) - 1
-            self.spin_cur.set_value(1 + self.label_after(cur_page))
-        elif name == 'up':
-            self.spin_cur.set_value(self.spin_cur.get_value() - 1)
-        elif name == 'down':
-            self.spin_cur.set_value(self.spin_cur.get_value() + 1)
+        elif command in ('next', 'next_label'):
+            self.spin_cur.set_value(1 + (self.label_before(cur_page + 1) if editing_labels else cur_page))
+        elif command in ('prev', 'prev_label'):
+            self.spin_cur.set_value((1 + self.label_before(cur_page - 1)) if editing_labels else (cur_page - 1))
         elif self.page_labels and self.edit_label.is_focus():
             return Gtk.Entry.do_key_press_event(self.edit_label, event)
         else:
@@ -510,7 +505,7 @@ class EstimatedTalkTime(EditableLabel):
         # TODO a callback for timer?
 
 
-    def more_actions(self, event, name):
+    def more_actions(self, event, command):
         """ Pass on keystrokes to :func:`~Gtk.Entry.do_key_press_event()`.
         """
         return Gtk.Entry.do_key_press_event(self.entry_ett, event)
