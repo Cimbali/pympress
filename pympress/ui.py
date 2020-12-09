@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 
 import os.path
 import sys
+import gc
 
 import gi
 import cairo
@@ -542,6 +543,7 @@ class UI(builder.Builder):
             page (`int`): the page at which to start the presentation
             reloading (`bool`): whether we are reloading or detecting stuff from the document
         """
+        run_gc = self.doc.doc is not None
         try:
             self.doc = document.Document.create(self, docpath)
 
@@ -583,6 +585,11 @@ class UI(builder.Builder):
             self.talk_time.reset_timer()
 
         self.on_page_change(False)
+
+        # Now that all references to the old document have been replaced or removed, manually
+        # collect garbage to delete objects and release file handles / close file descriptors
+        if run_gc:
+            gc.collect(1)
 
 
     def reload_document(self):
