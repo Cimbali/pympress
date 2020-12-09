@@ -790,14 +790,14 @@ class Document(object):
             :class:`~pympress.document.PdfPage`: the notes mode
         """
         page = self.page(self.cur_page) or self.page(0)
-        if page is None:
+        if page is None or not page.can_render():
             return PdfPage.NONE
 
         ar = page.get_aspect_ratio()
 
         # Check whether we have N slides with one aspect ratio then N slides with a different aspect ratio
         # that is the sign if Libreoffice notes pages
-        if self.nb_pages % 2 == 0:
+        if self.nb_pages and self.nb_pages % 2 == 0:
             half_doc = self.nb_pages // 2
             ar_slides = self.page(0).get_aspect_ratio()
             ar_notes = self.page(half_doc).get_aspect_ratio()
