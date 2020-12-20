@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GLib
+from gi.repository import Gtk, Gdk, GLib, Gio
 
 
 class EditableLabel(object):
@@ -42,7 +42,7 @@ class EditableLabel(object):
     #: `bool` tracking whether we are currently editing the label.
     editing = False
 
-    def on_label_event(self, widget, event = None, name = None):
+    def on_label_event(self, widget_or_action, event=None):
         """ Manage events on the current slide label/entry.
 
         This function triggers replacing the label with an entry when clicked or otherwise toggled.
@@ -50,28 +50,19 @@ class EditableLabel(object):
         Args:
             widget (:class:`~Gtk.Widget`):  the widget in which the event occurred
             event (:class:`~Gtk.Event` or None):  the event that occurred, None if tf we called from a menu item
-            name (`str`): name of the key in the casae of a key press
 
         Returns:
             `bool`: whether the event was consumed
         """
         hint = None
-        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.editing:
-            # Checking the checkbox conforming to current situation: do nothing
-            return False
-
-        elif issubclass(type(widget), Gtk.MenuItem):
-            # A button or menu item, etc. directly connected to this action
-            hint = widget.get_name()
+        if issubclass(type(widget_or_action), Gio.Action):
+            hint = widget_or_action.get_name()
             pass
 
-        elif event.type == Gdk.EventType.BUTTON_PRESS:
+        elif event is not None and event.type == Gdk.EventType.BUTTON_PRESS:
             # If we clicked on the Event Box then don't toggle, just enable.
-            if widget is not self.event_box or self.editing:
+            if widget_or_action is not self.event_box or self.editing:
                 return False
-
-        elif event.type == Gdk.EventType.KEY_PRESS:
-            hint = name
 
         else:
             return False
@@ -98,14 +89,8 @@ class EditableLabel(object):
         pass
 
 
-    def more_actions(self, event, command):
-        """ Perform actions based on passed key strokes or other events. Needs to be reimplemented by children classes.
-        """
-        raise NotImplementedError
-
-
-    def on_keypress(self, widget, event, name = None, command = None):
-        """ Manage key presses for the editable label.
+    def on_keypress(self, widget, event):
+        """ Manage key presses for the editable label. Needs to be reimplemented by children classes.
 
         If we are editing the label, intercept some key presses (to validate or cancel editing or other specific
         behaviour), otherwise pass the key presses on to the button for normal behaviour.
@@ -119,20 +104,24 @@ class EditableLabel(object):
         Returns:
             `bool`: whether the event was consumed
         """
-        if not self.editing or event.type != Gdk.EventType.KEY_PRESS:
+        raise NotImplementedError
+
+
+    def try_cancel(self):
+        if not self.editing:
             return False
 
-        if command == 'validate':
-            self.validate()
-            self.restore_label()
+        self.cancel()
+        self.restore_label()
+        return True
 
-        elif command == 'cancel':
-            self.cancel()
-            self.restore_label()
 
-        else:
-            return self.more_actions(event, command)
+    def try_validate(self):
+        if not self.editing:
+            return False
 
+        self.validate()
+        self.restore_label()
         return True
 
 
@@ -285,23 +274,12 @@ class PageNumber(EditableLabel):
         GLib.idle_add(self.page_change, False)
 
 
-    def more_actions(self, event, command):
+    def on_keypress(self, widget, event):
         """ Implement directions (left/right/home/end) keystrokes.
 
         Otherwise pass on to :func:`~Gtk.SpinButton.do_key_press_event()`.
         """
-        editing_labels = self.page_labels and self.edit_label.is_focus() or command and command.endswith('_label')
-        cur_page = int(self.spin_cur.get_value())
-
-        if command == 'first':
-            self.spin_cur.set_value(1)
-        elif command == 'last':
-            self.spin_cur.set_value(self.max_page_number)
-        elif command in ('next', 'next_label'):
-            self.spin_cur.set_value(1 + (self.label_before(cur_page + 1) if editing_labels else cur_page))
-        elif command in ('prev', 'prev_label'):
-            self.spin_cur.set_value((1 + self.label_before(cur_page - 1)) if editing_labels else (cur_page - 1))
-        elif self.page_labels and self.edit_label.is_focus():
+        if self.page_labels and self.edit_label.is_focus():
             return Gtk.Entry.do_key_press_event(self.edit_label, event)
         else:
             return Gtk.SpinButton.do_key_press_event(self.spin_cur, event)
@@ -341,7 +319,7 @@ class PageNumber(EditableLabel):
                 return Gtk.SpinButton.do_scroll_event(self.spin_cur, event)
 
 
-    def swap_label_for_entry(self, hint = None):
+    def swap_label_for_entry(self, hint=None):
         """ Perform the actual work of starting the editing.
         """
         self.stop_editing_est_time()
@@ -372,7 +350,7 @@ class PageNumber(EditableLabel):
             cur_nb = -1
         self.spin_cur.set_value(cur_nb)
 
-        if self.page_labels and (hint == 'jumpto_label' or hint == 'nav_jump'):
+        if self.page_labels and (hint == 'jumpto-label' or hint == 'nav_jump'):
             self.edit_label.grab_focus()
             self.edit_label.select_region(0, -1)
         else:
@@ -457,8 +435,6 @@ class EstimatedTalkTime(EditableLabel):
         self.entry_ett = Gtk.Entry()
 
         builder.load_widgets(self)
-        builder.get_object('nav_goto').set_name('nav_goto')
-        builder.get_object('nav_jump').set_name('nav_jump')
 
         self.set_time(ett)
 
@@ -505,7 +481,7 @@ class EstimatedTalkTime(EditableLabel):
         # TODO a callback for timer?
 
 
-    def more_actions(self, event, command):
+    def on_keypress(self, widget, event):
         """ Pass on keystrokes to :func:`~Gtk.Entry.do_key_press_event()`.
         """
         return Gtk.Entry.do_key_press_event(self.entry_ett, event)

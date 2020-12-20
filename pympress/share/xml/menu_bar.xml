@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+<menu id="menu_bar">
+	<submenu>
+        <attribute name="label" translatable="yes">_File</attribute>
+		<section>
+            <item>
+                <attribute name="label" translatable="yes">_Open</attribute>
+                <attribute name="action">file.pick</attribute>
+				<!-- <attribute name="icon">open</attribute> -->
+            </item>
+            <submenu id="recent_menu">
+                <attribute name="label" translatable="yes">Open _Recent</attribute>
+                <attribute name="submenu-action">file.list-recent</attribute>
+            </submenu>
+            <item>
+                <attribute name="label" translatable="yes">_Close</attribute>
+                <attribute name="action">file.close</attribute>
+            </item>
+            <item>
+                <attribute name="label" translatable="yes">_Quit</attribute>
+                <attribute name="action">app.quit</attribute>
+            </item>
+        </section>
+    </submenu>
+
+    <submenu>
+        <attribute name="label" translatable="yes">_Presentation</attribute>
+		<item>
+			<attribute name="label" translatable="yes">_Pause timer</attribute>
+			<attribute name="action">app.pause-timer</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Reset timer</attribute>
+			<attribute name="action">app.reset-timer</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">Set talk _Time</attribute>
+			<attribute name="action">app.set-talk-time</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Fullscreen</attribute>
+			<attribute name="action">app.presenter-fullscreen</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Swap screens</attribute>
+			<attribute name="action">app.swap-screens</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Notes mode</attribute>
+			<attribute name="action">app.notes-mode</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Blank screen</attribute>
+			<attribute name="action">app.blank-screen</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">Align _content</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Annotations</attribute>
+			<attribute name="action">app.annotations</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">Big buttons</attribute>
+			<attribute name="action">app.big-buttons</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Highlight</attribute>
+			<attribute name="action">highlight.toggle</attribute>
+		</item>
+		<submenu>
+			<attribute name="label" translatable="yes">_Pointer</attribute>
+			<section>
+				<item>
+					<attribute name="label" translatable="yes">_Permanent</attribute>
+					<attribute name="action">pointer.mode</attribute>
+					<attribute name="target">continuous</attribute>
+				</item>
+				<item>
+					<attribute name="label" translatable="yes">_Manual</attribute>
+					<attribute name="action">pointer.mode</attribute>
+					<attribute name="target">manual</attribute>
+				</item>
+				<item>
+					<attribute name="label" translatable="yes">_Disabled</attribute>
+					<attribute name="action">pointer.mode</attribute>
+					<attribute name="target">disabled</attribute>
+				</item>
+			</section>
+			<section>
+				<item>
+					<attribute name="label" translatable="yes">_Red</attribute>
+					<attribute name="action">pointer.color</attribute>
+					<attribute name="target">red</attribute>
+				</item>
+				<item>
+					<attribute name="label" translatable="yes">_Green</attribute>
+					<attribute name="action">pointer.color</attribute>
+					<attribute name="target">green</attribute>
+				</item>
+				<item>
+					<attribute name="label" translatable="yes">_Blue</attribute>
+					<attribute name="action">pointer.color</attribute>
+					<attribute name="target">blue</attribute>
+				</item>
+			</section>
+		</submenu>
+
+		<item>
+			<attribute name="label" translatable="yes">_Zoom in</attribute>
+			<attribute name="action">app.zoom</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Undo zoom</attribute>
+			<attribute name="action">app.unzoom</attribute>
+		</item>
+
+		<submenu>
+			<attribute name="label" translatable="yes">Notes position</attribute>
+			<item>
+				<attribute name="label" translatable="yes">_Right half of slide</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">right</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">_Bottom half of slide</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">bottom</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">_Left half of slide</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">left</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">_Top half of slide</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">top</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">_After slide pages</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">after</attribute>
+			</item>
+		</submenu>
+
+		<item>
+			<attribute name="label" translatable="yes">Timing breakdown</attribute>
+			<attribute name="action">app.timing-report</attribute>
+		</item>
+    </submenu>
+
+	<submenu>
+		<attribute name="label" translatable="yes">_Navigation</attribute>
+		<item>
+			<attribute name="label" translatable="yes">_Next</attribute>
+			<attribute name="action">app.next-page</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Previous</attribute>
+			<attribute name="action">app.prev-page</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_First</attribute>
+			<attribute name="action">app.first-page</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Last</attribute>
+			<attribute name="action">app.last-page</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Go to...</attribute>
+			<attribute name="action">app.goto-page</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Jump to label</attribute>
+			<attribute name="action">app.jumpto-label</attribute>
+		</item>
+	</submenu>
+
+	<submenu>
+		<attribute name="label" translatable="yes">_Starting Configuration</attribute>
+		<item>
+			<attribute name="label" translatable="yes">Content blanked</attribute>
+			<attribute name="action">app.start-blanked</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">Content fullscreen</attribute>
+			<attribute name="action">app.start-content-fullscreen</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">Presenter fullscreen</attribute>
+			<attribute name="action">app.start-presenter-fullscreen</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">Portable installation</attribute>
+			<attribute name="action">app.portable-config</attribute>
+		</item>
+	</submenu>
+
+	<submenu>
+		<attribute name="label" translatable="yes">_Help</attribute>
+		<item>
+			<attribute name="label">_About</attribute>
+			<attribute name="action">app.about</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Shortcuts</attribute>
+			<attribute name="action">app.show-shortcuts</attribute>
+		</item>
+	</submenu>
+
+</menu>
+</interface>

@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 import ctypes
 
 from pympress import builder
+from gi.repository import GLib
 
 
 def get_window_handle(window):
@@ -83,15 +84,6 @@ class VideoOverlay(builder.Builder):
     #: `bool` that tracks whether we should play automatically
     autoplay = False
 
-    #: callback, to be connected to :meth:`~pympress.extras.Media.play`, curryfied with the correct media_id
-    play = None
-    #: callback, to be connected to :meth:`~pympress.extras.Media.hide`, curryfied with the correct media_id
-    hide = None
-    #: callback, to be connected to :meth:`~pympress.extras.Media.play_pause`, curryfied with the correct media_id
-    play_pause = None
-    #: callback, to be connected to :meth:`~pympress.extras.Media.set_time`, curryfied with the correct media_id
-    set_time = None
-
     #: `bool` that tracks whether the user is dragging the position
     dragging_position = False
     #: `bool` that tracks whether the playback was paused when the user started dragging the position
@@ -100,6 +92,8 @@ class VideoOverlay(builder.Builder):
     time_format = '{:01}:{:02}'
     #: `float` holding the max time in s
     maxval = 1
+
+    action_map = None
 
     def __init__(self, container, show_controls, relative_margins, page_type, callback_getter):
         super(VideoOverlay, self).__init__()
@@ -111,11 +105,15 @@ class VideoOverlay(builder.Builder):
         self.load_ui('media_overlay')
         self.toolbar.set_visible(show_controls)
 
-        self.play = callback_getter('play')
-        self.hide = callback_getter('hide')
-        self.play_pause = callback_getter('play_pause')
-        self.set_time = callback_getter('set_time')
         self.connect_signals(self)
+
+        # medias, here the actions are scoped to the current widget
+        self.action_map = self.setup_actions('media', {
+            'play':     dict(activate=callback_getter('play')),
+            'stop':     dict(activate=callback_getter('hide')),
+            'pause':    dict(activate=callback_getter('play_pause')),
+            'set_time': dict(activate=callback_getter('set_time'), parameter_type=float)
+        }, widget=self.media_overlay)
 
 
     def handle_embed(self, mapped_widget):
@@ -164,7 +162,7 @@ class VideoOverlay(builder.Builder):
             sc (:class:`~Gtk.Scale`): The scale whose position we are updating
             val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of seconds elapsed in the video
         """
-        return self.set_time(val)
+        return self.action_map.lookup_action('set_time').activate(GLib.Variant('d', val))
 
 
     def update_margins_for_page(self, page_type):

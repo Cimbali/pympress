@@ -39,6 +39,10 @@
   background: @theme_bg_color
 }
 
+#scribble_overlay modelbutton.pen-preset radio {
+  margin: 0 30px 25px 0;
+}
+
 .frame-label {
     font-size:1.2em;
 }

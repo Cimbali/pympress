@@ -40,7 +40,7 @@ except ImportError:
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, GLib, Gio
 
 from pympress import util
 
@@ -195,6 +195,22 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             self.remove_option('content', 'monitor')
 
 
+    def get_shortcuts(self):
+        shortcuts = {}
+        for action, shortcut in self.items('shortcuts'):
+            try:
+                ok, action_name, target_value = Gio.Action.parse_detailed_name('app.' + action)
+                action_name = action_name.replace('app.', '')
+                if not ok:
+                    raise ValueError()
+            except:
+                logger.error('Error parsing action ' + action)
+            else:
+                shortcuts.setdefault(action_name, []).append((action, shortcut))
+
+        return shortcuts
+
+
     def getlist(self, *args):
         """ Parse a config value and return the list by splitting the value on commas.
 
@@ -259,19 +275,21 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             self.write(configfile)
 
 
-    def toggle_start(self, check_item):
+    def toggle_start(self, gaction, target):
         """ Generic function to toggle some boolean startup configuration.
 
         Args:
             check_item (:class:`~Gtk.:CheckMenuItem`): the check button triggering the call
         """
-        # button is named start(_[pc]win)?_property
-        start, *win, prop = check_item.get_name().split('_')
-
-        window = {(): 'content', ('pwin',): 'presenter', ('cwin',): 'content'}[tuple(win)]
+        # action is named start(-presenter|-content)?-property
+        start, *win, prop = gaction.get_name().split('-')
+        window = win[0] if win else 'content'
         start_conf = 'start_' + prop
 
-        self.set(window, start_conf, 'on' if check_item.get_active() else 'off')
+        new_state = not gaction.get_state().get_boolean()
+
+        gaction.set_state(GLib.Variant('b', new_state))
+        self.set(window, start_conf, 'on' if new_state else 'off')
 
 
     def validate_layout(self, layout, expected_widgets, optional_widgets = set()):

@@ -197,16 +197,17 @@ def get_icon_path(name):
     return __get_resource_path('share', 'pixmaps', name)
 
 
-def get_ui_resource_file(name):
+def get_ui_resource_file(name, ext='.glade'):
     """ Load an UI definition file from pympress' resources.
 
     Args:
         name (`str`): The name of the UI to load
+        ext (`str`): The extension of the file
 
     Returns:
         `str`: The full path to the glade file
     """
-    return __get_resource_path('share', 'xml', name + '.glade')
+    return __get_resource_path('share', 'xml', name + ext)
 
 
 def list_icons():
@@ -309,6 +310,7 @@ def set_screensaver(must_disable, window):
 
     else:
         logger.warning(_("Unsupported OS: can't enable/disable screensaver"))
+
 
 
 #: remember DPMS setting before we change it

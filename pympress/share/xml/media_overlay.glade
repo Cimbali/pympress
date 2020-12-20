@@ -35,7 +35,7 @@
                 <property name="label" translatable="yes">Play</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-media-play</property>
-                <signal name="clicked" handler="play" swapped="no"/>
+                <property name="action-name">media.play</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -49,7 +49,7 @@
                 <property name="label" translatable="yes">Pause</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-media-pause</property>
-                <signal name="clicked" handler="play_pause" swapped="no"/>
+                <property name="action-name">media.pause</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -63,7 +63,7 @@
                 <property name="label" translatable="yes">Stop</property>
                 <property name="use_underline">True</property>
                 <property name="stock_id">gtk-media-stop</property>
-                <signal name="clicked" handler="hide" swapped="no"/>
+                <property name="action-name">media.stop</property>
               </object>
               <packing>
                 <property name="expand">False</property>

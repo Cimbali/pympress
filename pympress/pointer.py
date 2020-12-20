@@ -32,7 +32,7 @@ import enum
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gdk, GdkPixbuf
+from gi.repository import Gdk, GdkPixbuf, GLib
 
 from pympress import util, extras
 
@@ -81,6 +81,8 @@ class Pointer(object):
 
     #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
     redraw_current_slide = lambda: None
+    #: callback, to be connected to :meth:`~pympress.app.Pympress.set_action_state`
+    set_action_state = None
 
     def __init__(self, config, builder):
         super(Pointer, self).__init__()
@@ -89,9 +91,10 @@ class Pointer(object):
         builder.load_widgets(self)
 
         self.redraw_current_slide = builder.get_callback_handler('redraw_current_slide')
+        self.set_action_state = builder.get_callback_handler('app.set_action_state')
 
         default_mode = config.get('presenter', 'pointer_mode')
-        default_color = 'pointer_' + config.get('presenter', 'pointer')
+        default_color = config.get('presenter', 'pointer')
 
         try:
             default_mode = PointerMode[default_mode.upper()]
@@ -99,19 +102,12 @@ class Pointer(object):
             default_mode = PointerMode.MANUAL
 
         self.activate_pointermode(default_mode)
-
-        for radio_name in ['continuous', 'manual', 'disabled']:
-            radio = builder.get_object('pointermode_' + radio_name)
-            radio.set_name('pointermode_' + radio_name)
-            radio.set_active(radio_name == default_mode.name.lower())
-            self.pointermode_radios[radio_name] = radio
-
         self.load_pointer(default_color)
 
-        for radio_name in ['pointer_red', 'pointer_blue', 'pointer_green']:
-            radio = builder.get_object(radio_name)
-            radio.set_name(radio_name)
-            radio.set_active(radio_name == default_color)
+        self.action_map = builder.setup_actions('pointer', {
+            'color' : dict(activate=self.change_pointercolor, state=default_color, parameter_type=str),
+            'mode'  : dict(activate=self.change_pointermode, state=default_mode.name.lower(), parameter_type=str),
+        })
 
 
     def load_pointer(self, name):
@@ -120,25 +116,26 @@ class Pointer(object):
         Args:
             name (`str`): Name of the pointer to load
         """
-        if name in ['pointer_red', 'pointer_green', 'pointer_blue']:
-            self.pointer = GdkPixbuf.Pixbuf.new_from_file(util.get_icon_path(name + '.png'))
+        if name in ['red', 'green', 'blue']:
+            self.pointer = GdkPixbuf.Pixbuf.new_from_file(util.get_icon_path('pointer_' + name + '.png'))
         else:
             raise ValueError('Wrong color name')
 
 
-    def change_pointercolor(self, widget):
-        """ Callback for a radio item selection as pointer color.
+    def change_pointercolor(self, action, target):
+        """ Callback for a radio item selection as pointer mode (continuous, manual, none).
 
         Args:
-            widget (:class:`~Gtk.RadioMenuItem`): the selected radio item in the pointer type selection menu
+            action (:class:`~Gio.Action`): The action activatd
+            target (:class:`~GLib.Variant`): The selected mode
         """
-        if widget.get_active():
-            assert widget.get_name().startswith('pointer_')
-            self.load_pointer(widget.get_name())
-            self.config.set('presenter', 'pointer', widget.get_name()[len('pointer_'):])
+        color = target.get_string()
+        self.load_pointer(color)
+        self.config.set('presenter', 'pointer', color)
+        action.change_state(target)
 
 
-    def activate_pointermode(self, mode = None):
+    def activate_pointermode(self, mode=None):
         """ Activate the pointer as given by mode.
 
         Depending on the given mode, shows or hides the laser pointer and the normal mouse pointer.
@@ -175,23 +172,20 @@ class Pointer(object):
         self.redraw_current_slide()
 
 
-    def change_pointermode(self, widget):
+    def change_pointermode(self, action, target):
         """ Callback for a radio item selection as pointer mode (continuous, manual, none).
 
         Args:
-            widget (:class:`~Gtk.RadioMenuItem`): the selected radio item in the pointer type selection menu
+            action (:class:`~Gio.Action`): The action activatd
+            target (:class:`~GLib.Variant`): The selected mode
         """
-        if widget.get_active():
-            mode = PointerMode[widget.get_name()[len('pointermode_'):].upper()]
-            self.activate_pointermode(mode)
-
-
-    def toggle_pointermode(self, *args):
-        """ Callback for shortcut to switch on/off continuous pointer.
-        """
-        mode = self.old_pointer_mode if self.pointer_mode == PointerMode.CONTINUOUS else PointerMode.CONTINUOUS
+        if target is None or target.get_string() == 'toggle':
+            mode = self.old_pointer_mode if self.pointer_mode == PointerMode.CONTINUOUS else PointerMode.CONTINUOUS
+        else:
+            mode = PointerMode[target.get_string().upper()]
         self.activate_pointermode(mode)
-        self.pointermode_radios[mode.name.lower()].set_active(True)
+
+        action.change_state(GLib.Variant('s', mode.name.lower()))
 
 
     def render_pointer(self, cairo_context, ww, wh):

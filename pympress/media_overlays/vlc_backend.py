@@ -54,7 +54,8 @@ class VlcOverlay(base.VideoOverlay):
         super(VlcOverlay, self).__init__(*args, **kwargs)
 
         event_manager = self.player.event_manager()
-        event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.hide))
+        event_manager.event_attach(vlc.EventType.MediaPlayerEndReached,
+                                   lambda e: GLib.idle_add(self.action_map.lookup_action('stop').activate()))
         event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged,
                                    lambda e: self.update_range(self.player.get_length() / 1000. or 1.))
         event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged,

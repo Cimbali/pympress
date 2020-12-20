@@ -43,24 +43,23 @@ import gc
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import GObject, Gtk, Gdk, GLib, GdkPixbuf
+from gi.repository import GObject, Gtk, Gdk, GLib, GdkPixbuf, Gio
 
 
 from pympress import document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, editable_label
 
 
-
 class UI(builder.Builder):
     """ Pympress GUI management.
     """
+    #:
+    app = None
     #: Content window, as a :class:`~Gtk.Window` instance.
     c_win = None
     #: :class:`~Gtk.AspectFrame` for the Content window.
     c_frame = None
     #: :class:`~Gtk.DrawingArea` for the Content window.
     c_da = None
-    #: :class:`~Gtk.CheckMenuItem` that shows whether the c_win is fullscreen
-    pres_fullscreen = None
 
     #: Presenter window, as a :class:`~Gtk.Window` instance.
     p_win = None
@@ -82,8 +81,6 @@ class UI(builder.Builder):
 
     #: :class:`~Gtk.Frame` for the annotations in the Presenter window.
     p_frame_annot = None
-    #: :class:`~Gtk.CheckMenuItem` that shows whether the annotations are toggled
-    pres_annot = None
 
     #: Indicates whether we should delay redraws on some drawing areas to fluidify resizing gtk.paned
     resize_panes = False
@@ -94,8 +91,6 @@ class UI(builder.Builder):
     notes_mode = document.PdfPage.NONE
     #: Current choice of mode to toggle notes
     chosen_notes_mode = document.PdfPage.RIGHT
-    #: :class:`~Gtk.CheckMenuItem` that shows whether the annotations are toggled
-    pres_notes = None
 
     #: Whether to display annotations or not
     show_annotations = True
@@ -115,8 +110,6 @@ class UI(builder.Builder):
 
     #: track whether we blank the screen
     blanked = False
-    #: :class:`~Gtk.CheckMenuItem` that shows whether the blank mode is toggled
-    pres_blank = None
 
     #: Dictionary of :class:`~Gtk.Widget` from the presenter window that can be dynamically rearranged
     placeable_widgets = {}
@@ -159,7 +152,8 @@ class UI(builder.Builder):
 
     #: A :class:`Gtk.AccelGroup` to store the shortcuts
     accel_group = None
-
+    #: A :class:`Gio.Menu` to display the recent files to open
+    recent_menu = None
 
     ##############################################################################
     #############################      UI setup      #############################
@@ -179,6 +173,8 @@ class UI(builder.Builder):
         )
 
         self.show_annotations = self.config.getboolean('presenter', 'show_annotations')
+        self.chosen_notes_mode = document.PdfPage[self.config.get('notes position', 'horizontal').upper()]
+        self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
 
         # Surface cache
         self.cache = surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
@@ -188,6 +184,10 @@ class UI(builder.Builder):
         self.load_ui('content')
         self.app.add_window(self.p_win)
         self.app.add_window(self.c_win)
+
+        self.load_ui('menu_bar', ext='.xml')
+        self.app.set_menubar(self.get_object('menu_bar'))
+        self.recent_menu = self.get_object('recent_menu')
 
         self.zoom = extras.Zoom(self)
         self.scribbler = scribble.Scribbler(self.config, self, self.notes_mode)
@@ -201,7 +201,6 @@ class UI(builder.Builder):
 
         # solve circular creation-time dependency
         self.est_time.delayed_callback_connection(self)
-        self.zoom.delayed_callback_connection(self.scribbler)
 
         # Get placeable widgets. NB, get the highlight one manually from the scribbler class
         self.placeable_widgets = {
@@ -214,6 +213,63 @@ class UI(builder.Builder):
         self.make_pwin()
 
         self.connect_signals(self)
+
+        self.setup_actions('file', {
+            'open'          : dict(activate=self.open_file, parameter_type=str),
+            'close'         : dict(activate=self.close_file),
+            'pick'          : dict(activate=self.pick_file),
+            'list-recent'   : dict(change_state=self.populate_recent_menu, state=False),
+        })
+
+        self.setup_actions('timer', {
+            'pause':        dict(activate=self.talk_time.switch_pause, state=True),
+            'reset':        dict(activate=self.reset_timer),
+            'report':       dict(activate=self.show_timing_report),
+            'set-duration': dict(activate=self.est_time.on_label_event),
+        })
+
+        c_full = self.config.getboolean('content', 'start_fullscreen')
+        p_full = self.config.getboolean('presenter', 'start_fullscreen')
+        self.setup_actions('app', {
+            'quit'                      : dict(activate=self.app.quit),
+            'about'                     : dict(activate=self.menu_about),
+            'big-buttons'               : dict(activate=self.switch_bigbuttons, state=self.show_bigbuttons),
+            'show-shortcuts'            : dict(activate=self.show_shortcuts),
+            'content-fullscreen'        : dict(activate=self.switch_fullscreen, state=c_full),
+            'presenter-fullscreen'      : dict(activate=self.switch_fullscreen, state=p_full),
+            'swap-screens'              : dict(activate=self.swap_screens),
+            'blank-screen'              : dict(activate=self.switch_blanked, state=self.blanked),
+            'notes-mode'                : dict(activate=self.switch_mode, state=False),
+            'notes-pos'                 : dict(activate=self.change_notes_pos, state=self.chosen_notes_mode.name.lower(),
+                                               parameter_type=str),
+            'annotations'               : dict(activate=self.switch_annotations, state=self.show_annotations),
+            'zoom'                      : dict(activate=self.zoom.start_zooming),
+            'unzoom'                    : dict(activate=self.zoom.stop_zooming),
+            'start-content-fullscreen'  : dict(activate=self.config.toggle_start, state=c_full),
+            'start-presenter-fullscreen': dict(activate=self.config.toggle_start, state=p_full),
+            'start-blanked'             : dict(activate=self.config.toggle_start, state=self.blanked),
+            'portable-config'           : dict(activate=self.config.toggle_portable_config,
+                                               state=self.config.using_portable_config()),
+            'validate-input'            : dict(activate=self.validate_current_input),
+            'cancel-input'              : dict(activate=self.cancel_current_input),
+        })
+
+        self.setup_actions('app', {
+            # nav
+            'goto-page'     : dict(activate=self.page_number.on_label_event),
+            'jumpto-label'  : dict(activate=self.page_number.on_label_event),
+            'next-page'     : dict(activate=self.doc.goto_next),
+            'next-label'    : dict(activate=self.doc.label_next),
+            'prev-page'     : dict(activate=self.doc.goto_prev),
+            'prev-label'    : dict(activate=self.doc.label_prev),
+            'hist-back'     : dict(activate=self.doc.hist_prev),
+            'hist-forward'  : dict(activate=self.doc.hist_next),
+            'first-page'    : dict(activate=self.doc.goto_home),
+            'last-page'     : dict(activate=self.doc.goto_end),
+        })
+
+        for action, shortcut in self.config.items('shortcuts'):
+            self.app.set_accels_for_action(action if '.' in action else 'app.' + action, shortcut.split())
 
         # Common to both windows
         self.load_icons()
@@ -234,6 +290,10 @@ class UI(builder.Builder):
         self.p_frame_annot.set_visible(self.show_annotations)
         self.laser.activate_pointermode()
 
+
+    def activate(self):
+        """
+        """
         # Setup screens and show all windows
         self.setup_screens()
         self.c_win.show_all()
@@ -261,14 +321,21 @@ class UI(builder.Builder):
     def make_cwin(self):
         """ Initializes the content window.
         """
-        self.c_frame.set_property("yalign", self.config.getfloat('content', 'yalign'))
-        self.c_frame.set_property("xalign", self.config.getfloat('content', 'xalign'))
+        self.c_frame.set_property('yalign', self.config.getfloat('content', 'yalign'))
+        self.c_frame.set_property('xalign', self.config.getfloat('content', 'xalign'))
 
         page_type = self.notes_mode.complement()
 
         self.cache.add_widget(self.c_da, page_type)
         self.cache.add_widget(self.c_da, page_type, zoomed = True)
         self.c_frame.set_property("ratio", self.doc.current_page().get_aspect_ratio(page_type))
+
+        colourclass = 'white' if self.config.getboolean('content', 'white_blanking') else 'black'
+        self.c_da.get_style_context().add_class(colourclass)
+        self.c_win.get_style_context().add_class(colourclass)
+
+        self.c_win.insert_action_group('content', self.c_win.get_action_group('win'))
+        self.c_win.insert_action_group('win', None)
 
 
     def make_pwin(self):
@@ -277,31 +344,6 @@ class UI(builder.Builder):
         layout = self.config.get_layout('notes' if self.notes_mode else 'plain')
         pane_handles = self.replace_layout(layout, self.p_central, self.placeable_widgets, self.on_pane_event)
         self.pane_handle_pos.update(pane_handles)
-
-        self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
-
-        init_checkstates = {
-            'pres_pause':            True,
-            'pres_notes':            bool(self.notes_mode),
-            'pres_blank':            self.blanked,
-            'pres_annot':            self.show_annotations,
-            'pres_buttons':          self.show_bigbuttons,
-            'pres_highlight':        False,
-
-            'start_blanked':         self.config.getboolean('content', 'start_blanked'),
-            'start_cwin_fullscreen': self.config.getboolean('content', 'start_fullscreen'),
-            'start_pwin_fullscreen': self.config.getboolean('presenter', 'start_fullscreen'),
-            'portable_config':       self.config.using_portable_config(),
-        }
-
-        for n in init_checkstates:
-            self.get_object(n).set_active(init_checkstates[n])
-
-        default = 'notes_' + self.chosen_notes_mode.name.lower()
-        for radio_name in ['notes_right', 'notes_left', 'notes_top', 'notes_bottom', 'notes_after']:
-            radio = self.get_object(radio_name)
-            radio.set_name(radio_name)
-            radio.set_active(radio_name == default)
 
         slide_type = self.notes_mode.complement()
         self.cache.add_widget(self.p_da_cur, slide_type)
@@ -318,9 +360,8 @@ class UI(builder.Builder):
         self.p_win.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
         self.p_win.drag_dest_add_text_targets()
 
-        colourclass = 'white' if self.config.getboolean('content', 'white_blanking') else 'black'
-        self.c_da.get_style_context().add_class(colourclass)
-        self.c_win.get_style_context().add_class(colourclass)
+        self.p_win.insert_action_group('presenter', self.c_win.get_action_group('win'))
+        self.p_win.insert_action_group('win', None)
 
 
     def setup_screens(self):
@@ -329,8 +370,8 @@ class UI(builder.Builder):
         self.p_win.parse_geometry(self.config.get('presenter', 'geometry'))
         self.c_win.parse_geometry(self.config.get('content', 'geometry'))
 
-        p_full = self.config.getboolean('presenter', 'start_fullscreen')
-        c_full = self.config.getboolean('content', 'start_fullscreen')
+        c_full = self.app.get_action_state('content-fullscreen')
+        p_full = self.app.get_action_state('presenter-fullscreen')
 
         if not c_full and not p_full:
             # Just restored window sizes, that’s enough
@@ -342,54 +383,58 @@ class UI(builder.Builder):
         if screen.get_n_monitors() <= 1:
             logger.warning(_('Not starting content or presenter window full screen ' +
                              'because there is only one monitor'))
-            return
 
-        # To start fullscreen, we need to ensure windows are on individual monitors
-        c_monitor = screen.get_monitor_at_window(self.c_win)
-        p_monitor = screen.get_monitor_at_window(self.p_win)
-        primary = screen.get_primary_monitor()
-        if c_monitor == p_monitor:
-            warning = _('Content and presenter window must not be on the same monitor if you start full screen!')
-            logger.warning(warning)
+            c_full, p_full = False, False
 
-            if p_monitor == primary:
-                # move content somewhere else
-                self.move_window(screen, self.c_win, c_monitor, (primary + 1) % screen.get_n_monitors())
-            else:
-                # move presenter to primary
-                self.move_window(screen, self.p_win, p_monitor, primary)
+        else:
+            # To start fullscreen, we need to ensure windows are on individual monitors
+            c_monitor = screen.get_monitor_at_point(*self.c_win.get_position())
+            p_monitor = screen.get_monitor_at_point(*self.p_win.get_position())
+            primary = screen.get_primary_monitor()
+            if c_monitor == p_monitor:
+                warning = _('Content and presenter window must not be on the same monitor if you start full screen!')
+                logger.warning(warning)
+
+                if p_monitor == primary:
+                    # move content somewhere else
+                    self.move_window(screen, self.c_win, c_monitor, (primary + 1) % screen.get_n_monitors())
+                else:
+                    # move presenter to primary
+                    self.move_window(screen, self.p_win, p_monitor, primary)
 
         if p_full:
             self.p_win.fullscreen()
-        self.get_object('pres_fullscreen').set_active(p_full)
 
         if c_full:
             self.c_win.fullscreen()
             GLib.idle_add(lambda: util.set_screensaver(True, self.c_win.get_window()))
 
+        self.app.set_action_state('content-fullscreen', c_full)
+        self.app.set_action_state('presenter-fullscreen', p_full)
+
 
     def move_window(self, screen, win, from_monitor, to_monitor):
         """ Move window from monitor number from_monitor to monitor to_monitor.
         """
-        x, y, w, h = win.get_geometry()
-        win_state = win.get_window().get_state()
+        x, y, w, h = win.get_position() + win.get_size()
+        win_state = win.get_window().get_state() if win.get_window() is not None else 0
 
         if (win_state & Gdk.WindowState.FULLSCREEN) != 0:
             win.unfullscreen()
         if (win_state & Gdk.WindowState.MAXIMIZED) != 0:
             win.unmaximize()
 
-        to_bounds = screen.get_monitor_geometry(move_from_monitor)
+        to_bounds = screen.get_monitor_geometry(to_monitor)
         to_w = min(w, to_bounds.width)
         to_h = min(h, to_bounds.height)
 
-        from_bounds = screen.get_monitor_geometry(move_from_monitor)
+        from_bounds = screen.get_monitor_geometry(from_monitor)
         # Get fraction of free space that is left or top of window
-        x = (max(0, x - from_bounds.x) / (from_bounds.width - w)) if w >= from_bounds.width else 0
-        y = (max(0, y - from_bounds.y) / (from_bounds.height - h)) if h >= from_bounds.height else 0
+        x = (max(0, x - from_bounds.x) / (from_bounds.width - w)) if w < from_bounds.width else 0
+        y = (max(0, y - from_bounds.y) / (from_bounds.height - h)) if h < from_bounds.height else 0
 
-        move_win.resize(to_w, to_h)
-        move_win.move(to_bounds.x + x * (to_bounds.width - to_w), to_bounds.y + y * (to_bounds.height - to_h))
+        win.resize(to_w, to_h)
+        win.move(to_bounds.x + x * (to_bounds.width - to_w), to_bounds.y + y * (to_bounds.height - to_h))
 
         if (win_state & Gdk.WindowState.MAXIMIZED) != 0:
             win.maximize()
@@ -487,6 +532,9 @@ class UI(builder.Builder):
         if self.redraw_timeout:
             self.redraw_timeout = 0
 
+        self.config.update_layout('highlight' if self.scribbler.scribbling_mode else self.layout_name(self.notes_mode),
+                                  self.p_central.get_children()[0], self.pane_handle_pos)
+
 
     def on_pane_event(self, widget, evt):
         """ Signal handler for gtk.paned events.
@@ -520,10 +568,7 @@ class UI(builder.Builder):
         extras.FileWatcher.stop_daemon()
         self.doc.cleanup_media_files()
 
-        self.config.update_layout(self.layout_name(self.notes_mode),
-                                  self.p_central.get_children()[0], self.pane_handle_pos)
-
-        if bool(self.c_win.get_window().get_state() & Gdk.WindowState.FULLSCREEN):
+        if self.app.get_action_state('content-fullscreen'):
             util.set_screensaver(False, self.c_win.get_window())
 
 
@@ -546,7 +591,7 @@ class UI(builder.Builder):
                            _('Python version {}').format(sys.version))
         about.set_website('https://github.com/Cimbali/pympress')
         try:
-            about.set_logo(GdkPixbuf.Pixbuf.new_from_file(util.get_icon_path('pympress-128.png')))
+            about.set_logo(GdkPixbuf.Pixbuf.new_from_file(util.get_icon_path('pympress.png')))
         except Exception:
             logger.exception(_('Error loading icon for about window'))
         about.run()
@@ -574,7 +619,7 @@ class UI(builder.Builder):
 
             if not reloading and docpath:
                 Gtk.RecentManager.get_default().add_item(self.doc.get_uri())
-                extras.FileWatcher.watch_file(docpath, self.reload_document)
+                extras.FileWatcher.watch_file(self.doc.get_path(), self.reload_document)
 
         except GLib.Error:
             if reloading:
@@ -590,11 +635,11 @@ class UI(builder.Builder):
             target_mode = self.doc.guess_notes(hpref, vpref)
 
             if self.notes_mode != target_mode:
-                self.switch_mode('swap_document', docpath, target_mode=target_mode)
+                self.switch_mode('notes-mode', target_mode=target_mode)
 
             # don't toggle from NONE to NONE
             if target_mode:
-                self.change_notes_pos(target_mode)
+                self.app.activate_action('notes-pos', target_mode.name.lower())
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
@@ -623,7 +668,7 @@ class UI(builder.Builder):
         self.swap_document(self.doc.path, page = self.doc.cur_page, reloading = True)
 
 
-    def recent_document(self, recent_menu):
+    def populate_recent_menu(self, gaction, is_opening):
         """ Callback for the recent document menu.
 
         Gets the URI and requests the document swap.
@@ -631,7 +676,22 @@ class UI(builder.Builder):
         Args:
             recent_menu (:class:`~Gtk.RecentChooserMenu`): the recent docs menu
         """
-        self.swap_document(recent_menu.get_current_uri())
+        if not is_opening.get_boolean():
+            self.recent_menu.remove_all()
+            return
+
+        for file in sorted(Gtk.RecentManager.get_default().get_items(), key=Gtk.RecentInfo.get_added):
+            if not file.exists() or not file.get_mime_type() == 'application/pdf':
+                continue
+
+            item = Gio.MenuItem.new(file.get_display_name(), 'file.open')
+            item.set_action_and_target_value('file.open', GLib.Variant('s', file.get_uri()))
+            item.set_icon(file.get_gicon())
+
+            self.recent_menu.append_item(item)
+
+            if self.recent_menu.get_n_items() >= 10:
+                break
 
 
     def on_drag_drop(self, widget, drag_context, x, y, data, info, time):
@@ -703,6 +763,12 @@ class UI(builder.Builder):
         """ Remove the current document.
         """
         self.swap_document(None)
+
+
+    def open_file(self, gaction, target):
+        """ Open a document.
+        """
+        self.swap_document(target.get_string())
 
 
     def get_notes_mode(self):
@@ -947,88 +1013,37 @@ class UI(builder.Builder):
             `bool`: whether the event was consumed
         """
         if event.type != Gdk.EventType.KEY_PRESS:
-            return
-
-        name = Gdk.keyval_name(event.keyval)
-        ctrl_pressed = event.get_state() & Gdk.ModifierType.CONTROL_MASK
-        shift_pressed = event.get_state() & Gdk.ModifierType.SHIFT_MASK
-        meta_pressed = event.get_state() & Gdk.ModifierType.MOD1_MASK
-
-        command = self.config.shortcuts.get((event.keyval, ctrl_pressed | shift_pressed | meta_pressed), None)
-
-        # Try passing events to special-behaviour widgets (spinner, ett, zooming, scribbler) in case they are enabled
-        if self.page_number.on_keypress(widget, event, name, command):
-            return True
-        elif self.est_time.on_keypress(widget, event, name, command):
-            return True
-        elif self.zoom.nav_zoom(name, ctrl_pressed, command):
-            return True
-        elif self.scribbler.nav_scribble(name, ctrl_pressed, command):
-            return True
-
-        # first key unpauses, next advance by one page
-        elif command in {'next', 'next_label'} and self.talk_time.unpause():
-            pass
-        elif command == 'next':
-            self.doc.goto_next()
-        elif command == 'next_label':
-            self.doc.label_next()
-        elif command == 'prev':
-            self.doc.goto_prev()
-        elif command == 'prev_label':
-            self.doc.label_prev()
-        elif command == 'hist_back':
-            self.doc.hist_prev()
-        elif command == 'hist_forward':
-            self.doc.hist_next()
-        elif command == 'first':
-            self.doc.goto_home()
-        elif command == 'last':
-            self.doc.goto_end()
-        elif command == 'fullscreen_content':
-            self.switch_fullscreen(self.c_win)
-        elif command == 'fullscreen_presenter':
-            self.switch_fullscreen(self.p_win)
-        elif command == 'quit':
-            self.app.quit()
-        elif command == 'pause_timer':
-            self.talk_time.switch_pause(widget, event)
-        elif command == 'reset_timer':
-            self.timing.reset(int(self.talk_time.delta))
-            self.talk_time.reset_timer()
-        elif command == 'highlight':
-            return self.scribbler.switch_scribbling(widget, event)
-        elif command == 'zoom':
-            return self.zoom.start_zooming(widget, event)
-        elif command == 'unzoom':
-            return self.zoom.stop_zooming(widget, event)
-        elif command in {'goto_page', 'jumpto_label'}:
-            return self.page_number.on_label_event(widget, event, command)
-        elif command == 'talk_time':
-            return self.est_time.on_label_event(widget, event, command)
-        elif command == 'notes_mode':
-            self.switch_mode(widget, event)
-        elif command == 'annotations':
-            self.switch_annotations(widget, event)
-        elif command == 'swap_screens':
-            self.swap_screens()
-        elif command == 'blank_screen':
-            self.switch_blanked(widget, event)
-        elif command == 'close_file':
-            self.close_file()
-        elif command == 'open_file':
-            self.pick_file()
-        elif command == 'toggle_pointermode':
-            self.laser.toggle_pointermode()
-        else:
-            if command and command not in {'cancel', 'validate', 'undo_scribble', 'redo_scribble'}:
-                logger.error('ERROR: missing command "{}" for {}{}{}{}'
-                             .format(command, 'ctrl + ' if ctrl_pressed else '', 'shift + ' if shift_pressed else '',
-                                     'meta + ' if meta_pressed else '', name))
-
             return False
 
-        return True
+        # Try passing events to special-behaviour widgets (spinner, ett, zooming, scribbler) in case they are enabled
+        if self.page_number.on_keypress(widget, event):
+            return True
+        elif self.est_time.on_keypress(widget, event):
+            return True
+
+        return False
+
+
+    def validate_current_input(self, action, target):
+        if self.page_number.try_validate():
+            return True
+        elif self.est_time.try_validate():
+            return True
+
+        return False
+
+
+    def cancel_current_input(self, action, target):
+        if self.page_number.try_cancel():
+            return True
+        elif self.est_time.try_cancel():
+            return True
+        elif self.zoom.try_cancel():
+            return True
+        elif self.scribbler.try_cancel():
+            return True
+
+        return False
 
 
     def on_scroll(self, widget, event):
@@ -1170,7 +1185,7 @@ class UI(builder.Builder):
             return True
 
 
-    def switch_fullscreen(self, widget):
+    def switch_fullscreen(self, gaction, target):
         """ Switch the Content window to fullscreen (if in normal mode) or to normal mode (if fullscreen).
 
         Screensaver will be disabled when entering fullscreen mode, and enabled
@@ -1182,29 +1197,28 @@ class UI(builder.Builder):
         Returns:
             `bool`: whether some window's full screen status got toggled
         """
-        if isinstance(widget, Gtk.CheckMenuItem):
-            # Called from menu -> use c_win
-            toggle_to = widget.get_active()
+        if gaction.get_name() == 'content-fullscreen':
             widget = self.c_win
+        elif gaction.get_name() == 'presenter-fullscreen':
+            widget = self.p_win
         else:
-            toggle_to = None
+            raise ValueError('Do not know which widget to put full screen')
 
         if widget != self.c_win and widget != self.p_win:
             logger.error(_("Unknow widget {} to be fullscreened, aborting.").format(widget))
             return False
 
+        toggle_to = not gaction.get_state().get_boolean()
         cur_state = (widget.get_window().get_state() & Gdk.WindowState.FULLSCREEN)
 
         if cur_state == toggle_to:
-            return
+            return False
         elif cur_state:
             widget.unfullscreen()
         else:
             widget.fullscreen()
 
-        if widget == self.c_win:
-            self.pres_fullscreen.set_active(not cur_state)
-
+        gaction.change_state(GLib.Variant('b', toggle_to))
         return True
 
 
@@ -1276,6 +1290,13 @@ class UI(builder.Builder):
         self.timing.show(int(self.talk_time.delta), self.doc.get_structure(), self.doc.page_labels)
 
 
+    def reset_timer(self, *args):
+        """ Reset both timer and estimated talk time
+        """
+        self.timing.reset(int(self.talk_time.delta))
+        self.talk_time.reset_timer()
+
+
     ##############################################################################
     ############################    Option toggles    ############################
     ##############################################################################
@@ -1286,8 +1307,8 @@ class UI(builder.Builder):
         screen = self.p_win.get_screen()
 
         # Though Gtk.Window is a Gtk.Widget get_parent_window() actually returns None on self.{c,p}_win
-        p_monitor = screen.get_monitor_at_window(self.p_win.get_window())
-        c_monitor = screen.get_monitor_at_window(self.c_win.get_window())
+        p_monitor = screen.get_monitor_at_point(*self.p_win.get_position())
+        c_monitor = screen.get_monitor_at_point(*self.c_win.get_position())
 
         if screen.get_n_monitors() == 1 or p_monitor == c_monitor:
             return
@@ -1296,18 +1317,15 @@ class UI(builder.Builder):
         self.move_window(screen, self.p_win, p_monitor, c_monitor)
 
 
-    def switch_blanked(self, widget, event = None):
+    def switch_blanked(self, action, target):
         """ Switch the blanked mode of the content screen.
 
         Returns:
             `bool`: whether the mode has been toggled.
         """
-        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.blanked:
-            return False
-
         self.blanked = not self.blanked
         self.c_da.queue_draw()
-        self.pres_blank.set_active(self.blanked)
+        self.app.set_action_state(action.get_name(), self.blanked)
 
         return True
 
@@ -1335,7 +1353,6 @@ class UI(builder.Builder):
         if new is None:
             new = self.layout_name(self.notes_mode)
 
-        self.config.update_layout(old, self.p_central.get_children()[0], self.pane_handle_pos)
         pane_handles = self.replace_layout(self.config.get_layout(new), self.p_central,
                                            self.placeable_widgets, self.on_pane_event)
         self.pane_handle_pos.update(pane_handles)
@@ -1345,21 +1362,13 @@ class UI(builder.Builder):
         self.p_frame_annot.set_visible(self.show_annotations)
 
 
-    def change_notes_pos(self, widget, event = None, force_change = False):
+    def change_notes_pos(self, gaction, target, force=False):
         """ Switch the position of the nodes in the slide.
 
         Returns:
             `bool`: whether the mode has been toggled.
         """
-        if issubclass(type(widget), Gtk.CheckMenuItem):
-            # if this widget is not the active one do nothing
-            if not widget.get_active():
-                return False
-            target_mode = document.PdfPage[widget.get_name()[len('notes_'):].upper()]
-        elif issubclass(type(widget), document.PdfPage):
-            target_mode = widget
-        else:
-            return False
+        target_mode = document.PdfPage[target.get_string().upper()]
 
         # Redundant toggle, do nothing
         if target_mode == self.chosen_notes_mode:
@@ -1368,31 +1377,26 @@ class UI(builder.Builder):
         # Update the choice, except for NONE or BEFORE/AFTER
         if target_mode:
             self.chosen_notes_mode = target_mode
-            self.get_object('notes_' + target_mode.name.lower()).set_active(True)
+            gaction.change_state(target)
             self.config.set('notes position', target_mode.direction(), target_mode.name.lower())
 
         # Change the notes arrangement if they are enabled or if we are forced to
-        if self.notes_mode or force_change:
-            self.switch_mode('changed notes position', target_mode = target_mode)
+        if self.notes_mode or force:
+            self.switch_mode(self.app.lookup_action('notes-mode'), target_mode=target_mode, force=True)
 
         return True
 
 
-    def switch_mode(self, widget, event=None, target_mode=None):
+    def switch_mode(self, gaction, target_mode=None, force=False):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
 
         Returns:
             `bool`: whether the mode has been toggled.
         """
-        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == bool(self.notes_mode):
-            # We toggle the menu item which brings us here, but it is somehow already in sync with notes mode.
-            # Exit to not risk double-toggling. Button is now in sync and can be toggled again correctly.
-            return False
-
         if target_mode is None:
             target_mode = document.PdfPage.NONE if self.notes_mode else self.chosen_notes_mode
 
-        if target_mode == self.notes_mode:
+        if target_mode == self.notes_mode and not force:
             return False
 
         self.scribbler.disable_scribbling()
@@ -1420,21 +1424,18 @@ class UI(builder.Builder):
 
         self.medias.adjust_margins_for_mode(page_type)
         self.on_page_change(False)
-        self.pres_notes.set_active(self.notes_mode)
         self.page_number.set_last(self.doc.pages_number())
+        self.app.set_action_state('notes-mode', bool(self.notes_mode))
 
         return True
 
 
-    def switch_annotations(self, widget, event = None):
+    def switch_annotations(self, gaction, target):
         """ Switch the display to show annotations or to hide them.
 
         Returns:
             `bool`: whether the mode has been toggled.
         """
-        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.show_annotations:
-            return False
-
         self.show_annotations = not self.show_annotations
 
         self.p_frame_annot.set_visible(self.show_annotations)
@@ -1450,7 +1451,7 @@ class UI(builder.Builder):
                 parent.set_position(self.pane_handle_pos[parent] * size)
 
         self.annotations.add_annotations(self.doc.current_page().get_annotations())
-        self.pres_annot.set_active(self.show_annotations)
+        gaction.change_state(GLib.Variant('b', self.show_annotations))
 
         return True
 
@@ -1464,7 +1465,9 @@ class UI(builder.Builder):
         self.next_button.set_visible(self.show_bigbuttons)
         self.laser_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
+
         self.config.set('presenter', 'show_bigbuttons', 'on' if self.show_bigbuttons else 'off')
+        self.app.set_action_state('big-buttons', self.show_bigbuttons)
 
 
 ##

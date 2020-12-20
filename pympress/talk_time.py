@@ -158,11 +158,12 @@ class TimeCounter(object):
 
     #: :class:`~TimeLabelColorer` that handles setting the colors of :attr:`label_time`
     label_colorer = None
-    #: :class:`~Gtk.CheckMenuItem` that shows whether the time is toggled
-    pres_pause = None
 
     #: :class:`~pympress.editable_label.EstimatedTalkTime` that handles changing the ett
     ett = None
+
+    #: callback, to be connected to :meth:`~pympress.app.Pympress.set_action_state`
+    set_action_state = None
 
     def __init__(self, builder, ett):
         super(TimeCounter, self).__init__()
@@ -171,6 +172,7 @@ class TimeCounter(object):
         self.ett = ett
 
         builder.load_widgets(self)
+        self.set_action_state = builder.get_callback_handler('app.set_action_state')
 
         # Setup timer for clocks
         GLib.timeout_add(250, self.update_time)
@@ -204,7 +206,7 @@ class TimeCounter(object):
         self.paused = True
 
         self.update_time()
-        self.pres_pause.set_active(self.paused)
+        self.set_action_state('pause-timer', self.paused)
         return True
 
 
@@ -221,7 +223,7 @@ class TimeCounter(object):
         self.paused = False
 
         self.update_time()
-        self.pres_pause.set_active(self.paused)
+        self.set_action_state('pause-timer', self.paused)
         return True
 
 

@@ -269,7 +269,7 @@ class Media(object):
                                    .format(mime_type, filename))
                     continue
 
-                def get_curryfied_callback(name, media_id = media_id):
+                def get_curryfied_callback(name, media_id=media_id):
                     """ Return a callback for signal 'name' that has the value 'media_id' pre-set, and remembered by this closure.
                     """
                     return lambda *args: VideoOverlay.find_callback_handler(self, name)(media_id, *args)
@@ -287,7 +287,7 @@ class Media(object):
 
             for w in self._media_overlays[media_id]:
                 if w.autoplay:
-                    w.set_time(0)
+                    self.set_time(media_id, target=GLib.Variant('d', 0))
                     w.show()
 
 
@@ -311,12 +311,11 @@ class Media(object):
                 widget.update_margins_for_page(page_type)
 
 
-    def play(self, media_id, button = None):
+    def play(self, media_id, gaction=None, target=None):
         """ Starts playing a media. Used as a callback.
 
         Args:
             media_id (`int`): A unique identifier of the media to start playing
-            button (:class:`~Gtk.Button`): the button clicked to cause the media to play, if any.
         """
         if media_id in self._media_overlays:
             c, p = self._media_overlays[media_id]
@@ -325,12 +324,11 @@ class Media(object):
             GLib.idle_add(lambda: any(p.do_play() for p in self._media_overlays[media_id]))
 
 
-    def hide(self, media_id, button = None):
+    def hide(self, media_id, gaction=None, target=None):
         """ Stops playing a media and hides the player. Used as a callback.
 
         Args:
             media_id (`int`): A unique identifier of the media to start playing
-            button (:class:`~Gtk.Button`): the button clicked to cause the media to stop, if any.
         """
         if media_id in self._media_overlays:
             c, p = self._media_overlays[media_id]
@@ -346,7 +344,7 @@ class Media(object):
             if p.is_shown(): p.do_hide()
 
 
-    def play_pause(self, media_id, *args):
+    def play_pause(self, media_id, gaction=None, target=None):
         """ Toggles playing and pausing a media. Used as a callback.
 
         Args:
@@ -355,13 +353,13 @@ class Media(object):
         GLib.idle_add(lambda: any(p.do_play_pause() for p in self._media_overlays[media_id]))
 
 
-    def set_time(self, media_id, t, *args):
+    def set_time(self, media_id, gaction=None, target=None):
         """ Set the player of a given media at time t. Used as a callback.
 
         Args:
             media_id (`int`): A unique idientifier of the media to start playing
-            t (`float`): the timestamp, in s
         """
+        t = target.get_double()
         GLib.idle_add(lambda: any(p.do_set_time(t) for p in self._media_overlays[media_id]))
 
 
@@ -497,12 +495,10 @@ class Zoom(object):
     scale = 1.
     shift = (0, 0)
 
-    #: a callback for the :func:`~Gtk.Button.set_sensitive` function of the zoom-out button in the scribble interface
-    set_scribble_zoomout_sensitive = lambda: None
-    #: :class:`~Gtk.MenuItem` that is clicked to stop zooming
-    menu_zoom_out = None
     #: :class:`~Gtk.Box` in the Presenter window, used to reliably set cursors.
     p_central = None
+    #: callback, to be connected to :meth:`~pympress.app.Pympress.set_action_enabled`
+    set_action_enabled = None
 
     #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
     redraw_current_slide = lambda: None
@@ -515,17 +511,7 @@ class Zoom(object):
 
         self.redraw_current_slide = builder.get_callback_handler('redraw_current_slide')
         self.clear_cache = builder.get_callback_handler('clear_zoom_cache')
-
-
-    def delayed_callback_connection(self, scribble_builder):
-        """ Connect callbacks later than at init, due to circular dependencies.
-
-        Call this when the page_number module is initialized, but before needing the callback.
-
-        Args:
-            scribble_builder (builder.Builder): The builder from which to load widgets for scribble
-        """
-        self.set_scribble_zoomout_sensitive = scribble_builder.get_callback_handler('zoom_stop_button.set_sensitive')
+        self.set_action_enabled = builder.get_callback_handler('app.set_action_enabled')
 
 
     def start_zooming(self, *args):
@@ -551,8 +537,7 @@ class Zoom(object):
         self.zoom_points = None
         self.scale = 1.
         self.shift = (0, 0)
-        self.set_scribble_zoomout_sensitive(False)
-        self.menu_zoom_out.set_sensitive(False)
+        self.set_action_enabled('unzoom', False)
 
         self.redraw_current_slide()
         self.clear_cache()
@@ -560,27 +545,14 @@ class Zoom(object):
         return True
 
 
-    def nav_zoom(self, name, ctrl_pressed, command = None):
-        """ Handles an key press event: stop trying to select an area to zoom.
-
-        Args:
-            name (`str`): The name of the key pressed
-            ctrl_pressed (`bool`): whether the ctrl modifier key was pressed
-            command (`str`): the name of the command in case this function is called by on_navigation
-
-        Returns:
-            `bool`: whether the event was consumed
-        """
+    def try_cancel(self):
         if not self.zoom_selecting:
             return False
 
-        elif command == 'cancel':
-            Cursor.set_cursor(self.p_central)
-            self.zoom_selecting = False
-            self.zoom_points = None
-            return True
-
-        return False
+        Cursor.set_cursor(self.p_central)
+        self.zoom_selecting = False
+        self.zoom_points = None
+        return True
 
 
     def get_slide_point(self, widget, event):
@@ -668,8 +640,7 @@ class Zoom(object):
             self.zoom_selecting = False
             self.clear_cache()
             self.redraw_current_slide()
-            self.set_scribble_zoomout_sensitive(True)
-            self.menu_zoom_out.set_sensitive(True)
+            self.set_action_enabled('unzoom', True)
 
             return True
 
@@ -730,7 +701,8 @@ except ImportError:
         stop_daemon = nop
 
 else:
-    logger.warning(_('Building FileWatcher'))
+    logger.info(_('Building FileWatcher'))
+
     class FileWatcher(object):
         """ A class with only static methods that wraps object watchdogs, to trigger callbacks when a file changes.
         """
@@ -754,7 +726,7 @@ else:
             cls.start_daemon()
             cls.stop_watching()
 
-            directory = os.path.dirname(path)
+            directory = os.path.dirname(path[7 if path.startswith('file:///') else 0:])
             cls.monitor.on_modified = lambda e: cls.enqueue(callback, *args, **kwargs) if e.src_path == path else None
             try:
                 cls.observer.schedule(cls.monitor, directory)

@@ -774,6 +774,10 @@ class Document(object):
         else:
             uri = Document.path_to_uri(path)
             poppler_doc = Poppler.Document.new_from_file(uri, None)
+
+            if uri == path:
+                scheme, path = path.split('://', 1)
+
             doc = Document(builder, poppler_doc, path, page)
 
         return doc
@@ -1079,6 +1083,15 @@ class Document(object):
 
         self.hist_pos -= 1
         self._do_page_change(self.history[self.hist_pos])
+
+
+    def get_path(self):
+        """ Gives access to the path of this document.
+
+        Returns:
+            `str`: the path to the file currently opened.
+        """
+        return self.path
 
 
     def get_uri(self):

@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
 <interface>
-  <requires lib="gtk+" version="3.2"/>
-  <object class="GtkWindow" id="c_win">
+  <requires lib="gtk+" version="3.4"/>
+  <object class="GtkApplicationWindow" id="c_win">
     <property name="can-focus">True</property>
     <property name="events">GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
     <property name="title" translatable="yes">Pympress Content</property>
     <property name="role">content</property>
     <property name="window-position">center</property>
+    <property name="hide-titlebar-when-maximized">True</property>
     <property name="deletable">False</property>
-    <signal name="window-state-event" handler="on_window_state_event" swapped="no"/>
+    <property name="has-resize-grip">True</property>
+    <property name="show-menubar">False</property>
     <signal name="configure-event" handler="on_configure_win" swapped="no"/>
-    <signal name="key-press-event" handler="on_navigation" swapped="no"/>
     <signal name="scroll-event" handler="on_scroll" swapped="no"/>
+    <signal name="window-state-event" handler="on_window_state_event" swapped="no"/>
+    <signal name="delete-event" handler="app.quit" swapped="no"/>
     <child>
       <object class="GtkAspectFrame" id="c_frame">
         <property name="visible">True</property>
@@ -39,6 +43,9 @@
                 <signal name="leave-notify-event" handler="laser.track_enter_leave" swapped="no"/>
                 <signal name="motion-notify-event" handler="track_motions" swapped="no"/>
               </object>
+              <packing>
+                <property name="index">-1</property>
+              </packing>
             </child>
           </object>
         </child>

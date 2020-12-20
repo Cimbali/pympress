@@ -48,6 +48,20 @@ class Pympress(Gtk.Application):
     log_level = logging.ERROR
     notes_pos = None
 
+    _glib_type_strings = {
+        float: 'd',
+        bool: 'b',
+        int: 's',
+        str: 's',
+    }
+
+    _glib_type_getters = {
+        'd': GLib.Variant.get_double,
+        'b': GLib.Variant.get_boolean,
+        'x': GLib.Variant.get_int64,
+        's': GLib.Variant.get_string,
+    }
+
     options = {
         # long_name: (short_name (int), flags (GLib.OptionFlags), arg (GLib.OptionArg)
         'talk-time': (ord('t'), GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
@@ -92,6 +106,13 @@ class Pympress(Gtk.Application):
             self.add_main_option(opt, *self.options[opt], *self.option_descriptions[opt])
 
 
+    def quit(self, *args):
+        """ Quit and ignore other arguments e.g. sent by signals.
+        """
+        Gtk.Application.quit(self)
+        return False
+
+
     def do_startup(self):
         """ Common start-up tasks for primary and remote instances.
 
@@ -108,6 +129,60 @@ class Pympress(Gtk.Application):
         Gtk.Application.do_startup(self)
 
 
+    def set_action_enabled(self, name, value):
+        """ Parse an action name and set its enabled state to True or False.
+
+        Args:
+            name (`str`): the name of the stateful action
+            value (`bool`): wheether the action should be enabled or disabled
+        """
+        try:
+            self.lookup_action(name).set_enabled(value)
+        except:
+            pass
+
+
+    def set_action_state(self, name, value):
+        """ Parse an action name and set its state wrapped in a :class:`~GLib.Variant`.
+
+        Args:
+            name (`str`): the name of the stateful action
+            value (`str`, `int`, `bool` or `float`): the value to set.
+        """
+        try:
+            self.lookup_action(name).change_state(GLib.Variant(self._glib_type_strings[type(value)], value))
+        except:
+            pass
+
+
+    def get_action_state(self, name):
+        """ Parse an action name and return its unwrapped state from the :class:`~GLib.Variant`.
+
+        Args:
+            name (`str`): the name of the stateful action
+
+        Returns:
+            `str`, `int`, `bool` or `float`: the value contained in the action
+        """
+        try:
+            state = self.lookup_action(name).get_state()
+            return self._glib_type_getters[state.get_type_string()](state)
+        except:
+            return None
+
+
+    def activate_action(self, name, parameter=None):
+        """ Parse an action name and activate it, with parameter wrapped in a :class:`~GLib.Variant` if it is not None.
+
+        Args:
+            name (`str`): the name of the stateful action
+        """
+        if parameter is not None:
+            parameter = GLib.Variant(self._glib_type_strings[type(parameter)], parameter)
+
+        self.lookup_action(name).activate(parameter)
+
+
     def do_activate(self, timestamp=GLib.get_current_time()):
         """ Activate: show UI windows.
 
@@ -116,6 +191,7 @@ class Pympress(Gtk.Application):
         Gtk.Application.do_activate(self)
         if self.gui is None:
             self.gui = ui.UI(self, self.config)
+            self.gui.activate()
 
             # pass command line args
             if self.ett:

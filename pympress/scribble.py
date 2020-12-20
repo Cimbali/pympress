@@ -33,7 +33,7 @@ import math
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GLib
 
 from pympress import builder, extras, util
 
@@ -98,8 +98,6 @@ class Scribbler(builder.Builder):
     #: :class:`~Gtk.Box` in the Presenter window, where we insert scribbling.
     p_central = None
 
-    #: :class:`~Gtk.CheckMenuItem` that shows whether the scribbling is toggled
-    pres_highlight = None
     #: :class:`~Gtk.Button` that is clicked to stop zooming, unsensitive when there is no zooming
     zoom_stop_button = None
 
@@ -124,11 +122,18 @@ class Scribbler(builder.Builder):
     #: callback, to be connected to :func:`~pympress.extras.Zoom.stop_zooming`
     stop_zooming = lambda: None
 
+    #: `int` that is the currently selected element
+    active_preset = -1
+
+    action_map = None
+
+
     def __init__(self, config, builder, notes_mode):
         super(Scribbler, self).__init__()
 
         self.load_ui('highlight')
         builder.load_widgets(self)
+        self.get_application().add_window(self.off_render)
 
         self.on_draw = builder.get_callback_handler('on_draw')
         self.track_motions = builder.get_callback_handler('track_motions')
@@ -151,38 +156,32 @@ class Scribbler(builder.Builder):
         self.marker_surfaces = list(zip(icons, masks))
         self.eraser_surface = cairo.ImageSurface.create_from_png(util.get_icon_path('eraser.png'))
 
-        # Load color and active pen preferences
-        self.color_width = list(zip(
+        # Load color and active pen preferences. Pen 0 is the eraser.
+        self.color_width = [(Gdk.RGBA(0, 0, 0, 0), 150)] + list(zip(
             [self.parse_color(config.get('scribble', 'color_{}'.format(pen))) for pen in range(1, 10)],
             [config.getint('scribble', 'width_{}'.format(pen)) for pen in range(1, 10)],
         ))
-        self.scribble_preset_buttons = [self.get_object('pen_preset_{}'.format(pen)) for pen in range(1, 10)]
-        self.load_preset(config.getint('scribble', 'active_pen') - 1)
+
+        self.scribble_preset_buttons = [
+            self.get_object('pen_preset_{}'.format(pen) if pen else 'eraser') for pen in range(10)
+        ]
+
+        active_pen = config.get('scribble', 'active_pen')
+        self.action_map = self.setup_actions('highlight', {
+            'toggle'    : dict(activate=self.switch_scribbling, state=False),
+            'use-pen'   : dict(activate=self.load_preset, state=active_pen, parameter_type=str),
+            'clear'     : dict(activate=self.clear_scribble),
+            'redo'      : dict(activate=self.redo_scribble),
+            'undo'      : dict(activate=self.pop_scribble),
+        })
+        self.load_preset(self.action_map.lookup_action('use-pen'), int(active_pen) if active_pen.isnumeric() else 0)
 
 
-    def nav_scribble(self, name, ctrl_pressed, command = None):
-        """ Handles a key press event: undo or disable scribbling.
-
-        Args:
-            name (`str`): The name of the key pressed
-            ctrl_pressed (`bool`): whether the ctrl modifier key was pressed
-            command (`str`): the name of the command in case this function is called by on_navigation
-
-        Returns:
-            `bool`: whether the event was consumed
-        """
+    def try_cancel(self):
         if not self.scribbling_mode:
             return False
-        elif command == 'undo_scribble':
-            self.pop_scribble()
-        elif command == 'redo_scribble':
-            self.pop_scribble()
-        elif command == 'cancel':
-            self.disable_scribbling()
-        elif command and command[:-1] == 'scribble_preset_' and command[-1] in list('0123456789'):
-            self.load_preset(int(command[-1]) - 1)
-        else:
-            return False
+
+        self.disable_scribbling()
         return True
 
 
@@ -394,10 +393,13 @@ class Scribbler(builder.Builder):
     def update_active_color_width(self):
         """ Update modifications to the active scribble color and width, on the pen button and config object
         """
+        if not self.active_preset:
+            return
+
         self.color_width[self.active_preset] = self.scribble_color, self.scribble_width
         self.scribble_preset_buttons[self.active_preset].queue_draw()
 
-        pen = self.active_preset + 1
+        pen = self.active_preset
         self.config.set('scribble', 'color_{}'.format(pen), self.scribble_color.to_string())
         self.config.set('scribble', 'width_{}'.format(pen), str(self.scribble_width))
 
@@ -457,25 +459,15 @@ class Scribbler(builder.Builder):
         self.resize_cache(widget.get_name(), event.width, event.height)
 
 
-    def switch_scribbling(self, widget, event = None):
+    def switch_scribbling(self, gaction, target=None):
         """ Starts the mode where one can read on top of the screen.
 
         Args:
-            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
-            event (:class:`~Gdk.Event` or None):  the GTK event., None when called through a menu item
 
         Returns:
             `bool`: whether the event was consumed
         """
-        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.scribbling_mode:
-            # Checking the checkbox conforming to current situation: do nothing
-            return False
-
-        elif issubclass(type(widget), Gtk.Actionable):
-            # A button or menu item, etc. directly connected to this action
-            pass
-
-        elif event.type != Gdk.EventType.KEY_PRESS:
+        if target is not None and target == self.scribbling_mode:
             return False
 
         # Perform the state toggle
@@ -502,7 +494,7 @@ class Scribbler(builder.Builder):
         self.scribble_overlay.queue_draw()
 
         self.scribbling_mode = True
-        self.pres_highlight.set_active(self.scribbling_mode)
+        self.action_map.lookup_action('toggle').change_state(GLib.Variant('b', self.scribbling_mode))
 
         extras.Cursor.set_cursor(self.scribble_p_da, 'invisible')
         return True
@@ -522,7 +514,7 @@ class Scribbler(builder.Builder):
 
         self.off_render.add(self.scribble_overlay)
         self.scribbling_mode = False
-        self.pres_highlight.set_active(self.scribbling_mode)
+        self.action_map.lookup_action('toggle').change_state(GLib.Variant('b', self.scribbling_mode))
 
         self.p_central.queue_draw()
         extras.Cursor.set_cursor(self.p_central)
@@ -531,7 +523,7 @@ class Scribbler(builder.Builder):
         return True
 
 
-    def load_preset(self, widget, event=None):
+    def load_preset(self, gaction=None, target=None):
         """ Loads the preset color of a given number or designed by a given widget, as an event handler.
 
         Args:
@@ -541,33 +533,22 @@ class Scribbler(builder.Builder):
         Returns:
             `bool`: whether the preset was loaded
         """
-        if isinstance(widget, Gtk.RadioButton):
-            if not widget.get_active():
-                return False
-            elif widget.get_name() == 'eraser':
-                preset_number = -1
-            else:
-                preset_number = int(widget.get_name().split('_')[-1]) - 1
-        elif type(widget) is int:
-            preset_number = widget
+        if type(target) == int:
+            self.active_preset = target
         else:
-            return False
+            self.active_preset = int(target.get_string()) if target.get_string() != 'eraser' else 0
 
-        self.active_preset = preset_number
-        self.config.set('scribble', 'active_pen', str(self.active_preset + 1))
+        target = str(self.active_preset) if self.active_preset else 'eraser'
 
-        if preset_number < 0:
-            self.scribble_color, self.scribble_width = Gdk.RGBA(0, 0, 0, 0), 150
-            self.get_object('eraser').set_active(True)
-        else:
-            self.scribble_color, self.scribble_width = self.color_width[preset_number]
-            self.get_object('pen_preset_{}'.format(preset_number + 1)).set_active(True)
+        self.config.set('scribble', 'active_pen', target)
+        self.action_map.lookup_action('use-pen').change_state(GLib.Variant('s', target))
+        self.scribble_color, self.scribble_width = self.color_width[self.active_preset]
 
         # Presenter-side setup
         self.scribble_color_selector.set_rgba(self.scribble_color)
         self.scribble_width_selector.set_value(self.scribble_width)
-        self.scribble_color_selector.set_sensitive(preset_number >= 0)
-        self.scribble_width_selector.set_sensitive(preset_number >= 0)
+        self.scribble_color_selector.set_sensitive(target != 'eraser')
+        self.scribble_width_selector.set_sensitive(target != 'eraser')
 
         return True
 
@@ -598,7 +579,7 @@ class Scribbler(builder.Builder):
             cairo_context (:class:`~cairo.Context`):  the Cairo context (or `None` if called directly)
         """
         button_number = int(widget.get_name().split('_')[-1])
-        color, width = self.color_width[button_number - 1]
+        color, width = self.color_width[button_number]
         icon, mask = self.marker_surfaces[int((width - 1) / 30)]
 
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()

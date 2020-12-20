@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.36.0 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
-  <requires lib="gtk+" version="3.2"/>
+  <requires lib="gtk+" version="3.4"/>
   <object class="GtkAdjustment" id="scribble_width_adjust">
     <property name="lower">2</property>
     <property name="upper">90</property>
     <property name="value">8</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">1</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">1</property>
   </object>
   <object class="GtkOffscreenWindow" id="off_render">
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <child>
       <object class="GtkBox" id="scribble_overlay">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <child>
           <object class="GtkAspectFrame" id="scribble_p_frame">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label_xalign">0</property>
-            <property name="shadow_type">none</property>
+            <property name="can-focus">False</property>
+            <property name="label-xalign">0</property>
+            <property name="shadow-type">none</property>
             <property name="ratio">1.3300000429153442</property>
-            <property name="obey_child">False</property>
+            <property name="obey-child">False</property>
             <child>
               <object class="GtkEventBox" id="scribble_p_eb">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                 <signal name="button-press-event" handler="track_clicks" swapped="no"/>
                 <signal name="button-release-event" handler="track_clicks" swapped="no"/>
@@ -34,7 +34,7 @@
                 <child>
                   <object class="GtkDrawingArea" id="scribble_p_da">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <signal name="configure-event" handler="on_configure_da" swapped="no"/>
                     <signal name="draw" handler="on_draw" swapped="no"/>
                   </object>
@@ -51,35 +51,35 @@
         <child>
           <object class="GtkFrame">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label_xalign">0</property>
-            <property name="shadow_type">none</property>
+            <property name="can-focus">False</property>
+            <property name="label-xalign">0</property>
+            <property name="shadow-type">none</property>
             <child>
               <object class="GtkAlignment">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="left_padding">12</property>
+                <property name="can-focus">False</property>
+                <property name="left-padding">12</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="valign">center</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">5</property>
                     <child>
-                      <object class="GtkRadioButton" id="pen_preset_1">
-                        <property name="width_request">60</property>
-                        <property name="height_request">60</property>
+                      <object class="GtkModelButton" id="pen_preset_1">
+                        <property name="width-request">60</property>
+                        <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="app_paintable">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="image_position">right</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">eraser</property>
+                        <property name="app-paintable">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-target">'1'</property>
+                        <property name="image-position">right</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <signal name="toggled" handler="load_preset" swapped="no"/>
+                        <style>
+                          <class name="pen-preset"/>
+                        </style>
                         <child>
                           <placeholder/>
                         </child>
@@ -91,17 +91,17 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="pen_preset_2">
-                        <property name="width_request">60</property>
-                        <property name="height_request">60</property>
+                      <object class="GtkModelButton" id="pen_preset_2">
+                        <property name="width-request">60</property>
+                        <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">eraser</property>
+                        <property name="can-focus">True</property>
+                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-target">'2'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <signal name="toggled" handler="load_preset" swapped="no"/>
+                        <style>
+                          <class name="pen-preset"/>
+                        </style>
                         <child>
                           <placeholder/>
                         </child>
@@ -113,17 +113,17 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="pen_preset_3">
-                        <property name="width_request">60</property>
-                        <property name="height_request">60</property>
+                      <object class="GtkModelButton" id="pen_preset_3">
+                        <property name="width-request">60</property>
+                        <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">eraser</property>
+                        <property name="can-focus">True</property>
+                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-target">'3'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <signal name="toggled" handler="load_preset" swapped="no"/>
+                        <style>
+                          <class name="pen-preset"/>
+                        </style>
                         <child>
                           <placeholder/>
                         </child>
@@ -135,17 +135,17 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="pen_preset_4">
-                        <property name="width_request">60</property>
-                        <property name="height_request">60</property>
+                      <object class="GtkModelButton" id="pen_preset_4">
+                        <property name="width-request">60</property>
+                        <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">eraser</property>
+                        <property name="can-focus">True</property>
+                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-target">'4'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <signal name="toggled" handler="load_preset" swapped="no"/>
+                        <style>
+                          <class name="pen-preset"/>
+                        </style>
                         <child>
                           <placeholder/>
                         </child>
@@ -157,17 +157,17 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="pen_preset_5">
-                        <property name="width_request">60</property>
-                        <property name="height_request">60</property>
+                      <object class="GtkModelButton" id="pen_preset_5">
+                        <property name="width-request">60</property>
+                        <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">eraser</property>
+                        <property name="can-focus">True</property>
+                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-target">'5'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <signal name="toggled" handler="load_preset" swapped="no"/>
+                        <style>
+                          <class name="pen-preset"/>
+                        </style>
                         <child>
                           <placeholder/>
                         </child>
@@ -179,17 +179,17 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="pen_preset_6">
-                        <property name="width_request">60</property>
-                        <property name="height_request">60</property>
+                      <object class="GtkModelButton" id="pen_preset_6">
+                        <property name="width-request">60</property>
+                        <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">eraser</property>
+                        <property name="can-focus">True</property>
+                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-target">'6'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <signal name="toggled" handler="load_preset" swapped="no"/>
+                        <style>
+                          <class name="pen-preset"/>
+                        </style>
                         <child>
                           <placeholder/>
                         </child>
@@ -201,17 +201,17 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="pen_preset_7">
-                        <property name="width_request">60</property>
-                        <property name="height_request">60</property>
+                      <object class="GtkModelButton" id="pen_preset_7">
+                        <property name="width-request">60</property>
+                        <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">eraser</property>
+                        <property name="can-focus">True</property>
+                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-target">'7'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <signal name="toggled" handler="load_preset" swapped="no"/>
+                        <style>
+                          <class name="pen-preset"/>
+                        </style>
                         <child>
                           <placeholder/>
                         </child>
@@ -223,17 +223,17 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="pen_preset_8">
-                        <property name="width_request">60</property>
-                        <property name="height_request">60</property>
+                      <object class="GtkModelButton" id="pen_preset_8">
+                        <property name="width-request">60</property>
+                        <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">eraser</property>
+                        <property name="can-focus">True</property>
+                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-target">'8'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <signal name="toggled" handler="load_preset" swapped="no"/>
+                        <style>
+                          <class name="pen-preset"/>
+                        </style>
                         <child>
                           <placeholder/>
                         </child>
@@ -245,17 +245,17 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="pen_preset_9">
-                        <property name="width_request">60</property>
-                        <property name="height_request">60</property>
+                      <object class="GtkModelButton" id="pen_preset_9">
+                        <property name="width-request">60</property>
+                        <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">eraser</property>
+                        <property name="can-focus">True</property>
+                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-target">'9'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <signal name="toggled" handler="load_preset" swapped="no"/>
+                        <style>
+                          <class name="pen-preset"/>
+                        </style>
                         <child>
                           <placeholder/>
                         </child>
@@ -267,17 +267,18 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="eraser">
-                        <property name="width_request">60</property>
-                        <property name="height_request">60</property>
+                      <object class="GtkModelButton" id="eraser">
+                        <property name="width-request">60</property>
+                        <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="image_position">bottom</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-target">'eraser'</property>
+                        <property name="image-position">left</property>
                         <signal name="draw" handler="on_eraser_button_draw" swapped="no"/>
-                        <signal name="toggled" handler="load_preset" swapped="no"/>
+                        <style>
+                          <class name="pen-preset"/>
+                        </style>
                         <child>
                           <placeholder/>
                         </child>
@@ -295,7 +296,7 @@
             <child type="label">
               <object class="GtkLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Presets</property>
               </object>
             </child>
@@ -309,19 +310,19 @@
         <child>
           <object class="GtkBox" id="scribble_toolbar">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkButton" id="scribble_close">
                 <property name="label">gtk-close</property>
-                <property name="width_request">80</property>
-                <property name="height_request">80</property>
+                <property name="width-request">80</property>
+                <property name="height-request">80</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
-                <signal name="clicked" handler="switch_scribbling" swapped="no"/>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="action-name">highlight.toggle</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -332,15 +333,15 @@
             <child>
               <object class="GtkButton" id="scribble_clear">
                 <property name="label">gtk-clear</property>
-                <property name="width_request">80</property>
-                <property name="height_request">80</property>
+                <property name="width-request">80</property>
+                <property name="height-request">80</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
-                <signal name="clicked" handler="clear_scribble" swapped="no"/>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="action-name">highlight.clear</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -351,15 +352,15 @@
             <child>
               <object class="GtkButton" id="scribble_undo">
                 <property name="label">gtk-undo</property>
-                <property name="width_request">80</property>
-                <property name="height_request">80</property>
+                <property name="width-request">80</property>
+                <property name="height-request">80</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
-                <signal name="clicked" handler="pop_scribble" swapped="no"/>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="action-name">highlight.undo</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -370,15 +371,15 @@
             <child>
               <object class="GtkButton" id="scribble_redo">
                 <property name="label">gtk-redo</property>
-                <property name="width_request">80</property>
-                <property name="height_request">80</property>
+                <property name="width-request">80</property>
+                <property name="height-request">80</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
-                <signal name="clicked" handler="redo_scribble" swapped="no"/>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="action-name">highlight.redo</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -389,19 +390,19 @@
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="valign">center</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkColorButton" id="scribble_color_selector">
-                    <property name="width_request">80</property>
-                    <property name="height_request">80</property>
+                    <property name="width-request">80</property>
+                    <property name="height-request">80</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="use_stock">True</property>
-                    <property name="always_show_image">True</property>
-                    <property name="use_alpha">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="use-stock">True</property>
+                    <property name="always-show-image">True</property>
+                    <property name="use-alpha">True</property>
                     <signal name="color-set" handler="update_color" swapped="no"/>
                   </object>
                   <packing>
@@ -412,16 +413,16 @@
                 </child>
                 <child>
                   <object class="GtkScale" id="scribble_width_selector">
-                    <property name="width_request">80</property>
-                    <property name="height_request">160</property>
+                    <property name="width-request">80</property>
+                    <property name="height-request">160</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can-focus">True</property>
                     <property name="orientation">vertical</property>
                     <property name="adjustment">scribble_width_adjust</property>
                     <property name="inverted">True</property>
                     <property name="digits">0</property>
-                    <property name="draw_value">False</property>
-                    <property name="value_pos">bottom</property>
+                    <property name="draw-value">False</property>
+                    <property name="value-pos">bottom</property>
                     <signal name="change-value" handler="update_width" swapped="no"/>
                   </object>
                   <packing>
@@ -440,39 +441,39 @@
             <child>
               <object class="GtkButton" id="zoom_stop_button">
                 <property name="label">gtk-zoom-out</property>
-                <property name="width_request">80</property>
-                <property name="height_request">80</property>
+                <property name="width-request">80</property>
+                <property name="height-request">80</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
-                <signal name="clicked" handler="stop_zooming" swapped="no"/>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="action-name">app.unzoom</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="pack_type">end</property>
+                <property name="pack-type">end</property>
                 <property name="position">7</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="zoom_start_button">
                 <property name="label">gtk-zoom-in</property>
-                <property name="width_request">80</property>
-                <property name="height_request">80</property>
+                <property name="width-request">80</property>
+                <property name="height-request">80</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
-                <signal name="clicked" handler="start_zooming" swapped="no"/>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="action-name">app.zoom</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="pack_type">end</property>
+                <property name="pack-type">end</property>
                 <property name="position">8</property>
               </packing>
             </child>
@@ -484,9 +485,6 @@
           </packing>
         </child>
       </object>
-    </child>
-    <child type="titlebar">
-      <placeholder/>
     </child>
   </object>
 </interface>

@@ -37,7 +37,7 @@ from collections import deque
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GObject, GLib
+from gi.repository import Gtk, GObject, GLib, Gio
 
 from pympress import util
 
@@ -196,13 +196,13 @@ class Builder(Gtk.Builder):
         Builder.connect_signals_full(base_target, self.signal_connector)
 
 
-    def load_ui(self, resource_name):
+    def load_ui(self, resource_name, **kwargs):
         """ Loads the UI defined in the file named resource_name using the builder.
 
         Args:
             resource_name (`str`): the basename of the glade file (without extension), identifying the resource to load.
         """
-        self.add_from_file(util.get_ui_resource_file(resource_name))
+        self.add_from_file(util.get_ui_resource_file(resource_name, **kwargs))
 
         # Get all newly built objects
         new_objects = set(self.get_objects()) - self.__built_widgets
@@ -373,3 +373,53 @@ class Builder(Gtk.Builder):
 
         paned.disconnect(self.pending_pane_resizes.pop(paned.get_name()))
         return True
+
+
+    def get_action_group(self, prefix, widget=None):
+        app = self.get_application()
+        if prefix == 'app':
+            return app
+
+        if widget is None:
+            widget = app.get_windows()[-1]
+
+        action_map = widget.get_action_group(prefix)
+
+        if action_map is None:
+            action_map = Gio.SimpleActionGroup.new()
+            widget.insert_action_group(prefix, action_map)
+
+        return action_map
+
+
+    def setup_actions(self, prefix, actions, **kwargs):
+        action_map = self.get_action_group(prefix, **kwargs)
+
+        _glib_type_strings = {
+            float: 'd',
+            bool: 'b',
+            int: 's',
+            str: 's',
+        }
+
+        for action_name, details in actions.items():
+            state = details.get('state')
+            param = details.get('parameter_type')
+
+            if param is not None:
+                param = GLib.VariantType.new(_glib_type_strings[param])
+
+            if state is not None:
+                state = GLib.Variant(_glib_type_strings[type(state)], state)
+                action = Gio.SimpleAction.new_stateful(action_name, param, state)
+            else:
+                action = Gio.SimpleAction.new(action_name, param)
+
+            for event in ['activate', 'change-state']:
+                handler = details.get(event.replace('-', '_'))
+                if handler is not None:
+                    action.connect(event, handler)
+
+            action_map.add_action(action)
+
+        return action_map

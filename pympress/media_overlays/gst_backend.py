@@ -112,7 +112,7 @@ class GstOverlay(base.VideoOverlay):
         self.player.connect('state-changed', self.track_state)
         self.player.connect('duration-changed', lambda p, ns: self.update_range(ns / 1e9))
         self.player.connect('position-updated', lambda p, ns: self.update_progress(ns / 1e9))
-        self.player.connect('end-of-stream', lambda e: GLib.idle_add(self.hide))
+        self.player.connect('end-of-stream', lambda e: GLib.idle_add(self.action_map.lookup_action('stop').activate()))
 
         if self.renderer.get_window_handle():
             pass
