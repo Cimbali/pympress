@@ -14,16 +14,41 @@ What are you doing?
 
 ### Problem
 What's happening instead of what you are expecting?
-What is reported in pympress.log?
 
-The pympress.log location is given in the pop-up avaible through the Help > about menu item.
+What is reported in pympress.log?\*
 
-It is located in the user cache folder, thus one of the following locations:
+Does the problem still happen if you remove your config file?\*
+(You can just move the config file to a different location to be able to restore it after testing)
+
+--------------------------------------------------------------------------------------------------
+
+\* The pympress config and log locations are given in the pop-up available through the Help > about menu item.
+
+The **log file** is located in the user cache folder, thus one of the following locations:
 On Linux:
-> $XDG_CACHE_HOME/pympress.log
-> ~/.cache/pympress.log
+
+    $XDG_CACHE_HOME/pympress.log
+    ~/.cache/pympress.log
+
 On macOS:
-> ~/Library/Logs/pympress.log
+
+    ~/Library/Logs/pympress.log
+
 On Windows:
-> %LOCALAPPDATA%\pympress.log
-> %APPDATA%\pympress.log
+
+    %LOCALAPPDATA%\pympress.log
+    %APPDATA%\pympress.log
+
+The **config file** is located in the user preference folder, thus one of the following locations:
+On Linux:
+
+    $XDG_CONFIG_HOME/pympress
+    ~/.config/pympress
+
+On macOS:
+
+    ~/Library/Preferences/pympress
+
+On Windows:
+
+    %APPDATA%\pympress.ini
