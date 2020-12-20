@@ -200,6 +200,48 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         return [t.strip() for t in self.get(*args).split(',') if t.strip()]
 
 
+    def getint(self, *args, **kwargs):
+        """ Wrapper for :meth:`~configparser.Configparser.getint()` to handle parsing errors when a fallback is given.
+        """
+        try:
+            return super(Config, self).getint(*args, **kwargs)
+        except ValueError:
+            if 'fallback' not in kwargs:
+                raise
+
+            logger.warning(_('Error parsing option from config file {}.{} "{}" to int'.format(*args, self.get(*args))),
+                           exc_info=True)
+            return kwargs['fallback']
+
+
+    def getfloat(self, *args, **kwargs):
+        """ Wrapper for :meth:`~configparser.Configparser.getfloat()` to handle parsing errors when a fallback is given.
+        """
+        try:
+            return super(Config, self).getfloat(*args, **kwargs)
+        except ValueError:
+            if 'fallback' not in kwargs:
+                raise
+
+            logger.warning(_('Error parsing option from config file {}.{} "{}" to float'.format(*args, self.get(*args))),
+                           exc_info=True)
+            return kwargs['fallback']
+
+
+    def getboolean(self, *args, **kwargs):
+        """ Wrapper for :meth:`~configparser.Configparser.getboolean()` to handle parsing errors when a fallback is given.
+        """
+        try:
+            return super(Config, self).getboolean(*args, **kwargs)
+        except ValueError:
+            if 'fallback' not in kwargs:
+                raise
+
+            logger.warning(_('Error parsing option from config file {}.{} "{}" to bool'.format(*args, self.get(*args))),
+                           exc_info=True)
+            return kwargs['fallback']
+
+
     def save_config(self):
         """ Save the configuration to its file.
         """

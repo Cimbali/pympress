@@ -322,8 +322,8 @@ class UI(builder.Builder):
         # If multiple monitors, apply windows to monitors according to config
         screen = self.p_win.get_screen()
         if screen.get_n_monitors() > 1:
-            c_monitor = self.config.getint('content', 'monitor')
-            p_monitor = self.config.getint('presenter', 'monitor')
+            p_monitor = self.config.getint('presenter', 'monitor', fallback=0)
+            c_monitor = self.config.getint('content', 'monitor', fallback=(p_monitor + 1) % screen.get_n_monitors())
             p_full = self.config.getboolean('presenter', 'start_fullscreen')
             c_full = self.config.getboolean('content', 'start_fullscreen')
 
