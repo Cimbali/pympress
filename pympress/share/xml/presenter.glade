@@ -1,25 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.1 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.2"/>
-  <object class="GtkSizeGroup" id="previews_sizegroup"/>
-  <object class="GtkRecentFilter" id="recent_filter">
-    <mime-types>
-      <mime-type>application/pdf</mime-type>
-    </mime-types>
-  </object>
-  <object class="GtkAdjustment" id="spin_adjust">
-    <property name="lower">1</property>
-    <property name="upper">1</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">1</property>
-  </object>
   <object class="GtkWindow" id="p_win">
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
     <property name="title" translatable="yes">Pympress Presenter</property>
     <property name="role">presenter</property>
-    <property name="window_position">center</property>
+    <property name="window-position">center</property>
     <signal name="configure-event" handler="on_configure_win" swapped="no"/>
     <signal name="delete-event" handler="save_and_quit" swapped="no"/>
     <signal name="destroy" handler="save_and_quit" swapped="no"/>
@@ -30,45 +18,45 @@
     <child>
       <object class="GtkBox" id="bigvbox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkMenuBar" id="menu_bar">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkMenuItem" id="menu_file">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">_File</property>
-                <property name="use_underline">True</property>
+                <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="file_open">
                         <property name="label">gtk-open</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
                         <signal name="activate" handler="pick_file" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="file_recent">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Open _Recent</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <child type="submenu">
                           <object class="GtkRecentChooserMenu" id="menu_recent">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="filter">recent_filter</property>
                             <property name="limit">10</property>
-                            <property name="sort_type">mru</property>
+                            <property name="sort-type">mru</property>
                             <signal name="item-activated" handler="recent_document" swapped="no"/>
                           </object>
                         </child>
@@ -78,9 +66,9 @@
                       <object class="GtkImageMenuItem" id="file_close">
                         <property name="label">gtk-close</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
                         <signal name="activate" handler="close_file" swapped="no"/>
                       </object>
                     </child>
@@ -88,9 +76,9 @@
                       <object class="GtkImageMenuItem" id="file_quit">
                         <property name="label">gtk-quit</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
                         <signal name="activate" handler="save_and_quit" swapped="no"/>
                       </object>
                     </child>
@@ -101,19 +89,19 @@
             <child>
               <object class="GtkMenuItem" id="menu_pres">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">_Presentation</property>
-                <property name="use_underline">True</property>
+                <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkCheckMenuItem" id="pres_pause">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Pause timer</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <property name="active">True</property>
                         <signal name="toggled" handler="talk_time.switch_pause" swapped="no"/>
                       </object>
@@ -121,109 +109,109 @@
                     <child>
                       <object class="GtkMenuItem" id="pres_reset">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Reset timer</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="talk_time.reset_timer" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="pres_ett">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Set talk _Time</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="est_time.on_label_event" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="pres_fullscreen">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Fullscreen</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="toggled" handler="switch_fullscreen" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="pres_swap">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Swap screens</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="swap_screens" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="pres_notes">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Notes mode</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="toggled" handler="switch_mode" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="pres_blank">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Blank screen</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="toggled" handler="switch_blanked" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="pres_align">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Align content</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="adjust_frame_position" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="pres_annot">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Annotations</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="toggled" handler="switch_annotations" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="pres_buttons">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Big buttons</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="toggled" handler="switch_bigbuttons" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="pres_highlight">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Highlight</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="toggled" handler="scribbler.switch_scribbling" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="pres_pointer">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Pointer</property>
                         <child type="submenu">
                           <object class="GtkMenu">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <child>
                               <object class="GtkRadioMenuItem" id="pointermode_continuous">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">_Permanent</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_as_radio">True</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
                                 <property name="group">pointermode_continuous</property>
                                 <signal name="toggled" handler="laser.change_pointermode" swapped="no"/>
                               </object>
@@ -231,10 +219,10 @@
                             <child>
                               <object class="GtkRadioMenuItem" id="pointermode_manual">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">_Manual</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_as_radio">True</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
                                 <property name="group">pointermode_continuous</property>
                                 <signal name="toggled" handler="laser.change_pointermode" swapped="no"/>
                               </object>
@@ -242,10 +230,10 @@
                             <child>
                               <object class="GtkRadioMenuItem" id="pointermode_disabled">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">_Disabled</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_as_radio">True</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
                                 <property name="group">pointermode_continuous</property>
                                 <signal name="toggled" handler="laser.change_pointermode" swapped="no"/>
                               </object>
@@ -253,16 +241,16 @@
                             <child>
                               <object class="GtkSeparatorMenuItem">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkRadioMenuItem" id="pointer_red">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">_Red</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_as_radio">True</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
                                 <property name="group">pointer_red</property>
                                 <signal name="toggled" handler="laser.change_pointercolor" swapped="no"/>
                               </object>
@@ -270,10 +258,10 @@
                             <child>
                               <object class="GtkRadioMenuItem" id="pointer_green">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">_Green</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_as_radio">True</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
                                 <property name="group">pointer_red</property>
                                 <signal name="toggled" handler="laser.change_pointercolor" swapped="no"/>
                               </object>
@@ -281,10 +269,10 @@
                             <child>
                               <object class="GtkRadioMenuItem" id="pointer_blue">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">_Blue</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_as_radio">True</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
                                 <property name="group">pointer_red</property>
                                 <signal name="toggled" handler="laser.change_pointercolor" swapped="no"/>
                               </object>
@@ -296,18 +284,18 @@
                     <child>
                       <object class="GtkMenuItem" id="menu_zoom_in">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Zoom in</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="zoom.start_zooming" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="menu_zoom_out">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Undo zoom</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <property name="sensitive">False</property>
                         <signal name="activate" handler="zoom.stop_zooming" swapped="no"/>
                       </object>
@@ -315,29 +303,29 @@
                     <child>
                       <object class="GtkMenuItem" id="pres_notes_pos">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Notes position</property>
                         <child type="submenu">
                           <object class="GtkMenu">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <child>
                               <object class="GtkRadioMenuItem" id="notes_right">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">_Right half of slide</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_as_radio">True</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
                                 <signal name="toggled" handler="change_notes_pos" swapped="no"/>
                               </object>
                             </child>
                             <child>
                               <object class="GtkRadioMenuItem" id="notes_bottom">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">_Bottom half of slide</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_as_radio">True</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
                                 <property name="group">notes_right</property>
                                 <signal name="toggled" handler="change_notes_pos" swapped="no"/>
                               </object>
@@ -345,10 +333,10 @@
                             <child>
                               <object class="GtkRadioMenuItem" id="notes_left">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">_Left half of slide</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_as_radio">True</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
                                 <property name="group">notes_right</property>
                                 <signal name="toggled" handler="change_notes_pos" swapped="no"/>
                               </object>
@@ -356,10 +344,10 @@
                             <child>
                               <object class="GtkRadioMenuItem" id="notes_top">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">_Top half of slide</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_as_radio">True</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
                                 <property name="group">notes_right</property>
                                 <signal name="toggled" handler="change_notes_pos" swapped="no"/>
                               </object>
@@ -367,10 +355,10 @@
                             <child>
                               <object class="GtkRadioMenuItem" id="notes_after">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">_After slide pages</property>
-                                <property name="use_underline">True</property>
-                                <property name="draw_as_radio">True</property>
+                                <property name="use-underline">True</property>
+                                <property name="draw-as-radio">True</property>
                                 <property name="group">notes_right</property>
                                 <signal name="toggled" handler="change_notes_pos" swapped="no"/>
                               </object>
@@ -382,9 +370,9 @@
                     <child>
                       <object class="GtkMenuItem" id="timing_breakdown">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Timing breakdown</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="show_timing_report" swapped="no"/>
                       </object>
                     </child>
@@ -395,64 +383,64 @@
             <child>
               <object class="GtkMenuItem" id="menu_nav">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">_Navigation</property>
-                <property name="use_underline">True</property>
+                <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkMenuItem" id="nav_next">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Next</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="doc.goto_next" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="nav_prev">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Previous</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="doc.goto_prev" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="nav_first">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_First</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="doc.goto_home" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="nav_last">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Last</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="doc.goto_end" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="nav_goto">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Go to...</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="page_number.on_label_event" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="nav_jump">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Jump to label</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="page_number.on_label_event" swapped="no"/>
                       </object>
                     </child>
@@ -463,46 +451,46 @@
             <child>
               <object class="GtkMenuItem" id="menu_start">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">_Starting Configuration</property>
-                <property name="use_underline">True</property>
+                <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkCheckMenuItem" id="start_blanked">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Content blanked</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="start_cwin_fullscreen">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Content fullscreen</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="start_pwin_fullscreen">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Presenter fullscreen</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="toggled" handler="config.toggle_start" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkCheckMenuItem" id="portable_config">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Portable installation</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="toggled" handler="config.toggle_portable_config" swapped="no"/>
                       </object>
                     </child>
@@ -513,30 +501,30 @@
             <child>
               <object class="GtkMenuItem" id="menu_help">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="right_justified">True</property>
+                <property name="can-focus">False</property>
+                <property name="right-justified">True</property>
                 <property name="label" translatable="yes">_Help</property>
-                <property name="use_underline">True</property>
+                <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="help_about">
                         <property name="label">gtk-about</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
                         <signal name="activate" handler="menu_about" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="help_shortcuts">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">_Shortcuts</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="show_shortcuts" swapped="no"/>
                       </object>
                     </child>
@@ -554,36 +542,36 @@
         <child>
           <object class="GtkBox" id="p_central">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkPaned" id="hpaned">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can-focus">True</property>
                 <property name="events">GDK_BUTTON_RELEASE_MASK</property>
-                <property name="margin_left">5</property>
-                <property name="margin_right">5</property>
-                <property name="margin_top">5</property>
-                <property name="margin_bottom">5</property>
+                <property name="margin-left">5</property>
+                <property name="margin-right">5</property>
+                <property name="margin-top">5</property>
+                <property name="margin-bottom">5</property>
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
                 <property name="position">600</property>
-                <property name="position_set">True</property>
-                <signal name="notify::position" handler="on_pane_event" swapped="no"/>
+                <property name="position-set">True</property>
                 <signal name="button-release-event" handler="on_pane_event" swapped="no"/>
+                <signal name="notify::position" handler="on_pane_event" swapped="no"/>
                 <child>
                   <object class="GtkAspectFrame" id="p_frame_notes">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_right">5</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">in</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-right">5</property>
+                    <property name="label-xalign">0</property>
+                    <property name="shadow-type">in</property>
                     <property name="ratio">1.3300000429153442</property>
-                    <property name="obey_child">False</property>
+                    <property name="obey-child">False</property>
                     <child>
                       <object class="GtkDrawingArea" id="p_da_notes">
                         <property name="visible">True</property>
-                        <property name="app_paintable">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="app-paintable">True</property>
+                        <property name="can-focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
                         <signal name="button-press-event" handler="track_clicks" swapped="no"/>
                         <signal name="button-release-event" handler="track_clicks" swapped="no"/>
@@ -595,9 +583,9 @@
                     <child type="label">
                       <object class="GtkLabel" id="label422">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Notes</property>
-                        <property name="use_markup">True</property>
+                        <property name="use-markup">True</property>
                         <style>
                           <class name="frame-label"/>
                         </style>
@@ -612,46 +600,46 @@
                 <child>
                   <object class="GtkPaned" id="vpaned">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can-focus">True</property>
                     <property name="orientation">vertical</property>
                     <property name="position">11</property>
-                    <property name="position_set">True</property>
+                    <property name="position-set">True</property>
                     <signal name="button-release-event" handler="on_pane_event" swapped="no"/>
                     <signal name="notify::position" handler="on_pane_event" swapped="no"/>
                     <child>
                       <object class="GtkBox" id="right_pane">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_left">5</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-left">5</property>
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkAspectFrame" id="p_frame_cur">
-                            <property name="height_request">200</property>
-                            <property name="can_focus">False</property>
-                            <property name="label_xalign">0</property>
-                            <property name="shadow_type">in</property>
+                            <property name="height-request">200</property>
+                            <property name="can-focus">False</property>
+                            <property name="label-xalign">0</property>
+                            <property name="shadow-type">in</property>
                             <property name="yalign">0</property>
                             <property name="ratio">1.3300000429153442</property>
-                            <property name="obey_child">False</property>
+                            <property name="obey-child">False</property>
                             <child>
                               <object class="GtkOverlay" id="p_overlay">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="hexpand">True</property>
                                 <property name="vexpand">True</property>
                                 <child>
                                   <object class="GtkDrawingArea" id="p_da_cur">
                                     <property name="visible">True</property>
-                                    <property name="app_paintable">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK</property>
+                                    <property name="app-paintable">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_STRUCTURE_MASK</property>
                                     <signal name="button-press-event" handler="track_clicks" swapped="no"/>
                                     <signal name="button-release-event" handler="track_clicks" swapped="no"/>
                                     <signal name="configure-event" handler="on_configure_da" swapped="no"/>
                                     <signal name="draw" handler="on_draw" swapped="no"/>
-                                    <signal name="motion-notify-event" handler="track_motions" swapped="no"/>
                                     <signal name="enter-notify-event" handler="laser.track_enter_leave" swapped="no"/>
                                     <signal name="leave-notify-event" handler="laser.track_enter_leave" swapped="no"/>
+                                    <signal name="motion-notify-event" handler="track_motions" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="index">-1</property>
@@ -662,9 +650,9 @@
                             <child type="label">
                               <object class="GtkLabel" id="label420">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Current slide</property>
-                                <property name="use_markup">True</property>
+                                <property name="use-markup">True</property>
                                 <style>
                                   <class name="frame-label"/>
                                 </style>
@@ -679,19 +667,19 @@
                         </child>
                         <child>
                           <object class="GtkAspectFrame" id="p_frame_next">
-                            <property name="height_request">200</property>
+                            <property name="height-request">200</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label_xalign">0</property>
-                            <property name="shadow_type">in</property>
+                            <property name="can-focus">False</property>
+                            <property name="label-xalign">0</property>
+                            <property name="shadow-type">in</property>
                             <property name="yalign">0</property>
                             <property name="ratio">1.3300000429153442</property>
-                            <property name="obey_child">False</property>
+                            <property name="obey-child">False</property>
                             <child>
                               <object class="GtkDrawingArea" id="p_da_next">
                                 <property name="visible">True</property>
-                                <property name="app_paintable">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="app-paintable">True</property>
+                                <property name="can-focus">False</property>
                                 <signal name="configure-event" handler="on_configure_da" swapped="no"/>
                                 <signal name="draw" handler="on_draw" swapped="no"/>
                               </object>
@@ -699,9 +687,9 @@
                             <child type="label">
                               <object class="GtkLabel" id="label421">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Next slide</property>
-                                <property name="use_markup">True</property>
+                                <property name="use-markup">True</property>
                                 <style>
                                   <class name="frame-label"/>
                                 </style>
@@ -723,24 +711,24 @@
                     <child>
                       <object class="GtkFrame" id="p_frame_annot">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label_xalign">0</property>
-                        <property name="shadow_type">in</property>
+                        <property name="can-focus">False</property>
+                        <property name="label-xalign">0</property>
+                        <property name="shadow-type">in</property>
                         <child>
                           <object class="GtkScrolledWindow" id="scrolled_window">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="min_content_width">10</property>
-                            <property name="min_content_height">10</property>
+                            <property name="can-focus">True</property>
+                            <property name="min-content-width">10</property>
+                            <property name="min-content-height">10</property>
                             <child>
                               <object class="GtkTextView" id="annotations_textview">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="has_focus">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="has-focus">True</property>
                                 <property name="editable">False</property>
-                                <property name="wrap_mode">word</property>
-                                <property name="cursor_visible">False</property>
-                                <property name="accepts_tab">False</property>
+                                <property name="wrap-mode">word</property>
+                                <property name="cursor-visible">False</property>
+                                <property name="accepts-tab">False</property>
                                 <property name="monospace">True</property>
                               </object>
                             </child>
@@ -749,9 +737,9 @@
                         <child type="label">
                           <object class="GtkLabel" id="label4">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Annotations</property>
-                            <property name="use_markup">True</property>
+                            <property name="use-markup">True</property>
                             <style>
                               <class name="frame-label"/>
                             </style>
@@ -787,15 +775,15 @@
         <child>
           <object class="GtkBox" id="bottom">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkButton" id="prev_button">
                 <property name="label">gtk-go-back</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="margin_top">10</property>
-                <property name="use_stock">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="margin-top">10</property>
+                <property name="use-stock">True</property>
                 <signal name="clicked" handler="doc.goto_prev" swapped="no"/>
                 <style>
                   <class name="info-label"/>
@@ -810,28 +798,28 @@
             </child>
             <child>
               <object class="GtkFrame" id="frame_cur">
-                <property name="width_request">200</property>
+                <property name="width-request">200</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label_xalign">0</property>
-                <property name="shadow_type">out</property>
+                <property name="can-focus">False</property>
+                <property name="label-xalign">0</property>
+                <property name="shadow-type">out</property>
                 <child>
                   <object class="GtkEventBox" id="eb_cur">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="receives_default">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">True</property>
                     <signal name="event" handler="page_number.on_label_event" swapped="no"/>
                     <child>
                       <object class="GtkBox" id="hb_cur">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="homogeneous">True</property>
                         <child>
                           <object class="GtkEntry" id="edit_label">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="width_chars">3</property>
-                            <property name="placeholder_text" translatable="yes">page label</property>
+                            <property name="can-focus">True</property>
+                            <property name="width-chars">3</property>
+                            <property name="placeholder-text" translatable="yes">page label</property>
                             <signal name="changed" handler="page_number.changed_page_label" swapped="no"/>
                             <style>
                               <class name="big-info-label"/>
@@ -846,12 +834,12 @@
                         <child>
                           <object class="GtkLabel" id="label_cur">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="halign">end</property>
                             <property name="label">0</property>
                             <property name="justify">right</property>
-                            <property name="single_line_mode">True</property>
-                            <property name="track_visited_links">False</property>
+                            <property name="single-line-mode">True</property>
+                            <property name="track-visited-links">False</property>
                             <style>
                               <class name="big-info-label"/>
                             </style>
@@ -865,12 +853,12 @@
                         <child>
                           <object class="GtkLabel" id="label_sep">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="halign">end</property>
                             <property name="label">0</property>
                             <property name="justify">right</property>
-                            <property name="single_line_mode">True</property>
-                            <property name="track_visited_links">False</property>
+                            <property name="single-line-mode">True</property>
+                            <property name="track-visited-links">False</property>
                             <style>
                               <class name="big-info-label"/>
                             </style>
@@ -884,14 +872,14 @@
                         <child>
                           <object class="GtkSpinButton" id="spin_cur">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="width_chars">3</property>
+                            <property name="can-focus">False</property>
+                            <property name="width-chars">3</property>
                             <property name="xalign">1</property>
                             <property name="adjustment">spin_adjust</property>
-                            <property name="climb_rate">1</property>
-                            <property name="snap_to_ticks">True</property>
+                            <property name="climb-rate">1</property>
+                            <property name="snap-to-ticks">True</property>
                             <property name="numeric">True</property>
-                            <property name="update_policy">if-valid</property>
+                            <property name="update-policy">if-valid</property>
                             <signal name="changed" handler="page_preview" swapped="no"/>
                             <signal name="key-press-event" handler="page_number.on_keypress" swapped="no"/>
                             <signal name="key-release-event" handler="page_number.on_keypress" swapped="no"/>
@@ -908,10 +896,10 @@
                         <child>
                           <object class="GtkLabel" id="label_last">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="halign">start</property>
                             <property name="label">/0</property>
-                            <property name="track_visited_links">False</property>
+                            <property name="track-visited-links">False</property>
                             <style>
                               <class name="big-info-label"/>
                             </style>
@@ -929,9 +917,9 @@
                 <child type="label">
                   <object class="GtkLabel" id="slide_number">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Slide number</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                     <style>
                       <class name="frame-label"/>
                     </style>
@@ -951,10 +939,10 @@
               <object class="GtkButton" id="next_button">
                 <property name="label">gtk-go-forward</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="margin_top">10</property>
-                <property name="use_stock">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="margin-top">10</property>
+                <property name="use-stock">True</property>
                 <signal name="clicked" handler="doc.goto_next" swapped="no"/>
                 <style>
                   <class name="info-label"/>
@@ -971,9 +959,9 @@
               <object class="GtkButton" id="highlight_button">
                 <property name="label" translatable="yes">Highlight</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="margin_top">10</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="margin-top">10</property>
                 <style>
                   <class name="info-label"/>
                 </style>
@@ -990,9 +978,9 @@
               <object class="GtkButton" id="laser_button">
                 <property name="label" translatable="yes">Pointer</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="margin_top">10</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="margin-top">10</property>
                 <style>
                   <class name="info-label"/>
                 </style>
@@ -1007,18 +995,18 @@
             </child>
             <child>
               <object class="GtkFrame" id="frame_time">
-                <property name="width_request">170</property>
+                <property name="width-request">170</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">1</property>
-                <property name="label_xalign">0</property>
-                <property name="shadow_type">in</property>
+                <property name="can-focus">False</property>
+                <property name="margin-left">1</property>
+                <property name="label-xalign">0</property>
+                <property name="shadow-type">in</property>
                 <child>
                   <object class="GtkLabel" id="label_time">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="label">00:00</property>
-                    <property name="width_chars">15</property>
+                    <property name="width-chars">15</property>
                     <style>
                       <class name="big-info-label"/>
                     </style>
@@ -1027,9 +1015,9 @@
                 <child type="label">
                   <object class="GtkLabel" id="framelabel_time">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Time elapsed</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                     <style>
                       <class name="frame-label"/>
                     </style>
@@ -1047,21 +1035,21 @@
             </child>
             <child>
               <object class="GtkFrame" id="frame_ett">
-                <property name="width_request">170</property>
+                <property name="width-request">170</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label_xalign">0</property>
-                <property name="shadow_type">in</property>
+                <property name="can-focus">False</property>
+                <property name="label-xalign">0</property>
+                <property name="shadow-type">in</property>
                 <child>
                   <object class="GtkEventBox" id="eb_ett">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <signal name="button-press-event" handler="est_time.on_label_event" swapped="no"/>
                     <signal name="key-press-event" handler="est_time.on_keypress" swapped="no"/>
                     <child>
                       <object class="GtkLabel" id="label_ett">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label">00:00</property>
                         <style>
                           <class name="info-label"/>
@@ -1073,9 +1061,9 @@
                 <child type="label">
                   <object class="GtkLabel" id="framelabel_ett">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Time estimation</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                     <style>
                       <class name="frame-label"/>
                     </style>
@@ -1093,17 +1081,17 @@
             </child>
             <child>
               <object class="GtkFrame" id="frame_clock">
-                <property name="width_request">170</property>
+                <property name="width-request">170</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label_xalign">0</property>
-                <property name="shadow_type">in</property>
+                <property name="can-focus">False</property>
+                <property name="label-xalign">0</property>
+                <property name="shadow-type">in</property>
                 <child>
                   <object class="GtkLabel" id="label_clock">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="label">00:00</property>
-                    <property name="width_chars">8</property>
+                    <property name="width-chars">8</property>
                     <style>
                       <class name="info-label"/>
                     </style>
@@ -1112,9 +1100,9 @@
                 <child type="label">
                   <object class="GtkLabel" id="framelabel_clock">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Clock</property>
-                    <property name="use_markup">True</property>
+                    <property name="use-markup">True</property>
                     <style>
                       <class name="frame-label"/>
                     </style>
@@ -1139,5 +1127,17 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkSizeGroup" id="previews_sizegroup"/>
+  <object class="GtkRecentFilter" id="recent_filter">
+    <mime-types>
+      <mime-type>application/pdf</mime-type>
+    </mime-types>
+  </object>
+  <object class="GtkAdjustment" id="spin_adjust">
+    <property name="lower">1</property>
+    <property name="upper">1</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">1</property>
   </object>
 </interface>

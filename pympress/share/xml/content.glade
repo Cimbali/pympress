@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 3.2 -->
+  <requires lib="gtk+" version="3.2"/>
   <object class="GtkWindow" id="c_win">
-    <property name="width_request">1067</property>
-    <property name="height_request">600</property>
-    <property name="can_focus">True</property>
+    <property name="can-focus">True</property>
     <property name="events">GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
     <property name="title" translatable="yes">Pympress Content</property>
     <property name="role">content</property>
-    <property name="window_position">center</property>
+    <property name="window-position">center</property>
     <property name="deletable">False</property>
     <signal name="destroy" handler="save_and_quit" swapped="no"/>
     <signal name="window-state-event" handler="on_window_state_event" swapped="no"/>
@@ -19,29 +17,29 @@
     <child>
       <object class="GtkAspectFrame" id="c_frame">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label_xalign">0</property>
-        <property name="shadow_type">none</property>
+        <property name="can-focus">False</property>
+        <property name="label-xalign">0</property>
+        <property name="shadow-type">none</property>
         <property name="ratio">1.3300000429153442</property>
-        <property name="obey_child">False</property>
+        <property name="obey-child">False</property>
         <child>
           <object class="GtkOverlay" id="c_overlay">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
             <child>
               <object class="GtkDrawingArea" id="c_da">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK</property>
+                <property name="can-focus">False</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_STRUCTURE_MASK</property>
                 <signal name="button-press-event" handler="track_clicks" swapped="no"/>
                 <signal name="button-release-event" handler="track_clicks" swapped="no"/>
-                <signal name="motion-notify-event" handler="track_motions" swapped="no"/>
-                <signal name="draw" handler="on_draw" swapped="no"/>
                 <signal name="configure-event" handler="on_configure_da" swapped="no"/>
+                <signal name="draw" handler="on_draw" swapped="no"/>
                 <signal name="enter-notify-event" handler="laser.track_enter_leave" swapped="no"/>
                 <signal name="leave-notify-event" handler="laser.track_enter_leave" swapped="no"/>
+                <signal name="motion-notify-event" handler="track_motions" swapped="no"/>
               </object>
             </child>
           </object>
