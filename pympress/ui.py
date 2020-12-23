@@ -204,11 +204,7 @@ class UI(builder.Builder):
         }
         self.placeable_widgets['highlight'] = self.scribbler.scribble_overlay
 
-        # Initialize windows and screens
-        self.setup_screens()
-        self.c_win.show_now()
-        self.p_win.show_now()
-
+        # Initialize windows
         self.make_cwin()
         self.make_pwin()
 
@@ -217,24 +213,31 @@ class UI(builder.Builder):
         # Common to both windows
         self.load_icons()
 
-        # Show all windows
-        self.c_win.show_all()
-        self.p_win.show_all()
-
         extras.FileWatcher.start_daemon()
 
-        # Queue some redraws
-        self.c_da.queue_draw()
-        self.redraw_panes()
-        self.on_page_change(False)
-
         # Adjust default visibility of items
+        self.prev_button.set_no_show_all(True)
+        self.next_button.set_no_show_all(True)
+        self.laser_button.set_no_show_all(True)
+        self.highlight_button.set_no_show_all(True)
+        self.p_frame_annot.set_no_show_all(True)
+
         self.prev_button.set_visible(self.show_bigbuttons)
         self.next_button.set_visible(self.show_bigbuttons)
         self.laser_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
         self.p_frame_annot.set_visible(self.show_annotations)
         self.laser.activate_pointermode()
+
+        # Setup screens and show all windows
+        self.setup_screens()
+        self.c_win.show_all()
+        self.p_win.show_all()
+
+        # Queue some redraws
+        self.c_da.queue_draw()
+        self.redraw_panes()
+        self.on_page_change(False)
 
 
     def load_icons(self):
@@ -274,7 +277,6 @@ class UI(builder.Builder):
 
         init_checkstates = {
             'pres_pause':            True,
-            'pres_fullscreen':       bool(self.c_win.get_window().get_state() & Gdk.WindowState.FULLSCREEN),
             'pres_notes':            bool(self.notes_mode),
             'pres_blank':            self.blanked,
             'pres_annot':            self.show_annotations,
@@ -319,43 +321,75 @@ class UI(builder.Builder):
     def setup_screens(self):
         """ Sets up the position of the windows.
         """
+        self.p_win.parse_geometry(self.config.get('presenter', 'geometry'))
+        self.c_win.parse_geometry(self.config.get('content', 'geometry'))
+
+        p_full = self.config.getboolean('presenter', 'start_fullscreen')
+        c_full = self.config.getboolean('content', 'start_fullscreen')
+
+        if not c_full and not p_full:
+            # Just restored window sizes, that’s enough
+            return
+
         # If multiple monitors, apply windows to monitors according to config
         screen = self.p_win.get_screen()
-        if screen.get_n_monitors() > 1:
-            p_monitor = self.config.getint('presenter', 'monitor', fallback=0)
-            c_monitor = self.config.getint('content', 'monitor', fallback=(p_monitor + 1) % screen.get_n_monitors())
-            p_full = self.config.getboolean('presenter', 'start_fullscreen')
-            c_full = self.config.getboolean('content', 'start_fullscreen')
 
-            if c_monitor == p_monitor and (c_full or p_full):
-                warning = _('Content and presenter window must not be on the same monitor if you start full screen!')
-                logger.warning(warning)
-                p_monitor = 0 if c_monitor > 0 else 1
-        else:
-            c_monitor = 0
-            p_monitor = 0
-            c_full = False
-            p_full = False
+        if screen.get_n_monitors() <= 1:
+            logger.warning(_('Not starting content or presenter window full screen ' +
+                             'because there is only one monitor'))
+            return
 
-            if self.config.getboolean('presenter', 'start_fullscreen') \
-                    or self.config.getboolean('content', 'start_fullscreen'):
-                logger.warning(_('Not starting content or presenter window full screen ' +
-                                 'because there is only one monitor'))
+        # To start fullscreen, we need to ensure windows are on individual monitors
+        c_monitor = screen.get_monitor_at_window(self.c_win)
+        p_monitor = screen.get_monitor_at_window(self.p_win)
+        primary = screen.get_primary_monitor()
+        if c_monitor == p_monitor:
+            warning = _('Content and presenter window must not be on the same monitor if you start full screen!')
+            logger.warning(warning)
 
-        p_bounds = screen.get_monitor_geometry(p_monitor)
-        self.p_win.move(p_bounds.x, p_bounds.y)
-        self.p_win.resize(p_bounds.width, p_bounds.height)
+            if p_monitor == primary:
+                # move content somewhere else
+                self.move_window(screen, self.c_win, c_monitor, (primary + 1) % screen.get_n_monitors())
+            else:
+                # move presenter to primary
+                self.move_window(screen, self.p_win, p_monitor, primary)
+
         if p_full:
             self.p_win.fullscreen()
-        else:
-            self.p_win.maximize()
+        self.get_object('pres_fullscreen').set_active(p_full)
 
-        c_bounds = screen.get_monitor_geometry(c_monitor)
-        self.c_win.move(c_bounds.x, c_bounds.y)
-        self.c_win.resize(c_bounds.width, c_bounds.height)
         if c_full:
             self.c_win.fullscreen()
             GLib.idle_add(lambda: util.set_screensaver(True, self.c_win.get_window()))
+
+
+    def move_window(self, screen, win, from_monitor, to_monitor):
+        """ Move window from monitor number from_monitor to monitor to_monitor.
+        """
+        x, y, w, h = win.get_geometry()
+        win_state = win.get_window().get_state()
+
+        if (win_state & Gdk.WindowState.FULLSCREEN) != 0:
+            win.unfullscreen()
+        if (win_state & Gdk.WindowState.MAXIMIZED) != 0:
+            win.unmaximize()
+
+        to_bounds = screen.get_monitor_geometry(move_from_monitor)
+        to_w = min(w, to_bounds.width)
+        to_h = min(h, to_bounds.height)
+
+        from_bounds = screen.get_monitor_geometry(move_from_monitor)
+        # Get fraction of free space that is left or top of window
+        x = (max(0, x - from_bounds.x) / (from_bounds.width - w)) if w >= from_bounds.width else 0
+        y = (max(0, y - from_bounds.y) / (from_bounds.height - h)) if h >= from_bounds.height else 0
+
+        move_win.resize(to_w, to_h)
+        move_win.move(to_bounds.x + x * (to_bounds.width - to_w), to_bounds.y + y * (to_bounds.height - to_h))
+
+        if (win_state & Gdk.WindowState.MAXIMIZED) != 0:
+            win.maximize()
+        if (win_state & Gdk.WindowState.FULLSCREEN) != 0:
+            win.fullscreen()
 
 
     def show_shortcuts(self, *args):
@@ -421,16 +455,16 @@ class UI(builder.Builder):
             widget (:class:`~Gtk.Widget`):  the window which has been moved or resized
             event (:class:`~Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
+        geom = '{}x{}{:+}{:+}'.format(*widget.get_size(), *widget.get_position())
+
         if widget is self.p_win:
-            p_monitor = self.p_win.get_display().get_monitor_at_window(self.p_central.get_parent_window())
-            self.config.set('presenter', 'monitor', str(p_monitor))
+            self.config.set('presenter', 'geometry', geom)
             cw = self.p_central.get_allocated_width()
             ch = self.p_central.get_allocated_height()
             self.scribbler.off_render.set_size_request(cw, ch)
 
         elif widget is self.c_win:
-            c_monitor = self.c_win.get_display().get_monitor_at_window(self.c_frame.get_parent_window())
-            self.config.set('content', 'monitor', str(c_monitor))
+            self.config.set('content', 'geometry', geom)
 
 
     def redraw_panes(self):
@@ -1261,41 +1295,14 @@ class UI(builder.Builder):
         screen = self.p_win.get_screen()
 
         # Though Gtk.Window is a Gtk.Widget get_parent_window() actually returns None on self.{c,p}_win
-        p_monitor = screen.get_monitor_at_window(self.p_central.get_parent_window())
-        c_monitor = screen.get_monitor_at_window(self.c_frame.get_parent_window())
+        p_monitor = screen.get_monitor_at_window(self.p_win.get_window())
+        c_monitor = screen.get_monitor_at_window(self.c_win.get_window())
 
         if screen.get_n_monitors() == 1 or p_monitor == c_monitor:
             return
 
-        p_win_state = self.p_win.get_window().get_state()
-        c_win_state = self.c_win.get_window().get_state()
-        if (c_win_state & Gdk.WindowState.FULLSCREEN) != 0:
-            self.c_win.unfullscreen()
-        if (p_win_state & Gdk.WindowState.FULLSCREEN) != 0:
-            self.p_win.unfullscreen()
-        if (c_win_state & Gdk.WindowState.MAXIMIZED) != 0:
-            self.c_win.unmaximize()
-        if (p_win_state & Gdk.WindowState.MAXIMIZED) != 0:
-            self.p_win.unmaximize()
-
-        p_monitor, c_monitor = c_monitor, p_monitor
-
-        cx, cy, cw, ch = self.c_win.get_position() + self.c_win.get_size()
-        px, py, pw, ph = self.p_win.get_position() + self.p_win.get_size()
-
-        c_bounds = screen.get_monitor_geometry(c_monitor)
-        p_bounds = screen.get_monitor_geometry(p_monitor)
-        self.c_win.move(c_bounds.x + max(0, c_bounds.width - cw) / 2, c_bounds.y + max(0, c_bounds.height - ch) / 2)
-        self.p_win.move(p_bounds.x + max(0, p_bounds.width - pw) / 2, p_bounds.y + max(0, p_bounds.height - ph) / 2)
-
-        if (c_win_state & Gdk.WindowState.MAXIMIZED) != 0:
-            self.c_win.maximize()
-        if (p_win_state & Gdk.WindowState.MAXIMIZED) != 0:
-            self.p_win.maximize()
-        if (c_win_state & Gdk.WindowState.FULLSCREEN) != 0:
-            self.c_win.fullscreen()
-        if (p_win_state & Gdk.WindowState.FULLSCREEN) != 0:
-            self.p_win.fullscreen()
+        self.move_window(screen, self.c_win, c_monitor, p_monitor)
+        self.move_window(screen, self.p_win, p_monitor, c_monitor)
 
 
     def switch_blanked(self, widget, event = None):

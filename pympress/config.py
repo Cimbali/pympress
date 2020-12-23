@@ -188,6 +188,12 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             self.remove_option('scribble', 'width')
             self.set('scribble', 'active_pen', '9')
 
+        if self.has_option('presenter', 'monitor'):
+            self.remove_option('presenter', 'monitor')
+
+        if self.has_option('content', 'monitor'):
+            self.remove_option('content', 'monitor')
+
 
     def getlist(self, *args):
         """ Parse a config value and return the list by splitting the value on commas.
