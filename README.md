@@ -28,7 +28,7 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
   With yum or dnf, simply do:
 
   ```sh
-  dnf enable copr/cimbali
+  dnf copr enable cimbali/pympress
   dnf install python3-pympress
 
   # optionally, required for VLC video support:
