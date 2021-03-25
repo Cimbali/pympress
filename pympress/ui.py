@@ -258,14 +258,14 @@ class UI(builder.Builder):
             # nav
             'goto-page'     : dict(activate=self.page_number.on_label_event),
             'jumpto-label'  : dict(activate=self.page_number.on_label_event),
-            'next-page'     : dict(activate=self.doc.goto_next),
-            'next-label'    : dict(activate=self.doc.label_next),
-            'prev-page'     : dict(activate=self.doc.goto_prev),
-            'prev-label'    : dict(activate=self.doc.label_prev),
-            'hist-back'     : dict(activate=self.doc.hist_prev),
-            'hist-forward'  : dict(activate=self.doc.hist_next),
-            'first-page'    : dict(activate=self.doc.goto_home),
-            'last-page'     : dict(activate=self.doc.goto_end),
+            'next-page'     : dict(activate=self.find_callback_handler(self, 'doc.goto_next')),
+            'next-label'    : dict(activate=self.find_callback_handler(self, 'doc.label_next')),
+            'prev-page'     : dict(activate=self.find_callback_handler(self, 'doc.goto_prev')),
+            'prev-label'    : dict(activate=self.find_callback_handler(self, 'doc.label_prev')),
+            'hist-back'     : dict(activate=self.find_callback_handler(self, 'doc.hist_prev')),
+            'hist-forward'  : dict(activate=self.find_callback_handler(self, 'doc.hist_next')),
+            'first-page'    : dict(activate=self.find_callback_handler(self, 'doc.goto_home')),
+            'last-page'     : dict(activate=self.find_callback_handler(self, 'doc.goto_end')),
         })
 
         for action, shortcut in self.config.items('shortcuts'):
@@ -797,21 +797,26 @@ class UI(builder.Builder):
         except Exception:
             pass
 
-        page_nb = int(widget.get_value()) - 1
-        if page_nb >= self.doc.pages_number() or page_nb < 0:
-            return
-
         draw_notes = self.notes_mode
         draw_page = draw_notes.complement()
 
-        page_cur = self.doc.page(page_nb)
-        page_next = self.doc.page(page_nb + 1)
+        if is_preview:
+            page_nb = int(widget.get_value()) - 1
+            if page_nb >= self.doc.pages_number() or page_nb < 0:
+                return
 
-        self.page_preview_nb = page_nb
+            page_cur = self.doc.page(page_nb)
+            page_next = self.doc.page(page_nb + 1)
+            page_notes = self.doc.notes_page(page_nb)
+        else:
+            page_cur = self.doc.current_page()
+            page_next = self.doc.next_page()
+            page_notes = self.doc.current_notes_page()
+
+        self.page_preview_nb = page_cur.number()
 
         # Aspect ratios and queue redraws
         if draw_notes:
-            page_notes = self.doc.notes_page(page_nb)
             self.p_frame_notes.set_property('ratio', page_notes.get_aspect_ratio(draw_notes))
             self.p_da_notes.queue_draw()
 
@@ -848,10 +853,6 @@ class UI(builder.Builder):
         """
         draw_notes = self.notes_mode
         draw_page = draw_notes.complement()
-
-        page_cur = self.doc.current_page()
-        page_next = self.doc.next_page()
-        page_notes = self.doc.current_notes_page()
 
         self.annotations.add_annotations(page_cur.get_annotations())
 

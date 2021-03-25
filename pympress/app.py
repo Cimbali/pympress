@@ -37,7 +37,7 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib, Gio
 
-from pympress import util, config, extras, document, ui
+from pympress import util, config, extras, document, ui, builder
 
 
 class Pympress(Gtk.Application):
@@ -47,20 +47,6 @@ class Pympress(Gtk.Application):
     ett = 0
     log_level = logging.ERROR
     notes_pos = None
-
-    _glib_type_strings = {
-        float: 'd',
-        bool: 'b',
-        int: 's',
-        str: 's',
-    }
-
-    _glib_type_getters = {
-        'd': GLib.Variant.get_double,
-        'b': GLib.Variant.get_boolean,
-        'x': GLib.Variant.get_int64,
-        's': GLib.Variant.get_string,
-    }
 
     options = {
         # long_name: (short_name (int), flags (GLib.OptionFlags), arg (GLib.OptionArg)
@@ -150,7 +136,7 @@ class Pympress(Gtk.Application):
             value (`str`, `int`, `bool` or `float`): the value to set.
         """
         try:
-            self.lookup_action(name).change_state(GLib.Variant(self._glib_type_strings[type(value)], value))
+            self.lookup_action(name).change_state(GLib.Variant(builder.Builder._glib_type_strings[type(value)], value))
         except:
             pass
 
@@ -166,7 +152,7 @@ class Pympress(Gtk.Application):
         """
         try:
             state = self.lookup_action(name).get_state()
-            return self._glib_type_getters[state.get_type_string()](state)
+            return builder.Builder._glib_type_getters[state.get_type_string()](state)
         except:
             return None
 
@@ -178,7 +164,7 @@ class Pympress(Gtk.Application):
             name (`str`): the name of the stateful action
         """
         if parameter is not None:
-            parameter = GLib.Variant(self._glib_type_strings[type(parameter)], parameter)
+            parameter = GLib.Variant(builder.Builder._glib_type_strings[type(parameter)], parameter)
 
         self.lookup_action(name).activate(parameter)
 

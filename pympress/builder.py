@@ -47,8 +47,23 @@ class Builder(Gtk.Builder):
     """
     #: `set` of :class:`~Gtk.Widget`s that have been built by the builder, and translated
     __built_widgets = set()
+
     #: `dict` mapping :class:`~Gtk.Paned` names to the handler ids of their size-allocate signal
     pending_pane_resizes = {}
+
+    _glib_type_strings = {
+        float: 'd',
+        bool: 'b',
+        int: 's',
+        str: 's',
+    }
+
+    _glib_type_getters = {
+        'd': GLib.Variant.get_double,
+        'b': GLib.Variant.get_boolean,
+        'x': GLib.Variant.get_int64,
+        's': GLib.Variant.get_string,
+    }
 
     def __init__(self):
         super(Builder, self).__init__()
@@ -407,10 +422,10 @@ class Builder(Gtk.Builder):
             param = details.get('parameter_type')
 
             if param is not None:
-                param = GLib.VariantType.new(_glib_type_strings[param])
+                param = GLib.VariantType.new(self._glib_type_strings[param])
 
             if state is not None:
-                state = GLib.Variant(_glib_type_strings[type(state)], state)
+                state = GLib.Variant(self._glib_type_strings[type(state)], state)
                 action = Gio.SimpleAction.new_stateful(action_name, param, state)
             else:
                 action = Gio.SimpleAction.new(action_name, param)
