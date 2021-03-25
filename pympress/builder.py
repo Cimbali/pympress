@@ -420,6 +420,7 @@ class Builder(Gtk.Builder):
         for action_name, details in actions.items():
             state = details.get('state')
             param = details.get('parameter_type')
+            enabled = details.get('enabled')
 
             if param is not None:
                 param = GLib.VariantType.new(self._glib_type_strings[param])
@@ -436,5 +437,8 @@ class Builder(Gtk.Builder):
                     action.connect(event, handler)
 
             action_map.add_action(action)
+
+            if enabled is not None:
+                action.set_enabled(enabled)
 
         return action_map

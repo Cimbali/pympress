@@ -122,10 +122,7 @@ class Pympress(Gtk.Application):
             name (`str`): the name of the stateful action
             value (`bool`): wheether the action should be enabled or disabled
         """
-        try:
-            self.lookup_action(name).set_enabled(value)
-        except:
-            pass
+        self.lookup_action(name).set_enabled(value)
 
 
     def set_action_state(self, name, value):
@@ -135,10 +132,7 @@ class Pympress(Gtk.Application):
             name (`str`): the name of the stateful action
             value (`str`, `int`, `bool` or `float`): the value to set.
         """
-        try:
-            self.lookup_action(name).change_state(GLib.Variant(builder.Builder._glib_type_strings[type(value)], value))
-        except:
-            pass
+        self.lookup_action(name).change_state(GLib.Variant(builder.Builder._glib_type_strings[type(value)], value))
 
 
     def get_action_state(self, name):
@@ -150,11 +144,8 @@ class Pympress(Gtk.Application):
         Returns:
             `str`, `int`, `bool` or `float`: the value contained in the action
         """
-        try:
-            state = self.lookup_action(name).get_state()
-            return builder.Builder._glib_type_getters[state.get_type_string()](state)
-        except:
-            return None
+        state = self.lookup_action(name).get_state()
+        return builder.Builder._glib_type_getters[state.get_type_string()](state)
 
 
     def activate_action(self, name, parameter=None):

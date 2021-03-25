@@ -47,11 +47,19 @@ class TimingReport(builder.Builder):
     #: `list` of time at which each page was reached
     page_time = []
     #: `int` the time at which the clock was reset
-    reset_time = -1
+    end_time = -1
     #: The :class:`~Gtk.TreeView` containing the timing data to display in the dialog.
     timing_treeview = None
     #: A :class:`~Gtk.Dialog` to contain the timing to show.
     time_report_dialog = None
+    #:
+    clear_on_next_transition = False
+
+    #: A `dict` containing the structure of the current document
+    doc_structure = {}
+    #: A `list` with the page label of each page of the current document
+    page_labels = []
+    document_open = False
 
     def __init__(self, parent):
         super(TimingReport, self).__init__()
@@ -68,16 +76,21 @@ class TimingReport(builder.Builder):
             page (`int`): the page number of the current slide
             time (`int`): the number of seconds elapsed since the beginning of the presentation
         """
-        if self.reset_time >= 0:
-            self.reset_time = -1
+        if not self.document_open:
+            return
+
+        if self.clear_on_next_transition:
+            self.clear_on_next_transition = False
             del self.page_time[:]
+
         self.page_time.append((page, time))
 
 
     def reset(self, reset_time):
         """ A timer reset. Clear the history as soon as we start changing pages again.
         """
-        self.reset_time = reset_time
+        self.end_time = reset_time
+        self.clear_on_next_transition = True
 
 
     @staticmethod
@@ -90,15 +103,30 @@ class TimingReport(builder.Builder):
         return '{:02}:{:02}'.format(*divmod(secs, 60))
 
 
-    def show(self, current_time, doc_structure, page_labels):
+    def set_document_metadata(self, doc_structure, page_labels):
         """ Show the popup with the timing infortmation.
 
         Args:
-            current_time (`int`): the number of seconds elapsed since the beginning of the presentation
             doc_structure (`dict`): the structure of the document
             page_labels (`list`): the page labels for each of the pages
         """
-        times = [time for page, time in self.page_time] + [current_time if self.reset_time < 0 else self.reset_time]
+        self.document_open = len(page_labels) != 0
+
+        # Do not update if we only close the document. That way the treport is still accessible when the document is closed.
+        if not self.document_open:
+            return
+
+        self.doc_structure = doc_structure
+        self.page_labels = page_labels
+
+        # Clear the report when there is a new document opened.
+        del self.page_time[:]
+
+
+    def show_report(self, gaction, param=None):
+        """ Show the popup with the timing infortmation.
+        """
+        times = [time for page, time in self.page_time] + [self.end_time]
         durations = (e - s for e, s in zip(times[1:], times[:-1]))
 
         infos = {'time': min(time for page, time in self.page_time), 'duration': 0, 'children': [], 'page': 0}
@@ -111,7 +139,7 @@ class TimingReport(builder.Builder):
             infos['duration'] += duration
 
             # lookup the position of the page in the document structure (section etc)
-            lookup = doc_structure
+            lookup = self.doc_structure
             cur_info_pos = infos
             while lookup:
                 try:
@@ -129,7 +157,8 @@ class TimingReport(builder.Builder):
                 cur_info_pos = cur_info_pos['children'][-1]
 
             # add the actual page as a leaf node
-            cur_info_pos['children'].append({'page': page, 'title': _('slide #') + page_labels[page],
+            label = self.page_labels[page] if 0 <= page < len(self.page_labels) else 'None'
+            cur_info_pos['children'].append({'page': page, 'title': _('slide #') + label,
                                              'duration': duration, 'time': start_time})
 
 
@@ -142,7 +171,10 @@ class TimingReport(builder.Builder):
         dfs_info = [(None, infos)]
         while dfs_info:
             first_it, first = dfs_info.pop()
-            last_col = '{} ({}/{})'.format(page_labels[first['page']], first['page'], len(page_labels))
+            page = first['page']
+            label = self.page_labels[page] if 0 <= page < len(self.page_labels) else 'None'
+
+            last_col = '{} ({}/{})'.format(label, page, len(self.page_labels))
             row = [first['title'], self.format_time(first['time']), self.format_time(first['duration']), last_col]
             it = treemodel.append(first_it, row)
 

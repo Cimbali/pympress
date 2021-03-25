@@ -150,9 +150,9 @@ class TimeCounter(object):
     label_clock = None
 
     #: Time at which the counter was started, `int` in seconds as returned by :func:`~time.time()`.
-    start_time = 0
+    restart_time = 0
     #: Time elapsed since the beginning of the presentation, `int` in seconds.
-    delta = 0
+    elapsed_time = 0
     #: Timer paused status, `bool`.
     paused = True
 
@@ -162,31 +162,37 @@ class TimeCounter(object):
     #: :class:`~pympress.editable_label.EstimatedTalkTime` that handles changing the ett
     ett = None
 
-    #: callback, to be connected to :meth:`~pympress.app.Pympress.set_action_state`
-    set_action_state = None
+    #: :class:`~Gio.ActionMap` containing timer.* actions
+    action_map = None
 
-    def __init__(self, builder, ett):
+    timing_tracker = None
+
+    def __init__(self, builder, ett, timing_tracker):
         super(TimeCounter, self).__init__()
 
         self.label_colorer = TimeLabelColorer(builder.get_object('label_time'))
         self.ett = ett
+        self.timing_tracker = timing_tracker
 
         builder.load_widgets(self)
-        self.set_action_state = builder.get_callback_handler('app.set_action_state')
+
+        self.action_map = builder.setup_actions('timer', {
+            'pause':        dict(activate=self.switch_pause, state=self.paused),
+            'reset':        dict(activate=self.reset_timer),
+            'report':       dict(activate=self.timing_tracker.show_report),
+            'set-duration': dict(activate=self.ett.on_label_event),
+        })
 
         # Setup timer for clocks
         GLib.timeout_add(250, self.update_time)
 
 
-    def switch_pause(self, widget, event = None):
+    def switch_pause(self, gaction, param=None):
         """ Switch the timer between paused mode and running (normal) mode.
 
         Returns:
             `bool`: whether the clock's pause was toggled.
         """
-        if issubclass(type(widget), Gtk.CheckMenuItem) and widget.get_active() == self.paused:
-            return False
-
         if self.paused:
             self.unpause()
         else:
@@ -204,9 +210,12 @@ class TimeCounter(object):
             return False
 
         self.paused = True
+        self.action_map.lookup_action('pause').change_state(GLib.Variant('b', self.paused))
+
+        self.elapsed_time += time.time() - self.restart_time
+        self.timing_tracker.end_time = self.elapsed_time
 
         self.update_time()
-        self.set_action_state('pause-timer', self.paused)
         return True
 
 
@@ -219,20 +228,31 @@ class TimeCounter(object):
         if not self.paused:
             return False
 
-        self.start_time = time.time() - self.delta
+        self.restart_time = time.time()
+
         self.paused = False
+        self.action_map.lookup_action('pause').change_state(GLib.Variant('b', self.paused))
 
         self.update_time()
-        self.set_action_state('pause-timer', self.paused)
         return True
 
 
     def reset_timer(self, *args):
         """ Reset the timer.
         """
-        self.start_time = time.time()
-        self.delta = 0
+        self.timing_tracker.reset(self.current_time())
+
+        self.restart_time = time.time()
+        self.elapsed_time = 0
         self.update_time()
+
+
+    def current_time(self):
+        # Time elapsed since the beginning of the presentation
+        if self.paused:
+            return self.elapsed_time
+        else:
+            return self.elapsed_time + (time.time() - self.restart_time)
 
 
     def update_time(self):
@@ -245,17 +265,19 @@ class TimeCounter(object):
         clock = time.strftime("%X")  # "%H:%M:%S"
 
         # Time elapsed since the beginning of the presentation
-        if not self.paused:
-            self.delta = time.time() - self.start_time
-        elapsed = "{:02}:{:02}".format(*divmod(int(self.delta), 60))
+        display_time = self.current_time()
+        elapsed = "{:02}:{:02}".format(*divmod(int(display_time), 60))
+
         if self.paused:
             elapsed += " " + _("(paused)")
 
         self.label_time.set_text(elapsed)
         self.label_clock.set_text(clock)
+        if not self.paused:
+            self.timing_tracker.end_time = elapsed
 
         if self.ett.est_time:
-            self.label_colorer.update_time_color(self.ett.est_time - self.delta)
+            self.label_colorer.update_time_color(self.ett.est_time - display_time)
         else:
             self.label_colorer.default_color()
 

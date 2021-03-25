@@ -28,11 +28,11 @@
         <attribute name="label" translatable="yes">_Presentation</attribute>
 		<item>
 			<attribute name="label" translatable="yes">_Pause timer</attribute>
-			<attribute name="action">app.pause-timer</attribute>
+			<attribute name="action">timer.pause</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Reset timer</attribute>
-			<attribute name="action">app.reset-timer</attribute>
+			<attribute name="action">timer.reset</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">Set talk _Time</attribute>
@@ -147,7 +147,7 @@
 
 		<item>
 			<attribute name="label" translatable="yes">Timing breakdown</attribute>
-			<attribute name="action">app.timing-report</attribute>
+			<attribute name="action">timer.report</attribute>
 		</item>
     </submenu>
 

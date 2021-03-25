@@ -383,7 +383,7 @@
                             <property name="snap-to-ticks">True</property>
                             <property name="numeric">True</property>
                             <property name="update-policy">if-valid</property>
-                            <signal name="changed" handler="page_preview" swapped="no"/>
+                            <signal name="changed" handler="on_page_change" swapped="no"/>
                             <signal name="key-press-event" handler="page_number.on_keypress" swapped="no"/>
                             <signal name="key-release-event" handler="page_number.on_keypress" swapped="no"/>
                             <style>

@@ -142,10 +142,10 @@ class UI(builder.Builder):
 
     #: :class:`~pympress.editable_label.EstimatedTalkTime` to set estimated/remaining talk time
     est_time = None
-    #: :class:`~pympress.talk_time.TimeCounter` clock tracking talk time (elapsed, and remaining)
-    talk_time = None
     #: :class:`~pympress.extras.TimingReport` popup to show how much time was spent on which part
     timing = None
+    #: :class:`~pympress.talk_time.TimeCounter` clock tracking talk time (elapsed, and remaining)
+    talk_time = None
 
     #: A :class:`~Gtk.ShortcutsWindow` to show the shortcuts
     shortcuts_window = None
@@ -196,8 +196,8 @@ class UI(builder.Builder):
         self.laser = pointer.Pointer(self.config, self)
         self.est_time = editable_label.EstimatedTalkTime(self)
         self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))
-        self.talk_time = talk_time.TimeCounter(self, self.est_time)
         self.timing = extras.TimingReport(self)
+        self.talk_time = talk_time.TimeCounter(self, self.est_time, self.timing)
 
         # solve circular creation-time dependency
         self.est_time.delayed_callback_connection(self)
@@ -219,13 +219,6 @@ class UI(builder.Builder):
             'close'         : dict(activate=self.close_file),
             'pick'          : dict(activate=self.pick_file),
             'list-recent'   : dict(change_state=self.populate_recent_menu, state=False),
-        })
-
-        self.setup_actions('timer', {
-            'pause':        dict(activate=self.talk_time.switch_pause, state=True),
-            'reset':        dict(activate=self.reset_timer),
-            'report':       dict(activate=self.show_timing_report),
-            'set-duration': dict(activate=self.est_time.on_label_event),
         })
 
         c_full = self.config.getboolean('content', 'start_fullscreen')
@@ -302,7 +295,7 @@ class UI(builder.Builder):
         # Queue some redraws
         self.c_da.queue_draw()
         self.redraw_panes()
-        self.on_page_change(False)
+        self.on_page_change(unpause=False)
 
 
     def load_icons(self):
@@ -647,14 +640,14 @@ class UI(builder.Builder):
         self.page_number.enable_labels(self.doc.has_labels())
         self.doc.goto(page)
         self.medias.purge_media_overlays()
+        self.timing.set_document_metadata(self.doc.get_structure().copy(), self.doc.page_labels[:])
 
-        # Draw the new page(s)
+        # A new document, restart at time 0, paused
         if not reloading:
             self.talk_time.pause()
-            self.timing.reset(int(self.talk_time.delta))
             self.talk_time.reset_timer()
 
-        self.on_page_change(False)
+        self.on_page_change(unpause=False)
 
         # Now that all references to the old document have been replaced or removed, manually
         # collect garbage to delete objects and release file handles / close file descriptors
@@ -784,13 +777,15 @@ class UI(builder.Builder):
     ############################  Displaying content  ############################
     ##############################################################################
 
-    def page_preview(self, widget, *args):
+    def on_page_change(self, widget=None, event=None, is_preview=False, unpause=True):
         """ Switch to another page and display it.
 
-        This is a kind of event which is supposed to be called only from the spin_cur spinner as a callback
+        This is a kind of event which is supposed to be called only from the
+        :class:`~pympress.document.Document` class.
 
         Args:
-            widget (:class:`~Gtk.SpinButton`): The spinner button widget calling page_preview
+            is_preview (`bool`):  `True` if the page change should not update the content
+            unpause (`bool`):  `True` if the page change should unpause the timer, `False` otherwise
         """
         try:
             widget.set_value(int(widget.get_buffer().get_text()))
@@ -817,79 +812,29 @@ class UI(builder.Builder):
 
         # Aspect ratios and queue redraws
         if draw_notes:
-            self.p_frame_notes.set_property('ratio', page_notes.get_aspect_ratio(draw_notes))
+            note_pr = page_notes.get_aspect_ratio(draw_notes)
+            self.p_frame_notes.set_property('ratio', note_pr)
             self.p_da_notes.queue_draw()
 
-        self.p_frame_cur.set_property('ratio', page_cur.get_aspect_ratio(draw_page))
-        self.p_da_cur.queue_draw()
-
-        if page_next is not None:
-            pr = page_next.get_aspect_ratio(draw_notes)
-            self.p_frame_next.set_property('ratio', pr)
-
-        self.p_da_next.queue_draw()
-
-        self.annotations.add_annotations(page_cur.get_annotations())
-
-        # Update display
-        self.page_number.update_jump_label(page_cur.label())
-
-        # Prerender the 4 next pages and the 2 previous ones
-        cur = page_cur.number()
-        page_max = min(self.doc.pages_number(), cur + 5)
-        page_min = max(0, cur - 2)
-        for p in list(range(cur + 1, page_max)) + list(range(cur, page_min, -1)):
-            self.cache.prerender(p)
-
-
-    def on_page_change(self, unpause=True):
-        """ Switch to another page and display it.
-
-        This is a kind of event which is supposed to be called only from the
-        :class:`~pympress.document.Document` class.
-
-        Args:
-            unpause (`bool`):  `True` if the page change should unpause the timer, `False` otherwise
-        """
-        draw_notes = self.notes_mode
-        draw_page = draw_notes.complement()
-
-        self.annotations.add_annotations(page_cur.get_annotations())
-
-        # Page change: resynchronize miniatures
-        self.page_preview_nb = page_cur.number()
-
-        # Aspect ratios and queue redraws
-        note_pr = page_notes.get_aspect_ratio(draw_notes)
-        self.p_frame_notes.set_property('ratio', note_pr)
-        self.p_da_notes.queue_draw()
-
         page_pr = page_cur.get_aspect_ratio(draw_page)
-
-        self.c_frame.set_property('ratio', page_pr)
-        self.c_da.queue_draw()
 
         self.p_frame_cur.set_property('ratio', page_pr)
         self.p_da_cur.queue_draw()
 
-        self.scribbler.scribble_p_frame.set_property('ratio', page_pr)
-        self.scribbler.scribble_p_frame.queue_draw()
+        if not is_preview:
+            self.c_frame.set_property('ratio', page_pr)
+            self.c_da.queue_draw()
+
+            self.scribbler.scribble_p_frame.set_property('ratio', page_pr)
+            self.scribbler.scribble_p_frame.queue_draw()
 
         if page_next is not None:
-            next_pr = page_next.get_aspect_ratio(draw_page)
+            next_pr = page_next.get_aspect_ratio(draw_notes)
             self.p_frame_next.set_property('ratio', next_pr)
 
         self.p_da_next.queue_draw()
 
-        # Remove scribbles and scribbling/zooming modes
-        self.scribbler.disable_scribbling()
-        self.scribbler.clear_scribble()
-        self.zoom.stop_zooming()
-
-        # Start counter if needed
-        if unpause:
-            self.talk_time.unpause()
-        self.timing.transition(self.page_preview_nb, int(self.talk_time.delta))
+        self.annotations.add_annotations(page_cur.get_annotations())
 
         # Update display
         self.page_number.update_page_numbers(self.page_preview_nb, page_cur.label())
@@ -900,7 +845,22 @@ class UI(builder.Builder):
         for p in list(range(self.page_preview_nb + 1, page_max)) + list(range(self.page_preview_nb, page_min, -1)):
             self.cache.prerender(p)
 
+        if is_preview:
+            return
+
+        # Remove scribbles and scribbling/zooming modes
+        self.scribbler.disable_scribbling()
+        self.scribbler.clear_scribble()
+        self.zoom.stop_zooming()
+
+        # Update medias
         self.medias.replace_media_overlays(self.doc.current_page(), draw_page)
+
+        # Start counter if needed
+        if unpause:
+            self.talk_time.unpause()
+
+        self.timing.transition(self.page_preview_nb, self.talk_time.current_time())
 
 
     def on_draw(self, widget, cairo_context):
@@ -1283,21 +1243,6 @@ class UI(builder.Builder):
             self.config.set('content', prop, str(button.get_value()))
 
 
-    def show_timing_report(self, *args):
-        """ Show the popup with information on timing of the talk.
-
-        Gather current time, document structure, page labels etc. and pass it to timing popup for display.
-        """
-        self.timing.show(int(self.talk_time.delta), self.doc.get_structure(), self.doc.page_labels)
-
-
-    def reset_timer(self, *args):
-        """ Reset both timer and estimated talk time
-        """
-        self.timing.reset(int(self.talk_time.delta))
-        self.talk_time.reset_timer()
-
-
     ##############################################################################
     ############################    Option toggles    ############################
     ##############################################################################
@@ -1424,7 +1369,7 @@ class UI(builder.Builder):
             self.cache.enable_prerender('p_da_cur')
 
         self.medias.adjust_margins_for_mode(page_type)
-        self.on_page_change(False)
+        self.on_page_change(unpause=False)
         self.page_number.set_last(self.doc.pages_number())
         self.app.set_action_state('notes-mode', bool(self.notes_mode))
 
