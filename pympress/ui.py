@@ -673,7 +673,7 @@ class UI(builder.Builder):
             self.recent_menu.remove_all()
             return
 
-        for file in sorted(Gtk.RecentManager.get_default().get_items(), key=Gtk.RecentInfo.get_added):
+        for file in Gtk.RecentManager.get_default().get_items():
             if not file.exists() or not file.get_mime_type() == 'application/pdf':
                 continue
 
