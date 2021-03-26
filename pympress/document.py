@@ -396,7 +396,7 @@ class Page(object):
             elif dest_name == "NextPage":
                 return Link.build_closure(self.parent.goto, self.page_nb + 1)
             elif dest_name == "LastPage":
-                return Link.build_closure(self.parent.goto, self.parent.pages_number(0) - 1)
+                return Link.build_closure(self.parent.goto, self.parent.pages_number() - 1)
             elif dest_name == "GoToPage":
                 # Same as the 'G' action which allows one to pick a page to jump to
                 return Link.build_closure(self.parent.start_editing_page_number, )
@@ -628,8 +628,6 @@ class Document(object):
     path = None
     #: Number of pages in the document
     nb_pages = -1
-    #: Number of the current page
-    cur_page = -1
     #: Pages cache (`dict` of :class:`~pympress.document.Page`). This makes
     #: navigation in the document faster by avoiding calls to Poppler when loading
     #: a page that has already been loaded.
@@ -645,17 +643,14 @@ class Document(object):
     #: `bool` indicating whether the second half of pages are in fact notes pages
     notes_after = False
 
-    #: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`
-    page_change = lambda p: None
     #: callback, to be connected to :func:`~pympress.extras.Media.play`
     play_media = lambda h: None
     #: callback, to be connected to :func:`~pympress.editable_label.PageNumber.start_editing`
     start_editing_page_number = lambda: None
 
-    def __init__(self, builder, pop_doc, path, page=0):
+    def __init__(self, builder, pop_doc, path):
         # Connect callbacks
         self.play_media                = builder.get_callback_handler('medias.play')
-        self.page_change               = builder.get_callback_handler('on_page_change')
         self.start_editing_page_number = builder.get_callback_handler('page_number.start_editing')
 
         # Setup PDF file
@@ -665,11 +660,6 @@ class Document(object):
         # Pages number
         self.nb_pages = self.doc.get_n_pages()
         self.page_labels = [self.doc.get_page(n).get_label() for n in range(self.nb_pages)]
-
-        # Number of the current page
-        self.cur_page = page
-        self.history.append(page)
-        self.hist_pos = 0
 
         # Pages cache
         self.pages_cache = {}
@@ -710,6 +700,7 @@ class Document(object):
                         page = action.goto_dest.dest.page_num - 1
                 else:
                     raise AssertionError('Unexpected type of action')
+
             except Exception:
                 logger.error(_('Unexpected action in index "{}"').format(action.type))
                 page = None
@@ -718,26 +709,26 @@ class Document(object):
             child = index_iter.get_child()
             if child:
                 new_entry['children'] = self.get_structure(child)
+                if page is None:
+                    page = min(new_entry['children'])
 
             # there should not be synonymous sections, correct the page here to a better guess
-            if page is None or page in index:
-                if 'children' in new_entry:
-                    page = min(new_entry['children'])
-                else:
-                    lower_bound = max(index)
-                    find = index[lower_bound]
-                    while 'children' in find:
-                        lower_bound = max(find)
-                        find = find[lower_bound]
+            if page in index:
+                lower_bound = max(index)
+                find = index[lower_bound]
+                while 'children' in find:
+                    lower_bound = max(find)
+                    find = find[lower_bound]
 
-                    try:
-                        page = min(number for number, label in enumerate(self.page_labels)
-                                   if label == self.page_labels[page] and number > lower_bound)
-                    except ValueError:  # empty iterator
-                        page = lower_bound + 1
+                try:
+                    page = min(number for number, label in enumerate(self.page_labels)
+                               if label == self.page_labels[page] and number > lower_bound)
+                except ValueError:  # empty iterator
+                    page = lower_bound + 1
 
 
-            index[page] = new_entry
+            if page is not None:
+                index[page] = new_entry
 
             if not index_iter.next():
                 break
@@ -758,7 +749,7 @@ class Document(object):
 
 
     @staticmethod
-    def create(builder, path, page=0):
+    def create(builder, path):
         """ Initializes a Document by passing it a :class:`~Poppler.Document`.
 
         Args:
@@ -778,12 +769,12 @@ class Document(object):
             if uri == path:
                 scheme, path = path.split('://', 1)
 
-            doc = Document(builder, poppler_doc, path, page)
+            doc = Document(builder, poppler_doc, path)
 
         return doc
 
 
-    def guess_notes(self, horizontal, vertical):
+    def guess_notes(self, horizontal, vertical, current_page=0):
         """ Get our best guess for the document mode.
 
         Args:
@@ -793,7 +784,7 @@ class Document(object):
         Returns:
             :class:`~pympress.document.PdfPage`: the notes mode
         """
-        page = self.page(self.cur_page) or self.page(0)
+        page = self.page(current_page)
         if page is None or not page.can_render():
             return PdfPage.NONE
 
@@ -878,33 +869,6 @@ class Document(object):
         return self.pages_cache[number]
 
 
-    def current_page(self):
-        """ Get the current page.
-
-        Returns:
-            :class:`~pympress.document.Page`: the current page
-        """
-        return self.page(self.cur_page)
-
-
-    def current_notes_page(self):
-        """ Get the current page.
-
-        Returns:
-            :class:`~pympress.document.Page`: the current page
-        """
-        return self.notes_page(self.cur_page)
-
-
-    def next_page(self):
-        """ Get the next page.
-
-        Returns:
-            :class:`~pympress.document.Page`: the next page, or `None` if this is the last page
-        """
-        return self.page(self.cur_page + 1)
-
-
     def pages_number(self):
         """ Get the number of pages in the document.
 
@@ -912,18 +876,6 @@ class Document(object):
             `int`: the number of pages in the document
         """
         return (self.nb_pages // 2) if self.notes_after else self.nb_pages
-
-
-    def _do_page_change(self, number):
-        """ Perform the actual change of page and UI notification.
-
-        The page number is **not** checked here, so it must be within bounds already.
-
-        Args:
-            number (`int`):  number of the destination page
-        """
-        self.cur_page = number
-        self.page_change()
 
 
     def has_labels(self):
@@ -983,38 +935,16 @@ class Document(object):
         if number >= self.pages_number():
             number = self.pages_number() - 1
 
-        if number != self.cur_page:
-            # chop off history where we were and go to end
-            self.hist_pos += 1
-            if self.hist_pos < len(self.history):
-                self.history = self.history[:self.hist_pos]
-            self.history.append(number)
+        if 0 <= self.hist_pos < len(self.history) and self.history[self.hist_pos] == number:
+            return number
 
-            self._do_page_change(number)
+        # chop off history where we were and append
+        self.hist_pos = min(len(self.history), self.hist_pos + 1)
+        del self.history[self.hist_pos:]
+        self.history.append(number)
 
+        return number
 
-    def goto_next(self, *args):
-        """ Switch to the next page.
-        """
-        self.goto(self.cur_page + 1)
-
-
-    def goto_prev(self, *args):
-        """ Switch to the previous page.
-        """
-        self.goto(self.cur_page - 1)
-
-
-    def goto_home(self, *args):
-        """ Switch to the first page.
-        """
-        self.goto(0)
-
-
-    def goto_end(self, *args):
-        """ Switch to the last page.
-        """
-        self.goto(self.nb_pages - 1)
 
 
     def label_after(self, page):
@@ -1053,36 +983,24 @@ class Document(object):
             return 0
 
 
-    def label_next(self, *args):
-        """ Switch to the next page with different label.
-        """
-        self.goto(self.label_after(self.cur_page))
-
-
-    def label_prev(self, *args):
-        """ Switch to the previous page with different label.
-        """
-        self.goto(self.label_before(self.cur_page))
-
-
     def hist_next(self, *args):
         """ Switch to the page we viewed next.
         """
         if self.hist_pos + 1 == len(self.history):
-            return
+            return None
 
         self.hist_pos += 1
-        self._do_page_change(self.history[self.hist_pos])
+        return self.history[self.hist_pos]
 
 
     def hist_prev(self, *args):
         """ Switch to the page we viewed before.
         """
         if self.hist_pos == 0:
-            return
+            return None
 
         self.hist_pos -= 1
-        self._do_page_change(self.history[self.hist_pos])
+        return self.history[self.hist_pos]
 
 
     def get_path(self):
@@ -1188,7 +1106,6 @@ class EmptyDocument(Document):
         self.path = None
         self.doc = None
         self.nb_pages = 0
-        self.cur_page = -1
         self.pages_cache = {-1: EmptyPage()}
 
 

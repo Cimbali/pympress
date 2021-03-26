@@ -67,7 +67,7 @@
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Highlight</attribute>
-			<attribute name="action">highlight.toggle</attribute>
+			<attribute name="action">app.highlight</attribute>
 		</item>
 		<submenu>
 			<attribute name="label" translatable="yes">_Pointer</attribute>

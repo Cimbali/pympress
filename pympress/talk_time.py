@@ -265,19 +265,19 @@ class TimeCounter(object):
         clock = time.strftime("%X")  # "%H:%M:%S"
 
         # Time elapsed since the beginning of the presentation
-        display_time = self.current_time()
-        elapsed = "{:02}:{:02}".format(*divmod(int(display_time), 60))
+        elapsed = self.current_time()
+        display_time = "{:02}:{:02}".format(*divmod(int(elapsed), 60))
 
         if self.paused:
-            elapsed += " " + _("(paused)")
+            display_time += " " + _("(paused)")
 
-        self.label_time.set_text(elapsed)
+        self.label_time.set_text(display_time)
         self.label_clock.set_text(clock)
         if not self.paused:
             self.timing_tracker.end_time = elapsed
 
         if self.ett.est_time:
-            self.label_colorer.update_time_color(self.ett.est_time - display_time)
+            self.label_colorer.update_time_color(self.ett.est_time - elapsed)
         else:
             self.label_colorer.default_color()
 

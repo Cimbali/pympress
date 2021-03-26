@@ -105,8 +105,10 @@ class UI(builder.Builder):
     #: :class:`~Gtk.ToolButton` big button for touch screens, go to scribble on screen
     highlight_button = None
 
-    #: number of page currently displayed in Controller window's miniatures
-    page_preview_nb = -1
+    #: number of page currently displayed in Content window's miniatures
+    current_page = -1
+    #: number of page currently displayed in Presenter window's miniatures
+    preview_page = -1
 
     #: track whether we blank the screen
     blanked = False
@@ -245,20 +247,21 @@ class UI(builder.Builder):
                                                state=self.config.using_portable_config()),
             'validate-input'            : dict(activate=self.validate_current_input),
             'cancel-input'              : dict(activate=self.cancel_current_input),
+            'highlight'                 : dict(activate=self.scribbler.switch_scribbling, state=False),
         })
 
         self.setup_actions('app', {
             # nav
             'goto-page'     : dict(activate=self.page_number.on_label_event),
             'jumpto-label'  : dict(activate=self.page_number.on_label_event),
-            'next-page'     : dict(activate=self.find_callback_handler(self, 'doc.goto_next')),
-            'next-label'    : dict(activate=self.find_callback_handler(self, 'doc.label_next')),
-            'prev-page'     : dict(activate=self.find_callback_handler(self, 'doc.goto_prev')),
-            'prev-label'    : dict(activate=self.find_callback_handler(self, 'doc.label_prev')),
-            'hist-back'     : dict(activate=self.find_callback_handler(self, 'doc.hist_prev')),
-            'hist-forward'  : dict(activate=self.find_callback_handler(self, 'doc.hist_next')),
-            'first-page'    : dict(activate=self.find_callback_handler(self, 'doc.goto_home')),
-            'last-page'     : dict(activate=self.find_callback_handler(self, 'doc.goto_end')),
+            'next-page'     : dict(activate=self.doc_goto_next),
+            'next-label'    : dict(activate=self.doc_label_next),
+            'prev-page'     : dict(activate=self.doc_goto_prev),
+            'prev-label'    : dict(activate=self.doc_label_prev),
+            'hist-back'     : dict(activate=self.doc_hist_prev),
+            'hist-forward'  : dict(activate=self.doc_hist_next),
+            'first-page'    : dict(activate=self.doc_goto_home),
+            'last-page'     : dict(activate=self.doc_goto_end),
         })
 
         for action, shortcut in self.config.items('shortcuts'):
@@ -295,7 +298,7 @@ class UI(builder.Builder):
         # Queue some redraws
         self.c_da.queue_draw()
         self.redraw_panes()
-        self.on_page_change(unpause=False)
+        self.do_page_change(unpause=False)
 
 
     def load_icons(self):
@@ -321,7 +324,7 @@ class UI(builder.Builder):
 
         self.cache.add_widget(self.c_da, page_type)
         self.cache.add_widget(self.c_da, page_type, zoomed = True)
-        self.c_frame.set_property("ratio", self.doc.current_page().get_aspect_ratio(page_type))
+        self.c_frame.set_property("ratio", self.doc.page(self.current_page).get_aspect_ratio(page_type))
 
         colourclass = 'white' if self.config.getboolean('content', 'white_blanking') else 'black'
         self.c_da.get_style_context().add_class(colourclass)
@@ -595,7 +598,7 @@ class UI(builder.Builder):
     ############################ Document manangement ############################
     ##############################################################################
 
-    def swap_document(self, docpath, page = 0, reloading = False):
+    def swap_document(self, docpath, page=0, reloading=False):
         """ Replace the currently open document with a new one.
 
         The new document is possibly and EmptyDocument if docpath is None.
@@ -621,11 +624,14 @@ class UI(builder.Builder):
             self.error_opening_file(docpath)
             extras.FileWatcher.stop_watching()
 
+        self.current_page = self.preview_page = self.doc.goto(page)
+        self.doc.goto(self.current_page)
+
         # Guess notes mode by default if the document has notes
         if not reloading:
             hpref = self.config.get('notes position', 'horizontal')
             vpref = self.config.get('notes position', 'vertical')
-            target_mode = self.doc.guess_notes(hpref, vpref)
+            target_mode = self.doc.guess_notes(hpref, vpref, self.current_page)
 
             if self.notes_mode != target_mode:
                 self.switch_mode('notes-mode', target_mode=target_mode)
@@ -638,7 +644,6 @@ class UI(builder.Builder):
         self.cache.swap_document(self.doc)
         self.page_number.set_last(self.doc.pages_number())
         self.page_number.enable_labels(self.doc.has_labels())
-        self.doc.goto(page)
         self.medias.purge_media_overlays()
         self.timing.set_document_metadata(self.doc.get_structure().copy(), self.doc.page_labels[:])
 
@@ -647,7 +652,7 @@ class UI(builder.Builder):
             self.talk_time.pause()
             self.talk_time.reset_timer()
 
-        self.on_page_change(unpause=False)
+        self.do_page_change(unpause=False)
 
         # Now that all references to the old document have been replaced or removed, manually
         # collect garbage to delete objects and release file handles / close file descriptors
@@ -658,7 +663,7 @@ class UI(builder.Builder):
     def reload_document(self):
         """ Reload the current document.
         """
-        self.swap_document(self.doc.path, page = self.doc.cur_page, reloading = True)
+        self.swap_document(self.doc.path, page=self.current_page, reloading=True)
 
 
     def populate_recent_menu(self, gaction, is_opening):
@@ -777,7 +782,46 @@ class UI(builder.Builder):
     ############################  Displaying content  ############################
     ##############################################################################
 
-    def on_page_change(self, widget=None, event=None, is_preview=False, unpause=True):
+    def on_page_change(self, widget, event=None):
+        self.goto_page(int(widget.get_value()) - 1)
+
+    def goto_page(self, page):
+        self.preview_page = self.doc.goto(page)
+
+        if not self.page_number.editing:
+            self.current_page = self.preview_page
+
+        self.do_page_change()
+
+    def doc_goto_prev(self, gaction=None, param=None):
+        self.goto_page(self.preview_page - 1)
+
+    def doc_goto_next(self, gaction=None, param=None):
+        self.goto_page(self.preview_page + 1)
+
+    def doc_label_next(self, gaction=None, param=None):
+        self.goto_page(self.doc.label_after(self.preview_page))
+
+    def doc_label_prev(self, gaction=None, param=None):
+        self.goto_page(self.doc.label_before(self.preview_page))
+
+    def doc_hist_prev(self, gaction=None, param=None):
+        dest = self.doc.hist_prev()
+        if dest is not None:
+            self.goto_page(dest)
+
+    def doc_hist_next(self, gaction=None, param=None):
+        dest = self.doc.hist_prev()
+        if dest is not None:
+            self.goto_page(dest)
+
+    def doc_goto_home(self, gaction=None, param=None):
+        self.goto_page(0)
+
+    def doc_goto_end(self, gaction=None, param=None):
+        self.goto_page(self.doc.pages_number())
+
+    def do_page_change(self, unpause=True):
         """ Switch to another page and display it.
 
         This is a kind of event which is supposed to be called only from the
@@ -787,28 +831,17 @@ class UI(builder.Builder):
             is_preview (`bool`):  `True` if the page change should not update the content
             unpause (`bool`):  `True` if the page change should unpause the timer, `False` otherwise
         """
-        try:
-            widget.set_value(int(widget.get_buffer().get_text()))
-        except Exception:
-            pass
+        is_preview = self.page_number.editing
+        if not is_preview:
+            self.preview_page = self.current_page
 
         draw_notes = self.notes_mode
         draw_page = draw_notes.complement()
 
-        if is_preview:
-            page_nb = int(widget.get_value()) - 1
-            if page_nb >= self.doc.pages_number() or page_nb < 0:
-                return
-
-            page_cur = self.doc.page(page_nb)
-            page_next = self.doc.page(page_nb + 1)
-            page_notes = self.doc.notes_page(page_nb)
-        else:
-            page_cur = self.doc.current_page()
-            page_next = self.doc.next_page()
-            page_notes = self.doc.current_notes_page()
-
-        self.page_preview_nb = page_cur.number()
+        page_content = self.doc.page(self.current_page)
+        page_preview = self.doc.page(self.preview_page)
+        page_next = self.doc.page(self.preview_page + 1)
+        page_notes = self.doc.notes_page(self.preview_page)
 
         # Aspect ratios and queue redraws
         if draw_notes:
@@ -816,16 +849,17 @@ class UI(builder.Builder):
             self.p_frame_notes.set_property('ratio', note_pr)
             self.p_da_notes.queue_draw()
 
-        page_pr = page_cur.get_aspect_ratio(draw_page)
+        preview_pr = page_preview.get_aspect_ratio(draw_page)
 
-        self.p_frame_cur.set_property('ratio', page_pr)
+        self.p_frame_cur.set_property('ratio', preview_pr)
         self.p_da_cur.queue_draw()
 
         if not is_preview:
-            self.c_frame.set_property('ratio', page_pr)
+            content_pr = page_preview.get_aspect_ratio(draw_page)
+            self.c_frame.set_property('ratio', content_pr)
             self.c_da.queue_draw()
 
-            self.scribbler.scribble_p_frame.set_property('ratio', page_pr)
+            self.scribbler.scribble_p_frame.set_property('ratio', content_pr)
             self.scribbler.scribble_p_frame.queue_draw()
 
         if page_next is not None:
@@ -834,15 +868,18 @@ class UI(builder.Builder):
 
         self.p_da_next.queue_draw()
 
-        self.annotations.add_annotations(page_cur.get_annotations())
+        self.annotations.add_annotations(page_preview.get_annotations())
 
-        # Update display
-        self.page_number.update_page_numbers(self.page_preview_nb, page_cur.label())
+        # Update display -- needs to be different ?
+        if is_preview:
+            self.page_number.update_jump_label(page_preview.label())
+        else:
+            self.page_number.update_page_numbers(self.preview_page, page_preview.label())
 
         # Prerender the 4 next pages and the 2 previous ones
-        page_max = min(self.doc.pages_number(), self.page_preview_nb + 5)
-        page_min = max(0, self.page_preview_nb - 2)
-        for p in list(range(self.page_preview_nb + 1, page_max)) + list(range(self.page_preview_nb, page_min, -1)):
+        page_max = min(self.doc.pages_number(), self.preview_page + 5)
+        page_min = max(0, self.preview_page - 2)
+        for p in list(range(self.preview_page + 1, page_max)) + list(range(self.preview_page, page_min, -1)):
             self.cache.prerender(p)
 
         if is_preview:
@@ -854,13 +891,13 @@ class UI(builder.Builder):
         self.zoom.stop_zooming()
 
         # Update medias
-        self.medias.replace_media_overlays(self.doc.current_page(), draw_page)
+        self.medias.replace_media_overlays(self.doc.page(self.current_page), draw_page)
 
         # Start counter if needed
         if unpause:
             self.talk_time.unpause()
 
-        self.timing.transition(self.page_preview_nb, self.talk_time.current_time())
+        self.timing.transition(self.preview_page, self.talk_time.current_time())
 
 
     def on_draw(self, widget, cairo_context):
@@ -879,15 +916,15 @@ class UI(builder.Builder):
             # Current page
             if self.blanked:
                 return
-            page = self.doc.page(self.doc.current_page().number())
+            page = self.doc.page(self.current_page)
         elif widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
             # Current page 'preview'
-            page = self.doc.page(self.page_preview_nb)
+            page = self.doc.page(self.preview_page)
         elif widget is self.p_da_notes:
             # Notes page, aligned with preview
-            page = self.doc.notes_page(self.page_preview_nb)
+            page = self.doc.notes_page(self.preview_page)
         else:
-            page = self.doc.page(self.page_preview_nb + 1)
+            page = self.doc.page(self.preview_page + 1)
             # No next page: just return so we won't draw anything
             if page is None:
                 return
@@ -1090,11 +1127,13 @@ class UI(builder.Builder):
 
         # Where did the event occur?
         if widget is self.p_da_next:
-            page = self.doc.next_page()
+            page = self.doc.page(self.preview_page + 1)
         elif widget is self.p_da_notes:
-            page = self.doc.current_notes_page()
+            page = self.doc.notes_page(self.preview_page)
+        elif widget is self.p_da_cur:
+            page = self.doc.page(self.preview_page)
         else:
-            page = self.doc.current_page()
+            page = self.doc.page(self.current_page)
 
         if page is None:
             return False
@@ -1126,11 +1165,13 @@ class UI(builder.Builder):
 
         # Where did the event occur?
         if widget is self.p_da_next:
-            page = self.doc.next_page()
+            page = self.doc.page(self.preview_page + 1)
         elif widget is self.p_da_notes:
-            page = self.doc.current_notes_page()
+            page = self.doc.notes_page(self.preview_page)
+        elif widget is self.p_da_cur:
+            page = self.doc.page(self.preview_page)
         else:
-            page = self.doc.current_page()
+            page = self.doc.page(self.current_page)
 
         if page is None:
             return False
@@ -1369,7 +1410,7 @@ class UI(builder.Builder):
             self.cache.enable_prerender('p_da_cur')
 
         self.medias.adjust_margins_for_mode(page_type)
-        self.on_page_change(unpause=False)
+        self.do_page_change(unpause=False)
         self.page_number.set_last(self.doc.pages_number())
         self.app.set_action_state('notes-mode', bool(self.notes_mode))
 
@@ -1396,7 +1437,7 @@ class UI(builder.Builder):
                     size = parent.get_parent().get_allocated_height()
                 parent.set_position(self.pane_handle_pos[parent] * size)
 
-        self.annotations.add_annotations(self.doc.current_page().get_annotations())
+        self.annotations.add_annotations(self.doc.page(self.preview_page).get_annotations())
         gaction.change_state(GLib.Variant('b', self.show_annotations))
 
         return True

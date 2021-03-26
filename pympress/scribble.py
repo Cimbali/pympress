@@ -168,8 +168,7 @@ class Scribbler(builder.Builder):
 
         active_pen = config.get('scribble', 'active_pen')
         self.action_map = self.setup_actions('highlight', {
-            'toggle'    : dict(activate=self.switch_scribbling, state=False),
-            'use-pen'   : dict(activate=self.load_preset, state=active_pen, parameter_type=str),
+            'use-pen'   : dict(activate=self.load_preset, state=active_pen, parameter_type=str, enabled=False),
             'clear'     : dict(activate=self.clear_scribble),
             'redo'      : dict(activate=self.redo_scribble),
             'undo'      : dict(activate=self.pop_scribble),
@@ -473,7 +472,6 @@ class Scribbler(builder.Builder):
         # Perform the state toggle
         if self.scribbling_mode:
             return self.disable_scribbling()
-
         else:
             return self.enable_scribbling()
 
@@ -494,8 +492,10 @@ class Scribbler(builder.Builder):
         self.scribble_overlay.queue_draw()
 
         self.scribbling_mode = True
-        self.action_map.lookup_action('toggle').change_state(GLib.Variant('b', self.scribbling_mode))
+        self.get_application().lookup_action('highlight').change_state(GLib.Variant('b', self.scribbling_mode))
+        self.action_map.lookup_action('use-pen').set_enabled(self.scribbling_mode)
 
+        self.p_central.queue_draw()
         extras.Cursor.set_cursor(self.scribble_p_da, 'invisible')
         return True
 
@@ -511,10 +511,11 @@ class Scribbler(builder.Builder):
 
         extras.Cursor.set_cursor(self.scribble_p_da, 'default')
         self.swap_layout('highlight', None)
-
         self.off_render.add(self.scribble_overlay)
+
         self.scribbling_mode = False
-        self.action_map.lookup_action('toggle').change_state(GLib.Variant('b', self.scribbling_mode))
+        self.get_application().lookup_action('highlight').change_state(GLib.Variant('b', self.scribbling_mode))
+        self.action_map.lookup_action('use-pen').set_enabled(self.scribbling_mode)
 
         self.p_central.queue_draw()
         extras.Cursor.set_cursor(self.p_central)

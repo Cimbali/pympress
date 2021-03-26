@@ -126,8 +126,8 @@ class TimingReport(builder.Builder):
     def show_report(self, gaction, param=None):
         """ Show the popup with the timing infortmation.
         """
-        times = [time for page, time in self.page_time] + [self.end_time]
-        durations = (e - s for e, s in zip(times[1:], times[:-1]))
+        times = [time for page, time in self.page_time]
+        durations = (e - s for s, e in zip(times, times[1:] + [self.end_time]))
 
         infos = {'time': min(time for page, time in self.page_time), 'duration': 0, 'children': [], 'page': 0}
         infos['title'] = 'Full presentation'

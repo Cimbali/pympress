@@ -188,7 +188,7 @@ class PageNumber(EditableLabel):
     label_before = lambda p: None
     #: callback, to be connected to :func:`~pympress.document.Document.label_before`
     label_after = lambda: None
-    #: callback, to be connected to :func:`~pympress.ui.UI.on_page_change`
+    #: callback, to be connected to :func:`~pympress.ui.UI.do_page_change`
     page_change = lambda b: None
     #: callback, to be connected to :func:`~pympress.editable_label.EstimatedTalkTime.stop_editing`
     stop_editing_est_time = lambda: None
@@ -201,11 +201,11 @@ class PageNumber(EditableLabel):
 
         builder.load_widgets(self)
 
-        self.goto_page             = builder.get_callback_handler('doc.goto')
+        self.goto_page             = builder.get_callback_handler('goto_page')
         self.find_label            = builder.get_callback_handler('doc.lookup_label')
         self.label_after           = builder.get_callback_handler('doc.label_after')
         self.label_before          = builder.get_callback_handler('doc.label_before')
-        self.page_change           = builder.get_callback_handler('on_page_change')
+        self.page_change           = builder.get_callback_handler('do_page_change')
         self.stop_editing_est_time = builder.get_callback_handler('est_time.stop_editing')
 
         # Initially (from XML) both the spinner and the current page label are visible.
@@ -260,9 +260,10 @@ class PageNumber(EditableLabel):
             page_nb = self.find_label(self.edit_label.get_text(), prefix_unique = False)
 
         if page_nb is None:
-            page_nb = self.spin_cur.get_value() - 1
+            page_nb = int(self.spin_cur.get_value() - 1)
 
         if page_nb is not None:
+            self.restore_label()
             self.goto_page(page_nb)
         else:
             self.cancel()
@@ -271,7 +272,8 @@ class PageNumber(EditableLabel):
     def cancel(self):
         """ Make the UI re-display the pages from before editing the current page.
         """
-        GLib.idle_add(self.page_change, False)
+        self.restore_label()
+        GLib.idle_add(self.page_change, unpause=False)
 
 
     def on_keypress(self, widget, event):
@@ -383,7 +385,7 @@ class PageNumber(EditableLabel):
         Args:
             label (`str`): The current page label
         """
-        self.edit_label.set_text(label)
+        self.edit_label.set_text(str(label))
 
 
     def update_page_numbers(self, cur_nb, label):
@@ -396,7 +398,7 @@ class PageNumber(EditableLabel):
         cur = str(cur_nb + 1)
 
         if self.page_labels:
-            self.label_cur.set_text('{} ({}'.format(label, cur))
+            self.label_cur.set_text('{} ({}'.format(str(label), cur))
         else:
             self.label_cur.set_text(cur)
 
