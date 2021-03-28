@@ -391,6 +391,18 @@ class Builder(Gtk.Builder):
 
 
     def get_action_group(self, prefix, widget=None):
+        """ Return an action group for the given prefix.
+
+        Use the application if prefix is "app", otherwise find or create a :class:`SimpleActionGroup`
+        in the passed widget, or in the presenter window if widget is None.
+
+        Args:
+            prefix (`str`): The prefix of the actions in this group.
+            widget (:class:`~Gtk.Widget`): The widget in which to add or look for the action group.
+
+        Returns:
+            :class:`~Gio.ActionMap`: An object implementing the action map interface, to register actions.
+        """
         app = self.get_application()
         if prefix == 'app':
             return app
@@ -408,14 +420,19 @@ class Builder(Gtk.Builder):
 
 
     def setup_actions(self, prefix, actions, **kwargs):
-        action_map = self.get_action_group(prefix, **kwargs)
+        """ Sets up actions with a given prefix.
 
-        _glib_type_strings = {
-            float: 'd',
-            bool: 'b',
-            int: 's',
-            str: 's',
-        }
+        Use the application if prefix is "app", otherwise find or create a :class:`SimpleActionGroup`
+        in the passed widget, or in the presenter window if widget is None.
+
+        Args:
+            prefix (`str`): The prefix of the actions to setup.
+            actions (`dict`): Maps the action names to dictionaries containing their parameters.
+
+        Returns:
+            :class:`~Gio.ActionMap`: The object implementing the action map interface that was used to register actions.
+        """
+        action_map = self.get_action_group(prefix, **kwargs)
 
         for action_name, details in actions.items():
             state = details.get('state')

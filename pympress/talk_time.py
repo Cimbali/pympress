@@ -248,6 +248,11 @@ class TimeCounter(object):
 
 
     def current_time(self):
+        """ Returns the time elapsed in the presentation.
+
+        Returns:
+            `int`: the time since the presentation started in seconds.
+        """
         # Time elapsed since the beginning of the presentation
         if self.paused:
             return self.elapsed_time

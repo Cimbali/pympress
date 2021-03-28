@@ -108,6 +108,11 @@ class EditableLabel(object):
 
 
     def try_cancel(self):
+        """ Cancel editing the label, if it is being edited.
+
+        Returns:
+            `bool`: `True` if editing got cancelled, `False` if the label was not being edited.
+        """
         if not self.editing:
             return False
 
@@ -117,6 +122,11 @@ class EditableLabel(object):
 
 
     def try_validate(self):
+        """ Validate the page choice, if the page label is being edited.
+
+        Returns:
+            `bool`: `True` if editing got validated, `False` if the label was not being edited.
+        """
         if not self.editing:
             return False
 

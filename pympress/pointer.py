@@ -105,8 +105,8 @@ class Pointer(object):
         self.load_pointer(default_color)
 
         self.action_map = builder.setup_actions('pointer', {
-            'color' : dict(activate=self.change_pointercolor, state=default_color, parameter_type=str),
-            'mode'  : dict(activate=self.change_pointermode, state=default_mode.name.lower(), parameter_type=str),
+            'color': dict(activate=self.change_pointercolor, state=default_color, parameter_type=str),
+            'mode':  dict(activate=self.change_pointermode, state=default_mode.name.lower(), parameter_type=str),
         })
 
 

@@ -155,27 +155,27 @@
 		<attribute name="label" translatable="yes">_Navigation</attribute>
 		<item>
 			<attribute name="label" translatable="yes">_Next</attribute>
-			<attribute name="action">app.next-page</attribute>
+			<attribute name="action">page.next</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Previous</attribute>
-			<attribute name="action">app.prev-page</attribute>
+			<attribute name="action">page.prev</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_First</attribute>
-			<attribute name="action">app.first-page</attribute>
+			<attribute name="action">page.first</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Last</attribute>
-			<attribute name="action">app.last-page</attribute>
+			<attribute name="action">page.last</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Go to...</attribute>
-			<attribute name="action">app.goto-page</attribute>
+			<attribute name="action">page.goto-page</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Jump to label</attribute>
-			<attribute name="action">app.jumpto-label</attribute>
+			<attribute name="action">page.jumpto-label</attribute>
 		</item>
 	</submenu>
 

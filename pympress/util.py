@@ -312,7 +312,6 @@ def set_screensaver(must_disable, window):
         logger.warning(_("Unsupported OS: can't enable/disable screensaver"))
 
 
-
 #: remember DPMS setting before we change it
 set_screensaver.dpms_was_enabled = None
 set_screensaver.dbus_cookie = None

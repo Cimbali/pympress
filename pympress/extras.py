@@ -112,7 +112,8 @@ class TimingReport(builder.Builder):
         """
         self.document_open = len(page_labels) != 0
 
-        # Do not update if we only close the document. That way the treport is still accessible when the document is closed.
+        # Do not update if we only close the document.
+        # That way, the report is still accessible when the document is closed.
         if not self.document_open:
             return
 
@@ -343,11 +344,13 @@ class Media(object):
                 widget.update_margins_for_page(page_type)
 
 
-    def play(self, media_id, gaction=None, target=None):
+    def play(self, media_id, gaction=None, param=None):
         """ Starts playing a media. Used as a callback.
 
         Args:
             media_id (`int`): A unique identifier of the media to start playing
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         if media_id in self._media_overlays:
             c, p = self._media_overlays[media_id]
@@ -356,11 +359,13 @@ class Media(object):
             GLib.idle_add(lambda: any(p.do_play() for p in self._media_overlays[media_id]))
 
 
-    def hide(self, media_id, gaction=None, target=None):
+    def hide(self, media_id, gaction=None, param=None):
         """ Stops playing a media and hides the player. Used as a callback.
 
         Args:
             media_id (`int`): A unique identifier of the media to start playing
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         if media_id in self._media_overlays:
             c, p = self._media_overlays[media_id]
@@ -376,22 +381,26 @@ class Media(object):
             if p.is_shown(): p.do_hide()
 
 
-    def play_pause(self, media_id, gaction=None, target=None):
+    def play_pause(self, media_id, gaction=None, param=None):
         """ Toggles playing and pausing a media. Used as a callback.
 
         Args:
             media_id (`int`): A unique idientifier of the media to start playing
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         GLib.idle_add(lambda: any(p.do_play_pause() for p in self._media_overlays[media_id]))
 
 
-    def set_time(self, media_id, gaction=None, target=None):
+    def set_time(self, media_id, gaction=None, param=None):
         """ Set the player of a given media at time t. Used as a callback.
 
         Args:
             media_id (`int`): A unique idientifier of the media to start playing
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): A wrapped float containing the time to which we have to go.
         """
-        t = target.get_double()
+        t = param.get_double()
         GLib.idle_add(lambda: any(p.do_set_time(t) for p in self._media_overlays[media_id]))
 
 
@@ -559,7 +568,7 @@ class Zoom(object):
 
 
     def stop_zooming(self, *args):
-        """ Cancel the zooming, if it was enabled.
+        """ Cancel the zooming, reset the zoom level to full page.
 
         Returns:
             `bool`: whether the event was consumed
@@ -578,6 +587,11 @@ class Zoom(object):
 
 
     def try_cancel(self):
+        """ Cancel the zoom selection, if it was enabled.
+
+        Returns:
+            `bool`: `True` if the zoom was cancelled, `False` if a zoom selection was not in progress.
+        """
         if not self.zoom_selecting:
             return False
 

@@ -41,11 +41,17 @@ from pympress import util, config, extras, document, ui, builder
 
 
 class Pympress(Gtk.Application):
-
+    """ Class representing the single pympress Gtk application.
+    """
+    #: The :class:`~pympress.ui.UI` object that is the interface of pympress
     gui = None
+    #: The :class:`~pympress.config.Config` object that holds pympress conferences
     config = None
+    #: The estimated talk time, to pass to the UI when it is created
     ett = 0
+    #: The log level to use
     log_level = logging.ERROR
+    #: The notes positioning, to pass to the UI when it is created
     notes_pos = None
 
     options = {
@@ -58,13 +64,13 @@ class Pympress(Gtk.Application):
 
     option_descriptions = {
         #  long_name: (description, arg_description)
-        'talk-time': (_('The estimated (intended) talk time in minutes') + ' '
-                     + _('(and optionally seconds)'), None),
+        'talk-time': (_('The estimated (intended) talk time in minutes') + ' ' +
+                      _('(and optionally seconds)'), None),
         'notes': (_('Set the position of notes on the pdf page') + ' ' +
                   _('(none, left, right, top, bottom, or after).') + ' ' +
                   _('Overrides the detection from the file.'), None),
         'log': (_('Set level of verbosity in log file:') + ' ' +
-                 _('{}, {}, {}, {}, or {}').format('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'), None),
+                _('{}, {}, {}, {}, or {}').format('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'), None),
         'version': (_('Print version and exit'), None),
     }
 
@@ -81,7 +87,7 @@ class Pympress(Gtk.Application):
 
 
     def __init__(self):
-        Gtk.Application.__init__(self, application_id='pympress.presenter', flags=Gio.ApplicationFlags.HANDLES_OPEN)
+        Gtk.Application.__init__(self, application_id='io.github.pympress', flags=Gio.ApplicationFlags.HANDLES_OPEN)
 
         self.register(None)
 
@@ -153,6 +159,7 @@ class Pympress(Gtk.Application):
 
         Args:
             name (`str`): the name of the stateful action
+            parameter: an object or None to pass as a parameter to the action, wrapped in a GLib.Variant
         """
         if parameter is not None:
             parameter = GLib.Variant(builder.Builder._glib_type_strings[type(parameter)], parameter)
@@ -181,6 +188,13 @@ class Pympress(Gtk.Application):
 
 
     def do_open(self, files, n_files, hint):
+        """ Handle opening files. In practice we only open once, the last one.
+
+        Args:
+            files (`list` of :class:`~Gio.File`s): representing an array of files to open
+            n_files (`int`): the number of files passed.
+            hint (`str`): a hint, such as view, edit, etc. Should always be the empty string.
+        """
         time = GLib.get_current_time()
         if self.gui is None:
             self.do_activate(timestamp=time)
@@ -192,6 +206,8 @@ class Pympress(Gtk.Application):
 
 
     def do_shutdown(self):
+        """ Perform various cleanups and save preferences.
+        """
         if self.gui is not None:
             self.gui.cleanup()
 
@@ -229,7 +245,6 @@ class Pympress(Gtk.Application):
                     s = int(t[1])
                 except ValueError:
                     print(_("Invalid time (mm or mm:ss expected), got \"{}\"").format(arg))
-                    usage()
                     return 2
                 except IndexError:
                     s = 0

@@ -33,7 +33,7 @@ import math
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GLib
+from gi.repository import Gdk, GLib
 
 from pympress import builder, extras, util
 
@@ -168,15 +168,20 @@ class Scribbler(builder.Builder):
 
         active_pen = config.get('scribble', 'active_pen')
         self.action_map = self.setup_actions('highlight', {
-            'use-pen'   : dict(activate=self.load_preset, state=active_pen, parameter_type=str, enabled=False),
-            'clear'     : dict(activate=self.clear_scribble),
-            'redo'      : dict(activate=self.redo_scribble),
-            'undo'      : dict(activate=self.pop_scribble),
+            'use-pen':   dict(activate=self.load_preset, state=active_pen, parameter_type=str, enabled=False),
+            'clear':     dict(activate=self.clear_scribble),
+            'redo':      dict(activate=self.redo_scribble),
+            'undo':      dict(activate=self.pop_scribble),
         })
         self.load_preset(self.action_map.lookup_action('use-pen'), int(active_pen) if active_pen.isnumeric() else 0)
 
 
     def try_cancel(self):
+        """ Cancel scribbling, if it is enabled.
+
+        Returns:
+            `bool`: `True` if scribbling got cancelled, `False` if it was already disabled.
+        """
         if not self.scribbling_mode:
             return False
 
@@ -200,6 +205,11 @@ class Scribbler(builder.Builder):
 
 
     def points_to_curves(self, points):
+        """ Transform a list of points from scribbles to bezier curves
+
+        Returns:
+            `list`: control points of a bezier curves to draw
+        """
         curves = []
 
         if len(points) <= 2:
@@ -216,10 +226,6 @@ class Scribbler(builder.Builder):
             curves.append((*c1, *points[-2], *points[-1]))
 
         return curves
-
-
-    def get_current_scribble(self):
-        return
 
 
     def track_scribble(self, widget, event):
@@ -271,6 +277,8 @@ class Scribbler(builder.Builder):
 
 
     def reset_scribble_cache(self):
+        """ Clear the cached scribbles.
+        """
         ww, wh = self.c_da.get_allocated_width(), self.c_da.get_allocated_height()
         window = self.c_da.get_window()
         self.scribble_cache = window.create_similar_image_surface(cairo.FORMAT_ARGB32, ww, wh, 0)
@@ -278,13 +286,15 @@ class Scribbler(builder.Builder):
 
 
     def prerender(self):
+        """ Clear scribbles to cached.
+        """
         if self.scribble_cache is None:
             self.reset_scribble_cache()
 
         ww, wh = self.scribble_cache.get_width(), self.scribble_cache.get_height()
 
         monitor = self.c_da.get_display().get_monitor_at_window(self.c_da.get_parent_window()).get_geometry()
-        pen_scale_factor = max(ww / monitor.width, wh / monitor.height) # or sqrt of product
+        pen_scale_factor = max(ww / monitor.width, wh / monitor.height)  # or sqrt of product
 
         cairo_context = cairo.Context(self.scribble_cache)
         cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
@@ -300,6 +310,17 @@ class Scribbler(builder.Builder):
 
 
     def render_scribble(self, cairo_context, color, width, points):
+        """ Draw a single scribble, i.e. a bezier curve, on the cairo context
+
+        Args:
+            cairo_context (:class:`~cairo.Context`): The canvas on which to render the drawings
+            color (:class:`~Gdk.RGBA`): The color of the scribble
+            width (`float`): The width of the curve
+            points (`list`): The control points of the curve, scaled to the surface.
+
+        Returns:
+            :class:`~cairo.Path`: A copy of the path that was drawn
+        """
         if not points:
             return
 
@@ -342,7 +363,7 @@ class Scribbler(builder.Builder):
         cairo_context.restore()
 
         monitor = widget.get_display().get_monitor_at_window(widget.get_parent_window()).get_geometry()
-        pen_scale_factor = max(ww / monitor.width, wh / monitor.height) # or sqrt of product
+        pen_scale_factor = max(ww / monitor.width, wh / monitor.height)  # or sqrt of product
 
         if self.scribble_drawing:
             cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)

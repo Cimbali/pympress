@@ -46,7 +46,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import GObject, Gtk, Gdk, GLib, GdkPixbuf, Gio
 
 
-from pympress import document, surfacecache, util, pointer, scribble, config, builder, talk_time, extras, editable_label
+from pympress import document, surfacecache, util, pointer, scribble, builder, talk_time, extras, editable_label
 
 
 class UI(builder.Builder):
@@ -217,55 +217,54 @@ class UI(builder.Builder):
         self.connect_signals(self)
 
         self.setup_actions('file', {
-            'open'          : dict(activate=self.open_file, parameter_type=str),
-            'close'         : dict(activate=self.close_file),
-            'pick'          : dict(activate=self.pick_file),
-            'list-recent'   : dict(change_state=self.populate_recent_menu, state=False),
+            'open':          dict(activate=self.open_file, parameter_type=str),
+            'close':         dict(activate=self.close_file),
+            'pick':          dict(activate=self.pick_file),
+            'list-recent':   dict(change_state=self.populate_recent_menu, state=False),
         })
 
         c_full = self.config.getboolean('content', 'start_fullscreen')
         p_full = self.config.getboolean('presenter', 'start_fullscreen')
         self.setup_actions('app', {
-            'quit'                      : dict(activate=self.app.quit),
-            'about'                     : dict(activate=self.menu_about),
-            'big-buttons'               : dict(activate=self.switch_bigbuttons, state=self.show_bigbuttons),
-            'show-shortcuts'            : dict(activate=self.show_shortcuts),
-            'content-fullscreen'        : dict(activate=self.switch_fullscreen, state=c_full),
-            'presenter-fullscreen'      : dict(activate=self.switch_fullscreen, state=p_full),
-            'swap-screens'              : dict(activate=self.swap_screens),
-            'blank-screen'              : dict(activate=self.switch_blanked, state=self.blanked),
-            'notes-mode'                : dict(activate=self.switch_mode, state=False),
-            'notes-pos'                 : dict(activate=self.change_notes_pos, state=self.chosen_notes_mode.name.lower(),
-                                               parameter_type=str),
-            'annotations'               : dict(activate=self.switch_annotations, state=self.show_annotations),
-            'zoom'                      : dict(activate=self.zoom.start_zooming),
-            'unzoom'                    : dict(activate=self.zoom.stop_zooming),
-            'start-content-fullscreen'  : dict(activate=self.config.toggle_start, state=c_full),
+            'quit':                       dict(activate=self.app.quit),
+            'about':                      dict(activate=self.menu_about),
+            'big-buttons':                dict(activate=self.switch_bigbuttons, state=self.show_bigbuttons),
+            'show-shortcuts':             dict(activate=self.show_shortcuts),
+            'content-fullscreen':         dict(activate=self.switch_fullscreen, state=c_full),
+            'presenter-fullscreen':       dict(activate=self.switch_fullscreen, state=p_full),
+            'swap-screens':               dict(activate=self.swap_screens),
+            'blank-screen':               dict(activate=self.switch_blanked, state=self.blanked),
+            'notes-mode':                 dict(activate=self.switch_mode, state=False),
+            'notes-pos':                  dict(activate=self.change_notes_pos, parameter_type=str,
+                                               state=self.chosen_notes_mode.name.lower()),
+            'annotations':                dict(activate=self.switch_annotations, state=self.show_annotations),
+            'zoom':                       dict(activate=self.zoom.start_zooming),
+            'unzoom':                     dict(activate=self.zoom.stop_zooming),
+            'start-content-fullscreen':   dict(activate=self.config.toggle_start, state=c_full),
             'start-presenter-fullscreen': dict(activate=self.config.toggle_start, state=p_full),
-            'start-blanked'             : dict(activate=self.config.toggle_start, state=self.blanked),
-            'portable-config'           : dict(activate=self.config.toggle_portable_config,
+            'start-blanked':              dict(activate=self.config.toggle_start, state=self.blanked),
+            'portable-config':            dict(activate=self.config.toggle_portable_config,
                                                state=self.config.using_portable_config()),
-            'validate-input'            : dict(activate=self.validate_current_input),
-            'cancel-input'              : dict(activate=self.cancel_current_input),
-            'highlight'                 : dict(activate=self.scribbler.switch_scribbling, state=False),
+            'validate-input':             dict(activate=self.validate_current_input),
+            'cancel-input':               dict(activate=self.cancel_current_input),
+            'highlight':                  dict(activate=self.scribbler.switch_scribbling, state=False),
         })
 
-        self.setup_actions('app', {
-            # nav
-            'goto-page'     : dict(activate=self.page_number.on_label_event),
-            'jumpto-label'  : dict(activate=self.page_number.on_label_event),
-            'next-page'     : dict(activate=self.doc_goto_next),
-            'next-label'    : dict(activate=self.doc_label_next),
-            'prev-page'     : dict(activate=self.doc_goto_prev),
-            'prev-label'    : dict(activate=self.doc_label_prev),
-            'hist-back'     : dict(activate=self.doc_hist_prev),
-            'hist-forward'  : dict(activate=self.doc_hist_next),
-            'first-page'    : dict(activate=self.doc_goto_home),
-            'last-page'     : dict(activate=self.doc_goto_end),
+        self.setup_actions('page', {
+            'goto-page':     dict(activate=self.page_number.on_label_event),
+            'jumpto-label':  dict(activate=self.page_number.on_label_event),
+            'next':          dict(activate=self.doc_goto_next),
+            'next-label':    dict(activate=self.doc_label_next),
+            'prev':          dict(activate=self.doc_goto_prev),
+            'prev-label':    dict(activate=self.doc_label_prev),
+            'hist-back':     dict(activate=self.doc_hist_prev),
+            'hist-forward':  dict(activate=self.doc_hist_next),
+            'first':         dict(activate=self.doc_goto_home),
+            'last':          dict(activate=self.doc_goto_end),
         })
 
         for action, shortcut in self.config.items('shortcuts'):
-            self.app.set_accels_for_action(action if '.' in action else 'app.' + action, shortcut.split())
+            self.app.set_accels_for_action(action, shortcut.split())
 
         # Common to both windows
         self.load_icons()
@@ -288,7 +287,7 @@ class UI(builder.Builder):
 
 
     def activate(self):
-        """
+        """ Activate application, i.e. bring windows to front.
         """
         # Setup screens and show all windows
         self.setup_screens()
@@ -666,13 +665,14 @@ class UI(builder.Builder):
         self.swap_document(self.doc.path, page=self.current_page, reloading=True)
 
 
-    def populate_recent_menu(self, gaction, is_opening):
+    def populate_recent_menu(self, gaction, is_opening=None):
         """ Callback for the recent document menu.
 
         Gets the URI and requests the document swap.
 
         Args:
-            recent_menu (:class:`~Gtk.RecentChooserMenu`): the recent docs menu
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            is_opening (:class:`~GLib.Variant`): a wrapped boolean indicating whether the menu is opening or closing.
         """
         if not is_opening.get_boolean():
             self.recent_menu.remove_all()
@@ -814,12 +814,20 @@ class UI(builder.Builder):
 
     def doc_goto_prev(self, gaction=None, param=None):
         """ Handle going to the next page.
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         self.goto_page(self.preview_page - 1)
 
 
     def doc_goto_next(self, gaction=None, param=None):
         """ Handle going to the previous page.
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         if self.talk_time.paused:
             self.talk_time.unpause()
@@ -829,18 +837,30 @@ class UI(builder.Builder):
 
     def doc_label_next(self, gaction=None, param=None):
         """ Handle going to the next page with a different label.
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         self.goto_page(self.doc.label_after(self.preview_page))
 
 
     def doc_label_prev(self, gaction=None, param=None):
         """ Handle going to the previous page with a different label.
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         self.goto_page(self.doc.label_before(self.preview_page))
 
 
     def doc_hist_prev(self, gaction=None, param=None):
         """ Handle going to the previous page in the history of visited pages
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         dest = self.doc.hist_prev()
         if dest is not None:
@@ -849,6 +869,10 @@ class UI(builder.Builder):
 
     def doc_hist_next(self, gaction=None, param=None):
         """ Handle going to the next page in the history of visited pages
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         dest = self.doc.hist_prev()
         if dest is not None:
@@ -857,12 +881,20 @@ class UI(builder.Builder):
 
     def doc_goto_home(self, gaction=None, param=None):
         """ Handle going to the start of the document
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         self.goto_page(0)
 
 
     def doc_goto_end(self, gaction=None, param=None):
         """ Handle going to the end of the document
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         self.goto_page(self.doc.pages_number())
 
@@ -901,7 +933,7 @@ class UI(builder.Builder):
         self.p_da_cur.queue_draw()
 
         if not is_preview:
-            content_pr = page_preview.get_aspect_ratio(draw_page)
+            content_pr = page_content.get_aspect_ratio(draw_page)
             self.c_frame.set_property('ratio', content_pr)
             self.c_da.queue_draw()
 
@@ -1065,7 +1097,13 @@ class UI(builder.Builder):
         return False
 
 
-    def validate_current_input(self, action, target):
+    def validate_current_input(self, gaction, param=None):
+        """ Handle the action validating the input, if applicable.
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
+        """
         if self.page_number.try_validate():
             return True
         elif self.est_time.try_validate():
@@ -1074,7 +1112,13 @@ class UI(builder.Builder):
         return False
 
 
-    def cancel_current_input(self, action, target):
+    def cancel_current_input(self, gaction, param=None):
+        """ Handle the action cancelling the input, if applicable.
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
+        """
         if self.page_number.try_cancel():
             return True
         elif self.est_time.try_cancel():
@@ -1347,15 +1391,16 @@ class UI(builder.Builder):
         self.move_window(screen, self.p_win, p_monitor, c_monitor)
 
 
-    def switch_blanked(self, action, target):
+    def switch_blanked(self, gaction, param):
         """ Switch the blanked mode of the content screen.
 
         Returns:
-            `bool`: whether the mode has been toggled.
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         self.blanked = not self.blanked
         self.c_da.queue_draw()
-        self.app.set_action_state(action.get_name(), self.blanked)
+        gaction.change_state(GLib.Variant('b', self.blanked))
 
         return True
 

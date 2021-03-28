@@ -40,7 +40,7 @@ except ImportError:
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib, Gio
+from gi.repository import Gtk, GLib
 
 from pympress import util
 
@@ -195,22 +195,6 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             self.remove_option('content', 'monitor')
 
 
-    def get_shortcuts(self):
-        shortcuts = {}
-        for action, shortcut in self.items('shortcuts'):
-            try:
-                ok, action_name, target_value = Gio.Action.parse_detailed_name('app.' + action)
-                action_name = action_name.replace('app.', '')
-                if not ok:
-                    raise ValueError()
-            except:
-                logger.error('Error parsing action ' + action)
-            else:
-                shortcuts.setdefault(action_name, []).append((action, shortcut))
-
-        return shortcuts
-
-
     def getlist(self, *args):
         """ Parse a config value and return the list by splitting the value on commas.
 
@@ -223,7 +207,9 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
 
 
     def getint(self, *args, **kwargs):
-        """ Wrapper for :meth:`~configparser.Configparser.getint()` to handle parsing errors when a fallback is given.
+        """ Wrapper for configparser’s getint to handle parsing errors when a fallback is given.
+
+        See :meth:`~configparser.Configparser.getint()`
         """
         try:
             return super(Config, self).getint(*args, **kwargs)
@@ -237,7 +223,9 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
 
 
     def getfloat(self, *args, **kwargs):
-        """ Wrapper for :meth:`~configparser.Configparser.getfloat()` to handle parsing errors when a fallback is given.
+        """ Wrapper for confiparser’s to handle parsing errors when a fallback is given.
+
+        See :meth:`~configparser.Configparser.getfloat()`
         """
         try:
             return super(Config, self).getfloat(*args, **kwargs)
@@ -245,13 +233,15 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             if 'fallback' not in kwargs:
                 raise
 
-            logger.warning(_('Error parsing option from config file {}.{} "{}" to float'.format(*args, self.get(*args))),
-                           exc_info=True)
+            logger.warning(_('Error parsing option from config file {}.{} "{}" to float')
+                           .format(*args, self.get(*args)), exc_info=True)
             return kwargs['fallback']
 
 
     def getboolean(self, *args, **kwargs):
-        """ Wrapper for :meth:`~configparser.Configparser.getboolean()` to handle parsing errors when a fallback is given.
+        """ Wrapper for configparser’s getboolean to handle parsing errors when a fallback is given.
+
+        :meth:`~configparser.Configparser.getboolean()`
         """
         try:
             return super(Config, self).getboolean(*args, **kwargs)
@@ -275,11 +265,12 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             self.write(configfile)
 
 
-    def toggle_start(self, gaction, target):
+    def toggle_start(self, gaction, param=None):
         """ Generic function to toggle some boolean startup configuration.
 
         Args:
-            check_item (:class:`~Gtk.:CheckMenuItem`): the check button triggering the call
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         # action is named start(-presenter|-content)?-property
         start, *win, prop = gaction.get_name().split('-')
