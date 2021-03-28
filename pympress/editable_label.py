@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#       page_number.py
+#       editable_label.py
 #
 #       Copyright 2017 Cimbali <me@cimba.li>
 #
@@ -379,15 +379,6 @@ class PageNumber(EditableLabel):
         self.editing = False
 
 
-    def update_jump_label(self, label):
-        """ Update the displayed page label.
-
-        Args:
-            label (`str`): The current page label
-        """
-        self.edit_label.set_text(str(label))
-
-
     def update_page_numbers(self, cur_nb, label):
         """ Update the displayed page numbers.
 
@@ -402,7 +393,11 @@ class PageNumber(EditableLabel):
         else:
             self.label_cur.set_text(cur)
 
-        self.restore_label()
+        if self.editing:
+            if not self.edit_label.is_focus():
+                self.edit_label.set_text(str(label))
+
+            self.spin_cur.set_value(cur_nb + 1)
 
 
 class EstimatedTalkTime(EditableLabel):

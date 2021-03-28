@@ -783,9 +783,27 @@ class UI(builder.Builder):
     ##############################################################################
 
     def on_page_change(self, widget, event=None):
-        self.goto_page(int(widget.get_value()) - 1)
+        """ Signal handler for current page editing.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the editable widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+        """
+        widget_text = widget.get_buffer().get_text()
+        try:
+            display_page_num = int(widget_text)
+        except ValueError:
+            return
+        else:
+            self.goto_page(display_page_num - 1)
+
 
     def goto_page(self, page):
+        """ Handle going to the page passed as argument
+
+        Args:
+            page (`int`): the page to which to go. Will be clipped to document pages.
+        """
         self.preview_page = self.doc.goto(page)
 
         if not self.page_number.editing:
@@ -793,33 +811,58 @@ class UI(builder.Builder):
 
         self.do_page_change()
 
+
     def doc_goto_prev(self, gaction=None, param=None):
+        """ Handle going to the next page.
+        """
         self.goto_page(self.preview_page - 1)
 
+
     def doc_goto_next(self, gaction=None, param=None):
+        """ Handle going to the previous page.
+        """
         self.goto_page(self.preview_page + 1)
 
+
     def doc_label_next(self, gaction=None, param=None):
+        """ Handle going to the next page with a different label.
+        """
         self.goto_page(self.doc.label_after(self.preview_page))
 
+
     def doc_label_prev(self, gaction=None, param=None):
+        """ Handle going to the previous page with a different label.
+        """
         self.goto_page(self.doc.label_before(self.preview_page))
 
+
     def doc_hist_prev(self, gaction=None, param=None):
+        """ Handle going to the previous page in the history of visited pages
+        """
         dest = self.doc.hist_prev()
         if dest is not None:
             self.goto_page(dest)
+
 
     def doc_hist_next(self, gaction=None, param=None):
+        """ Handle going to the next page in the history of visited pages
+        """
         dest = self.doc.hist_prev()
         if dest is not None:
             self.goto_page(dest)
 
+
     def doc_goto_home(self, gaction=None, param=None):
+        """ Handle going to the start of the document
+        """
         self.goto_page(0)
 
+
     def doc_goto_end(self, gaction=None, param=None):
+        """ Handle going to the end of the document
+        """
         self.goto_page(self.doc.pages_number())
+
 
     def do_page_change(self, unpause=True):
         """ Switch to another page and display it.
@@ -871,10 +914,7 @@ class UI(builder.Builder):
         self.annotations.add_annotations(page_preview.get_annotations())
 
         # Update display -- needs to be different ?
-        if is_preview:
-            self.page_number.update_jump_label(page_preview.label())
-        else:
-            self.page_number.update_page_numbers(self.preview_page, page_preview.label())
+        self.page_number.update_page_numbers(self.preview_page, page_preview.label())
 
         # Prerender the 4 next pages and the 2 previous ones
         page_max = min(self.doc.pages_number(), self.preview_page + 5)
