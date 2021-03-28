@@ -821,7 +821,10 @@ class UI(builder.Builder):
     def doc_goto_next(self, gaction=None, param=None):
         """ Handle going to the previous page.
         """
-        self.goto_page(self.preview_page + 1)
+        if self.talk_time.paused:
+            self.talk_time.unpause()
+        else:
+            self.goto_page(self.preview_page + 1)
 
 
     def doc_label_next(self, gaction=None, param=None):
