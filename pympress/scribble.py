@@ -69,21 +69,21 @@ class Scribbler(builder.Builder):
     scribble_p_eb = None
     #: :class:`~Gtk.AspectFrame` for the slide in the Presenter's highlight mode
     scribble_p_frame = None
-    #:
+    #: The :class:`~Gtk.DrawingArea` in the content window
     c_da = None
 
-    #:
+    #: The :class:`~Gtk.ColorButton` selecting the color of the pen
     scribble_color_selector = None
-    #:
+    #: The :class:`~Gtk.Scale` selecting the size of the pen
     scribble_width_selector = None
-    #:
+    #: The `list` containing the radio buttons :class:`~Gtk.ModelButton`
     scribble_preset_buttons = []
 
-    #:
+    #: The position of the mouse on the slide as `tuple` of `float`s
     mouse_pos = None
-    #:
+    #: A :class:`~cairo.Surface` to hold drawn highlights
     scribble_cache = None
-    #:
+    #: The next scribble to render (i.e. that is not rendered in cache)
     next_render = 0
 
     #: :class:`~Gtk.Button` for removing the last drawn scribble
