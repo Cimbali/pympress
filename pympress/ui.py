@@ -52,7 +52,7 @@ from pympress import document, surfacecache, util, pointer, scribble, builder, t
 class UI(builder.Builder):
     """ Pympress GUI management.
     """
-    #:
+    #: The :class:`~pympress.app.Pympress` instance
     app = None
     #: Content window, as a :class:`~Gtk.Window` instance.
     c_win = None
@@ -216,16 +216,16 @@ class UI(builder.Builder):
 
         self.connect_signals(self)
 
-        self.setup_actions('file', {
-            'open':          dict(activate=self.open_file, parameter_type=str),
-            'close':         dict(activate=self.close_file),
-            'pick':          dict(activate=self.pick_file),
-            'list-recent':   dict(change_state=self.populate_recent_menu, state=False),
+        self.setup_actions({
+            'open-file':         dict(activate=self.open_file, parameter_type=str),
+            'close-file':        dict(activate=self.close_file),
+            'pick-file':         dict(activate=self.pick_file),
+            'list-recent-files': dict(change_state=self.populate_recent_menu, state=False),
         })
 
         c_full = self.config.getboolean('content', 'start_fullscreen')
         p_full = self.config.getboolean('presenter', 'start_fullscreen')
-        self.setup_actions('app', {
+        self.setup_actions({
             'quit':                       dict(activate=self.app.quit),
             'about':                      dict(activate=self.menu_about),
             'big-buttons':                dict(activate=self.switch_bigbuttons, state=self.show_bigbuttons),
@@ -248,23 +248,24 @@ class UI(builder.Builder):
             'validate-input':             dict(activate=self.validate_current_input),
             'cancel-input':               dict(activate=self.cancel_current_input),
             'highlight':                  dict(activate=self.scribbler.switch_scribbling, state=False),
+            'align-content':              dict(activate=self.adjust_frame_position),
         })
 
-        self.setup_actions('page', {
+        self.setup_actions({
             'goto-page':     dict(activate=self.page_number.on_label_event),
             'jumpto-label':  dict(activate=self.page_number.on_label_event),
-            'next':          dict(activate=self.doc_goto_next),
+            'next-page':     dict(activate=self.doc_goto_next),
             'next-label':    dict(activate=self.doc_label_next),
-            'prev':          dict(activate=self.doc_goto_prev),
+            'prev-page':     dict(activate=self.doc_goto_prev),
             'prev-label':    dict(activate=self.doc_label_prev),
             'hist-back':     dict(activate=self.doc_hist_prev),
             'hist-forward':  dict(activate=self.doc_hist_next),
-            'first':         dict(activate=self.doc_goto_home),
-            'last':          dict(activate=self.doc_goto_end),
+            'first-page':    dict(activate=self.doc_goto_home),
+            'last-page':     dict(activate=self.doc_goto_end),
         })
 
         for action, shortcut in self.config.items('shortcuts'):
-            self.app.set_accels_for_action(action, shortcut.split())
+            self.app.set_accels_for_action('app.' + action, shortcut.split())
 
         # Common to both windows
         self.load_icons()
@@ -682,8 +683,8 @@ class UI(builder.Builder):
             if not file.exists() or not file.get_mime_type() == 'application/pdf':
                 continue
 
-            item = Gio.MenuItem.new(file.get_display_name(), 'file.open')
-            item.set_action_and_target_value('file.open', GLib.Variant('s', file.get_uri()))
+            item = Gio.MenuItem.new(file.get_display_name(), 'app.open-file')
+            item.set_action_and_target_value('app.open-file', GLib.Variant('s', file.get_uri()))
             item.set_icon(file.get_gicon())
 
             self.recent_menu.append_item(item)

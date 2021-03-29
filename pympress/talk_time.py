@@ -144,16 +144,16 @@ class TimeCounter(object):
         builder (builder.Builder): The builder from which to load widgets.
         ett (`int`): the estimated time for the talk, in seconds.
     """
-    #: Elapsed time :class:`~Gtk.Label`.
+    #: Elapsed time :class:`~Gtk.Label`
     label_time = None
-    #: Clock :class:`~Gtk.Label`.
+    #: Clock :class:`~Gtk.Label`
     label_clock = None
 
-    #: Time at which the counter was started, `int` in seconds as returned by :func:`~time.time()`.
+    #: Time at which the counter was started, `int` in seconds as returned by :func:`~time.time()`
     restart_time = 0
-    #: Time elapsed since the beginning of the presentation, `int` in seconds.
+    #: Time elapsed since the beginning of the presentation, `int` in seconds
     elapsed_time = 0
-    #: Timer paused status, `bool`.
+    #: Timer paused status, `bool`
     paused = True
 
     #: :class:`~TimeLabelColorer` that handles setting the colors of :attr:`label_time`
@@ -162,9 +162,10 @@ class TimeCounter(object):
     #: :class:`~pympress.editable_label.EstimatedTalkTime` that handles changing the ett
     ett = None
 
-    #: :class:`~Gio.ActionMap` containing timer.* actions
-    action_map = None
+    #: The pause-timer :class:`~Gio.Action`
+    pause_action = None
 
+    #: The :class:`~pympress.extras.TimingReport`, needs to know when the slides change
     timing_tracker = None
 
     def __init__(self, builder, ett, timing_tracker):
@@ -176,12 +177,13 @@ class TimeCounter(object):
 
         builder.load_widgets(self)
 
-        self.action_map = builder.setup_actions('timer', {
-            'pause':        dict(activate=self.switch_pause, state=self.paused),
-            'reset':        dict(activate=self.reset_timer),
-            'report':       dict(activate=self.timing_tracker.show_report),
-            'set-duration': dict(activate=self.ett.on_label_event),
+        builder.setup_actions({
+            'pause-timer':   dict(activate=self.switch_pause, state=self.paused),
+            'reset-timer':   dict(activate=self.reset_timer),
+            'timing-report': dict(activate=self.timing_tracker.show_report),
+            'set-talk-time': dict(activate=self.ett.on_label_event),
         })
+        self.pause_action = builder.get_application().lookup_action('pause-timer')
 
         # Setup timer for clocks
         GLib.timeout_add(250, self.update_time)
@@ -210,7 +212,7 @@ class TimeCounter(object):
             return False
 
         self.paused = True
-        self.action_map.lookup_action('pause').change_state(GLib.Variant('b', self.paused))
+        self.pause_action.change_state(GLib.Variant('b', self.paused))
 
         self.elapsed_time += time.time() - self.restart_time
         self.timing_tracker.end_time = self.elapsed_time
@@ -231,7 +233,7 @@ class TimeCounter(object):
         self.restart_time = time.time()
 
         self.paused = False
-        self.action_map.lookup_action('pause').change_state(GLib.Variant('b', self.paused))
+        self.pause_action.change_state(GLib.Variant('b', self.paused))
 
         self.update_time()
         return True

@@ -48,17 +48,18 @@ class TimingReport(builder.Builder):
     page_time = []
     #: `int` the time at which the clock was reset
     end_time = -1
-    #: The :class:`~Gtk.TreeView` containing the timing data to display in the dialog.
+    #: The :class:`~Gtk.TreeView` containing the timing data to display in the dialog
     timing_treeview = None
-    #: A :class:`~Gtk.Dialog` to contain the timing to show.
+    #: A :class:`~Gtk.Dialog` to contain the timing to show
     time_report_dialog = None
-    #:
+    #: `bool` marking whether next page transition should reset the history of page timings
     clear_on_next_transition = False
 
     #: A `dict` containing the structure of the current document
     doc_structure = {}
     #: A `list` with the page label of each page of the current document
     page_labels = []
+    #: `bool` tracking whether a document is opened
     document_open = False
 
     def __init__(self, parent):
@@ -320,7 +321,7 @@ class Media(object):
 
             for w in self._media_overlays[media_id]:
                 if w.autoplay:
-                    self.set_time(media_id, target=GLib.Variant('d', 0))
+                    self.set_time(media_id, param=GLib.Variant('d', 0))
                     w.show()
 
 

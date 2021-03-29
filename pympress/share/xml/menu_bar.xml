@@ -6,16 +6,16 @@
 		<section>
             <item>
                 <attribute name="label" translatable="yes">_Open</attribute>
-                <attribute name="action">file.pick</attribute>
+                <attribute name="action">app.pick-file</attribute>
 				<!-- <attribute name="icon">open</attribute> -->
             </item>
             <submenu id="recent_menu">
                 <attribute name="label" translatable="yes">Open _Recent</attribute>
-                <attribute name="submenu-action">file.list-recent</attribute>
+                <attribute name="submenu-action">app.list-recent-files</attribute>
             </submenu>
             <item>
                 <attribute name="label" translatable="yes">_Close</attribute>
-                <attribute name="action">file.close</attribute>
+                <attribute name="action">app.close-file</attribute>
             </item>
             <item>
                 <attribute name="label" translatable="yes">_Quit</attribute>
@@ -28,11 +28,11 @@
         <attribute name="label" translatable="yes">_Presentation</attribute>
 		<item>
 			<attribute name="label" translatable="yes">_Pause timer</attribute>
-			<attribute name="action">timer.pause</attribute>
+			<attribute name="action">app.pause-timer</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Reset timer</attribute>
-			<attribute name="action">timer.reset</attribute>
+			<attribute name="action">app.reset-timer</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">Set talk _Time</attribute>
@@ -56,6 +56,7 @@
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">Align _content</attribute>
+			<attribute name="action">app.align-content</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Annotations</attribute>
@@ -74,34 +75,34 @@
 			<section>
 				<item>
 					<attribute name="label" translatable="yes">_Permanent</attribute>
-					<attribute name="action">pointer.mode</attribute>
+					<attribute name="action">app.pointer-mode</attribute>
 					<attribute name="target">continuous</attribute>
 				</item>
 				<item>
 					<attribute name="label" translatable="yes">_Manual</attribute>
-					<attribute name="action">pointer.mode</attribute>
+					<attribute name="action">app.pointer-mode</attribute>
 					<attribute name="target">manual</attribute>
 				</item>
 				<item>
 					<attribute name="label" translatable="yes">_Disabled</attribute>
-					<attribute name="action">pointer.mode</attribute>
+					<attribute name="action">app.pointer-mode</attribute>
 					<attribute name="target">disabled</attribute>
 				</item>
 			</section>
 			<section>
 				<item>
 					<attribute name="label" translatable="yes">_Red</attribute>
-					<attribute name="action">pointer.color</attribute>
+					<attribute name="action">app.pointer-color</attribute>
 					<attribute name="target">red</attribute>
 				</item>
 				<item>
 					<attribute name="label" translatable="yes">_Green</attribute>
-					<attribute name="action">pointer.color</attribute>
+					<attribute name="action">app.pointer-color</attribute>
 					<attribute name="target">green</attribute>
 				</item>
 				<item>
 					<attribute name="label" translatable="yes">_Blue</attribute>
-					<attribute name="action">pointer.color</attribute>
+					<attribute name="action">app.pointer-color</attribute>
 					<attribute name="target">blue</attribute>
 				</item>
 			</section>
@@ -147,7 +148,7 @@
 
 		<item>
 			<attribute name="label" translatable="yes">Timing breakdown</attribute>
-			<attribute name="action">timer.report</attribute>
+			<attribute name="action">app.timing-report</attribute>
 		</item>
     </submenu>
 
@@ -155,27 +156,27 @@
 		<attribute name="label" translatable="yes">_Navigation</attribute>
 		<item>
 			<attribute name="label" translatable="yes">_Next</attribute>
-			<attribute name="action">page.next</attribute>
+			<attribute name="action">app.next-page</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Previous</attribute>
-			<attribute name="action">page.prev</attribute>
+			<attribute name="action">app.prev-page</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_First</attribute>
-			<attribute name="action">page.first</attribute>
+			<attribute name="action">app.first-page</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Last</attribute>
-			<attribute name="action">page.last</attribute>
+			<attribute name="action">app.last-page</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Go to...</attribute>
-			<attribute name="action">page.goto-page</attribute>
+			<attribute name="action">app.goto-page</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Jump to label</attribute>
-			<attribute name="action">page.jumpto-label</attribute>
+			<attribute name="action">app.jumpto-label</attribute>
 		</item>
 	</submenu>
 

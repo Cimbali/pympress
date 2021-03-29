@@ -125,7 +125,8 @@ class Scribbler(builder.Builder):
     #: `int` that is the currently selected element
     active_preset = -1
 
-    action_map = None
+    #: The :class:`~Gio.Action` that contains the currently selected pen
+    pen_action = None
 
 
     def __init__(self, config, builder, notes_mode):
@@ -167,13 +168,15 @@ class Scribbler(builder.Builder):
         ]
 
         active_pen = config.get('scribble', 'active_pen')
-        self.action_map = self.setup_actions('highlight', {
-            'use-pen':   dict(activate=self.load_preset, state=active_pen, parameter_type=str, enabled=False),
-            'clear':     dict(activate=self.clear_scribble),
-            'redo':      dict(activate=self.redo_scribble),
-            'undo':      dict(activate=self.pop_scribble),
+        self.setup_actions({
+            'highlight-use-pen': dict(activate=self.load_preset, state=active_pen, parameter_type=str, enabled=False),
+            'highlight-clear':   dict(activate=self.clear_scribble),
+            'highlight-redo':    dict(activate=self.redo_scribble),
+            'highlight-undo':    dict(activate=self.pop_scribble),
         })
-        self.load_preset(self.action_map.lookup_action('use-pen'), int(active_pen) if active_pen.isnumeric() else 0)
+
+        self.pen_action = self.get_application().lookup_action('highlight-use-pen')
+        self.load_preset(self.pen_action, int(active_pen) if active_pen.isnumeric() else 0)
 
 
     def try_cancel(self):
@@ -514,7 +517,7 @@ class Scribbler(builder.Builder):
 
         self.scribbling_mode = True
         self.get_application().lookup_action('highlight').change_state(GLib.Variant('b', self.scribbling_mode))
-        self.action_map.lookup_action('use-pen').set_enabled(self.scribbling_mode)
+        self.pen_action.set_enabled(self.scribbling_mode)
 
         self.p_central.queue_draw()
         extras.Cursor.set_cursor(self.scribble_p_da, 'invisible')
@@ -536,7 +539,7 @@ class Scribbler(builder.Builder):
 
         self.scribbling_mode = False
         self.get_application().lookup_action('highlight').change_state(GLib.Variant('b', self.scribbling_mode))
-        self.action_map.lookup_action('use-pen').set_enabled(self.scribbling_mode)
+        self.pen_action.set_enabled(self.scribbling_mode)
 
         self.p_central.queue_draw()
         extras.Cursor.set_cursor(self.p_central)
@@ -563,7 +566,7 @@ class Scribbler(builder.Builder):
         target = str(self.active_preset) if self.active_preset else 'eraser'
 
         self.config.set('scribble', 'active_pen', target)
-        self.action_map.lookup_action('use-pen').change_state(GLib.Variant('s', target))
+        self.pen_action.change_state(GLib.Variant('s', target))
         self.scribble_color, self.scribble_width = self.color_width[self.active_preset]
 
         # Presenter-side setup

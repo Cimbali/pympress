@@ -164,7 +164,7 @@ class Pympress(Gtk.Application):
         if parameter is not None:
             parameter = GLib.Variant(builder.Builder._glib_type_strings[type(parameter)], parameter)
 
-        self.lookup_action(name).activate(parameter)
+        Gio.ActionGroup.activate_action(self, name, parameter)
 
 
     def do_activate(self, timestamp=GLib.get_current_time()):
