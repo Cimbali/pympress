@@ -53,24 +53,39 @@ class Pympress(Gtk.Application):
     notes_pos = None
 
     options = {
-        # long_name: (short_name (int), flags (GLib.OptionFlags), arg (GLib.OptionArg)
-        'talk-time': (ord('t'), GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
-        'notes':     (ord('n'), GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
-        'log':       (0,        GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
-        'version':   (ord('v'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
-        'pause':     (ord('p'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
+        # long_name:  (short_name (int), flags (GLib.OptionFlags), arg (GLib.OptionArg)
+        'talk-time':  (ord('t'), GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
+        'notes':      (ord('N'), GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
+        'log':        (0,        GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
+        'version':    (ord('v'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
+        'pause':      (ord('P'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
+        'reset':      (ord('r'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
+        'next':       (ord('n'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
+        'prev':       (ord('p'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
+        'first':      (ord('f'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
+        'last':       (ord('l'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
+        'blank':      (ord('b'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
+        'quit':       (ord('q'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
     }
 
     option_descriptions = {
         #  long_name: (description, arg_description)
         'talk-time': (_('The estimated (intended) talk time in minutes') + ' ' +
-                      _('(and optionally seconds)'), None),
-        'notes': (_('Set the position of notes on the pdf page') + ' ' +
-                  _('(none, left, right, top, bottom, or after).') + ' ' +
-                  _('Overrides the detection from the file.'), None),
-        'log': (_('Set level of verbosity in log file:') + ' ' +
-                _('{}, {}, {}, {}, or {}').format('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'), None),
-        'version': (_('Print version and exit'), None),
+                      _('(and optionally seconds)'), 'mm[:ss]'),
+        'notes':     (_('Set the position of notes on the pdf page') + ' ' +
+                      _('(none, left, right, top, bottom, or after).') + ' ' +
+                      _('Overrides the detection from the file.'), '<position>'),
+        'log':       (_('Set level of verbosity in log file:') + ' ' +
+                      _('{}, {}, {}, {}, or {}').format('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'), '<level>'),
+        'version':   (_('Print version and exit'), None),
+        'pause':     (_('Toggle pause of talk timer'), None),
+        'reset':     (_('Reset talk timer'), None),
+        'next':      (_('Next slide'), None),
+        'prev':      (_('Prev slide'), None),
+        'first':     (_('First slide'), None),
+        'last':      (_('Last slide'), None),
+        'blank':     (_('Blank/unblank content screen'), None),
+        'quit':      (_('Close opened pympress instance'), None),
     }
 
     version_string = ' '.join([
@@ -220,6 +235,17 @@ class Pympress(Gtk.Application):
         # convert GVariantDict -> GVariant -> dict
         opts = opts_variant_dict.end().unpack()
 
+        simple_actions = {
+            'pause': 'pause-timer',
+            'reset': 'reset-timer',
+            'next': 'next-page',
+            'prev': 'prev-page',
+            'blank': 'blank-screen',
+            'quit': 'quit',
+            'first': 'first-page',
+            'last': 'last-page',
+        }
+
         for opt, arg in opts.items():
             if opt == "version":
                 print(self.version_string)
@@ -233,9 +259,6 @@ class Pympress(Gtk.Application):
                     print(_("Invalid log level \"{}\", try one of {}").format(
                         arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"
                     ))
-
-            elif opt == "pause":
-                self.activate_action('pause-timer')
 
             elif opt == "notes":
                 arg = arg.lower()[:1]
@@ -257,5 +280,8 @@ class Pympress(Gtk.Application):
                 except IndexError:
                     s = 0
                 self.activate_action('set-talk-time', m * 60 + s)
+
+            elif opt in simple_actions:
+                self.activate_action(simple_actions[opt])
 
         return -1
