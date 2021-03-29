@@ -55,9 +55,10 @@ class Pympress(Gtk.Application):
     options = {
         # long_name: (short_name (int), flags (GLib.OptionFlags), arg (GLib.OptionArg)
         'talk-time': (ord('t'), GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
-        'notes': (ord('n'), GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
-        'log': (0, GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
-        'version': (ord('v'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
+        'notes':     (ord('n'), GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
+        'log':       (0,        GLib.OptionFlags.NONE, GLib.OptionArg.STRING),
+        'version':   (ord('v'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
+        'pause':     (ord('p'), GLib.OptionFlags.NONE, GLib.OptionArg.NONE),
     }
 
     option_descriptions = {
@@ -96,7 +97,7 @@ class Pympress(Gtk.Application):
         signal.signal(signal.SIGINT, self.quit)
 
         for opt in self.options:
-            self.add_main_option(opt, *self.options[opt], *self.option_descriptions[opt])
+            self.add_main_option(opt, *self.options[opt], *self.option_descriptions.get(opt, ['', None]))
 
 
     def quit(self, *args):
@@ -232,6 +233,9 @@ class Pympress(Gtk.Application):
                     print(_("Invalid log level \"{}\", try one of {}").format(
                         arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"
                     ))
+
+            elif opt == "pause":
+                self.activate_action('pause-timer')
 
             elif opt == "notes":
                 arg = arg.lower()[:1]
