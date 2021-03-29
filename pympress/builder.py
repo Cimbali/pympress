@@ -54,7 +54,7 @@ class Builder(Gtk.Builder):
     _glib_type_strings = {
         float: 'd',
         bool: 'b',
-        int: 's',
+        int: 'x',
         str: 's',
     }
 

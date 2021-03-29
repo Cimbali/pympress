@@ -418,7 +418,6 @@ class EstimatedTalkTime(EditableLabel):
 
     Args:
         builder (builder.Builder): The builder from which to load widgets.
-        ett (`int`): the estimated time for the talk, in seconds.
     """
     #: Elapsed time :class:`~Gtk.Label`.
     label_time = None
@@ -436,14 +435,16 @@ class EstimatedTalkTime(EditableLabel):
     stop_editing_page_number = lambda: None
 
 
-    def __init__(self, builder, ett = 0):
+    def __init__(self, builder):
         super(EstimatedTalkTime, self).__init__()
 
         self.entry_ett = Gtk.Entry()
 
         builder.load_widgets(self)
-
-        self.set_time(ett)
+        builder.setup_actions({
+            'edit-talk-time': dict(activate=self.on_label_event),
+            'set-talk-time':  dict(activate=self.set_time, parameter_type=int),
+        })
 
         self.event_box = self.eb_ett
 
@@ -470,22 +471,23 @@ class EstimatedTalkTime(EditableLabel):
             s = int(t[1])
         except ValueError:
             logger.error(_("Invalid time (mm or mm:ss expected), got \"{}\"").format(text))
-            return True
+            return
         except IndexError:
             s = 0
 
-        self.set_time(m * 60 + s)
+        self.set_time(None, GLib.Variant.new_int64(m * 60 + s))
 
 
-    def set_time(self, time):
+    def set_time(self, gaction, param):
         """ Set the talk time.
 
         Args:
-            time (`int`): the estimated time for the talk, in seconds.
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): The time in seconds, as an int64 variant
         """
+        time = param.get_int64()
         self.est_time = time
         self.label_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
-        # TODO a callback for timer?
 
 
     def on_keypress(self, widget, event):

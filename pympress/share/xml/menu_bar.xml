@@ -36,7 +36,7 @@
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">Set talk _Time</attribute>
-			<attribute name="action">app.set-talk-time</attribute>
+			<attribute name="action">app.edit-talk-time</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Fullscreen</attribute>

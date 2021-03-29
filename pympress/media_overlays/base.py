@@ -165,7 +165,7 @@ class VideoOverlay(builder.Builder):
             sc (:class:`~Gtk.Scale`): The scale whose position we are updating
             val (`float`): The position of the :class:`~Gtk.Scale`, which is the number of seconds elapsed in the video
         """
-        return self.action_map.lookup_action('set_time').activate(GLib.Variant('d', val))
+        return self.action_map.lookup_action('set_time').activate(GLib.Variant.new_double(val))
 
 
     def update_margins_for_page(self, page_type):

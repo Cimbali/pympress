@@ -67,7 +67,11 @@ class TimingReport(builder.Builder):
         self.load_ui('time_report_dialog')
         self.time_report_dialog.set_transient_for(parent.p_win)
         self.time_report_dialog.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+
         self.connect_signals(self)
+        parent.setup_actions({
+            'timing-report': dict(activate=self.show_report),
+        })
 
 
     def transition(self, page, time):
@@ -321,7 +325,7 @@ class Media(object):
 
             for w in self._media_overlays[media_id]:
                 if w.autoplay:
-                    self.set_time(media_id, param=GLib.Variant('d', 0))
+                    self.set_time(media_id, param=GLib.Variant.new_double(0))
                     w.show()
 
 

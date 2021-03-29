@@ -684,7 +684,7 @@ class UI(builder.Builder):
                 continue
 
             item = Gio.MenuItem.new(file.get_display_name(), 'app.open-file')
-            item.set_action_and_target_value('app.open-file', GLib.Variant('s', file.get_uri()))
+            item.set_action_and_target_value('app.open-file', GLib.Variant.new_string(file.get_uri()))
             item.set_icon(file.get_gicon())
 
             self.recent_menu.append_item(item)
@@ -1308,7 +1308,7 @@ class UI(builder.Builder):
         else:
             widget.fullscreen()
 
-        gaction.change_state(GLib.Variant('b', toggle_to))
+        gaction.change_state(GLib.Variant.new_boolean(toggle_to))
         return True
 
 
@@ -1401,7 +1401,7 @@ class UI(builder.Builder):
         """
         self.blanked = not self.blanked
         self.c_da.queue_draw()
-        gaction.change_state(GLib.Variant('b', self.blanked))
+        gaction.change_state(GLib.Variant.new_boolean(self.blanked))
 
         return True
 
@@ -1527,7 +1527,7 @@ class UI(builder.Builder):
                 parent.set_position(self.pane_handle_pos[parent] * size)
 
         self.annotations.add_annotations(self.doc.page(self.preview_page).get_annotations())
-        gaction.change_state(GLib.Variant('b', self.show_annotations))
+        gaction.change_state(GLib.Variant.new_boolean(self.show_annotations))
 
         return True
 

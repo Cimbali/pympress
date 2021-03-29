@@ -47,8 +47,6 @@ class Pympress(Gtk.Application):
     gui = None
     #: The :class:`~pympress.config.Config` object that holds pympress conferences
     config = None
-    #: The estimated talk time, to pass to the UI when it is created
-    ett = 0
     #: The log level to use
     log_level = logging.ERROR
     #: The notes positioning, to pass to the UI when it is created
@@ -91,6 +89,9 @@ class Pympress(Gtk.Application):
 
         self.register(None)
 
+        if not self.get_is_remote():
+            self.gui = ui.UI(self, self.config)
+
         # Connect proper exit function to interrupt
         signal.signal(signal.SIGINT, self.quit)
 
@@ -119,6 +120,19 @@ class Pympress(Gtk.Application):
 
         logger.info(self.version_string)
         Gtk.Application.do_startup(self)
+
+
+    def do_activate(self, timestamp=GLib.get_current_time()):
+        """ Activate: show UI windows.
+
+        Build them if they do not exist, otherwise bring to front.
+        """
+        Gtk.Application.do_activate(self)
+        assert self.gui is not None, 'Activating on non-remote ?!'
+        if not self.get_is_remote():
+            self.gui.activate()
+
+        self.gui.p_win.present_with_time(timestamp)
 
 
     def set_action_enabled(self, name, value):
@@ -167,26 +181,6 @@ class Pympress(Gtk.Application):
         Gio.ActionGroup.activate_action(self, name, parameter)
 
 
-    def do_activate(self, timestamp=GLib.get_current_time()):
-        """ Activate: show UI windows.
-
-        Build them if they do not exist, otherwise bring to front.
-        """
-        Gtk.Application.do_activate(self)
-        if self.gui is None:
-            self.gui = ui.UI(self, self.config)
-            self.gui.activate()
-
-            # pass command line args
-            if self.ett:
-                self.gui.est_time.set_time(self.ett)
-
-            if self.notes_pos is not None:
-                self.gui.change_notes_pos(self.notes_pos, force_change = True)
-
-        self.gui.p_win.present_with_time(timestamp)
-
-
     def do_open(self, files, n_files, hint):
         """ Handle opening files. In practice we only open once, the last one.
 
@@ -196,7 +190,8 @@ class Pympress(Gtk.Application):
             hint (`str`): a hint, such as view, edit, etc. Should always be the empty string.
         """
         time = GLib.get_current_time()
-        if self.gui is None:
+
+        if not self.get_is_remote():
             self.do_activate(timestamp=time)
 
         if n_files:
@@ -229,14 +224,23 @@ class Pympress(Gtk.Application):
                 print(self.version_string)
                 return 0
 
+            elif opt == "log":
+                numeric_level = getattr(logging, arg.upper(), None)
+                if isinstance(numeric_level, int):
+                    logger.setLevel(numeric_level)
+                else:
+                    print(_("Invalid log level \"{}\", try one of {}").format(
+                        arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"
+                    ))
+
             elif opt == "notes":
                 arg = arg.lower()[:1]
-                if arg == 'n': self.notes_pos = document.PdfPage.NONE
-                if arg == 'l': self.notes_pos = document.PdfPage.LEFT
-                if arg == 'r': self.notes_pos = document.PdfPage.RIGHT
-                if arg == 't': self.notes_pos = document.PdfPage.TOP
-                if arg == 'b': self.notes_pos = document.PdfPage.BOTTOM
-                if arg == 'a': self.notes_pos = document.PdfPage.AFTER
+                if arg == 'n': self.activate_action('notes-pos', 'none')
+                if arg == 'l': self.activate_action('notes-pos', 'left')
+                if arg == 'r': self.activate_action('notes-pos', 'right')
+                if arg == 't': self.activate_action('notes-pos', 'top')
+                if arg == 'b': self.activate_action('notes-pos', 'bottom')
+                if arg == 'a': self.activate_action('notes-pos', 'after')
 
             elif opt == "talk-time":
                 t = ["0" + n.strip() for n in arg.split(':')]
@@ -248,15 +252,6 @@ class Pympress(Gtk.Application):
                     return 2
                 except IndexError:
                     s = 0
-                self.ett = m * 60 + s
-
-            elif opt == "log":
-                numeric_level = getattr(logging, arg.upper(), None)
-                if isinstance(numeric_level, int):
-                    logger.setLevel(numeric_level)
-                else:
-                    print(_("Invalid log level \"{}\", try one of {}").format(
-                        arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"
-                    ))
+                self.activate_action('set-talk-time', m * 60 + s)
 
         return -1

@@ -279,7 +279,7 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
 
         new_state = not gaction.get_state().get_boolean()
 
-        gaction.set_state(GLib.Variant('b', new_state))
+        gaction.set_state(GLib.Variant.new_boolean(new_state))
         self.set(window, start_conf, 'on' if new_state else 'off')
 
 

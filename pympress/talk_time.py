@@ -178,10 +178,8 @@ class TimeCounter(object):
         builder.load_widgets(self)
 
         builder.setup_actions({
-            'pause-timer':   dict(activate=self.switch_pause, state=self.paused),
-            'reset-timer':   dict(activate=self.reset_timer),
-            'timing-report': dict(activate=self.timing_tracker.show_report),
-            'set-talk-time': dict(activate=self.ett.on_label_event),
+            'pause-timer':    dict(activate=self.switch_pause, state=self.paused),
+            'reset-timer':    dict(activate=self.reset_timer),
         })
         self.pause_action = builder.get_application().lookup_action('pause-timer')
 
@@ -212,7 +210,7 @@ class TimeCounter(object):
             return False
 
         self.paused = True
-        self.pause_action.change_state(GLib.Variant('b', self.paused))
+        self.pause_action.change_state(GLib.Variant.new_boolean(self.paused))
 
         self.elapsed_time += time.time() - self.restart_time
         self.timing_tracker.end_time = self.elapsed_time
@@ -233,7 +231,7 @@ class TimeCounter(object):
         self.restart_time = time.time()
 
         self.paused = False
-        self.pause_action.change_state(GLib.Variant('b', self.paused))
+        self.pause_action.change_state(GLib.Variant.new_boolean(self.paused))
 
         self.update_time()
         return True

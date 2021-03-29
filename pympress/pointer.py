@@ -185,7 +185,7 @@ class Pointer(object):
             mode = PointerMode[target.get_string().upper()]
         self.activate_pointermode(mode)
 
-        action.change_state(GLib.Variant('s', mode.name.lower()))
+        action.change_state(GLib.Variant.new_string(mode.name.lower()))
 
 
     def render_pointer(self, cairo_context, ww, wh):

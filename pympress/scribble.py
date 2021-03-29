@@ -516,7 +516,7 @@ class Scribbler(builder.Builder):
         self.scribble_overlay.queue_draw()
 
         self.scribbling_mode = True
-        self.get_application().lookup_action('highlight').change_state(GLib.Variant('b', self.scribbling_mode))
+        self.get_application().lookup_action('highlight').change_state(GLib.Variant.new_boolean(self.scribbling_mode))
         self.pen_action.set_enabled(self.scribbling_mode)
 
         self.p_central.queue_draw()
@@ -538,7 +538,7 @@ class Scribbler(builder.Builder):
         self.off_render.add(self.scribble_overlay)
 
         self.scribbling_mode = False
-        self.get_application().lookup_action('highlight').change_state(GLib.Variant('b', self.scribbling_mode))
+        self.get_application().lookup_action('highlight').change_state(GLib.Variant.new_boolean(self.scribbling_mode))
         self.pen_action.set_enabled(self.scribbling_mode)
 
         self.p_central.queue_draw()
@@ -566,7 +566,7 @@ class Scribbler(builder.Builder):
         target = str(self.active_preset) if self.active_preset else 'eraser'
 
         self.config.set('scribble', 'active_pen', target)
-        self.pen_action.change_state(GLib.Variant('s', target))
+        self.pen_action.change_state(GLib.Variant.new_string(target))
         self.scribble_color, self.scribble_width = self.color_width[self.active_preset]
 
         # Presenter-side setup
