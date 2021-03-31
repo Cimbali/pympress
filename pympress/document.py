@@ -386,17 +386,17 @@ class Page(object):
             if dest:
                 return Link.build_closure(self.parent.goto, dest.page_num)
             elif dest_name == "GoBack":
-                return self.parent.hist_prev
+                return self.parent.goto_prev_hist
             elif dest_name == "GoForward":
-                return self.parent.hist_next
+                return self.parent.goto_next_hist
             elif dest_name == "FirstPage":
-                return Link.build_closure(self.parent.goto, 0)
+                return Link.build_closure(self.parent.goto_page, 0)
             elif dest_name == "PrevPage":
-                return Link.build_closure(self.parent.goto, self.page_nb - 1)
+                return Link.build_closure(self.parent.goto_page, self.page_nb - 1)
             elif dest_name == "NextPage":
-                return Link.build_closure(self.parent.goto, self.page_nb + 1)
+                return Link.build_closure(self.parent.goto_page, self.page_nb + 1)
             elif dest_name == "LastPage":
-                return Link.build_closure(self.parent.goto, self.parent.pages_number() - 1)
+                return Link.build_closure(self.parent.goto_page, self.parent.pages_number() - 1)
             elif dest_name == "GoToPage":
                 # Same as the 'G' action which allows one to pick a page to jump to
                 return Link.build_closure(self.parent.start_editing_page_number, )
@@ -647,11 +647,16 @@ class Document(object):
     play_media = lambda h: None
     #: callback, to be connected to :func:`~pympress.editable_label.PageNumber.start_editing`
     start_editing_page_number = lambda: None
+    #: callback, to be connected to :func:`~pympress.ui.UI.goto_page`
+    navigate = lambda: None
 
     def __init__(self, builder, pop_doc, path):
         # Connect callbacks
         self.play_media                = builder.get_callback_handler('medias.play')
         self.start_editing_page_number = builder.get_callback_handler('page_number.start_editing')
+        self.goto_page                 = builder.get_callback_handler('goto_page')
+        self.goto_next_hist            = builder.get_callback_handler('doc_hist_next')
+        self.goto_prev_hist            = builder.get_callback_handler('doc_hist_prev')
 
         # Setup PDF file
         self.path = path

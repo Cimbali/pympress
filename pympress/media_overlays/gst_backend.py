@@ -116,14 +116,18 @@ class GstOverlay(base.VideoOverlay):
         stop_action = self.action_map.lookup_action('stop')
         self.player.connect('end-of-stream', lambda e, act=stop_action: GLib.idle_add(act.activate))
 
+        window = self.movie_zone.get_window()
         if self.renderer.get_window_handle():
             pass
+        elif window is None:
+            logger.error('No window in which to embed the Gst player!')
+            return False
         elif IS_WINDOWS:
             # TODO test in windows
             # get_property('window')
-            self.renderer.set_window_handle(base.get_window_handle(self.movie_zone.get_window()))
+            self.renderer.set_window_handle(base.get_window_handle(window))
         else:
-            self.renderer.set_window_handle(self.movie_zone.get_window().get_xid())
+            self.renderer.set_window_handle(window.get_xid())
 
         self.player.play()
         return False

@@ -403,7 +403,7 @@ class UI(builder.Builder):
 
         if c_full:
             self.c_win.fullscreen()
-            GLib.idle_add(lambda: util.set_screensaver(True, self.c_win.get_window()))
+            GLib.idle_add(lambda: util.set_screensaver(True))
 
         self.app.set_action_state('content-fullscreen', c_full)
         self.app.set_action_state('presenter-fullscreen', p_full)
@@ -565,7 +565,7 @@ class UI(builder.Builder):
         self.doc.cleanup_media_files()
 
         if self.app.get_action_state('content-fullscreen'):
-            util.set_screensaver(False, self.c_win.get_window())
+            util.set_screensaver(False)
 
 
     def menu_about(self, *args):
@@ -1299,7 +1299,8 @@ class UI(builder.Builder):
             return False
 
         toggle_to = not gaction.get_state().get_boolean()
-        cur_state = (widget.get_window().get_state() & Gdk.WindowState.FULLSCREEN)
+        window = widget.get_window()
+        cur_state = (window.get_state() & Gdk.WindowState.FULLSCREEN) if window is not None else False
 
         if cur_state == toggle_to:
             return False
@@ -1324,7 +1325,7 @@ class UI(builder.Builder):
         """
         if widget.get_name() == self.c_win.get_name():
             fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
-            util.set_screensaver(fullscreen, self.c_win.get_window())
+            util.set_screensaver(fullscreen)
         return False
 
 

@@ -284,6 +284,10 @@ class Scribbler(builder.Builder):
         """
         ww, wh = self.c_da.get_allocated_width(), self.c_da.get_allocated_height()
         window = self.c_da.get_window()
+
+        if window is None:
+            return ValueError('Cannot initialize scribble acche without drawing area window')
+
         self.scribble_cache = window.create_similar_image_surface(cairo.FORMAT_ARGB32, ww, wh, 0)
         self.next_render = 0
 
@@ -292,7 +296,11 @@ class Scribbler(builder.Builder):
         """ Clear scribbles to cached.
         """
         if self.scribble_cache is None:
-            self.reset_scribble_cache()
+            try:
+                self.reset_scribble_cache()
+            except ValueError as e:
+                logger.info(e)
+                return
 
         ww, wh = self.scribble_cache.get_width(), self.scribble_cache.get_height()
 

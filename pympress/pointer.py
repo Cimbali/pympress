@@ -158,7 +158,8 @@ class Pointer(object):
             if max(ww, wh) == 1:
                 continue
 
-            pointer_coordinates = slide_widget.get_window().get_pointer()
+            window = slide_widget.get_window()
+            pointer_coordinates = window.get_pointer() if window is not None else (-1, -1)
 
             if 0 < pointer_coordinates.x < ww and 0 < pointer_coordinates.y < wh \
                     and self.pointer_mode == PointerMode.CONTINUOUS:

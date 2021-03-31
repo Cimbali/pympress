@@ -526,7 +526,9 @@ class Cursor(object):
             cls._populate_cursors()
             cursor = cls._cursors[cursor_name]
 
-        widget.get_window().set_cursor(cursor)
+        window = widget.get_window()
+        if window is not None:
+            window.set_cursor(cursor)
 
 
 class Zoom(object):

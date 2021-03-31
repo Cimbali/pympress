@@ -67,10 +67,14 @@ class VlcOverlay(base.VideoOverlay):
         """
         # Do we need to be on the main thread? (especially for the mess from the win32 window handle)
         # assert(isinstance(threading.current_thread(), threading._MainThread))
-        if IS_WINDOWS:
-            self.player.set_hwnd(base.get_window_handle(self.movie_zone.get_window()))  # get_property('window')
+        window = self.movie_zone.get_window()
+        if window is None:
+            logger.error('No window in which to embed the VLC player!')
+            return False
+        elif IS_WINDOWS:
+            self.player.set_hwnd(base.get_window_handle(window))  # get_property('window')
         else:
-            self.player.set_xwindow(self.movie_zone.get_window().get_xid())
+            self.player.set_xwindow(window.get_xid())
         return False
 
 

@@ -254,12 +254,11 @@ def fileopen(f):
         subprocess.call(['xdg-open', f])
 
 
-def set_screensaver(must_disable, window):
+def set_screensaver(must_disable):
     """ Enable or disable the screensaver.
 
     Args:
         must_disable (`bool`):  if `True`, indicates that the screensaver must be disabled; otherwise it will be enabled
-        window (:class:`~Gdk.Window`): The window on the screen where the screensaver is to be suspended.
     """
     if IS_MAC_OS:
         # On Mac OS X we can use caffeinate to prevent the display from sleeping

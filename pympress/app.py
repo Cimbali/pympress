@@ -205,15 +205,11 @@ class Pympress(Gtk.Application):
             n_files (`int`): the number of files passed.
             hint (`str`): a hint, such as view, edit, etc. Should always be the empty string.
         """
-        time = GLib.get_current_time()
+        if not n_files:
+            return
 
-        if not self.get_is_remote():
-            self.do_activate(timestamp=time)
-
-        if n_files:
-            self.gui.swap_document(files[-1].get_uri())
-
-        self.do_activate(time)
+        self.do_activate(timestamp=GLib.get_current_time())
+        self.gui.swap_document(files[-1].get_uri())
 
 
     def do_shutdown(self):
