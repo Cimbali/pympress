@@ -749,8 +749,12 @@ class Document(object):
         pos = path.index(':') if ':' in path else -1
         if path[pos:pos + 3] == '://' and pos > 1 and set(path[:pos]) <= set(scheme_chars):
             return path
-        else:
+
+        try:
+            # A msys/mingw path on windows has unexpected forward-slashes
             return urljoin('file:', pathname2url(path))
+        except OSError:
+            return 'file://' + path
 
 
     @staticmethod
