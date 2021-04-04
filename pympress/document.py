@@ -892,7 +892,7 @@ class Document(object):
         return self.page_labels != [str(n + 1) for n in range(self.nb_pages)]
 
 
-    def lookup_label(self, label, prefix_unique = True):
+    def lookup_label(self, label, prefix_unique=True):
         """ Find a page from its label.
 
         Args:
@@ -949,7 +949,6 @@ class Document(object):
         self.history.append(number)
 
         return number
-
 
 
     def label_after(self, page):

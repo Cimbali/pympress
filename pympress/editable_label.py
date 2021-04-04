@@ -68,11 +68,10 @@ class EditableLabel(object):
             return False
 
         # Perform the state toggle
-
         if not self.editing:
             self.swap_label_for_entry(hint)
         else:
-            self.restore_label()
+            self.validate()
 
         return True
 
@@ -210,13 +209,15 @@ class PageNumber(EditableLabel):
         self.invert_scroll = not page_num_scroll
 
         builder.load_widgets(self)
+        builder.setup_actions({
+            'goto-page':     dict(activate=self.on_label_event),
+            'jumpto-label':  dict(activate=self.on_label_event),
+        })
 
         self.goto_page             = builder.get_callback_handler('goto_page')
-        self.find_label            = builder.get_callback_handler('doc.lookup_label')
-        self.label_after           = builder.get_callback_handler('doc.label_after')
-        self.label_before          = builder.get_callback_handler('doc.label_before')
         self.page_change           = builder.get_callback_handler('do_page_change')
         self.stop_editing_est_time = builder.get_callback_handler('est_time.stop_editing')
+        self.setup_doc_callbacks(builder.doc)
 
         # Initially (from XML) both the spinner and the current page label are visible.
         self.hb_cur.remove(self.spin_cur)
@@ -224,6 +225,17 @@ class PageNumber(EditableLabel):
         self.hb_cur.remove(self.label_sep)
 
         self.event_box = self.eb_cur
+
+
+    def setup_doc_callbacks(self, doc):
+        """ Callbacks that need to be setup again at every new document
+
+        Args:
+            doc (:class:`~pympress.document.Document`): The new document that got loaded
+        """
+        self.find_label   = doc.lookup_label
+        self.label_after  = doc.label_after
+        self.label_before = doc.label_before
 
 
     def set_last(self, num_pages):

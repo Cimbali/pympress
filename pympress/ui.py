@@ -252,8 +252,6 @@ class UI(builder.Builder):
         })
 
         self.setup_actions({
-            'goto-page':     dict(activate=self.page_number.on_label_event),
-            'jumpto-label':  dict(activate=self.page_number.on_label_event),
             'next-page':     dict(activate=self.doc_goto_next),
             'next-label':    dict(activate=self.doc_label_next),
             'prev-page':     dict(activate=self.doc_goto_prev),
@@ -620,6 +618,7 @@ class UI(builder.Builder):
         except GLib.Error:
             if reloading:
                 return
+
             self.doc = document.Document.create(self, None)
             self.error_opening_file(docpath)
             extras.FileWatcher.stop_watching()
@@ -651,6 +650,7 @@ class UI(builder.Builder):
         if not reloading:
             self.talk_time.pause()
             self.talk_time.reset_timer()
+            self.page_number.setup_doc_callbacks(self.doc)
 
         self.do_page_change(unpause=False)
 
@@ -830,7 +830,7 @@ class UI(builder.Builder):
             gaction (:class:`~Gio.Action`): the action triggering the call
             param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
-        if self.talk_time.paused:
+        if not self.page_number.editing and self.talk_time.paused:
             self.talk_time.unpause()
         else:
             self.goto_page(self.preview_page + 1)
