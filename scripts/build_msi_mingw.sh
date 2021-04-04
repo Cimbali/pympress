@@ -1,7 +1,6 @@
 # this script is meant to be run by appveyor on msys2 with mingw-w64
 # arch=x86_64 or i686, py=python2 or python3, vlc=with-vlc or without-vlc
 set -ve
-pacman -Syu --noprogressbar --noconfirm
 pacman -S --noprogressbar --noconfirm --needed base-devel mingw-w64-$arch-gtk3 mingw-w64-$arch-cairo mingw-w64-$arch-poppler mingw-w64-$arch-$py mingw-w64-$arch-gcc mingw-w64-$arch-vlc zip
 pacman -S --noprogressbar --noconfirm --needed mingw-w64-$arch-$py-pip mingw-w64-$arch-$py-gobject mingw-w64-$arch-$py-cairo mingw-w64-$arch-$py-appdirs mingw-w64-$arch-$py-packaging
 $py -m pip install --disable-pip-version-check --upgrade pip
