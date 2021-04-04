@@ -235,6 +235,7 @@ class UI(builder.Builder):
         self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))
         self.timing = extras.TimingReport(self)
         self.talk_time = talk_time.TimeCounter(self, self.est_time, self.timing)
+        self.config.register_actions(self)
 
         # Get placeable widgets. NB, get the highlight one manually from the scribbler class
         self.placeable_widgets = {
@@ -248,8 +249,8 @@ class UI(builder.Builder):
 
         self.connect_signals(self)
 
-        self.config.register_actions(self)
-        self.config.setup_accels(self.app)
+        for action, shortcut_list in self.config.shortcuts.items():
+            self.app.set_accels_for_action('app.' + action, shortcut_list)
 
         # Common to both windows
         self.load_icons()

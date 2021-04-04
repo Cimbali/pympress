@@ -42,7 +42,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, Gio
 
-from pympress import util, builder
+from pympress import util
 
 
 try:
@@ -169,18 +169,21 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
                 logger.error('Failed parsing command ' + command)
                 continue
 
-            parsed_accels = {keys: Gtk.accelerator_parse(keys) != (0, 0) for keys in config.get('shortcuts', command).split()}
-            failed = [keys for keys, success in parsed_accels.items() if not success]
+            parsed_accels = {keys: Gtk.accelerator_parse(keys) for keys in config.get('shortcuts', command).split()}
+            failed = [keys for keys, parsed in parsed_accels.items() if parsed == (0, 0)]
             if failed:
-                logger.warning('Failed parsing shortcut(s) for "' + command +'": "' + '", "'.join(failed) + '"')
+                logger.warning('Failed parsing shortcut(s) for "{}": "{}"'.format(command, '", "'.join(failed)))
 
-            keep_accels = [keys for keys, success in parsed_accels.items() if success]
+            keep_accels = [keys for keys, parsed in parsed_accels.items() if parsed != (0, 0)]
             if keep_accels:
                 config.shortcuts[command] = keep_accels
 
 
     def register_actions(self, builder):
         """ Register actions that impact the config file only.
+
+        Args:
+            builder (:class:`pympress.builder.Builder`): a builder to setup the actions
         """
         p_full = self.getboolean('presenter', 'start_fullscreen')
         c_full = self.getboolean('content', 'start_fullscreen')
@@ -193,11 +196,6 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             'start-blanked':              dict(activate=self.toggle_start, state=blank),
             'portable-config':            dict(activate=self.toggle_portable_config, state=portable),
         })
-
-
-    def setup_accels(self, app):
-        for action, shortcut_list in self.shortcuts.items():
-            app.set_accels_for_action('app.' + action, shortcut_list)
 
 
     def upgrade(self):
