@@ -861,7 +861,7 @@ class UI(builder.Builder):
             gaction (:class:`~Gio.Action`): the action triggering the call
             param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
-        dest = self.doc.hist_prev()
+        dest = self.doc.hist_next()
         if dest is not None:
             self.goto_page(dest)
 
