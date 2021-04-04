@@ -1,0 +1,49 @@
+# This is a basic workflow that is manually triggered
+
+name: Build windows binaries
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            msystem: MINGW64
+          - arch: i686
+            msystem: MINGW32
+
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            mingw-w64-$arch-toolchain
+            base-devel
+            mingw-w64-$arch-gtk3
+            mingw-w64-$arch-cairo
+            mingw-w64-$arch-poppler
+            mingw-w64-$arch-python-3
+            mingw-w64-$arch-gcc
+            mingw-w64-$arch-vlc
+            zip
+            mingw-w64-$arch-python3-pip
+            mingw-w64-$arch-python3-gobject
+            mingw-w64-$arch-python3-cairo
+            mingw-w64-$arch-python3-appdirs
+            mingw-w64-$arch-python3-packaging
+      - name: CI-Build
+        run: |
+          echo 'Running in MSYS2!'
+          ./scripts/build_msi_mingw.sh
