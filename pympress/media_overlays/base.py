@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 import ctypes
 
 from pympress import builder
-from gi.repository import GLib, Gio
+from gi.repository import GLib
 
 
 def get_window_handle(window):
@@ -96,7 +96,7 @@ class VideoOverlay(builder.Builder):
     #: :class:`~Gio.ActionMap` containing the actios for this video overlay
     action_map = None
 
-    def __init__(self, container, show_controls, relative_margins, page_type, callback_getter):
+    def __init__(self, container, show_controls, relative_margins, page_type, action_map):
         super(VideoOverlay, self).__init__()
 
         self.parent = container
@@ -109,14 +109,8 @@ class VideoOverlay(builder.Builder):
         self.connect_signals(self)
 
         # medias, here the actions are scoped to the current widget
-        self.action_map = Gio.SimpleActionGroup.new()
+        self.action_map = action_map
         self.media_overlay.insert_action_group('media', self.action_map)
-        self.setup_actions({
-            'play':     dict(activate=callback_getter('play')),
-            'stop':     dict(activate=callback_getter('hide')),
-            'pause':    dict(activate=callback_getter('play_pause')),
-            'set_time': dict(activate=callback_getter('set_time'), parameter_type=float)
-        }, self.action_map)
 
 
     def handle_embed(self, mapped_widget):

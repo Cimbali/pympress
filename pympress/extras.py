@@ -32,13 +32,13 @@ import os.path
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GLib
+from gi.repository import Gtk, Gdk, GLib, Gio
 
 import mimetypes
+import functools
 from collections import defaultdict
 
 from pympress import document, builder, config
-from pympress.media_overlays.base import VideoOverlay
 
 
 class TimingReport(builder.Builder):
@@ -307,13 +307,16 @@ class Media(object):
                                    .format(mime_type, filename))
                     continue
 
-                def get_curryfied_callback(name, media_id=media_id):
-                    """ Return a callback for signal 'name' that has the value 'media_id' pre-set, and remembered by this closure.
-                    """
-                    return lambda *args: VideoOverlay.find_callback_handler(self, name)(media_id, *args)
+                action_group = Gio.SimpleActionGroup.new()
+                builder.Builder.setup_actions({
+                    'play':     dict(activate=functools.partial(self.play, media_id)),
+                    'stop':     dict(activate=functools.partial(self.hide, media_id)),
+                    'pause':    dict(activate=functools.partial(self.play_pause, media_id)),
+                    'set_time': dict(activate=functools.partial(self.set_time, media_id), parameter_type=float)
+                }, action_group)
 
-                v_da_c = factory(self.c_overlay, show_controls, relative_margins, page_type, get_curryfied_callback)
-                v_da_p = factory(self.p_overlay, True, relative_margins, page_type, get_curryfied_callback)
+                v_da_c = factory(self.c_overlay, show_controls, relative_margins, page_type, action_group)
+                v_da_p = factory(self.p_overlay, True, relative_margins, page_type, action_group)
 
                 v_da_c.set_file(filename)
                 v_da_p.set_file(filename)
@@ -329,7 +332,7 @@ class Media(object):
                     w.show()
 
 
-    def resize(self, which = None):
+    def resize(self, which=None):
         """ Resize all media overlays that are a child of an overlay.
         """
         needs_resizing = (which == 'content', which == 'presenter') if which is not None else (True, True)

@@ -103,38 +103,7 @@ class Builder(Gtk.Builder):
             Builder.__recursive_translate_widgets(a_widget.get_submenu())
 
 
-    @staticmethod
-    def signal_resolver(target, attr_list):
-        """ Dynamically resolves a signal that is target.a.b.c() when attr_list is ['a', 'b', 'c'].
-
-        This allows one to specify multi-level signals in the XML files, instead of targeting everything at the main UI
-        object.
-
-        Also, resolving signals dynamically means the object properties of the top-level object can be replaced, and the
-        signal will still connect to something meaningful. The downside is that this connection is done at runtime, thus
-        probably less efficient and might fail to find the target if any attribute along the way has an unexpected
-        value.
-
-        Args:
-            attr_list (`list`): a list of attribute names, designating objects except the last one which is a function
-
-        Returns:
-            `function`: The function to which we want to connect
-        """
-        top = target
-
-        for attr in attr_list:
-            try:
-                target = getattr(target, attr)
-            except AttributeError:
-                logger.error('Can not reach target of signal {}.{}()'.format(top, '.'.join(attr_list)), exc_info = True)
-                target = None
-
-        return target
-
-
-    @staticmethod
-    def find_callback_handler(target, handler_name):
+    def get_callback_handler(self, handler_name):
         """ Returns the handler from its name, searching in target.
 
         Parse handler names and split on '.' to use recursion.
@@ -144,40 +113,18 @@ class Builder(Gtk.Builder):
             handler_name (`str`): The name of the function to be connected to a signal
 
         Returns:
-            `function`: A function bound to an object or, if the object may change, a lambda calling
-            :meth:`~pympress.Builder.signal_resolver` to get said function bound to an object
+            `function`: A function bound to an object
         """
-        try:
-            return getattr(target, handler_name)
+        target = self
 
-        except AttributeError:
-            attr_list = handler_name.split('.')
+        for attr in handler_name.split('.'):
+            try:
+                target = getattr(target, attr)
+            except AttributeError:
+                logger.error('Can not reach target of signal {}.{}()'.format(self, handler_name), exc_info=True)
+                return None
 
-            if len(attr_list) == 1:
-                logger.error('Handler name not in target object. Expected "." but got: {}'.format(handler_name),
-                             exc_info = True)
-                raise
-
-            # Dynamically resolved handler for 'doc' (only) since target.doc may change
-            if 'doc' in attr_list:
-                return lambda *args, **kwargs: Builder.signal_resolver(target, attr_list)(*args, **kwargs)
-            else:
-                return Builder.signal_resolver(target, attr_list)
-
-
-    def get_callback_handler(self, handler_name):
-        """ Convenience non-static wrapper function for :func:`find_callback_handler` to search in the builder object.
-
-        The `handler_name` function must be a method of this builder (realistically, of an inherited UI class instance).
-
-        Args:
-            handler_name (`str`): The name of the function to be connected to a signal
-
-        Returns:
-            `function`: A function bound to an object or, if the object may change, a lambda calling
-            :meth:`~pympress.Builder.signal_resolver` to get said function bound to an object
-        """
-        return self.find_callback_handler(self, handler_name)
+        return target
 
 
     def signal_connector(self, builder, object, signal_name, handler_name, connect_object, flags, *user_data):
@@ -390,7 +337,8 @@ class Builder(Gtk.Builder):
         return True
 
 
-    def setup_actions(self, actions, action_map=None):
+    @staticmethod
+    def setup_actions(actions, action_map=None):
         """ Sets up actions with a given prefix, using the Application as the ActionMap.
 
         Args:
@@ -398,7 +346,7 @@ class Builder(Gtk.Builder):
             action_map (:class:`~Gio.ActionMap`): The object implementing the action map interface to register actions
         """
         if action_map is None:
-            action_map = self.get_application()
+            action_map = Gio.Application.get_default()
 
         for action_name, details in actions.items():
             state = details.get('state')
@@ -406,10 +354,10 @@ class Builder(Gtk.Builder):
             enabled = details.get('enabled')
 
             if param is not None:
-                param = GLib.VariantType.new(self._glib_type_strings[param])
+                param = GLib.VariantType.new(Builder._glib_type_strings[param])
 
             if state is not None:
-                state = GLib.Variant(self._glib_type_strings[type(state)], state)
+                state = GLib.Variant(Builder._glib_type_strings[type(state)], state)
                 action = Gio.SimpleAction.new_stateful(action_name, param, state)
             else:
                 action = Gio.SimpleAction.new(action_name, param)
