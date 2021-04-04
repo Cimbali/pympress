@@ -290,6 +290,8 @@ class SurfaceCache(object):
 
         with self.doc_lock:
             page = self.doc.page(page_nb)
+            if page is None:
+                return False
             pw, ph = page.get_size(wtype)
 
         # Render to a ImageSurface

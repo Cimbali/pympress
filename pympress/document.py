@@ -747,7 +747,7 @@ class Document(object):
         """
         # Do not trust urlsplit, manually check we have an URI
         pos = path.index(':') if ':' in path else -1
-        if path[pos:pos + 3] == '://' or (pos > 1 and set(path[:pos]) <= scheme_chars):
+        if path[pos:pos + 3] == '://' and pos > 1 and set(path[:pos]) <= set(scheme_chars):
             return path
         else:
             return urljoin('file:', pathname2url(path))

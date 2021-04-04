@@ -135,7 +135,8 @@ class TimingReport(builder.Builder):
         times = [time for page, time in self.page_time]
         durations = (e - s for s, e in zip(times, times[1:] + [self.end_time]))
 
-        infos = {'time': min(time for page, time in self.page_time), 'duration': 0, 'children': [], 'page': 0}
+        min_time = min(time for page, time in self.page_time) if self.page_time else 0
+        infos = {'time': min_time, 'duration': 0, 'children': [], 'page': 0}
         infos['title'] = 'Full presentation'
 
         for (page, start_time), duration in zip(self.page_time, durations):
