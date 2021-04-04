@@ -40,9 +40,9 @@ except ImportError:
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk, GLib, Gio
 
-from pympress import util
+from pympress import util, builder
 
 
 try:
@@ -97,7 +97,7 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
     placeable_widgets = {"notes": "p_frame_notes", "current": "p_frame_cur", "next": "p_frame_next",
                          "annotations": "p_frame_annot", "highlight": "scribble_overlay"}
 
-    #: Map of (keyval, Gdk.ModifierType) to string, which representing the shortcuts for each command
+    #: `dict` mapping accelerator keys to actions
     shortcuts = {}
 
     @staticmethod
@@ -149,7 +149,8 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
 
 
     def __init__(config):
-        super(Config, config).__init__()
+        # Remove : from delimiters so we can use it in preferences
+        super(Config, config).__init__(delimiters=('=',))
 
         # populate values first from the default config file, then from the proper one
         config.read(util.get_default_config())
@@ -162,26 +163,41 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         config.load_window_layouts()
 
         for command in all_commands:
-            parsed = {Gtk.accelerator_parse(keys) for keys in config.get('shortcuts', command).split()}
+            # NB only parsing commands from defaults
+            parse_ok, action_name, target_value = Gio.Action.parse_detailed_name('app.' + command)
+            if not parse_ok or not Gio.action_name_is_valid(action_name):
+                logger.error('Failed parsing command ' + command)
+                continue
 
-            if (0, 0) in parsed:
-                logger.warning('Failed parsing 1 or more shortcuts for ' + command)
-                parsed.remove((0, 0))
+            parsed_accels = {keys: Gtk.accelerator_parse(keys) != (0, 0) for keys in config.get('shortcuts', command).split()}
+            failed = [keys for keys, success in parsed_accels.items() if not success]
+            if failed:
+                logger.warning('Failed parsing shortcut(s) for "' + command +'": "' + '", "'.join(failed) + '"')
 
-            config.shortcuts.update({s: command for s in parsed})
+            keep_accels = [keys for keys, success in parsed_accels.items() if success]
+            if keep_accels:
+                config.shortcuts[command] = keep_accels
 
 
-        p_full = config.getboolean('presenter', 'start_fullscreen')
-        c_full = config.getboolean('content', 'start_fullscreen')
-        blank  = config.getboolean('content', 'start_blanked')
+    def register_actions(self, builder):
+        """ Register actions that impact the config file only.
+        """
+        p_full = self.getboolean('presenter', 'start_fullscreen')
+        c_full = self.getboolean('content', 'start_fullscreen')
+        blank = self.getboolean('content', 'start_blanked')
+        portable = self.using_portable_config()
 
-        builder.Builder.setup_actions({
-            'start-content-fullscreen':   dict(activate=config.toggle_start, state=c_full),
-            'start-presenter-fullscreen': dict(activate=config.toggle_start, state=p_full),
-            'start-blanked':              dict(activate=config.toggle_start, state=blank),
-            'portable-config':            dict(activate=config.toggle_portable_config,
-                                               state=config.using_portable_config()),
+        builder.setup_actions({
+            'start-content-fullscreen':   dict(activate=self.toggle_start, state=c_full),
+            'start-presenter-fullscreen': dict(activate=self.toggle_start, state=p_full),
+            'start-blanked':              dict(activate=self.toggle_start, state=blank),
+            'portable-config':            dict(activate=self.toggle_portable_config, state=portable),
         })
+
+
+    def setup_accels(self, app):
+        for action, shortcut_list in self.shortcuts.items():
+            app.set_accels_for_action('app.' + action, shortcut_list)
 
 
     def upgrade(self):
@@ -206,6 +222,55 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
 
         if self.has_option('content', 'monitor'):
             self.remove_option('content', 'monitor')
+
+        # When we went from gtk signal handlers to actions, some renaming had to be done
+        for old, new in {
+            'next':                 'next-page',
+            'prev':                 'prev-page',
+            'next_label':           'next-label',
+            'prev_label':           'prev-label',
+            'hist_back':            'hist-back',
+            'hist_forward':         'hist-forward',
+            'first':                'first-page',
+            'last':                 'last-page',
+            'goto_page':            'goto-page',
+            'jumpto_label':         'jumpto-label',
+            'fullscreen_content':   'content-fullscreen',
+            'fullscreen_presenter': 'presenter-fullscreen',
+            'pause_timer':          'pause-timer',
+            'reset_timer':          'reset-timer',
+            'talk_time':            'edit-talk-time',
+            'blank_screen':         'blank-screen',
+            'notes_mode':           'notes-mode',
+            'swap_screens':         'swap-screens',
+            'open_file':            'pick-file',
+            'close_file':           'close-file',
+            'validate':             'validate-input',
+            'cancel':               'cancel-input',
+            'undo_scribble':        'highlight-undo',
+            'redo_scribble':        'highlight-redo',
+            'scribble_preset_1':    'highlight-use-pen::1',
+            'scribble_preset_2':    'highlight-use-pen::2',
+            'scribble_preset_3':    'highlight-use-pen::3',
+            'scribble_preset_4':    'highlight-use-pen::4',
+            'scribble_preset_5':    'highlight-use-pen::5',
+            'scribble_preset_6':    'highlight-use-pen::6',
+            'scribble_preset_7':    'highlight-use-pen::7',
+            'scribble_preset_8':    'highlight-use-pen::8',
+            'scribble_preset_9':    'highlight-use-pen::9',
+            'scribble_preset_0':    'highlight-use-pen::eraser',
+            'toggle_pointermode':   'pointer-mode::toggle',
+        }.items():
+            shortcut = self.get('shortcuts', old, fallback=None)
+            if shortcut is not None:
+                if old in {'hist_back', 'hist_forward'} and 'backspace' in shortcut.lower():
+                    # In the Gio.Action operations, accelerators have precedence over widgets, which
+                    # means it’s very annoying to edit a shortcut if backspace is mapped to anything.
+                    logger.warning('Changing shortcut for "{}" to new default instead of keeping backspace'.format(new))
+                else:
+                    self.set('shortcuts', new, shortcut)
+
+                self.remove_option('shortcuts', old)
 
 
     def getlist(self, *args):

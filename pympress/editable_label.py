@@ -199,8 +199,6 @@ class PageNumber(EditableLabel):
     label_after = lambda: None
     #: callback, to be connected to :func:`~pympress.ui.UI.do_page_change`
     page_change = lambda b: None
-    #: callback, to be connected to :func:`~pympress.editable_label.EstimatedTalkTime.stop_editing`
-    stop_editing_est_time = lambda: None
 
     def __init__(self, builder, page_num_scroll):
         super(PageNumber, self).__init__()
@@ -210,13 +208,13 @@ class PageNumber(EditableLabel):
 
         builder.load_widgets(self)
         builder.setup_actions({
-            'goto-page':     dict(activate=self.on_label_event),
-            'jumpto-label':  dict(activate=self.on_label_event),
+            'goto-page':          dict(activate=self.on_label_event),
+            'jumpto-label':       dict(activate=self.on_label_event),
+            'cancel-page-number': dict(activate=self.cancel),
         })
 
-        self.goto_page             = builder.get_callback_handler('goto_page')
-        self.page_change           = builder.get_callback_handler('do_page_change')
-        self.stop_editing_est_time = builder.get_callback_handler('est_time.stop_editing')
+        self.goto_page       = builder.get_callback_handler('goto_page')
+        self.page_change     = builder.get_callback_handler('do_page_change')
         self.setup_doc_callbacks(builder.doc)
 
         # Initially (from XML) both the spinner and the current page label are visible.
@@ -291,7 +289,7 @@ class PageNumber(EditableLabel):
             self.cancel()
 
 
-    def cancel(self):
+    def cancel(self, gaction=None, param=None):
         """ Make the UI re-display the pages from before editing the current page.
         """
         self.restore_label()
@@ -346,7 +344,7 @@ class PageNumber(EditableLabel):
     def swap_label_for_entry(self, hint=None):
         """ Perform the actual work of starting the editing.
         """
-        self.stop_editing_est_time()
+        Gio.Application.get_default().activate_action('cancel-talk-time')
 
         label, sep, cur = self.label_cur.get_text().rpartition('(')
 
@@ -454,22 +452,12 @@ class EstimatedTalkTime(EditableLabel):
 
         builder.load_widgets(self)
         builder.setup_actions({
-            'edit-talk-time': dict(activate=self.on_label_event),
-            'set-talk-time':  dict(activate=self.set_time, parameter_type=int),
+            'edit-talk-time':   dict(activate=self.on_label_event),
+            'set-talk-time':    dict(activate=self.set_time, parameter_type=int),
+            'cancel-talk-time': dict(activate=self.restore_label),
         })
 
         self.event_box = self.eb_ett
-
-
-    def delayed_callback_connection(self, builder):
-        """ Connect callbacks later than at init, due to circular dependencies.
-
-        Call this when the page_number module is initialized, but before needing the callback.
-
-        Args:
-            builder (builder.Builder): The builder from which to load widgets.
-        """
-        self.stop_editing_page_number = builder.get_callback_handler('page_number.stop_editing')
 
 
     def validate(self):
@@ -511,7 +499,7 @@ class EstimatedTalkTime(EditableLabel):
     def swap_label_for_entry(self, *args):
         """ Perform the actual work of starting the editing.
         """
-        self.stop_editing_page_number()
+        Gio.Application.get_default().activate_action('cancel-page-number')
 
         # Set entry text
         self.entry_ett.set_text("{:02}:{:02}".format(*divmod(self.est_time, 60)))
@@ -525,7 +513,7 @@ class EstimatedTalkTime(EditableLabel):
         self.editing = True
 
 
-    def restore_label(self):
+    def restore_label(self, gaction=None, param=None):
         """ Make sure that the current page number is displayed in a label and not in an entry.
 
         If it is an entry, then replace it with the label.

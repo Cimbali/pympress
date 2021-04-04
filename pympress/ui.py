@@ -191,49 +191,24 @@ class UI(builder.Builder):
         self.app.set_menubar(self.get_object('menu_bar'))
         self.recent_menu = self.get_object('recent_menu')
 
-        self.zoom = extras.Zoom(self)
-        self.scribbler = scribble.Scribbler(self.config, self, self.notes_mode)
-        self.annotations = extras.Annotations(self)
-        self.medias = extras.Media(self, self.config)
-        self.laser = pointer.Pointer(self.config, self)
-        self.est_time = editable_label.EstimatedTalkTime(self)
-        self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))
-        self.timing = extras.TimingReport(self)
-        self.talk_time = talk_time.TimeCounter(self, self.est_time, self.timing)
-
-        # solve circular creation-time dependency
-        self.est_time.delayed_callback_connection(self)
-
-        # Get placeable widgets. NB, get the highlight one manually from the scribbler class
-        self.placeable_widgets = {
-            name: self.get_object(widget_name) for name, widget_name in self.config.placeable_widgets.items()
-        }
-        self.placeable_widgets['highlight'] = self.scribbler.scribble_overlay
-
-        # Initialize windows
-        self.make_cwin()
-        self.make_pwin()
-
-        self.connect_signals(self)
-
         c_full = self.config.getboolean('content', 'start_fullscreen')
         p_full = self.config.getboolean('presenter', 'start_fullscreen')
         self.setup_actions({
-            'quit':                       dict(activate=self.app.quit),
-            'about':                      dict(activate=self.menu_about),
-            'big-buttons':                dict(activate=self.switch_bigbuttons, state=self.show_bigbuttons),
-            'show-shortcuts':             dict(activate=self.show_shortcuts),
-            'content-fullscreen':         dict(activate=self.switch_fullscreen, state=c_full),
-            'presenter-fullscreen':       dict(activate=self.switch_fullscreen, state=p_full),
-            'swap-screens':               dict(activate=self.swap_screens),
-            'blank-screen':               dict(activate=self.switch_blanked, state=self.blanked),
-            'notes-mode':                 dict(activate=self.switch_mode, state=False),
-            'notes-pos':                  dict(activate=self.change_notes_pos, parameter_type=str,
-                                               state=self.chosen_notes_mode.name.lower()),
-            'annotations':                dict(activate=self.switch_annotations, state=self.show_annotations),
-            'validate-input':             dict(activate=self.validate_current_input),
-            'cancel-input':               dict(activate=self.cancel_current_input),
-            'align-content':              dict(activate=self.adjust_frame_position),
+            'quit':                  dict(activate=self.app.quit),
+            'about':                 dict(activate=self.menu_about),
+            'big-buttons':           dict(activate=self.switch_bigbuttons, state=self.show_bigbuttons),
+            'show-shortcuts':        dict(activate=self.show_shortcuts),
+            'content-fullscreen':    dict(activate=self.switch_fullscreen, state=c_full),
+            'presenter-fullscreen':  dict(activate=self.switch_fullscreen, state=p_full),
+            'swap-screens':          dict(activate=self.swap_screens),
+            'blank-screen':          dict(activate=self.switch_blanked, state=self.blanked),
+            'notes-mode':            dict(activate=self.switch_mode, state=False),
+            'notes-pos':             dict(activate=self.change_notes_pos, parameter_type=str,
+                                          state=self.chosen_notes_mode.name.lower()),
+            'annotations':           dict(activate=self.switch_annotations, state=self.show_annotations),
+            'validate-input':        dict(activate=self.validate_current_input),
+            'cancel-input':          dict(activate=self.cancel_current_input),
+            'align-content':         dict(activate=self.adjust_frame_position),
         })
 
         self.setup_actions({
@@ -251,8 +226,30 @@ class UI(builder.Builder):
             'last-page':         dict(activate=self.doc_goto_end),
         })
 
-        for action, shortcut in self.config.items('shortcuts'):
-            self.app.set_accels_for_action('app.' + action, shortcut.split())
+        self.zoom = extras.Zoom(self)
+        self.scribbler = scribble.Scribbler(self.config, self, self.notes_mode)
+        self.annotations = extras.Annotations(self)
+        self.medias = extras.Media(self, self.config)
+        self.laser = pointer.Pointer(self.config, self)
+        self.est_time = editable_label.EstimatedTalkTime(self)
+        self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))
+        self.timing = extras.TimingReport(self)
+        self.talk_time = talk_time.TimeCounter(self, self.est_time, self.timing)
+
+        # Get placeable widgets. NB, get the highlight one manually from the scribbler class
+        self.placeable_widgets = {
+            name: self.get_object(widget_name) for name, widget_name in self.config.placeable_widgets.items()
+        }
+        self.placeable_widgets['highlight'] = self.scribbler.scribble_overlay
+
+        # Initialize windows
+        self.make_cwin()
+        self.make_pwin()
+
+        self.connect_signals(self)
+
+        self.config.register_actions(self)
+        self.config.setup_accels(self.app)
 
         # Common to both windows
         self.load_icons()
