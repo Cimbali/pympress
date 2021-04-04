@@ -128,6 +128,18 @@ class Scribbler(builder.Builder):
     #: The :class:`~Gio.Action` that contains the currently selected pen
     pen_action = None
 
+    #: `str` which is the mode for scribbling, one of 3 possile values:
+    # global means one set of scribbles for the whole document
+    # single-page means we manage a single page of scribbles, and clear everything on page change (historical behaviour)
+    # per-page means we manage a set of scribbles per document page, and clear or restore them on page change
+    # per-label means we manage a set of scribbles per document page, but defined by label and not page number
+    highlight_mode = 'single-page'
+
+    #: `dict` of scribbles per page
+    remembered_scribbles = {}
+    #: `tuple` of (`int`, `str`) indicating the current page number and label
+    current_page = (None, None)
+
 
     def __init__(self, config, builder, notes_mode):
         super(Scribbler, self).__init__()
@@ -174,10 +186,31 @@ class Scribbler(builder.Builder):
             'highlight-clear':   dict(activate=self.clear_scribble),
             'highlight-redo':    dict(activate=self.redo_scribble),
             'highlight-undo':    dict(activate=self.pop_scribble),
+            'highlight-mode':    dict(activate=self.set_mode, state=self.highlight_mode, parameter_type=str),
         })
 
         self.pen_action = self.get_application().lookup_action('highlight-use-pen')
         self.load_preset(self.pen_action, int(active_pen) if active_pen.isnumeric() else 0)
+        self.set_mode(None, GLib.Variant.new_string(config.get('scribble', 'mode')))
+
+
+    def set_mode(self, gaction, param):
+        """ Change the mode of clearing and restoring highlights
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the new mode as a string wrapped in a GLib.Variant
+        """
+        new_mode = param.get_string()
+        if new_mode not in {'single-page', 'global', 'per-page', 'per-label'}:
+            return False
+
+        self.get_application().lookup_action('highlight-mode').change_state(GLib.Variant.new_string(new_mode))
+        self.highlight_mode = new_mode
+        self.config.set('scribble', 'mode', self.highlight_mode)
+        self.remembered_scribbles.clear()
+
+        return True
 
 
     def try_cancel(self):
@@ -452,6 +485,40 @@ class Scribbler(builder.Builder):
         self.reset_scribble_cache()
         self.redraw_current_slide()
         self.adjust_buttons()
+
+
+    def page_change(self, page_number, page_label):
+        """ Called when we change pages, to clear or restore scribbles
+
+        Args:
+            page_number (`int`): The number of the new page
+            page_label (`str`): The label of the new page
+        """
+        if self.highlight_mode == 'per-page':
+            current_page = self.current_page[0]
+            new_page = page_number
+        elif self.highlight_mode == 'per-label':
+            current_page = self.current_page[1]
+            new_page = page_label
+
+        # Remember whatever the current mode, to facilitate switching modes
+        self.current_page = (page_number, page_label)
+
+        if self.highlight_mode == 'global':
+            return
+        elif self.highlight_mode == 'single-page':
+            return self.clear_scribble()
+        else:
+            # Now optionally save the current scribbles
+            if current_page is not None and self.scribble_list:
+                self.remembered_scribbles[current_page] = self.scribble_list.copy()
+
+            self.scribble_list = self.remembered_scribbles.pop(new_page, [])
+
+            self.reset_scribble_cache()
+            self.adjust_buttons()
+            self.prerender()
+            self.redraw_current_slide()
 
 
     def pop_scribble(self, *args):

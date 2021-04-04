@@ -950,7 +950,7 @@ class UI(builder.Builder):
 
         # Remove scribbles and scribbling/zooming modes
         self.scribbler.disable_scribbling()
-        self.scribbler.clear_scribble()
+        self.scribbler.page_change(self.preview_page, page_preview.label())
         self.zoom.stop_zooming()
 
         # Update medias
