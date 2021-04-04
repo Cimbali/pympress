@@ -322,7 +322,7 @@ class Scribbler(builder.Builder):
         if window is None:
             return ValueError('Cannot initialize scribble acche without drawing area window')
 
-        self.scribble_cache = window.create_similar_image_surface(cairo.FORMAT_ARGB32, ww, wh, 0)
+        self.scribble_cache = window.create_similar_image_surface(cairo.Format.ARGB32, ww, wh, 0)
         self.next_render = 0
 
 
