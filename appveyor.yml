@@ -37,7 +37,7 @@ deploy:
   tag: $(appveyor_repo_tag_name)
   description: Automated upload of windows binaries
   auth_token:
-    secure: 99OQhliIMiV/Z1/kuZQ3TxR55Qb7Y2zaD7ZV6/JUaUGDbAxHzep97/yBLfM21Jzw
+    secure: P934PvEuB4UQKvsc/QXa0VVKu/4msuf5IuW3n+tpGLG68TpE9VqL4PsXMzHqfT1h
   draft: true
   force_update: false
   on:
