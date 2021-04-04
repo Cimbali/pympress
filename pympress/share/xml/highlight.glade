@@ -73,7 +73,7 @@
                         <property name="visible">True</property>
                         <property name="app-paintable">True</property>
                         <property name="can-focus">True</property>
-                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'1'</property>
                         <property name="image-position">right</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
@@ -96,7 +96,7 @@
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'2'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
@@ -118,7 +118,7 @@
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'3'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
@@ -140,7 +140,7 @@
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'4'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
@@ -162,7 +162,7 @@
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'5'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
@@ -184,7 +184,7 @@
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'6'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
@@ -206,7 +206,7 @@
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'7'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
@@ -228,7 +228,7 @@
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'8'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
@@ -250,7 +250,7 @@
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'9'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
@@ -272,7 +272,7 @@
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
-                        <property name="action-name">highlight.use-pen</property>
+                        <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'eraser'</property>
                         <property name="image-position">left</property>
                         <signal name="draw" handler="on_eraser_button_draw" swapped="no"/>
@@ -320,7 +320,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="action-name">highlight.toggle</property>
+                <property name="action-name">app.highlight</property>
                 <property name="use-stock">True</property>
                 <property name="always-show-image">True</property>
               </object>
@@ -339,7 +339,7 @@
                 <property name="sensitive">False</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="action-name">highlight.clear</property>
+                <property name="action-name">app.highlight-clear</property>
                 <property name="use-stock">True</property>
                 <property name="always-show-image">True</property>
               </object>
@@ -358,7 +358,7 @@
                 <property name="sensitive">False</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="action-name">highlight.undo</property>
+                <property name="action-name">app.highlight-undo</property>
                 <property name="use-stock">True</property>
                 <property name="always-show-image">True</property>
               </object>
@@ -377,7 +377,7 @@
                 <property name="sensitive">False</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="action-name">highlight.redo</property>
+                <property name="action-name">app.highlight-redo</property>
                 <property name="use-stock">True</property>
                 <property name="always-show-image">True</property>
               </object>
