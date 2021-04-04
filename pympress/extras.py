@@ -564,6 +564,11 @@ class Zoom(object):
         self.clear_cache = builder.get_callback_handler('clear_zoom_cache')
         self.set_action_enabled = builder.get_callback_handler('app.set_action_enabled')
 
+        builder.setup_actions({
+            'zoom':   dict(activate=self.start_zooming),
+            'unzoom': dict(activate=self.stop_zooming),
+        })
+
 
     def start_zooming(self, *args):
         """ Setup for the user to select the zooming area.

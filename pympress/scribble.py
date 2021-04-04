@@ -169,6 +169,7 @@ class Scribbler(builder.Builder):
 
         active_pen = config.get('scribble', 'active_pen')
         self.setup_actions({
+            'highlight':         dict(activate=self.switch_scribbling, state=False),
             'highlight-use-pen': dict(activate=self.load_preset, state=active_pen, parameter_type=str, enabled=False),
             'highlight-clear':   dict(activate=self.clear_scribble),
             'highlight-redo':    dict(activate=self.redo_scribble),

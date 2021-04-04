@@ -216,13 +216,6 @@ class UI(builder.Builder):
 
         self.connect_signals(self)
 
-        self.setup_actions({
-            'open-file':         dict(activate=self.open_file, parameter_type=str),
-            'close-file':        dict(activate=self.close_file),
-            'pick-file':         dict(activate=self.pick_file),
-            'list-recent-files': dict(change_state=self.populate_recent_menu, state=False),
-        })
-
         c_full = self.config.getboolean('content', 'start_fullscreen')
         p_full = self.config.getboolean('presenter', 'start_fullscreen')
         self.setup_actions({
@@ -238,28 +231,24 @@ class UI(builder.Builder):
             'notes-pos':                  dict(activate=self.change_notes_pos, parameter_type=str,
                                                state=self.chosen_notes_mode.name.lower()),
             'annotations':                dict(activate=self.switch_annotations, state=self.show_annotations),
-            'zoom':                       dict(activate=self.zoom.start_zooming),
-            'unzoom':                     dict(activate=self.zoom.stop_zooming),
-            'start-content-fullscreen':   dict(activate=self.config.toggle_start, state=c_full),
-            'start-presenter-fullscreen': dict(activate=self.config.toggle_start, state=p_full),
-            'start-blanked':              dict(activate=self.config.toggle_start, state=self.blanked),
-            'portable-config':            dict(activate=self.config.toggle_portable_config,
-                                               state=self.config.using_portable_config()),
             'validate-input':             dict(activate=self.validate_current_input),
             'cancel-input':               dict(activate=self.cancel_current_input),
-            'highlight':                  dict(activate=self.scribbler.switch_scribbling, state=False),
             'align-content':              dict(activate=self.adjust_frame_position),
         })
 
         self.setup_actions({
-            'next-page':     dict(activate=self.doc_goto_next),
-            'next-label':    dict(activate=self.doc_label_next),
-            'prev-page':     dict(activate=self.doc_goto_prev),
-            'prev-label':    dict(activate=self.doc_label_prev),
-            'hist-back':     dict(activate=self.doc_hist_prev),
-            'hist-forward':  dict(activate=self.doc_hist_next),
-            'first-page':    dict(activate=self.doc_goto_home),
-            'last-page':     dict(activate=self.doc_goto_end),
+            'open-file':         dict(activate=self.open_file, parameter_type=str),
+            'close-file':        dict(activate=self.close_file),
+            'pick-file':         dict(activate=self.pick_file),
+            'list-recent-files': dict(change_state=self.populate_recent_menu, state=False),
+            'next-page':         dict(activate=self.doc_goto_next),
+            'next-label':        dict(activate=self.doc_label_next),
+            'prev-page':         dict(activate=self.doc_goto_prev),
+            'prev-label':        dict(activate=self.doc_label_prev),
+            'hist-back':         dict(activate=self.doc_hist_prev),
+            'hist-forward':      dict(activate=self.doc_hist_next),
+            'first-page':        dict(activate=self.doc_goto_home),
+            'last-page':         dict(activate=self.doc_goto_end),
         })
 
         for action, shortcut in self.config.items('shortcuts'):

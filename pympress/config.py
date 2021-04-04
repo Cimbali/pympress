@@ -171,6 +171,19 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             config.shortcuts.update({s: command for s in parsed})
 
 
+        p_full = config.getboolean('presenter', 'start_fullscreen')
+        c_full = config.getboolean('content', 'start_fullscreen')
+        blank  = config.getboolean('content', 'start_blanked')
+
+        builder.Builder.setup_actions({
+            'start-content-fullscreen':   dict(activate=config.toggle_start, state=c_full),
+            'start-presenter-fullscreen': dict(activate=config.toggle_start, state=p_full),
+            'start-blanked':              dict(activate=config.toggle_start, state=blank),
+            'portable-config':            dict(activate=config.toggle_portable_config,
+                                               state=config.using_portable_config()),
+        })
+
+
     def upgrade(self):
         """ Update obsolete config options when pympress updates.
         """
