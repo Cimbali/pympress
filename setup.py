@@ -27,6 +27,7 @@ All configuration is in setup.cfg.
 """
 
 import os
+import re
 import sys
 import glob
 from ctypes.util import find_library
@@ -126,7 +127,7 @@ def gtk_resources():
     base, last = os.path.split(os.path.dirname(find_library('libgtk-3-0')))
     include_path = base if last in {'bin', 'lib', 'lib64'} else os.path.join(base, last)
 
-    include_files = []
+    include_files = [(find_library('gdbus.exe'), os.path.join('lib', 'gi', 'gdbus.exe'))]
     resources = [
         'etc',
         os.path.join('lib', 'girepository-1.0'),
@@ -162,7 +163,7 @@ def dlls():
     libgio-2.0-0.dll libgirepository-1.0-1.dll libglib-2.0-0.dll libgobject-2.0-0.dll libgtk-3-0.dll \
     libidn2-0.dll libjpeg-8.dll liblcms2-2.dll libnghttp2-14.dll libnspr4.dll libopenjp2-7.dll \
     libpango-1.0-0.dll libpangocairo-1.0-0.dll libpangoft2-1.0-0.dll libpangowin32-1.0-0.dll \
-    libplc4.dll libplds4.dll libpoppler-98.dll libpoppler-cpp-0.dll libpoppler-glib-8.dll libpsl-5.dll \
+    libplc4.dll libplds4.dll libpoppler-105.dll libpoppler-cpp-0.dll libpoppler-glib-8.dll libpsl-5.dll \
     libpython3.8.dll libstdc++-6.dll libthai-0.dll libtiff-5.dll libunistring-2.dll libwinpthread-1.dll \
     libzstd.dll nss3.dll nssutil3.dll smime3.dll'
     # these appear superfluous, though unexpectedly so:
@@ -175,7 +176,18 @@ def dlls():
         if path and os.path.exists(path):
             include_files.append((path, lib))
         else:
-            print('WARNING: Can not find library {}'.format(lib))
+            lib_root, lib_ext = os.path.splitext(lib)
+            find_glob = list(glob.glob(os.path.join(
+                os.path.dirname(find_library('libgtk-3-0')),  # other directories to look in ?
+                re.sub('-[0-9.]*$', '-*', lib_root) + lib_ext
+            )))
+            if len(find_glob) == 1:
+                found_path = find_glob[0]
+                found_lib = os.path.basename(found_path)
+                include_files.append((path, lib))
+                print('WARNING: Can not find library {}, including {} instead'.format(lib, found_lib))
+            else:
+                print('WARNING: Can not find library {}'.format(lib))
 
     return include_files
 
