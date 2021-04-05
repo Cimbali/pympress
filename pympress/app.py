@@ -81,7 +81,7 @@ class Pympress(Gtk.Application):
         'pause':     (_('Toggle pause of talk timer'), None),
         'reset':     (_('Reset talk timer'), None),
         'next':      (_('Next slide'), None),
-        'prev':      (_('Prev slide'), None),
+        'prev':      (_('Previous slide'), None),
         'first':     (_('First slide'), None),
         'last':      (_('Last slide'), None),
         'blank':     (_('Blank/unblank content screen'), None),

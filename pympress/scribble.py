@@ -324,7 +324,7 @@ class Scribbler(builder.Builder):
 
         try:
             self.scribble_cache = window.create_similar_image_surface(cairo.Format.ARGB32, ww, wh, 0)
-        except:
+        except ValueError:
             logger.exception('Error creating highlight cache')
         self.next_render = 0
 
