@@ -267,9 +267,13 @@ if __name__ == '__main__':
                     'silent': True
                 }
             },
-            'executables': [Executable(os.path.join('pympress', '__main__.py'), targetName='pympress.exe',
-                                       base='Win32GUI', shortcutDir='ProgramMenuFolder', shortcutName='pympress',
-                                       icon=os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico'))]
+            'executables': [
+                Executable(os.path.join('pympress', '__main__.py'), targetName='pympress-gui.exe',
+                           base='Win32GUI', shortcutDir='ProgramMenuFolder', shortcutName='pympress',
+                           icon=os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico')),
+                Executable(os.path.join('pympress', '__main__.py'), targetName='pympress.exe',
+                           base='Console', icon=os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico')),
+            ]
         }
 
         if check_vlc_redistribution():
