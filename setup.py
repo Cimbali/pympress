@@ -265,13 +265,24 @@ if __name__ == '__main__':
                     'packages': ['codecs', 'gi', 'vlc', 'watchdog'],
                     'include_files': gtk_resources() + dlls() + pympress_resources(),
                     'silent': True
+                },
+                'bdist_msi': {
+                    'add_to_path': True,
+                    'all_users': False,
+                    'summary_data': {
+                        'comments': 'https://github.com/Cimbali/pympress/',
+                        'keywords': 'pdf-viewer, beamer, presenter, slide, projector, pdf-reader, \
+                                    presentation, python, poppler, gtk, pygi, vlc',
+                    },
+                    # 'target_name': 'pympress-{version}-{arch}.msi'.format(...),
+                    # 'data': {}, #  arbitrary MSI data by table name, 1 tuple per row
                 }
             },
             'executables': [
-                Executable(os.path.join('pympress', '__main__.py'), targetName='pympress-gui.exe',
-                           base='Win32GUI', shortcutDir='ProgramMenuFolder', shortcutName='pympress',
+                Executable(os.path.join('pympress', '__main__.py'), target_name='pympress-gui.exe',
+                           base='Win32GUI', shortcut_dir='ProgramMenuFolder', shortcut_name='pympress',
                            icon=os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico')),
-                Executable(os.path.join('pympress', '__main__.py'), targetName='pympress.exe',
+                Executable(os.path.join('pympress', '__main__.py'), target_name='pympress.exe',
                            base='Console', icon=os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico')),
             ]
         }

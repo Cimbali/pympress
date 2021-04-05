@@ -8,7 +8,7 @@ $py -m pip install watchdog python-vlc babel cx_Freeze
 
 $py setup.py compile_catalog
 $py setup.py --freeze --$vlc build_exe
-$py setup.py --freeze --$vlc bdist_msi --add-to-path True --target-name pympress-`git describe --tags --always --abbrev=0`-$arch.msi
+$py setup.py --freeze --$vlc bdist_msi --target-name pympress-`git describe --tags --always`-$arch.msi
 
 # Build a zip from the build_exe outputs
 cd build
