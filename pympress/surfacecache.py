@@ -36,6 +36,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import threading
+import functools
 import collections
 
 import gi
@@ -126,7 +127,7 @@ class SurfaceCache(object):
             self.surface_cache[widget_name] = OrderedDict()
             self.surface_size[widget_name] = (-1, -1)
             self.surface_type[widget_name] = wtype
-            self.surface_factory[widget_name] = lambda *args: widget.get_window().create_similar_image_surface(*args, 0)
+            self.surface_factory[widget_name] = functools.partial(self._create_surface, widget)
             if prerender_enabled and not zoomed:
                 self.enable_prerender(widget_name)
 
@@ -248,6 +249,23 @@ class SurfaceCache(object):
 
             while len(pc) > self.max_pages:
                 pc.popitem(False)
+
+
+    def _create_surface(self, widget, fmt, width, height):
+        """ Given a widget, create a cairo Image surface with appropriate size and scaling.
+
+        Args:
+            widget (:class:`~Gtk.Widget`): the widget for which we’re caching data.
+            fmt (:class:`~cairo.Format`): the format for the new surface
+            width (`int`): width of the new surface
+            height (`int`): height of the new surface
+
+        Returns:
+            :class:`~cairo.ImageSurface`: a new image surface
+        """
+        window = widget.get_window()
+        scale = window.get_scale_factor()
+        return window.create_similar_image_surface(fmt, width * scale, height * scale, scale)
 
 
     def prerender(self, page_nb):

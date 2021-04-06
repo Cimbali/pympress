@@ -316,14 +316,15 @@ class Scribbler(builder.Builder):
     def reset_scribble_cache(self):
         """ Clear the cached scribbles.
         """
-        ww, wh = self.c_da.get_allocated_width(), self.c_da.get_allocated_height()
         window = self.c_da.get_window()
 
         if window is None:
             return ValueError('Cannot initialize scribble acche without drawing area window')
 
+        scale = window.get_scale_factor()
+        ww, wh = self.c_da.get_allocated_width() * scale, self.c_da.get_allocated_height() * scale
         try:
-            self.scribble_cache = window.create_similar_image_surface(cairo.Format.ARGB32, ww, wh, 0)
+            self.scribble_cache = window.create_similar_image_surface(cairo.Format.ARGB32, ww, wh, scale)
         except ValueError:
             logger.exception('Error creating highlight cache')
         self.next_render = 0

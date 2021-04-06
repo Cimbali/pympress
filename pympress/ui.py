@@ -999,6 +999,8 @@ class UI(builder.Builder):
         nb = page.number()
         wtype = self.cache.get_widget_type(name)
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+        window = widget.get_window()
+        scale = window.get_scale_factor()
 
         if self.zoom.scale != 1. and (widget is self.p_da_cur or widget is self.c_da or
                                       widget is self.scribbler.scribble_p_da):
@@ -1014,7 +1016,7 @@ class UI(builder.Builder):
                 return
 
             # Cache miss: render the page, and save it to the cache
-            pb = widget.get_window().create_similar_image_surface(cairo.Format.RGB24, ww, wh, 0)
+            pb = window.create_similar_image_surface(cairo.Format.RGB24, ww * scale, wh * scale, scale)
 
             cairo_prerender = cairo.Context(pb)
             cairo_prerender.transform(zoom_matrix)
