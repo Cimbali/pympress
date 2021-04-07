@@ -266,10 +266,10 @@
               <object class="GtkButton" id="prev_button">
                 <property name="label">gtk-go-back</property>
                 <property name="visible">True</property>
-                <property name="can-focus">True</property>
+                <property name="can-focus">False</property>
                 <property name="receives-default">True</property>
                 <property name="margin-top">10</property>
-                <property name="action-name">app.prev</property>
+                <property name="action-name">app.prev-page</property>
                 <property name="use-stock">True</property>
                 <style>
                   <class name="info-label"/>
@@ -425,10 +425,10 @@
               <object class="GtkButton" id="next_button">
                 <property name="label">gtk-go-forward</property>
                 <property name="visible">True</property>
-                <property name="can-focus">True</property>
+                <property name="can-focus">False</property>
                 <property name="receives-default">True</property>
                 <property name="margin-top">10</property>
-                <property name="action-name">app.next</property>
+                <property name="action-name">app.next-page</property>
                 <property name="use-stock">True</property>
                 <style>
                   <class name="info-label"/>
@@ -445,7 +445,7 @@
               <object class="GtkButton" id="highlight_button">
                 <property name="label" translatable="yes">Highlight</property>
                 <property name="visible">True</property>
-                <property name="can-focus">True</property>
+                <property name="can-focus">False</property>
                 <property name="receives-default">True</property>
                 <property name="margin-top">10</property>
                 <property name="action-name">app.highlight</property>
@@ -464,10 +464,11 @@
               <object class="GtkButton" id="laser_button">
                 <property name="label" translatable="yes">Pointer</property>
                 <property name="visible">True</property>
-                <property name="can-focus">True</property>
+                <property name="can-focus">False</property>
                 <property name="receives-default">True</property>
                 <property name="margin-top">10</property>
-                <property name="action-name">app.toggle-pointermode</property>
+                <property name="action-name">app.pointer-mode</property>
+                <property name="action-target">'toggle'</property>
                 <style>
                   <class name="info-label"/>
                 </style>

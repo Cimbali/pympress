@@ -72,17 +72,14 @@
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
                         <property name="app-paintable">True</property>
-                        <property name="can-focus">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="receives-default">False</property>
                         <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'1'</property>
-                        <property name="image-position">right</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
                           <class name="pen-preset"/>
                         </style>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -95,16 +92,14 @@
                         <property name="width-request">60</property>
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="receives-default">False</property>
                         <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'2'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
                           <class name="pen-preset"/>
                         </style>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -117,16 +112,14 @@
                         <property name="width-request">60</property>
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="receives-default">False</property>
                         <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'3'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
                           <class name="pen-preset"/>
                         </style>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -139,16 +132,14 @@
                         <property name="width-request">60</property>
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="receives-default">False</property>
                         <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'4'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
                           <class name="pen-preset"/>
                         </style>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -161,16 +152,14 @@
                         <property name="width-request">60</property>
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="receives-default">False</property>
                         <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'5'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
                           <class name="pen-preset"/>
                         </style>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -183,16 +172,14 @@
                         <property name="width-request">60</property>
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="receives-default">False</property>
                         <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'6'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
                           <class name="pen-preset"/>
                         </style>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -205,16 +192,14 @@
                         <property name="width-request">60</property>
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="receives-default">False</property>
                         <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'7'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
                           <class name="pen-preset"/>
                         </style>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -227,16 +212,14 @@
                         <property name="width-request">60</property>
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="receives-default">False</property>
                         <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'8'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
                           <class name="pen-preset"/>
                         </style>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -249,16 +232,14 @@
                         <property name="width-request">60</property>
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="receives-default">False</property>
                         <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'9'</property>
                         <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
                         <style>
                           <class name="pen-preset"/>
                         </style>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -271,17 +252,14 @@
                         <property name="width-request">60</property>
                         <property name="height-request">60</property>
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="receives-default">False</property>
                         <property name="action-name">app.highlight-use-pen</property>
                         <property name="action-target">'eraser'</property>
-                        <property name="image-position">left</property>
                         <signal name="draw" handler="on_eraser_button_draw" swapped="no"/>
                         <style>
                           <class name="pen-preset"/>
                         </style>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
