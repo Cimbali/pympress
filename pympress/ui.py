@@ -174,6 +174,14 @@ class UI(builder.Builder):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
+        # We may want some additional CSS changes
+        self.css_provider = Gtk.CssProvider()
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            self.css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+
         self.show_annotations = self.config.getboolean('presenter', 'show_annotations')
         self.chosen_notes_mode = document.PdfPage[self.config.get('notes position', 'horizontal').upper()]
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
@@ -494,8 +502,18 @@ class UI(builder.Builder):
             ch = self.p_central.get_allocated_height()
             self.scribbler.off_render.set_size_request(cw, ch)
 
+            self.adjust_bottom_bar_font()
+
         elif widget is self.c_win:
             self.config.set('content', 'geometry', geom)
+
+
+    def adjust_bottom_bar_font(self):
+        """ Scale baseline font size of bottom bar, clipped to 6px..13px. Fonts are then scaled by CSS em indications.
+        """
+        ww, wh = self.p_win.get_size()
+        font_size = max(6, min(13, ww / 120 if self.show_bigbuttons else ww / 75))
+        self.css_provider.load_from_data('#bottom {{ font-size: {:.1f}px; }}'.format(font_size).encode())
 
 
     def redraw_panes(self):
@@ -1526,11 +1544,18 @@ class UI(builder.Builder):
         """ Toggle the display of big buttons (nice for touch screens).
         """
         self.show_bigbuttons = not self.show_bigbuttons
+        if self.show_bigbuttons:
+            # potentially reduce font
+            self.adjust_bottom_bar_font()
 
         self.prev_button.set_visible(self.show_bigbuttons)
         self.next_button.set_visible(self.show_bigbuttons)
         self.laser_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
+
+        if not self.show_bigbuttons:
+            # potentially increase font
+            self.adjust_bottom_bar_font()
 
         self.config.set('presenter', 'show_bigbuttons', 'on' if self.show_bigbuttons else 'off')
         self.app.set_action_state('big-buttons', self.show_bigbuttons)

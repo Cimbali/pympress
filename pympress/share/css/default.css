@@ -31,6 +31,21 @@
   font-family: "monospace";
 }
 
+#frame_ett {
+  /* similar to button padding to add some room */
+  margin-left: 3px;
+  margin-right: 3px;
+}
+#frame_cur {
+  min-width: 15em;
+}
+#frame_ett {
+  min-width: 6em;
+}
+#frame_clock {
+  min-width: 8em;
+}
+
 .toolbar {
   background: @theme_base_color
 }

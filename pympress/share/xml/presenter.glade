@@ -284,7 +284,6 @@
             </child>
             <child>
               <object class="GtkFrame" id="frame_cur">
-                <property name="width-request">200</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label-xalign">0</property>
@@ -482,7 +481,6 @@
             </child>
             <child>
               <object class="GtkFrame" id="frame_time">
-                <property name="width-request">170</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="margin-left">1</property>
@@ -522,7 +520,6 @@
             </child>
             <child>
               <object class="GtkFrame" id="frame_ett">
-                <property name="width-request">170</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label-xalign">0</property>
@@ -551,6 +548,8 @@
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Time estimation</property>
                     <property name="use-markup">True</property>
+                    <property name="ellipsize">end</property>
+                    <property name="single-line-mode">True</property>
                     <style>
                       <class name="frame-label"/>
                     </style>
@@ -568,7 +567,6 @@
             </child>
             <child>
               <object class="GtkFrame" id="frame_clock">
-                <property name="width-request">170</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label-xalign">0</property>
@@ -590,6 +588,7 @@
                     <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Clock</property>
                     <property name="use-markup">True</property>
+                    <property name="single-line-mode">True</property>
                     <style>
                       <class name="frame-label"/>
                     </style>

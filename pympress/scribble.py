@@ -340,6 +340,10 @@ class Scribbler(builder.Builder):
                 logger.info(e)
                 return
 
+        if self.scribble_cache is None:
+            self.next_render = 0
+            return
+
         ww, wh = self.scribble_cache.get_width(), self.scribble_cache.get_height()
 
         monitor = self.c_da.get_display().get_monitor_at_window(self.c_da.get_parent_window()).get_geometry()
