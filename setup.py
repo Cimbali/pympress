@@ -75,8 +75,14 @@ class PatchedRpmDist(bdist_rpm):
             line.replace('%{name}', '%{pythonname}')
                 .replace('define name ', 'define pythonname ')
                 .replace('Name: %{pythonname}', 'Name: python3-%{pythonname}')
+                .replace('License: GPLv2', 'License: GPL-2.0-or-later')
             for line in bdist_rpm._make_spec_file(self) if not line.startswith('Group:')
         ]
+
+        # Override the generation of installed files to specify top-level pympress directories or files,
+        # this is recursive and takes care of directories not being tracked.
+        spec.insert(find_index_startstring(spec, 'python3 setup.py install') + 1,
+                    "find $RPM_BUILD_ROOT -name 'pympress*' -printf '/%%P\\n' -prune > INSTALLED_FILES")
 
         insert_pos = find_index_startstring(spec, 'Requires:') + 1
         insert = [
