@@ -37,7 +37,7 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib, Gio
 
-from pympress import util, config, extras, document, ui, builder
+from pympress import util, config, document, ui, builder
 
 
 class Pympress(Gtk.Application):
@@ -96,7 +96,6 @@ class Pympress(Gtk.Application):
         '; GLib {}.{}.{}'.format(GLib.MAJOR_VERSION, GLib.MINOR_VERSION, GLib.MICRO_VERSION),
         '; Poppler', document.Poppler.get_version(), document.Poppler.get_backend().value_nick,
         '; Cairo', cairo.cairo_version_string(), ', pycairo', cairo.version,
-        '; Media:', extras.Media.backend_version()
     ])
 
 

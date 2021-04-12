@@ -50,7 +50,7 @@ class GifOverlay(base.VideoOverlay):
     transform = None
 
     def __init__(self, container, show_controls, relative_margins, page_type, callback_getter):
-        # override: no toolbar or interactive stuff for a gif, replace the whole widget area with a Gtk.Image
+        # override: no toolbar or interactive stuff for a gif, replace the whole widget area with a GdkPixbuf
         super(GifOverlay, self).__init__(container, False, relative_margins, page_type, callback_getter)
 
         # we'll manually draw on the movie zone
@@ -141,4 +141,4 @@ class GifOverlay(base.VideoOverlay):
     def setup_backend(cls):
         """ Returns the name of this backend.
         """
-        return _('GtkImage gif player')
+        return _('GdkPixbuf gif player')
