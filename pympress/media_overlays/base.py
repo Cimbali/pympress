@@ -232,7 +232,7 @@ class VideoOverlay(builder.Builder):
         self.media_overlay.show()
 
 
-    def do_hide(self):
+    def do_hide(self, *args):
         """ Remove widget from overlays. Needs to be called via :func:`~GLib.idle_add`.
 
         Returns:
@@ -243,6 +243,7 @@ class VideoOverlay(builder.Builder):
 
         if self.media_overlay.get_parent():
             self.parent.remove(self.media_overlay)
+        self.parent.queue_draw()
         return False
 
 
