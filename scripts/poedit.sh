@@ -48,7 +48,7 @@ getpass() {
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <command>"
-    echo "Where command is one of: upload, languages, download, progress, contributors"
+    echo "Where command is one of: upload, languages, download, contributors"
     echo "requires curl and jq"
 fi
 
@@ -69,7 +69,7 @@ while [ $# -gt 0 ]; do
         getpass
         contributors
     else
-        echo "Unrecognised command $1 use one of: upload, languages, download, progress, contributors"
+        echo "Unrecognised command $1 use one of: upload, languages, download, contributors"
         exit 1
     fi
     shift
