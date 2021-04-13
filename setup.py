@@ -40,7 +40,7 @@ from setuptools.command.bdist_rpm import bdist_rpm
 try:
     from cx_Freeze.windist import bdist_msi
     import msilib
-except (ImportError, ModuleNotFoundError):
+except ImportError:
     class bdist_msi:
         """ Dummy class for systems without cx_Freeze or msilib
         """
