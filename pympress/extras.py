@@ -36,9 +36,8 @@ from gi.repository import Gtk, Gdk, GLib, Gio
 
 import mimetypes
 import functools
-from collections import defaultdict
 
-from pympress import document, builder, config
+from pympress import document, builder
 
 
 class TimingReport(builder.Builder):
@@ -253,8 +252,9 @@ class Media(object):
     #: :class:`~Gtk.Overlay` for the Presenter window.
     p_overlay = None
 
-    #: `list` with the backend modules that were correctly loaded
-    loaded = []
+    #: `dict` with the backend modules that were correctly loaded, mapping backend identifiers (`str`)
+    #: to :class:`~pympress.media_overlays.base.VideoOverlay` sub-classes
+    _backends = {}
     #: `dict` containing backends and their mappings to mime type lists for which they are enabled.
     #: A default backend is marked by an empty list.
     types_list = {}
@@ -263,15 +263,15 @@ class Media(object):
         super(Media, self).__init__()
         self.conf = conf
 
-        self.loaded = self._setup_backends()
+        self._setup_backends()
         builder.load_widgets(self)
 
-        self.types_list = {backend: conf.getlist(backend, 'mime_types') for backend in self.loaded
-                                    if backend != 'gif' and conf.getboolean(backend, 'enabled')}
-
         builder.setup_actions({
-            'use-gst-backend': dict(activate=self.toggle, state='gst' in self.types_list, enabled='gst' in self.loaded),
-            'use-vlc-backend': dict(activate=self.toggle, state='vlc' in self.types_list, enabled='vlc' in self.loaded),
+            'use-{}-backend'.format(backend): {
+                'activate': self.toggle,
+                'state': backend in self.types_list,
+                'enabled': backend in self._backends,
+            } for backend in self._backends
         })
 
         self.c_overlay.queue_draw()
@@ -286,7 +286,7 @@ class Media(object):
             param (:class:`~GLib.Variant`): an optional parameter
         """
         backend = gaction.get_name().split('-')[1]
-        if backend not in self.loaded:
+        if backend not in self._backends:
             return ValueError('Unexpected backend')
 
         enable = backend not in self.types_list
@@ -446,54 +446,64 @@ class Media(object):
     def _setup_backends(self):
         """ Load the backends for video overlays.
         """
-        backend_versions = {}
         try:
             from pympress.media_overlays.gif_backend import GifOverlay
-            backend_versions['gif'] = GifOverlay.setup_backend()
+
+            gif_version = GifOverlay.setup_backend()
+            self._backends['gif'] = GifOverlay
+            self.types_list['gif'] = ['image/gif', 'image/svg+xml']
 
         except Exception as e:
+            gif_version = 'GdkPixbuf not available'
             logger.error(_('Media support using {} is disabled.').format('GdkPixbuf'))
             logger.info(_('Caused by ') + type(e).__name__ + ': ' + str(e))
 
 
         try:
             from pympress.media_overlays.gst_backend import GstOverlay
+
             gst_version = GstOverlay.setup_backend(self.conf.getlist('gst', 'init_options'))
-            backend_versions['gst'] = gst_version
+            self._backends['gst'] = GstOverlay
+            if self.conf.getboolean('gst', 'enabled'):
+                self.types_list['gst'] = self.conf.getlist('gst', 'mime_types')
 
         except Exception as e:
+            gst_version = 'GStreamer not available'
             logger.debug(_('Media support using {} is disabled.').format('GStreamer'))
             logger.debug(_('Caused by ') + type(e).__name__ + ': ' + str(e))
 
 
         try:
             from pympress.media_overlays.vlc_backend import VlcOverlay
+
             vlc_version = VlcOverlay.setup_backend(self.conf.getlist('vlc', 'init_options'))
-            backend_versions['vlc'] = vlc_version
+            self._backends['vlc'] = VlcOverlay
+            if self.conf.getboolean('vlc', 'enabled'):
+                self.types_list['vlc'] = self.conf.getlist('vlc', 'mime_types')
 
         except Exception as e:
+            vlc_version = 'VLC not available'
             logger.debug(_('Media support using {} is disabled.').format('VLC'))
             logger.debug(_('Caused by ') + type(e).__name__ + ': ' + str(e))
 
-        logger.info(_('Media support loaded: ') + ', '.join(backend_versions.values()))
-        return list(backend_versions.keys())
+        logger.info(_('Media support: ') + ', '.join([gif_version, gst_version, vlc_version]))
 
 
     def get_factory(self, mime_type):
         """ Returns a class of type :attr:`~_backend`.
         """
         if 'mime_type' in {'image/gif', 'image/svg+xml'}:
-            return GifOverlay
+            return self._backends['gif']
 
         # Search for specific mime type
         for backend, mime_types in self.types_list.items():
             if mime_type in mime_types:
-                return backend
+                return self._backends[backend]
 
         # Search for empty list, meaning fallback
         for backend, mime_types in self.types_list.items():
             if len(mime_types) == 0:
-                return backend
+                return self._backends[backend]
 
         return None
 
