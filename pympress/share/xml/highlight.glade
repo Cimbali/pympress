@@ -49,233 +49,218 @@
           </packing>
         </child>
         <child>
-          <object class="GtkFrame">
+          <object class="GtkAlignment">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="label-xalign">0</property>
-            <property name="shadow-type">none</property>
+            <property name="left-padding">12</property>
             <child>
-              <object class="GtkAlignment">
+              <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="left-padding">12</property>
+                <property name="valign">center</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">5</property>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkModelButton" id="pen_preset_1">
+                    <property name="width-request">60</property>
+                    <property name="height-request">60</property>
+                    <property name="visible">True</property>
+                    <property name="app-paintable">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
+                    <property name="action-name">app.highlight-use-pen</property>
+                    <property name="action-target">'1'</property>
+                    <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
+                    <style>
+                      <class name="pen-preset"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkModelButton" id="pen_preset_2">
+                    <property name="width-request">60</property>
+                    <property name="height-request">60</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="valign">center</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">5</property>
-                    <child>
-                      <object class="GtkModelButton" id="pen_preset_1">
-                        <property name="width-request">60</property>
-                        <property name="height-request">60</property>
-                        <property name="visible">True</property>
-                        <property name="app-paintable">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="receives-default">False</property>
-                        <property name="action-name">app.highlight-use-pen</property>
-                        <property name="action-target">'1'</property>
-                        <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <style>
-                          <class name="pen-preset"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkModelButton" id="pen_preset_2">
-                        <property name="width-request">60</property>
-                        <property name="height-request">60</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="receives-default">False</property>
-                        <property name="action-name">app.highlight-use-pen</property>
-                        <property name="action-target">'2'</property>
-                        <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <style>
-                          <class name="pen-preset"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkModelButton" id="pen_preset_3">
-                        <property name="width-request">60</property>
-                        <property name="height-request">60</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="receives-default">False</property>
-                        <property name="action-name">app.highlight-use-pen</property>
-                        <property name="action-target">'3'</property>
-                        <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <style>
-                          <class name="pen-preset"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkModelButton" id="pen_preset_4">
-                        <property name="width-request">60</property>
-                        <property name="height-request">60</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="receives-default">False</property>
-                        <property name="action-name">app.highlight-use-pen</property>
-                        <property name="action-target">'4'</property>
-                        <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <style>
-                          <class name="pen-preset"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkModelButton" id="pen_preset_5">
-                        <property name="width-request">60</property>
-                        <property name="height-request">60</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="receives-default">False</property>
-                        <property name="action-name">app.highlight-use-pen</property>
-                        <property name="action-target">'5'</property>
-                        <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <style>
-                          <class name="pen-preset"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">4</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkModelButton" id="pen_preset_6">
-                        <property name="width-request">60</property>
-                        <property name="height-request">60</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="receives-default">False</property>
-                        <property name="action-name">app.highlight-use-pen</property>
-                        <property name="action-target">'6'</property>
-                        <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <style>
-                          <class name="pen-preset"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">5</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkModelButton" id="pen_preset_7">
-                        <property name="width-request">60</property>
-                        <property name="height-request">60</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="receives-default">False</property>
-                        <property name="action-name">app.highlight-use-pen</property>
-                        <property name="action-target">'7'</property>
-                        <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <style>
-                          <class name="pen-preset"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">6</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkModelButton" id="pen_preset_8">
-                        <property name="width-request">60</property>
-                        <property name="height-request">60</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="receives-default">False</property>
-                        <property name="action-name">app.highlight-use-pen</property>
-                        <property name="action-target">'8'</property>
-                        <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <style>
-                          <class name="pen-preset"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">7</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkModelButton" id="pen_preset_9">
-                        <property name="width-request">60</property>
-                        <property name="height-request">60</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="receives-default">False</property>
-                        <property name="action-name">app.highlight-use-pen</property>
-                        <property name="action-target">'9'</property>
-                        <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
-                        <style>
-                          <class name="pen-preset"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">8</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkModelButton" id="eraser">
-                        <property name="width-request">60</property>
-                        <property name="height-request">60</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="receives-default">False</property>
-                        <property name="action-name">app.highlight-use-pen</property>
-                        <property name="action-target">'eraser'</property>
-                        <signal name="draw" handler="on_eraser_button_draw" swapped="no"/>
-                        <style>
-                          <class name="pen-preset"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">9</property>
-                      </packing>
-                    </child>
+                    <property name="receives-default">False</property>
+                    <property name="action-name">app.highlight-use-pen</property>
+                    <property name="action-target">'2'</property>
+                    <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
+                    <style>
+                      <class name="pen-preset"/>
+                    </style>
                   </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
                 </child>
-              </object>
-            </child>
-            <child type="label">
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Presets</property>
+                <child>
+                  <object class="GtkModelButton" id="pen_preset_3">
+                    <property name="width-request">60</property>
+                    <property name="height-request">60</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
+                    <property name="action-name">app.highlight-use-pen</property>
+                    <property name="action-target">'3'</property>
+                    <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
+                    <style>
+                      <class name="pen-preset"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkModelButton" id="pen_preset_4">
+                    <property name="width-request">60</property>
+                    <property name="height-request">60</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
+                    <property name="action-name">app.highlight-use-pen</property>
+                    <property name="action-target">'4'</property>
+                    <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
+                    <style>
+                      <class name="pen-preset"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkModelButton" id="pen_preset_5">
+                    <property name="width-request">60</property>
+                    <property name="height-request">60</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
+                    <property name="action-name">app.highlight-use-pen</property>
+                    <property name="action-target">'5'</property>
+                    <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
+                    <style>
+                      <class name="pen-preset"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkModelButton" id="pen_preset_6">
+                    <property name="width-request">60</property>
+                    <property name="height-request">60</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
+                    <property name="action-name">app.highlight-use-pen</property>
+                    <property name="action-target">'6'</property>
+                    <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
+                    <style>
+                      <class name="pen-preset"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkModelButton" id="pen_preset_7">
+                    <property name="width-request">60</property>
+                    <property name="height-request">60</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
+                    <property name="action-name">app.highlight-use-pen</property>
+                    <property name="action-target">'7'</property>
+                    <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
+                    <style>
+                      <class name="pen-preset"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkModelButton" id="pen_preset_8">
+                    <property name="width-request">60</property>
+                    <property name="height-request">60</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
+                    <property name="action-name">app.highlight-use-pen</property>
+                    <property name="action-target">'8'</property>
+                    <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
+                    <style>
+                      <class name="pen-preset"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkModelButton" id="pen_preset_9">
+                    <property name="width-request">60</property>
+                    <property name="height-request">60</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
+                    <property name="action-name">app.highlight-use-pen</property>
+                    <property name="action-target">'9'</property>
+                    <signal name="draw" handler="on_preset_button_draw" swapped="no"/>
+                    <style>
+                      <class name="pen-preset"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">8</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkModelButton" id="eraser">
+                    <property name="width-request">60</property>
+                    <property name="height-request">60</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="receives-default">False</property>
+                    <property name="action-name">app.highlight-use-pen</property>
+                    <property name="action-target">'eraser'</property>
+                    <signal name="draw" handler="on_eraser_button_draw" swapped="no"/>
+                    <style>
+                      <class name="pen-preset"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">9</property>
+                  </packing>
+                </child>
               </object>
             </child>
           </object>
