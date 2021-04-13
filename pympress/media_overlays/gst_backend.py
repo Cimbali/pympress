@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gst', '1.0')
-from gi.repository import GLib, Gst
+gi.require_version('GstVideo', '1.0')
+from gi.repository import GLib, Gst, GstVideo
 
 
 from pympress.util import IS_WINDOWS, IS_MAC_OS
@@ -140,7 +141,10 @@ class GstOverlay(base.VideoOverlay):
         bus.connect('sync-message::element', self.on_sync_message)
 
         self.playbin.set_property('uri', self.uri)
-        self.playbin.set_mute(self.muted)
+        try:
+            self.playbin.set_mute(self.muted)
+        except AttributeError:
+            pass
 
         self.playbin.set_state(Gst.State.PLAYING)
 
@@ -156,11 +160,11 @@ class GstOverlay(base.VideoOverlay):
         elif window is None:
             logger.error('No window in which to embed the Gst player!')
         elif IS_WINDOWS:
-            GLib.idle_add(lambda *args: msg.src.set_window_handle(base.get_window_handle(window)))
+            GLib.idle_add(lambda *args: GstVideo.VideoOverlay.set_window_handle(msg.src, base.get_window_handle(window)))
         elif IS_MAC_OS:
-            GLib.idle_add(lambda *args: msg.src.set_window_handle(base.get_window_nsview(window)))
+            GLib.idle_add(lambda *args: GstVideo.VideoOverlay.set_window_handle(msg.src, base.get_window_nsview(window)))
         else:
-            GLib.idle_add(lambda *args: msg.src.set_window_handle(window.get_xid()))
+            GLib.idle_add(lambda *args: GstVideo.VideoOverlay.set_window_handle(msg.src, window.get_xid()))
 
 
     def do_play_pause(self):
