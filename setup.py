@@ -37,6 +37,13 @@ from setuptools.command.develop import develop
 from setuptools.command.install import install
 from setuptools.command.bdist_rpm import bdist_rpm
 
+try:
+    from cx_Freeze.windist import bdist_msi
+    import msilib
+except (ImportError, ModuleNotFoundError):
+    class bdist_msi:
+        user_options = []
+
 
 def find_index_startstring(haystack, needle, start = 0, stop = sys.maxsize):
     """ Return the index of the first string in haystack starting with needle, or raise ValueError if none match.
@@ -47,10 +54,98 @@ def find_index_startstring(haystack, needle, start = 0, stop = sys.maxsize):
         raise ValueError('No string starts with ' + needle)
 
 
+class PatchedMsiDist(bdist_msi):
+    """ Patched bdist msi to add files
+    """
+    user_options = bdist_msi.user_options + [
+        ('separate-components=', None, 'add files as separate Components, as a dict mapping file to component name'),
+        ('extensions=', None, 'Extensions for which to register Verbs'),
+        ('progid=', None, 'The program ID, typically in them form Manufacturer.Program.Version'),
+    ]
+
+
+    def initialize_options(self):
+        super(PatchedMsiDist, self).initialize_options()
+        self.separate_components = None
+        self.extensions = None
+        self.progid = None
+
+
+    def _append_to_data(self, table, line):
+        rows = self.data.setdefault(table, [])
+        if line not in rows:
+            rows.append(line)
+
+
+    def finalize_options(self):
+        super(PatchedMsiDist, self).finalize_options()
+        if self.progid is not None:
+            self.data.setdefault('ProgId', []).append(
+                (self.progid, None, None, self.distribution.get_description(),
+                    'InstallIcon' if self.install_icon else None, None)
+            )
+        if self.separate_components is None:
+            self.separate_components = {}
+
+        if self.extensions is not None:
+            if self.progid is None:
+                raise ValueError('A Program Id (option progid) is required to register extensions')
+
+            for extension in self.extensions:
+                # Mandatory elements
+                ext, verb, component = extension['extension'], extension['verb'], extension['component']
+                if component not in self.separate_components.values():
+                    raise ValueError('Component for file extension must be defined in separate-components option')
+                # Optional elements
+                mime = extension.get('mime', None)
+                argument = extension.get('argument', None)  # "%1" a better default?
+                context = extension.get('context', '{} {}'.format(self.distribution.get_name(), verb))
+                # Add to self.data safely and without duplicates
+                self._append_to_data('Extension', (ext, component, self.progid, mime, 'default'))
+                self._append_to_data('Verb', (ext, verb, 0, context, argument))
+                self._append_to_data('Registry',
+                    (component, -1, r'Software\Classes\{}'.format(self.progid),
+                        'FriendlyAppName', self.distribution.get_name(), component)
+                )
+                self._append_to_data('Registry',
+                    ('{}.{}'.format(component, verb), -1, r'Software\Classes\{}\shell\{}'.format(self.progid, verb),
+                        'FriendlyAppName', self.distribution.get_name(), component)
+                )
+                if 'mime' in extension:
+                    self._append_to_data('MIME', (extension['mime'], ext, 'None'))
+
+
+    def add_files(self):
+        f = msilib.Feature(self.db, 'default', 'Default Feature', 'Everything', 1, directory='TARGETDIR')
+        f.set_current()
+
+        cab = msilib.CAB('distfiles')
+        rootdir = os.path.abspath(self.bdist_dir)
+        root = msilib.Directory(self.db, cab, None, rootdir, 'TARGETDIR', 'SourceDir')
+        self.db.Commit()
+
+        # Some file we want as separate components
+        for file, comp in self.separate_components.items():
+            root.start_component(component=comp, flags=0, feature=f, keyfile=file)
+            root.add_file(file)
+
+        todo = [root]
+        root.start_component(component=root.logical, flags=0, feature=f)
+        while todo:
+            dir = todo.pop()
+            for file in os.listdir(dir.absolute):
+                if os.path.isdir(os.path.join(dir.absolute, file)):
+                    newDir = msilib.Directory(self.db, cab, dir, file, file, "{}|{}".format(dir.make_short(file), file))
+                    todo.append(newDir)
+                elif file not in self.separate_components:
+                    dir.add_file(file)
+
+        cab.commit(self.db)
+
+
 class PatchedRpmDist(bdist_rpm):
     """ Patched bdist rpm to avoid running seds and breaking up the build system
     """
-
     user_options = bdist_rpm.user_options + [
         ('recommends=', None, "capabilities recommendd by this package"),
         ('suggests=', None, "capabilities suggestd by this package"),
@@ -116,6 +211,7 @@ class PatchedDevelop(develop):
         """ Run compile_catalog before running (parent) develop command. """
         self.distribution.run_command('compile_catalog')
         develop.run(self)
+
 
 class PatchedInstall(install):
     """Patched installation for installation mode to build translations .mo files. """
@@ -191,7 +287,7 @@ def dlls():
                 found_path = find_glob[0]
                 found_lib = os.path.basename(found_path)
                 include_files.append((path, lib))
-                print('WARNING: Can not find library {}, including {} instead'.format(lib, found_lib))
+                print('WARNING: Can not find library {}, including {} instead'.format(lib, found_lib))
             else:
                 print('WARNING: Can not find library {}'.format(lib))
 
@@ -273,9 +369,9 @@ if __name__ == '__main__':
         print('Using cx_Freeze.setup():', file=sys.stderr)
         from cx_Freeze import setup, Executable
 
-        # List all resources we'll distribute
         setup_opts = {
             **options,
+            'cmdclass': {'bdist_msi': PatchedMsiDist},
             'options': {
                 'build_exe': {
                     'includes': [],
@@ -292,8 +388,20 @@ if __name__ == '__main__':
                         'keywords': 'pdf-viewer, beamer, presenter, slide, projector, pdf-reader, \
                                     presentation, python, poppler, gtk, pygi, vlc',
                     },
-                    # 'target_name': 'pympress-{version}-{arch}.msi'.format(...),
-                    # 'data': {}, #  arbitrary MSI data by table name, 1 tuple per row
+                    'install_icon': os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico'),
+                    # Patched build system to allow specifying progid, separate components, and extensions/verbs
+                    'progid': 'pympress',
+                    'separate_components': {
+                        'pympress-gui.exe': 'pympressgui',
+                    },
+                    'extensions': [{
+                        'extension': 'pdf',
+                        'verb': 'open',
+                        'component': 'pympressgui',
+                        'argument': '"%1"',
+                        'mime': 'application/pdf',
+                        'context': 'Open with p&ympress',
+                    }],
                 }
             },
             'executables': [
