@@ -586,7 +586,7 @@ class UI(builder.Builder):
                            _('Some preferences are saved in ') + self.config.path_to_config() + '\n' +
                            _('Resources are loaded from ') + os.path.dirname(util.get_locale_dir()) + '\n' +
                            _('The log is written to ') + util.get_log_path() + '\n\n' +
-                           _('Media support uses {}.').format(self.medias.backend_version()) + '\n' +
+                           _('Media support uses {}.').format(self.medias.backend_version) + '\n' +
                            _('Python version {}').format(sys.version))
         about.set_website('https://github.com/Cimbali/pympress')
         try:

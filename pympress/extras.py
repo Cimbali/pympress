@@ -486,7 +486,8 @@ class Media(object):
             logger.debug(_('Media support using {} is disabled.').format('VLC'))
             logger.debug(_('Caused by ') + type(e).__name__ + ': ' + str(e))
 
-        logger.info(_('Media support: ') + ', '.join([gif_version, gst_version, vlc_version]))
+        self.backend_version = ', '.join([gif_version, gst_version, vlc_version])
+        logger.info(_('Media support: ') + self.backend_version)
 
 
     def get_factory(self, mime_type):
