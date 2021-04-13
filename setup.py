@@ -42,6 +42,8 @@ try:
     import msilib
 except (ImportError, ModuleNotFoundError):
     class bdist_msi:
+        """ Dummy class for systems without cx_Freeze or msilib
+        """
         user_options = []
 
 
@@ -65,6 +67,8 @@ class PatchedMsiDist(bdist_msi):
 
 
     def initialize_options(self):
+        """ Prepare variables to receive options
+        """
         super(PatchedMsiDist, self).initialize_options()
         self.separate_components = None
         self.extensions = None
@@ -72,12 +76,16 @@ class PatchedMsiDist(bdist_msi):
 
 
     def _append_to_data(self, table, line):
+        """ Add a line in a table inside self.data, after checking for duplicates
+        """
         rows = self.data.setdefault(table, [])
         if line not in rows:
             rows.append(line)
 
 
     def finalize_options(self):
+        """ Validate and translate options to setup internals
+        """
         super(PatchedMsiDist, self).finalize_options()
         if self.progid is not None:
             self.data.setdefault('ProgId', []).append(
@@ -103,19 +111,21 @@ class PatchedMsiDist(bdist_msi):
                 # Add to self.data safely and without duplicates
                 self._append_to_data('Extension', (ext, component, self.progid, mime, 'default'))
                 self._append_to_data('Verb', (ext, verb, 0, context, argument))
-                self._append_to_data('Registry',
-                    (component, -1, r'Software\Classes\{}'.format(self.progid),
-                        'FriendlyAppName', self.distribution.get_name(), component)
-                )
-                self._append_to_data('Registry',
-                    ('{}.{}'.format(component, verb), -1, r'Software\Classes\{}\shell\{}'.format(self.progid, verb),
-                        'FriendlyAppName', self.distribution.get_name(), component)
-                )
+                self._append_to_data('Registry', (
+                    component, -1, r'Software\Classes\{}'.format(self.progid),
+                    'FriendlyAppName', self.distribution.get_name(), component
+                ))
+                self._append_to_data('Registry', (
+                    '{}.{}'.format(component, verb), -1, r'Software\Classes\{}\shell\{}'.format(self.progid, verb),
+                    'FriendlyAppName', self.distribution.get_name(), component
+                ))
                 if 'mime' in extension:
                     self._append_to_data('MIME', (extension['mime'], ext, 'None'))
 
 
     def add_files(self):
+        """ Store files in a cab insde the MSI
+        """
         f = msilib.Feature(self.db, 'default', 'Default Feature', 'Everything', 1, directory='TARGETDIR')
         f.set_current()
 
