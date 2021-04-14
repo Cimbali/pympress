@@ -272,10 +272,15 @@ class Page(object):
         self.page = page
         self.page_nb = number
         self.parent = parent
-        self.page_label = self.page.get_label()
         self.links = []
         self.medias = []
         self.annotations = []
+
+        if self.page is None:
+            return
+
+        # Get page label
+        self.page_label = self.page.get_label()
 
         # Read page size
         self.pw, self.ph = self.page.get_size()
@@ -651,20 +656,25 @@ class Document(object):
     navigate = lambda: None
 
     def __init__(self, builder, pop_doc, path):
-        # Connect callbacks
-        self.play_media                = builder.get_callback_handler('medias.play')
-        self.start_editing_page_number = builder.get_callback_handler('page_number.start_editing')
-        self.goto_page                 = builder.get_callback_handler('goto_page')
-        self.goto_next_hist            = builder.get_callback_handler('doc_hist_next')
-        self.goto_prev_hist            = builder.get_callback_handler('doc_hist_prev')
+        if builder is not None:
+            # Connect callbacks
+            self.play_media                = builder.get_callback_handler('medias.play')
+            self.start_editing_page_number = builder.get_callback_handler('page_number.start_editing')
+            self.goto_page                 = builder.get_callback_handler('goto_page')
+            self.goto_next_hist            = builder.get_callback_handler('doc_hist_next')
+            self.goto_prev_hist            = builder.get_callback_handler('doc_hist_prev')
 
         # Setup PDF file
         self.path = path
         self.doc = pop_doc
 
         # Pages number
-        self.nb_pages = self.doc.get_n_pages()
-        self.page_labels = [self.doc.get_page(n).get_label() for n in range(self.nb_pages)]
+        if pop_doc is not None:
+            self.nb_pages = self.doc.get_n_pages()
+            self.page_labels = [self.doc.get_page(n).get_label() for n in range(self.nb_pages)]
+        else:
+            self.nb_pages = 0
+            self.page_labels = []
 
         # Pages cache
         self.pages_cache = {}
@@ -1073,14 +1083,8 @@ class EmptyPage(Page):
     """
 
     def __init__(self):
-        self.page = None
-        self.page_nb = -1
-        self.parent = None
+        super(EmptyPage, self).__init__(None, -1, None)
         self.page_label = None
-        self.links = []
-        self.medias = []
-        self.annotations = []
-
         # by default, anything that will have a 1.3 asapect ratio
         self.pw, self.ph = 1.3, 1.0
 
@@ -1109,12 +1113,9 @@ class EmptyPage(Page):
 class EmptyDocument(Document):
     """ A dummy document, placeholder for when no document is open.
     """
-
     def __init__(self):
-        self.path = None
-        self.doc = None
-        self.nb_pages = 0
-        self.pages_cache = {-1: EmptyPage()}
+        super(EmptyDocument, self).__init__(None, None, None)
+        self.pages_cache[-1] = EmptyPage()
 
 
     def page(self, number):
