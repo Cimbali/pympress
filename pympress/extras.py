@@ -564,9 +564,9 @@ class Zoom(object):
     set_action_enabled = None
 
     #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
-    redraw_current_slide = lambda: None
+    redraw_current_slide = lambda *args: None
     #: callback, to be connected to :func:`~pympress.ui.UI.clear_cache`
-    clear_cache = lambda: None
+    clear_cache = lambda *args: None
 
     def __init__(self, builder):
         super(Zoom, self).__init__()

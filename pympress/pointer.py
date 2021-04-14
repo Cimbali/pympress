@@ -80,7 +80,7 @@ class Pointer(object):
     pointermode_radios = {}
 
     #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
-    redraw_current_slide = lambda: None
+    redraw_current_slide = lambda *args: None
     #: callback, to be connected to :meth:`~pympress.app.Pympress.set_action_state`
     set_action_state = None
 

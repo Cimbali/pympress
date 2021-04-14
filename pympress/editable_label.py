@@ -189,15 +189,15 @@ class PageNumber(EditableLabel):
     invert_scroll = True
 
     #: callback, to be connected to :func:`~pympress.document.Document.goto`
-    goto_page = lambda p: None
+    goto_page = lambda *args: None
     #: callback, to be connected to :func:`~pympress.document.Document.lookup_label`
-    find_label = lambda p: None
+    find_label = lambda *args: None
     #: callback, to be connected to :func:`~pympress.document.Document.label_after`
-    label_before = lambda p: None
+    label_before = lambda *args: None
     #: callback, to be connected to :func:`~pympress.document.Document.label_before`
-    label_after = lambda: None
+    label_after = lambda *args: None
     #: callback, to be connected to :func:`~pympress.ui.UI.do_page_change`
-    page_change = lambda b: None
+    page_change = lambda *args: None
 
     def __init__(self, builder, page_num_scroll):
         super(PageNumber, self).__init__()
@@ -439,7 +439,7 @@ class EstimatedTalkTime(EditableLabel):
     entry_ett = None
 
     #: callback, to be connected to :func:`~pympress.editable_label.PageNumber.stop_editing`
-    stop_editing_page_number = lambda: None
+    stop_editing_page_number = lambda *args: None
 
 
     def __init__(self, builder):

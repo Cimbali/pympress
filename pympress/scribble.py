@@ -102,25 +102,25 @@ class Scribbler(builder.Builder):
     zoom_stop_button = None
 
     #: callback, to be connected to :func:`~pympress.surfacecache.SurfaceCache.resize_widget`
-    resize_cache = lambda: None
+    resize_cache = lambda *args: None
     #: callback, to be connected to :func:`~pympress.ui.UI.on_draw`
-    on_draw = lambda: None
+    on_draw = lambda *args: None
     #: callback, to be connected to :func:`~pympress.ui.UI.track_motions`
-    track_motions = lambda: None
+    track_motions = lambda *args: None
     #: callback, to be connected to :func:`~pympress.ui.UI.track_clicks`
-    track_clicks = lambda: None
+    track_clicks = lambda *args: None
 
     #: callback, to be connected to :func:`~pympress.ui.UI.load_layout`
-    load_layout = lambda: None
+    load_layout = lambda *args: None
     #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
-    redraw_current_slide = lambda: None
+    redraw_current_slide = lambda *args: None
 
     #: callback, to be connected to :func:`~pympress.extras.Zoom.get_slide_point`
-    get_slide_point = lambda: None
+    get_slide_point = lambda *args: None
     #: callback, to be connected to :func:`~pympress.extras.Zoom.start_zooming`
-    start_zooming = lambda: None
+    start_zooming = lambda *args: None
     #: callback, to be connected to :func:`~pympress.extras.Zoom.stop_zooming`
-    stop_zooming = lambda: None
+    stop_zooming = lambda *args: None
 
     #: `int` that is the currently selected element
     active_preset = -1

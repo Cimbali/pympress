@@ -649,11 +649,11 @@ class Document(object):
     notes_after = False
 
     #: callback, to be connected to :func:`~pympress.extras.Media.play`
-    play_media = lambda h: None
+    play_media = lambda *args: None
     #: callback, to be connected to :func:`~pympress.editable_label.PageNumber.start_editing`
-    start_editing_page_number = lambda: None
+    start_editing_page_number = lambda *args: None
     #: callback, to be connected to :func:`~pympress.ui.UI.goto_page`
-    navigate = lambda: None
+    navigate = lambda *args: None
 
     def __init__(self, builder, pop_doc, path):
         if builder is not None:
