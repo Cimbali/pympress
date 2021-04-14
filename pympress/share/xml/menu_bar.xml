@@ -169,18 +169,6 @@
 			</item>
 		</submenu>
 
-		<submenu>
-			<attribute name="label" translatable="yes">Media backends</attribute>
-			<item>
-				<attribute name="label" translatable="yes">VLC</attribute>
-				<attribute name="action">app.use-vlc-backend</attribute>
-			</item>
-			<item>
-				<attribute name="label" translatable="yes">GStreamer</attribute>
-				<attribute name="action">app.use-gst-backend</attribute>
-			</item>
-		</submenu>
-
 		<item>
 			<attribute name="label" translatable="yes">Timing breakdown</attribute>
 			<attribute name="action">app.timing-report</attribute>
