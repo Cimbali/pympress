@@ -113,6 +113,12 @@ class VideoOverlay(builder.Builder):
         self.media_overlay.insert_action_group('media', self.action_map)
 
 
+    def play_pause(self, *args):
+        """ Signal handler to action conversion.
+        """
+        return self.action_map.lookup_action('pause').activate(None)
+
+
     def handle_embed(self, mapped_widget):
         """ Handler to embed the video player in the window, connected to the :attr:`~.Gtk.Widget.signals.map` signal.
         """
