@@ -57,7 +57,6 @@ class EditableLabel(object):
         hint = None
         if issubclass(type(widget_or_action), Gio.Action):
             hint = widget_or_action.get_name()
-            pass
 
         elif event is not None and event.type == Gdk.EventType.BUTTON_PRESS:
             # If we clicked on the Event Box then don't toggle, just enable.
@@ -305,8 +304,6 @@ class PageNumber(EditableLabel):
             return Gtk.Entry.do_key_press_event(self.edit_label, event)
         else:
             return Gtk.SpinButton.do_key_press_event(self.spin_cur, event)
-
-        return True
 
 
     def on_scroll(self, widget, event):

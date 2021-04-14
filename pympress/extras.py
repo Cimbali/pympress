@@ -493,7 +493,7 @@ class Media(object):
     def get_factory(self, mime_type):
         """ Returns a class of type :attr:`~_backend`.
         """
-        if 'mime_type' in {'image/gif', 'image/svg+xml'}:
+        if mime_type in {'image/gif', 'image/svg+xml'}:
             return self._backends['gif']
 
         # Search for specific mime type

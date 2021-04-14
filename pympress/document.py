@@ -937,10 +937,11 @@ class Document(object):
             try:
                 found = next(label for label in compatible_labels if filtering(label))
             except StopIteration:
-                continue
-            return compatible_labels[found]
-        else:
-            return None
+                pass
+            else:
+                return compatible_labels[found]
+
+        return None
 
 
     def goto(self, number):
@@ -997,8 +998,8 @@ class Document(object):
         for prev_page, prev_label in enumerate(reversed(self.page_labels[:page])):
             if prev_label != self.page_labels[page]:
                 return page - 1 - prev_page
-        else:
-            return 0
+
+        return 0
 
 
     def hist_next(self, *args):
