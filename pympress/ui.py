@@ -1425,15 +1425,12 @@ class UI(builder.Builder):
             return 'plain'
 
 
-    def swap_layout(self, old, new):
-        """ Save the old layout in the prefs, load the new layout.
+    def load_layout(self, new):
+        """ Replace the current layout
 
         Args:
-            old (`str`): the name of the layout to save, `None` to use current layout automatically
             new (`str`): the name of the layout to load, `None` to use current layout automatically
         """
-        if old is None:
-            old = self.layout_name(self.notes_mode)
         if new is None:
             new = self.layout_name(self.notes_mode)
 
@@ -1486,7 +1483,7 @@ class UI(builder.Builder):
         self.scribbler.disable_scribbling()
         self.doc.set_notes_after(target_mode.direction() == 'page number')
 
-        self.swap_layout(self.layout_name(self.notes_mode), self.layout_name(target_mode))
+        self.load_layout(self.layout_name(target_mode))
 
         self.notes_mode = target_mode
         page_type = self.notes_mode.complement()

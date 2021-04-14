@@ -110,8 +110,8 @@ class Scribbler(builder.Builder):
     #: callback, to be connected to :func:`~pympress.ui.UI.track_clicks`
     track_clicks = lambda: None
 
-    #: callback, to be connected to :func:`~pympress.ui.UI.swap_layout`
-    swap_layout = lambda: None
+    #: callback, to be connected to :func:`~pympress.ui.UI.load_layout`
+    load_layout = lambda: None
     #: callback, to be connected to :func:`~pympress.ui.UI.redraw_current_slide`
     redraw_current_slide = lambda: None
 
@@ -151,7 +151,7 @@ class Scribbler(builder.Builder):
         self.on_draw = builder.get_callback_handler('on_draw')
         self.track_motions = builder.get_callback_handler('track_motions')
         self.track_clicks = builder.get_callback_handler('track_clicks')
-        self.swap_layout = builder.get_callback_handler('swap_layout')
+        self.load_layout = builder.get_callback_handler('load_layout')
         self.redraw_current_slide = builder.get_callback_handler('redraw_current_slide')
         self.resize_cache = builder.get_callback_handler('cache.resize_widget')
         self.get_slide_point = builder.get_callback_handler('zoom.get_slide_point')
@@ -594,7 +594,7 @@ class Scribbler(builder.Builder):
             return False
 
         self.off_render.remove(self.scribble_overlay)
-        self.swap_layout(None, 'highlight')
+        self.load_layout('highlight')
 
         self.p_central.queue_draw()
         self.scribble_overlay.queue_draw()
@@ -618,7 +618,7 @@ class Scribbler(builder.Builder):
             return False
 
         extras.Cursor.set_cursor(self.scribble_p_da, 'default')
-        self.swap_layout('highlight', None)
+        self.load_layout(None)
         self.off_render.add(self.scribble_overlay)
 
         self.scribbling_mode = False
