@@ -47,14 +47,30 @@ class GstOverlay(base.VideoOverlay):
     #: A :class:`~Gst.Playbin` to be play videos
     playbin = None
 
-    #: `bool` indicating whether the player starts or is muted
-    muted = False
-
     #: `str` holding the path to the current file
     uri = None
 
     def __init__(self, *args, **kwargs):
         super(GstOverlay, self).__init__(*args, **kwargs)
+
+        # Create GStreamer playbin
+        self.playbin = Gst.ElementFactory.make('playbin', None)
+        self.sink = Gst.ElementFactory.make('gtksink', None)
+        self.playbin.set_property('video-sink', self.sink)
+
+        self.media_overlay.remove(self.movie_zone)
+        self.media_overlay.pack_start(self.sink.props.widget, True, True,  0)
+        self.media_overlay.reorder_child(self.sink.props.widget, 0)
+        self.sink.props.widget.show()
+
+        # Create bus to get events from GStreamer playin
+        bus = self.playbin.get_bus()
+        bus.add_signal_watch()
+        bus.enable_sync_message_emission()
+        bus.connect('message::eos', lambda *args: GLib.idle_add(self.do_hide))
+        bus.connect('message::error', lambda _, msg: logger.error('{} {}'.format(*msg.parse_error())))
+        bus.connect('message::async-done', self.on_play)
+        bus.connect('message::duration-changed', lambda *args: GLib.idle_add(self.do_update_duration))
 
 
     def is_playing(self):
@@ -63,7 +79,7 @@ class GstOverlay(base.VideoOverlay):
         Returns:
             `bool`: `True` iff the media is playing.
         """
-        return self.playbin is not None and self.playbin.get_state(0).state == Gst.State.PLAYING
+        return self.playbin.get_state(0).state == Gst.State.PLAYING
 
 
     def set_file(self, filepath):
@@ -81,11 +97,7 @@ class GstOverlay(base.VideoOverlay):
         Args:
             value (`bool`): `True` iff this player should be muted
         """
-        self.muted = value
-
-        if self.playbin is not None:
-            GLib.idle_add(self.playbin.set_mute, value)
-
+        self.playbin.set_property('mute', value)
         return False
 
 
@@ -109,9 +121,6 @@ class GstOverlay(base.VideoOverlay):
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
-        if self.playbin is None:
-            return False
-
         changed, time_ns = self.playbin.query_position(Gst.Format.TIME)
         self.update_progress(time_ns / 1e9)
         return True
@@ -123,42 +132,10 @@ class GstOverlay(base.VideoOverlay):
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
-        if self.playbin is not None:
-            self.do_stop()
-
-        # Create GStreamer playbin
-        self.playbin = Gst.ElementFactory.make('playbin', None)
-
-        # Create bus to get events from GStreamer playin
-        bus = self.playbin.get_bus()
-        bus.add_signal_watch()
-        bus.enable_sync_message_emission()
-        bus.connect('message::eos', lambda *args: GLib.idle_add(self.do_hide))
-        bus.connect('message::error', lambda _, msg: logger.error('{} {}'.format(*msg.parse_error())))
-        bus.connect('message::async-done', self.on_play)
-        bus.connect('message::duration-changed', lambda *args: GLib.idle_add(self.do_update_duration))
-        bus.connect('sync-message::element', self.on_sync_message)
-
         self.playbin.set_property('uri', self.uri)
-        self.playbin.set_mute(self.muted)
-
         self.playbin.set_state(Gst.State.PLAYING)
 
         return False
-
-
-    def on_sync_message(self, bus, msg):
-        """ Handle sync messages, in particular the one requesting the window handle (e.g. X11 window id)
-        """
-        window = self.movie_zone.get_window()
-        if msg.get_structure().get_name() != 'prepare-window-handle':
-            return
-        elif window is None:
-            logger.error('No window in which to embed the Gst player!')
-        elif IS_WINDOWS:
-            GLib.idle_add(lambda *args: msg.src.set_window_handle(base.get_window_handle(window)))
-        else:
-            GLib.idle_add(lambda *args: msg.src.set_window_handle(window.get_xid()))
 
 
     def do_play_pause(self):
@@ -169,8 +146,7 @@ class GstOverlay(base.VideoOverlay):
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
-        if self.playbin is not None:
-            self.playbin.set_state(Gst.State.PLAYING if not self.is_playing() else Gst.State.PAUSED)
+        self.playbin.set_state(Gst.State.PLAYING if not self.is_playing() else Gst.State.PAUSED)
 
         return False
 
@@ -178,12 +154,7 @@ class GstOverlay(base.VideoOverlay):
     def do_stop(self):
         """ Stops playing in the backend player.
         """
-        if self.playbin is None:
-            return False
-
         self.playbin.set_state(Gst.State.NULL)
-        self.playbin = None
-        self.bus = None
 
         return False
 
@@ -199,8 +170,7 @@ class GstOverlay(base.VideoOverlay):
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
-        if self.playbin is not None:
-            self.playbin.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH, t * Gst.SECOND)
+        self.playbin.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH, t * Gst.SECOND)
         return False
 
 
