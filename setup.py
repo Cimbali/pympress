@@ -398,6 +398,7 @@ if __name__ == '__main__':
                         'keywords': 'pdf-viewer, beamer, presenter, slide, projector, pdf-reader, \
                                     presentation, python, poppler, gtk, pygi, vlc',
                     },
+                    'upgrade_code': '{5D156784-ED69-49FF-A972-CBAD312187F7}',
                     'install_icon': os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico'),
                     # Patched build system to allow specifying progid, separate components, and extensions/verbs
                     'progid': 'pympress',
