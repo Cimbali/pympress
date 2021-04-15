@@ -134,20 +134,20 @@ class PatchedMsiDist(bdist_msi):
         root = msilib.Directory(self.db, cab, None, rootdir, 'TARGETDIR', 'SourceDir')
         self.db.Commit()
 
-        # Some file we want as separate components
-        for file, comp in self.separate_components.items():
-            root.start_component(component=comp, flags=0, feature=f, keyfile=file)
-            root.add_file(file)
-
         todo = [root]
-        root.start_component(component=root.logical, flags=0, feature=f)
         while todo:
             dir = todo.pop()
             for file in os.listdir(dir.absolute):
-                if os.path.isdir(os.path.join(dir.absolute, file)):
+                comp = self.separate_components.get(os.path.relpath(os.path.join(dir.absolute, file), self.bdist_dir))
+                if comp is not None:
+                    restore_component = dir.component
+                    dir.start_component(component=comp, flags=0, feature=f, keyfile=file)
+                    dir.add_file(file)
+                    dir.component = restore_component
+                elif os.path.isdir(os.path.join(dir.absolute, file)):
                     newDir = msilib.Directory(self.db, cab, dir, file, file, "{}|{}".format(dir.make_short(file), file))
                     todo.append(newDir)
-                elif file not in self.separate_components:
+                else:
                     dir.add_file(file)
 
         cab.commit(self.db)
