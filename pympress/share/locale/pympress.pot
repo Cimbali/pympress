@@ -1,6 +1,9 @@
 msgid "(and optionally seconds)"
 msgstr ""
 
+msgid "(none, left, right, top, bottom, or after)."
+msgstr ""
+
 msgid "(paused)"
 msgstr ""
 
@@ -8,6 +11,9 @@ msgid "Additional features"
 msgstr ""
 
 msgid "Adjust alignment of slides in projector screen"
+msgstr ""
+
+msgid "Align _content"
 msgstr ""
 
 msgid "All files"
@@ -22,16 +28,37 @@ msgstr ""
 msgid "Blank screen"
 msgstr ""
 
+msgid "Blank/unblank content screen"
+msgstr ""
+
+msgid "Building FileWatcher"
+msgstr ""
+
 msgid "Cairo can not draw gif"
 msgstr ""
 
 msgid "Cancel goto/jump/highlighting/zooming"
 msgstr ""
 
+msgid "Caused by "
+msgstr ""
+
+msgid "Clear and restore per page label"
+msgstr ""
+
+msgid "Clear and restore per page number"
+msgstr ""
+
+msgid "Clear on page change"
+msgstr ""
+
 msgid "Clock"
 msgstr ""
 
 msgid "Close file"
+msgstr ""
+
+msgid "Close opened pympress instance"
 msgstr ""
 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
@@ -52,13 +79,22 @@ msgstr ""
 msgid "Current slide"
 msgstr ""
 
-msgid "ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system."
+msgid "ERROR: Gobject Introspections and/or pycairo module is missing, make sure Gtk, pygobject and pycairo are installed on your system."
 msgstr ""
 
 msgid "Error loading icon for about window"
 msgstr ""
 
 msgid "Error opening the file \"{}\""
+msgstr ""
+
+msgid "Error parsing option from config file {}.{} \"{}\" to bool"
+msgstr ""
+
+msgid "Error parsing option from config file {}.{} \"{}\" to float"
+msgstr ""
+
+msgid "Error parsing option from config file {}.{} \"{}\" to int"
 msgstr ""
 
 msgid "First slide"
@@ -70,6 +106,9 @@ msgstr ""
 msgid "Fullscreen Presentation running"
 msgstr ""
 
+msgid "GdkPixbuf gif player"
+msgstr ""
+
 msgid "Go back in slide history"
 msgstr ""
 
@@ -79,13 +118,13 @@ msgstr ""
 msgid "Go to page number"
 msgstr ""
 
-msgid "GtkImage gif player"
-msgstr ""
-
 msgid "Highlight"
 msgstr ""
 
-msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
+msgid "Highlight mode"
+msgstr ""
+
+msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
 msgstr ""
 
 msgid "Invalid log level \"{}\", try one of {}"
@@ -106,7 +145,22 @@ msgstr ""
 msgid "Media support uses {}."
 msgstr ""
 
+msgid "Media support using {} is disabled."
+msgstr ""
+
+msgid "Media support: "
+msgstr ""
+
+msgid "Missing dependency: python \"{}\" package"
+msgstr ""
+
+msgid "Monitoring of changes to reload files automatically is not available"
+msgstr ""
+
 msgid "Navigating"
+msgstr ""
+
+msgid "Never clear (manually only)"
 msgstr ""
 
 msgid "Next slide"
@@ -131,9 +185,6 @@ msgid "Open file"
 msgstr ""
 
 msgid "Open..."
-msgstr ""
-
-msgid "Options:"
 msgstr ""
 
 msgid "Overrides the detection from the file."
@@ -172,6 +223,9 @@ msgstr ""
 msgid "Previous slide with different label"
 msgstr ""
 
+msgid "Print version and exit"
+msgstr ""
+
 msgid "Pympress Content"
 msgstr ""
 
@@ -208,6 +262,9 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
+msgid "Reset talk timer"
+msgstr ""
+
 msgid "Reset timer"
 msgstr ""
 
@@ -223,7 +280,7 @@ msgstr ""
 msgid "Set talk _Time"
 msgstr ""
 
-msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
+msgid "Set the position of notes on the pdf page"
 msgstr ""
 
 msgid "Slide number"
@@ -242,9 +299,6 @@ msgid "The estimated (intended) talk time in minutes"
 msgstr ""
 
 msgid "The log is written to "
-msgstr ""
-
-msgid "This help"
 msgstr ""
 
 msgid "Time elapsed"
@@ -274,6 +328,18 @@ msgstr ""
 msgid "Toggle notes mode"
 msgstr ""
 
+msgid "Toggle pause of talk timer"
+msgstr ""
+
+msgid "Tools below slide"
+msgstr ""
+
+msgid "Tools next to slide"
+msgstr ""
+
+msgid "Try your operating system’s package manager, or try running: pip install pygobject pycairo"
+msgstr ""
+
 msgid "Undo highlight stroke"
 msgstr ""
 
@@ -295,13 +361,7 @@ msgstr ""
 msgid "Unzoom"
 msgstr ""
 
-msgid "Usage: {} [options] <presentation_file>"
-msgstr ""
-
 msgid "Validate goto/jump destination"
-msgstr ""
-
-msgid "Video support using {} is disabled."
 msgstr ""
 
 msgid "Windows"
@@ -310,7 +370,7 @@ msgstr ""
 msgid "Zoom"
 msgstr ""
 
-msgid "_Align content"
+msgid "_After slide pages"
 msgstr ""
 
 msgid "_Annotations"
@@ -322,7 +382,10 @@ msgstr ""
 msgid "_Blue"
 msgstr ""
 
-msgid "_Bottom"
+msgid "_Bottom half of slide"
+msgstr ""
+
+msgid "_Close"
 msgstr ""
 
 msgid "_Disabled"
@@ -355,7 +418,7 @@ msgstr ""
 msgid "_Last"
 msgstr ""
 
-msgid "_Left"
+msgid "_Left half of slide"
 msgstr ""
 
 msgid "_Manual"
@@ -370,10 +433,16 @@ msgstr ""
 msgid "_Notes mode"
 msgstr ""
 
+msgid "_Open"
+msgstr ""
+
 msgid "_Pause timer"
 msgstr ""
 
 msgid "_Permanent"
+msgstr ""
+
+msgid "_Pointer"
 msgstr ""
 
 msgid "_Presentation"
@@ -382,13 +451,16 @@ msgstr ""
 msgid "_Previous"
 msgstr ""
 
+msgid "_Quit"
+msgstr ""
+
 msgid "_Red"
 msgstr ""
 
 msgid "_Reset timer"
 msgstr ""
 
-msgid "_Right"
+msgid "_Right half of slide"
 msgstr ""
 
 msgid "_Shortcuts"
@@ -400,7 +472,7 @@ msgstr ""
 msgid "_Swap screens"
 msgstr ""
 
-msgid "_Top"
+msgid "_Top half of slide"
 msgstr ""
 
 msgid "_Undo zoom"
@@ -410,9 +482,6 @@ msgid "_Zoom in"
 msgstr ""
 
 msgid "access denied when trying to access screen saver settings in registry!"
-msgstr ""
-
-msgid "column"
 msgstr ""
 
 msgid "duration"
@@ -427,7 +496,7 @@ msgstr ""
 msgid "page label"
 msgstr ""
 
-msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
+msgid "pip will then download and compile pygobject and pycairo, for which you need the Gtk and cairo headers (or development packages)."
 msgstr ""
 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
