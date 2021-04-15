@@ -205,12 +205,12 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             self.set('presenter', 'pointer', 'red')
             self.set('presenter', 'pointer_mode', 'disabled')
 
-        if self.has_option('scribble', 'color'):
+        if self.has_section('scribble') and self.has_option('scribble', 'color'):
             self.set('scribble', 'color_9', self.get('scribble', 'color'))
             self.remove_option('scribble', 'color')
             self.set('scribble', 'active_pen', '9')
 
-        if self.has_option('scribble', 'width'):
+        if self.has_section('scribble') and self.has_option('scribble', 'width'):
             self.set('scribble', 'width_9', self.get('scribble', 'width'))
             self.remove_option('scribble', 'width')
             self.set('scribble', 'active_pen', '9')
@@ -220,6 +220,11 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
 
         if self.has_option('content', 'monitor'):
             self.remove_option('content', 'monitor')
+
+        if self.has_section('scribble'):
+            for key, val in self.items('scribble'):
+                self.set('highlight', key, val)
+            self.remove_section('scribble')
 
         # When we went from gtk signal handlers to actions, some renaming had to be done
         for old, new in {

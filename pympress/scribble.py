@@ -171,15 +171,15 @@ class Scribbler(builder.Builder):
 
         # Load color and active pen preferences. Pen 0 is the eraser.
         self.color_width = [(Gdk.RGBA(0, 0, 0, 0), 150)] + list(zip(
-            [self.parse_color(config.get('scribble', 'color_{}'.format(pen))) for pen in range(1, 10)],
-            [config.getint('scribble', 'width_{}'.format(pen)) for pen in range(1, 10)],
+            [self.parse_color(config.get('highlight', 'color_{}'.format(pen))) for pen in range(1, 10)],
+            [config.getint('highlight', 'width_{}'.format(pen)) for pen in range(1, 10)],
         ))
 
         self.scribble_preset_buttons = [
             self.get_object('pen_preset_{}'.format(pen) if pen else 'eraser') for pen in range(10)
         ]
 
-        active_pen = config.get('scribble', 'active_pen')
+        active_pen = config.get('highlight', 'active_pen')
         self.setup_actions({
             'highlight':         dict(activate=self.switch_scribbling, state=False),
             'highlight-use-pen': dict(activate=self.load_preset, state=active_pen, parameter_type=str, enabled=False),
@@ -191,7 +191,7 @@ class Scribbler(builder.Builder):
 
         self.pen_action = self.get_application().lookup_action('highlight-use-pen')
         self.load_preset(self.pen_action, int(active_pen) if active_pen.isnumeric() else 0)
-        self.set_mode(None, GLib.Variant.new_string(config.get('scribble', 'mode')))
+        self.set_mode(None, GLib.Variant.new_string(config.get('highlight', 'mode')))
 
 
     def set_mode(self, gaction, param):
@@ -207,7 +207,7 @@ class Scribbler(builder.Builder):
 
         self.get_application().lookup_action('highlight-mode').change_state(GLib.Variant.new_string(new_mode))
         self.highlight_mode = new_mode
-        self.config.set('scribble', 'mode', self.highlight_mode)
+        self.config.set('highlight', 'mode', self.highlight_mode)
         self.remembered_scribbles.clear()
 
         return True
@@ -473,8 +473,8 @@ class Scribbler(builder.Builder):
         self.scribble_preset_buttons[self.active_preset].queue_draw()
 
         pen = self.active_preset
-        self.config.set('scribble', 'color_{}'.format(pen), self.scribble_color.to_string())
-        self.config.set('scribble', 'width_{}'.format(pen), str(self.scribble_width))
+        self.config.set('highlight', 'color_{}'.format(pen), self.scribble_color.to_string())
+        self.config.set('highlight', 'width_{}'.format(pen), str(self.scribble_width))
 
 
     def adjust_buttons(self):
@@ -649,7 +649,7 @@ class Scribbler(builder.Builder):
 
         target = str(self.active_preset) if self.active_preset else 'eraser'
 
-        self.config.set('scribble', 'active_pen', target)
+        self.config.set('highlight', 'active_pen', target)
         self.pen_action.change_state(GLib.Variant.new_string(target))
         self.scribble_color, self.scribble_width = self.color_width[self.active_preset]
 
