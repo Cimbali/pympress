@@ -54,10 +54,13 @@
             <property name="can-focus">False</property>
             <property name="left-padding">12</property>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="preset_toolbar">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="halign">center</property>
                 <property name="valign">center</property>
+                <property name="margin-right">5</property>
+                <property name="margin-bottom">5</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
@@ -340,6 +343,7 @@
                 <property name="sensitive">False</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
+                <property name="valign">center</property>
                 <property name="action-name">app.highlight-redo</property>
                 <property name="use-stock">True</property>
                 <property name="always-show-image">True</property>
@@ -351,9 +355,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkBox" id="scribble_color_toolbox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="halign">center</property>
                 <property name="valign">center</property>
                 <property name="orientation">vertical</property>
                 <child>

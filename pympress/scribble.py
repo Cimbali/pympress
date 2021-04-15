@@ -33,7 +33,7 @@ import math
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gdk, GLib
+from gi.repository import Gtk, Gdk, GLib
 
 from pympress import builder, extras, util
 
@@ -140,6 +140,15 @@ class Scribbler(builder.Builder):
     #: `tuple` of (`int`, `str`) indicating the current page number and label
     current_page = (None, None)
 
+    #: `str` indicating the current layout of the highlight toolbar
+    tools_orientation = 'vertical'
+    #: :class:`~Gtk.Box` containing the presets
+    preset_toolbar = None
+    #: :class:`~Gtk.Box` containing the scribble buttons
+    scribble_toolbar = None
+    #: :class:`~Gtk.Box` containing the scribble color and width selectors
+    scribble_color_toolbox = None
+
 
     def __init__(self, config, builder, notes_mode):
         super(Scribbler, self).__init__()
@@ -179,6 +188,9 @@ class Scribbler(builder.Builder):
             self.get_object('pen_preset_{}'.format(pen) if pen else 'eraser') for pen in range(10)
         ]
 
+        self.tools_orientation = self.config.get('layout', 'highlight_tools')
+        self.adjust_tools_orientation()
+
         active_pen = config.get('highlight', 'active_pen')
         self.setup_actions({
             'highlight':         dict(activate=self.switch_scribbling, state=False),
@@ -187,7 +199,10 @@ class Scribbler(builder.Builder):
             'highlight-redo':    dict(activate=self.redo_scribble),
             'highlight-undo':    dict(activate=self.pop_scribble),
             'highlight-mode':    dict(activate=self.set_mode, state=self.highlight_mode, parameter_type=str),
+            'highlight-tools-orientation': dict(activate=self.set_tools_orientation, state=self.tools_orientation,
+                                                parameter_type=str),
         })
+
 
         self.pen_action = self.get_application().lookup_action('highlight-use-pen')
         self.load_preset(self.pen_action, int(active_pen) if active_pen.isnumeric() else 0)
@@ -566,6 +581,47 @@ class Scribbler(builder.Builder):
         self.resize_cache(widget.get_name(), event.width, event.height)
 
 
+    def set_tools_orientation(self, gaction, target):
+        """ Changes the orientation of the highlighting tool box.
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            target (:class:`~GLib.Variant`): the new orientation to set, as a string wrapped in a GLib.Variant
+
+        Returns:
+            `bool`: whether the preset was loaded
+        """
+        orientation = target.get_string()
+        if orientation == self.tools_orientation:
+            return False
+        elif orientation not in ['horizontal', 'vertical']:
+            logger.error('Unexpected highlight-tools orientation {}'.format(orientation))
+            return False
+
+        self.tools_orientation = orientation
+        self.adjust_tools_orientation()
+
+        gaction.change_state(target)
+        self.config.set('layout', 'highlight_tools', self.tools_orientation)
+
+
+    def adjust_tools_orientation(self):
+        """ Actually change the highlight tool elements orientations according to self.tools_orientation
+        """
+        orientation = Gtk.Orientation.VERTICAL if self.tools_orientation == 'vertical' else Gtk.Orientation.HORIZONTAL
+        self.preset_toolbar.set_orientation(orientation)
+        self.scribble_toolbar.set_orientation(orientation)
+        self.scribble_color_toolbox.set_orientation(orientation)
+        self.scribble_width_selector.set_orientation(orientation)
+
+        w, h = sorted(self.scribble_width_selector.get_size_request(), reverse=self.tools_orientation != 'vertical')
+        self.scribble_width_selector.set_size_request(w, h)
+
+        # NB the parent container is layed out perpendicularly to its contents
+        self.scribble_overlay.set_orientation(Gtk.Orientation.HORIZONTAL if self.tools_orientation == 'vertical' else
+                                              Gtk.Orientation.VERTICAL)
+
+
     def switch_scribbling(self, gaction, target=None):
         """ Starts the mode where one can read on top of the screen.
 
@@ -636,8 +692,8 @@ class Scribbler(builder.Builder):
         """ Loads the preset color of a given number or designed by a given widget, as an event handler.
 
         Args:
-            widget (:class:`~Gtk.Widget`):  the widget which has received the event, or an `int` for the selected preset
-            event (:class:`~Gdk.Event`):  the GTK event.
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            target (:class:`~GLib.Variant`): the new preset to load, as a string wrapped in a GLib.Variant
 
         Returns:
             `bool`: whether the preset was loaded

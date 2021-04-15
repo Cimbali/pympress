@@ -109,26 +109,40 @@
 		</submenu>
 		<submenu>
 			<attribute name="label" translatable="yes">Highlight mode</attribute>
-			<item>
-				<attribute name="label" translatable="yes">Clear on page change</attribute>
-				<attribute name="action">app.highlight-mode</attribute>
-				<attribute name="target">single-page</attribute>
-			</item>
-			<item>
-				<attribute name="label" translatable="yes">Never clear (manually only)</attribute>
-				<attribute name="action">app.highlight-mode</attribute>
-				<attribute name="target">global</attribute>
-			</item>
-			<item>
-				<attribute name="label" translatable="yes">Clear and restore per page number</attribute>
-				<attribute name="action">app.highlight-mode</attribute>
-				<attribute name="target">per-page</attribute>
-			</item>
-			<item>
-				<attribute name="label" translatable="yes">Clear and restore per page label</attribute>
-				<attribute name="action">app.highlight-mode</attribute>
-				<attribute name="target">per-label</attribute>
-			</item>
+			<section>
+				<item>
+					<attribute name="label" translatable="yes">Clear on page change</attribute>
+					<attribute name="action">app.highlight-mode</attribute>
+					<attribute name="target">single-page</attribute>
+				</item>
+				<item>
+					<attribute name="label" translatable="yes">Never clear (manually only)</attribute>
+					<attribute name="action">app.highlight-mode</attribute>
+					<attribute name="target">global</attribute>
+				</item>
+				<item>
+					<attribute name="label" translatable="yes">Clear and restore per page number</attribute>
+					<attribute name="action">app.highlight-mode</attribute>
+					<attribute name="target">per-page</attribute>
+				</item>
+				<item>
+					<attribute name="label" translatable="yes">Clear and restore per page label</attribute>
+					<attribute name="action">app.highlight-mode</attribute>
+					<attribute name="target">per-label</attribute>
+				</item>
+			</section>
+			<section>
+				<item>
+					<attribute name="label" translatable="yes">Tools next to slide</attribute>
+					<attribute name="action">app.highlight-tools-orientation</attribute>
+					<attribute name="target">vertical</attribute>
+				</item>
+				<item>
+					<attribute name="label" translatable="yes">Tools below slide</attribute>
+					<attribute name="action">app.highlight-tools-orientation</attribute>
+					<attribute name="target">horizontal</attribute>
+				</item>
+			</section>
 		</submenu>
 
 		<item>
