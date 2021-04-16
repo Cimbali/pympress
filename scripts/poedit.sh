@@ -8,6 +8,7 @@ upload() {
     curl -sX POST https://api.poeditor.com/v2/projects/upload \
           -F api_token="$poeditor_api_token" \
           -F id="301055" -F updating="terms" -F file=@"$pot" \
+          -F tags="{\"obsolete\":\"removed\"}" \
           | jq -r '.response.message'
 }
 
@@ -64,6 +65,9 @@ while [ $# -gt 0 ]; do
         for lang in `languages`; do
             download $lang
         done
+        contributors
+    elif test "$1" = "contributors"; then
+        getpass
         contributors
     elif test "$1" = "contributors"; then
         getpass
