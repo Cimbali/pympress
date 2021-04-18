@@ -37,3 +37,15 @@ jobs:
       run: |
         # Full list of ignores, fail on errors. No Docs errors.
         flake8 . --count --show-source --statistics --select=D
+
+  macos:
+    name: Install and run test on mac
+    runs-on: macos-latest
+    steps:
+    - name: Install latest
+      run: |
+        brew install pympress --HEAD
+
+    - name: Test
+      run: |
+        brew test pympress
