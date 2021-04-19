@@ -44,7 +44,7 @@ jobs:
     steps:
     - name: Install latest
       run: |
-        brew install Cimbali/homebrew-core/pympress.rb --HEAD
+        brew install Cimbali/core/pympress --HEAD
 
     - name: Test
       run: |

@@ -34,7 +34,6 @@ import subprocess
 from ctypes.util import find_library
 import setuptools
 
-from distutils.cmd import Command
 from setuptools.command.build_py import build_py
 from setuptools.command.bdist_rpm import bdist_rpm
 
@@ -48,7 +47,7 @@ except ImportError:
         user_options = []
 
 
-def find_index_startstring(haystack, needle, start = 0, stop = sys.maxsize):
+def find_index_startstring(haystack, needle, start=0, stop=sys.maxsize):
     """ Return the index of the first string in haystack starting with needle, or raise ValueError if none match.
     """
     try:
@@ -154,6 +153,7 @@ class PatchedMsiDist(bdist_msi):
         cab.commit(self.db)
 
 
+
 class PatchedRpmDist(bdist_rpm):
     """ Patched bdist rpm to avoid running seds and breaking up the build system
     """
@@ -215,22 +215,30 @@ class PatchedRpmDist(bdist_rpm):
         ] + spec[:insert_pos] + insert + spec[insert_pos:]
 
 
+
 class GettextBuildCatalog(build_py):
     """ Patched build command to generate translations .mo files using gettext’s msgfmt
 
     This is used for build systems that do not have easy access to Babel
     """
     def initialize_options(self):
+        """ Initialize options
+        """
         self.domain = None
         self.directory = None
         self.use_fuzzy = False
         self.statistics = True
 
+
     def finalize_options(self):
+        """ Finalize options
+        """
         assert self.domain is not None and self.directory is not None
 
+
     def run(self):
-        """ Run msgfmt before running (parent) develop command. """
+        """ Run msgfmt before running (parent) develop command
+        """
         po_wildcard = os.path.join(self.directory, '*', 'LC_MESSAGES', self.domain + '.po')
         for po in glob.glob(po_wildcard):
             print(po)
@@ -245,13 +253,15 @@ class GettextBuildCatalog(build_py):
             subprocess.check_output(cmd)
 
 
+
 class BuildWithCatalogs(build_py):
     """ Patched build command to generate translations .mo files using Babel
 
     This is what we use by default, e.g. when distributing through PyPI
     """
     def run(self):
-        """ Run compile_catalog before running (parent) develop command. """
+        """ Run compile_catalog before running (parent) develop command
+        """
         self.distribution.run_command('compile_catalog')
         build_py.run(self)
 
@@ -383,7 +393,17 @@ def pympress_resources():
 
 if __name__ == '__main__':
 
-    options = {}
+    try:
+        from babel.messages.frontend import compile_catalog
+    except ImportError:
+        compile_catalog = GettextBuildCatalog
+
+    options = {'cmdclass': {
+        'build_py': BuildWithCatalogs,
+        'bdist_rpm': PatchedRpmDist,
+        'bdist_msi': PatchedMsiDist,
+        'compile_catalog': compile_catalog,
+    }}
 
     # subtle tweak: don’t put an install section in installed packages
     with open('README.md') as f:
@@ -405,7 +425,6 @@ if __name__ == '__main__':
 
         setup_opts = {
             **options,
-            'cmdclass': {'bdist_msi': PatchedMsiDist},
             'options': {
                 'build_exe': {
                     'includes': [],
@@ -462,13 +481,6 @@ if __name__ == '__main__':
     else:
         # Normal behaviour: use setuptools, load options from setup.cfg
         print('Using setuptools.setup():', file=sys.stderr)
-
-        options['cmdclass'] = {'build_py': BuildWithCatalogs, 'bdist_rpm': PatchedRpmDist}
-
-        try:
-            import babel
-        except ImportError:
-            options['cmdclass']['compile_catalog'] = GettextBuildCatalog
 
         setuptols_version = tuple(int(n) for n in setuptools.__version__.split('.'))
         # older versions are missing out!
