@@ -134,6 +134,7 @@ class Pympress(Gtk.Application):
             Gdk.set_allowed_backends('x11,*')
 
         logger.info(self.version_string)
+        logger.setLevel(logging.WARNING)
         Gtk.Application.do_startup(self)
 
 
