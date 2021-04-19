@@ -34,6 +34,7 @@ import subprocess
 from ctypes.util import find_library
 import setuptools
 
+from distutils.cmd import Command
 from setuptools.command.build_py import build_py
 from setuptools.command.bdist_rpm import bdist_rpm
 
@@ -216,7 +217,7 @@ class PatchedRpmDist(bdist_rpm):
 
 
 
-class GettextBuildCatalog(build_py):
+class GettextBuildCatalog(Command):
     """ Patched build command to generate translations .mo files using gettext’s msgfmt
 
     This is used for build systems that do not have easy access to Babel
