@@ -750,121 +750,95 @@ class Zoom(object):
             cairo_context.fill()
 
 
-try:
-    from watchdog.observers import Observer
-    from watchdog.events import FileSystemEventHandler
-
-except ImportError:
-    logger.error(_('Missing dependency: python "{}" package').format('watchdog'))
-    logger.info(_('Monitoring of changes to reload files automatically is not available'))
-
     def nop(*args, **kwargs):
         """ Do nothing
         """
         pass
 
-    class FileWatcher(object):
-        """ Dummy class that does nothing
+
+
+class FileWatcher(object):
+    """ A class that wraps watchdog objects, to trigger callbacks when a file changes.
+    """
+    #: A :class:`~watchdog.observers.Observer` to watch when the file changes
+    observer = None
+
+    #: A :class:`~watchdog.events.FileSystemEventHandler` to get notified when the file changes
+    monitor = None
+
+    # `int` that is a GLib timeout id to delay the callback
+    timeout = 0
+
+    def __init__(self):
+        try:
+            from watchdog.observers import Observer
+            from watchdog.events import FileSystemEventHandler
+
+            self.observer = Observer()
+            self.monitor = FileSystemEventHandler()
+
+            self.observer.start()
+
+        except ImportError:
+            logger.error(_('Missing dependency: python "{}" package').format('watchdog'))
+            logger.info(_('Monitoring of changes to reload files automatically is not available'))
+
+
+    def __del__(self):
+        """ On finalize, cancel the watchdog observer thread.
         """
-        watch_file = nop
-        enqueue = nop
-        call = nop
-        stop_watching = nop
-        start_daemon = nop
-        stop_daemon = nop
+        self.stop_watching()
+        if self.observer.is_alive():
+            self.observer.stop()
 
-else:
-    logger.info(_('Building FileWatcher'))
+        self.observer = None
 
-    class FileWatcher(object):
-        """ A class with only static methods that wraps object watchdogs, to trigger callbacks when a file changes.
+
+    def watch_file(self, path, callback, *args, **kwargs):
+        """ Watches a new file with a new callback. Removes any precedent watched files.
+
+        If the optional watchdog dependency is missing, does nothing.
+
+        Args:
+            path (`str`): full path to the file to watch
+            callback (`function`): callback to call with all the further arguments when the file changes
         """
-        #: A :class:`~watchdog.observers.Observer` to watch when the file changes
-        observer = None
+        if self.observer is None:
+            return
 
-        #: A :class:`~watchdog.events.FileSystemEventHandler` to get notified when the file changes
-        monitor = None
+        self.stop_watching()
 
-        # `int` that is a GLib timeout id to delay the callback
-        timeout = 0
-
-        @classmethod
-        def watch_file(cls, path, callback, *args, **kwargs):
-            """ Watches a new file with a new callback. Removes any precedent watched files.
-
-            Args:
-                path (`str`): full path to the file to watch
-                callback (`function`): callback to call with all the further arguments when the file changes
-            """
-            cls.start_daemon()
-            cls.stop_watching()
-
-            directory = os.path.dirname(path[7 if path.startswith('file:///') else 0:])
-            cls.monitor.on_modified = lambda e: cls.enqueue(callback, *args, **kwargs) if e.src_path == path else None
-            try:
-                cls.observer.schedule(cls.monitor, directory)
-            except OSError:
-                logger.error('Impossible to open dir at {}'.format(directory), exc_info = True)
-
-        @classmethod
-        def enqueue(cls, callback, *args, **kwargs):
-            """ Do not call callback directly, instead delay as to avoid repeated calls in short periods of time.
-
-            Args:
-                callback (`function`): callback to call with all the further arguments
-            """
-            if cls.timeout:
-                GLib.Source.remove(cls.timeout)
-            cls.timeout = GLib.timeout_add(200, cls.call, callback, *args, **kwargs)
+        directory = os.path.dirname(path[7 if path.startswith('file:///') else 0:])
+        self.monitor.on_modified = lambda e: self._enqueue(callback, *args, **kwargs) if e.src_path == path else None
+        try:
+            self.observer.schedule(self.monitor, directory)
+        except OSError:
+            logger.error('Impossible to open dir at {}'.format(directory), exc_info = True)
 
 
-        @classmethod
-        def call(cls, callback, *args, **kwargs):
-            """ Call the callback.
-
-            Args:
-                callback (`function`): callback to call with all the further arguments
-            """
-            if cls.timeout:
-                cls.timeout = 0
-            callback(*args, **kwargs)
+    def stop_watching(self):
+        """ Remove all files that are being watched.
+        """
+        self.observer.unschedule_all()
 
 
-        @classmethod
-        def stop_watching(cls):
-            """ Remove all files that are being watched.
-            """
-            cls.observer.unschedule_all()
+    def _enqueue(self, callback, *args, **kwargs):
+        """ Do not call callback directly, instead delay as to avoid repeated calls in short periods of time.
+
+        Args:
+            callback (`function`): callback to call with all the further arguments
+        """
+        if self.timeout:
+            GLib.Source.remove(self.timeout)
+        self.timeout = GLib.timeout_add(200, self._call, callback, *args, **kwargs)
 
 
-        @classmethod
-        def start_daemon(cls):
-            """ Start the watchdog observer thread.
-            """
-            if cls.observer is None:
-                cls.observer = Observer()
-                cls.monitor = FileSystemEventHandler()
+    def _call(self, callback, *args, **kwargs):
+        """ Call the callback.
 
-            if not cls.observer.is_alive():
-                cls.observer.start()
-
-
-        @classmethod
-        def stop_daemon(cls, wait = False):
-            """ Stop the watchdog observer thread.
-
-            Args:
-                wait (`bool`): whether to wait for the thread to have joined before returning
-            """
-            if cls.observer is None:
-                return
-
-            cls.observer.unschedule_all()
-            if cls.observer.is_alive():
-                cls.observer.stop()
-
-            while wait and cls.observer.is_alive():
-                cls.observer.join()
-
-            cls.observer = None
-            cls.monitor = None
+        Args:
+            callback (`function`): callback to call with all the further arguments
+        """
+        if self.timeout:
+            self.timeout = 0
+        callback(*args, **kwargs)

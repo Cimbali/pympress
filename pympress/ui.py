@@ -152,10 +152,13 @@ class UI(builder.Builder):
     #: A :class:`~Gtk.ShortcutsWindow` to show the shortcuts
     shortcuts_window = None
 
-    #: A :class:`Gtk.AccelGroup` to store the shortcuts
+    #: A :class:`~Gtk.AccelGroup` to store the shortcuts
     accel_group = None
-    #: A :class:`Gio.Menu` to display the recent files to open
+    #: A :class:`~Gio.Menu` to display the recent files to open
     recent_menu = None
+
+    #: A :class:`~pympress.extras.FileWatcher` object to reload modified files
+    file_watcher = None
 
     ##############################################################################
     #############################      UI setup      #############################
@@ -243,6 +246,7 @@ class UI(builder.Builder):
         self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))
         self.timing = extras.TimingReport(self)
         self.talk_time = talk_time.TimeCounter(self, self.est_time, self.timing)
+        self.file_watcher = extras.FileWatcher()
         self.config.register_actions(self)
 
         # Get placeable widgets. NB, get the highlight one manually from the scribbler class
@@ -262,8 +266,6 @@ class UI(builder.Builder):
 
         # Common to both windows
         self.load_icons()
-
-        extras.FileWatcher.start_daemon()
 
         # Adjust default visibility of items
         self.prev_button.set_no_show_all(True)
@@ -564,7 +566,6 @@ class UI(builder.Builder):
         self.scribbler.disable_scribbling()
         self.medias.hide_all()
 
-        extras.FileWatcher.stop_daemon()
         self.doc.cleanup_media_files()
 
         if self.app.get_action_state('content-fullscreen'):
@@ -618,7 +619,9 @@ class UI(builder.Builder):
 
             if not reloading and docpath:
                 Gtk.RecentManager.get_default().add_item(self.doc.get_uri())
-                extras.FileWatcher.watch_file(self.doc.get_path(), self.reload_document)
+
+            if not reloading:
+                self.file_watcher.watch_file(self.doc.get_path(), self.reload_document)
 
         except GLib.Error:
             if reloading:
@@ -626,7 +629,7 @@ class UI(builder.Builder):
 
             self.doc = document.Document.create(self, None)
             self.error_opening_file(docpath)
-            extras.FileWatcher.stop_watching()
+            self.file_watcher.stop_watching()
 
         self.current_page = self.preview_page = self.doc.goto(page)
         self.doc.goto(self.current_page)
