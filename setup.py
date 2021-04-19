@@ -30,11 +30,12 @@ import os
 import re
 import sys
 import glob
+import subprocess
 from ctypes.util import find_library
 import setuptools
 
-from setuptools.command.develop import develop
-from setuptools.command.install import install
+from distutils.cmd import Command
+from setuptools.command.build_py import build_py
 from setuptools.command.bdist_rpm import bdist_rpm
 
 try:
@@ -214,22 +215,45 @@ class PatchedRpmDist(bdist_rpm):
         ] + spec[:insert_pos] + insert + spec[insert_pos:]
 
 
+class GettextBuildCatalog(build_py):
+    """ Patched build command to generate translations .mo files using gettext’s msgfmt
 
-class PatchedDevelop(develop):
-    """ Patched installation for development mode to build translations .mo files. """
+    This is used for build systems that do not have easy access to Babel
+    """
+    def initialize_options(self):
+        self.domain = None
+        self.directory = None
+        self.use_fuzzy = False
+        self.statistics = True
+
+    def finalize_options(self):
+        assert self.domain is not None and self.directory is not None
+
+    def run(self):
+        """ Run msgfmt before running (parent) develop command. """
+        po_wildcard = os.path.join(self.directory, '*', 'LC_MESSAGES', self.domain + '.po')
+        for po in glob.glob(po_wildcard):
+            print(po)
+            mo = os.path.splitext(po)[0] + '.mo'
+
+            cmd = ['msgfmt', po, '-o', mo]
+            if self.use_fuzzy:
+                cmd.insert(1, '--use-fuzzy')
+            if self.statistics:
+                cmd.insert(1, '--statistics')
+
+            subprocess.check_output(cmd)
+
+
+class BuildWithCatalogs(build_py):
+    """ Patched build command to generate translations .mo files using Babel
+
+    This is what we use by default, e.g. when distributing through PyPI
+    """
     def run(self):
         """ Run compile_catalog before running (parent) develop command. """
         self.distribution.run_command('compile_catalog')
-        develop.run(self)
-
-
-class PatchedInstall(install):
-    """Patched installation for installation mode to build translations .mo files. """
-    def run(self):
-        """ Run compile_catalog before running (parent) install command. """
-        if not self.single_version_externally_managed:
-            self.distribution.run_command('compile_catalog')
-        install.run(self)
+        build_py.run(self)
 
 
 # All functions listing resources return a list of pairs: (system path, distribution relative path)
@@ -439,7 +463,12 @@ if __name__ == '__main__':
         # Normal behaviour: use setuptools, load options from setup.cfg
         print('Using setuptools.setup():', file=sys.stderr)
 
-        options['cmdclass'] = {'develop': PatchedDevelop, 'install': PatchedInstall, 'bdist_rpm': PatchedRpmDist}
+        options['cmdclass'] = {'build_py': BuildWithCatalogs, 'bdist_rpm': PatchedRpmDist}
+
+        try:
+            import babel
+        except ImportError:
+            options['cmdclass']['compile_catalog'] = GettextBuildCatalog
 
         setuptols_version = tuple(int(n) for n in setuptools.__version__.split('.'))
         # older versions are missing out!
