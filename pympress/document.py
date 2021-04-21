@@ -378,18 +378,18 @@ class Page(object):
             if dest_type == Poppler.DestType.NAMED:
                 dest = self.parent.doc.find_dest(action.goto_dest.dest.named_dest)
                 if dest:
-                    return Link.build_closure(self.parent.goto, dest.page_num - 1)
+                    return Link.build_closure(self.parent.goto_page, dest.page_num - 1)
                 else:
                     warning = _('Unrecognized named destination: ') + str(action.goto_dest.dest.named_dest)
             elif dest_type != Poppler.DestType.UNKNOWN:
-                return Link.build_closure(self.parent.goto, action.goto_dest.dest.page_num - 1)
+                return Link.build_closure(self.parent.goto_page, action.goto_dest.dest.page_num - 1)
 
         elif link_type == Poppler.ActionType.NAMED:
             dest_name = action.named.named_dest
             dest = self.parent.doc.find_dest(dest_name)
 
             if dest:
-                return Link.build_closure(self.parent.goto, dest.page_num)
+                return Link.build_closure(self.parent.goto_page, dest.page_num)
             elif dest_name == "GoBack":
                 return self.parent.goto_prev_hist
             elif dest_name == "GoForward":
