@@ -2,9 +2,9 @@
 # arch=x86_64 or i686, py=python2 or python3, vlc=with-vlc or without-vlc
 set -ve
 pacman -S --noprogressbar --noconfirm --needed base-devel mingw-w64-$arch-gtk3 mingw-w64-$arch-cairo mingw-w64-$arch-poppler mingw-w64-$arch-$py mingw-w64-$arch-gcc mingw-w64-$arch-vlc zip
-pacman -S --noprogressbar --noconfirm --needed mingw-w64-$arch-$py-pip mingw-w64-$arch-$py-gobject mingw-w64-$arch-$py-cairo mingw-w64-$arch-$py-appdirs mingw-w64-$arch-$py-packaging
+pacman -S --noprogressbar --noconfirm --needed mingw-w64-$arch-$py-pip mingw-w64-$arch-$py-gobject mingw-w64-$arch-$py-cairo mingw-w64-$arch-$py-appdirs mingw-w64-$arch-$py-packaging mingw-w64-$arch-$py-cx_Freeze
 $py -m pip install --disable-pip-version-check --upgrade pip
-$py -m pip install watchdog python-vlc babel cx_Freeze
+$py -m pip install watchdog python-vlc babel
 
 $py setup.py compile_catalog
 $py setup.py --freeze --$vlc build_exe
