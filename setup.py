@@ -339,28 +339,16 @@ def dlls():
     return include_files
 
 
-def check_vlc_redistribution():
-    """ We might want to redistribute the VLC library (DLLs etc.) with pympress.
+def check_cli_arg(val):
+    """ Check whether an argument was passed, and clear it from sys.argv
 
-        NB: we always depend on the vlc python package. That way, installing
-        pympress on a system that has VLC installed works out of the box,
-        even without redistributing it.
-
-    Returns (bool): whether to include VLC redistributables
-                    (decided from command line arguments or prompt).
+    Returns (bool): whether the arguement was present
     """
-    opts = {'--with-vlc': True, '--without-vlc': False}
+    if val in sys.argv[1:]:
+        sys.argv.remove(val)
+        return True
 
-    for opt, val in opts.items():
-        if opt in sys.argv[1:]:
-            sys.argv.remove(opt)
-            return val
-
-    # If unclear, interactively ask whether we include VLC
-    while True:
-        answer = input('Include VLC in the package? [y/N] ').lower()
-        if answer in {'y', 'n', ''}:
-            return answer == 'y'
+    return False
 
 
 def vlc_resources():
@@ -418,9 +406,7 @@ if __name__ == '__main__':
 
 
     # Check our options: whether to freeze, and whether to include VLC resources (DLLs, plugins, etc).
-    if '--freeze' in sys.argv[1:]:
-        sys.argv.remove('--freeze')
-
+    if check_cli_arg('--freeze'):
         print('Using cx_Freeze.setup():', file=sys.stderr)
         from cx_Freeze import setup, Executable
 
@@ -468,7 +454,8 @@ if __name__ == '__main__':
             ]
         }
 
-        if check_vlc_redistribution():
+        # NB checking both to consume the arguments if either is present
+        if not check_cli_arg('--without-vlc') and check_cli_arg('--with-vlc'):
             try:
                 setup_opts['options']['build_exe']['include_files'] += vlc_resources()
             except ImportError:
