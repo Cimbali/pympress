@@ -171,10 +171,16 @@ class PatchedRpmDist(bdist_rpm):
     user_options = bdist_rpm.user_options + [
         ('recommends=', None, "capabilities recommendd by this package"),
         ('suggests=', None, "capabilities suggestd by this package"),
+        ('license=', None, "License file"),
     ]
 
-    recommends = None
-    suggests = None
+    def initialize_options(self):
+        """ Initialize the additional and inherited options
+        """
+        bdist_rpm.initialize_options(self)
+        self.recommends = None
+        self.suggests = None
+        self.license = None
 
     def finalize_package_data(self):
         """ Add recommends/suggests option validation
@@ -183,6 +189,7 @@ class PatchedRpmDist(bdist_rpm):
 
         self.ensure_string_list('recommends')
         self.ensure_string_list('suggests')
+        self.ensure_filename('license')
 
 
     def _make_spec_file(self):
@@ -192,14 +199,9 @@ class PatchedRpmDist(bdist_rpm):
             line.replace('%{name}', '%{pythonname}')
                 .replace('define name ', 'define pythonname ')
                 .replace('Name: %{pythonname}', 'Name: python3-%{pythonname}')
-                .replace('License: GPLv2', 'License: GPL-2.0-or-later')
+                .replace('License: GPLv2+', 'License: GPL-2.0-or-later')
             for line in bdist_rpm._make_spec_file(self) if not line.startswith('Group:')
         ]
-
-        # Override the generation of installed files to specify top-level pympress directories or files,
-        # this is recursive and takes care of directories not being tracked.
-        spec.insert(find_index_startstring(spec, 'python3 setup.py install') + 1,
-                    "find $RPM_BUILD_ROOT -name 'pympress*' -printf '/%%P\\n' -prune > INSTALLED_FILES")
 
         insert_pos = find_index_startstring(spec, 'Requires:') + 1
         insert = [
@@ -216,6 +218,10 @@ class PatchedRpmDist(bdist_rpm):
 
         if self.suggests:
             insert.append('Suggests: ' + ' '.join(self.suggests))
+
+        if self.license:
+            # before %defattr
+            spec.insert(len(spec) - 1, '%license ' + self.license)
 
         # Roll our own py3_dist if it doesn’t exist on this platform, only for requires.
         # Also define typelib_deps if we are on suse or mageia, to specify dependencies using typelib capabilities.

@@ -1,0 +1,7 @@
+%py3_install
+
+chmod 0755 %{buildroot}/%{_bindir}/%{pythonname}
+
+find $RPM_BUILD_ROOT -name 'pympress*' -printf '/%%P\n' -prune > INSTALLED_FILES
+%find_lang %{pythonname}
+cat %{pythonname}.lang >> INSTALLED_FILES
