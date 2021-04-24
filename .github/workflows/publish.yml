@@ -47,12 +47,19 @@ jobs:
 
     - name: Configure brew repo
       run: |
+        # Credentials and remotes
         git="git -C `brew --repo`/Library/Taps/homebrew/homebrew-core/"
         $git config user.name Cimbali
         $git config user.email me@cimba.li
         $git config credential.helper store
         echo -e "protocol=https\nhost=github.com\nusername=Cimbali\npassword=$PASSWORD" | $git credential-store store
-        $git push -f "https://github.com/Cimbali/homebrew-core.git" master:master
+        $git remote add gh "https://github.com/Cimbali/homebrew-core.git"
+        # Attempt a rebase of changes in our repo copy
+        $git fetch gh
+        $git rebase origin/master gh/master && git branch -f master HEAD || git rebase --abort
+        # Now use master and update remote
+        $git checkout master
+        $git push gh -f master:master
       env:
         PASSWORD: ${{ secrets.GITHUB_HOMEBREW_TOKEN }}
 

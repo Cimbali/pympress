@@ -444,7 +444,7 @@ if __name__ == '__main__':
                     'extensions': [{
                         'extension': 'pdf',
                         'verb': 'open',
-                        'component': 'pympressgui',
+                        'executable': 'pympress-gui.exe',
                         'argument': '"%1"',
                         'mime': 'application/pdf',
                         'context': 'Open with p&ympress',
