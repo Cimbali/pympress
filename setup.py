@@ -61,9 +61,7 @@ class PatchedMsiDist(bdist_msi):
     """ Patched bdist msi to add files
     """
     user_options = bdist_msi.user_options + [
-        ('separate-components=', None, 'add files as separate Components, as a dict mapping file to component name'),
         ('extensions=', None, 'Extensions for which to register Verbs'),
-        ('progid=', None, 'The program ID, typically in them form Manufacturer.Program.Version'),
     ]
 
 
@@ -71,9 +69,7 @@ class PatchedMsiDist(bdist_msi):
         """ Prepare variables to receive options
         """
         super(PatchedMsiDist, self).initialize_options()
-        self.separate_components = None
         self.extensions = None
-        self.progid = None
 
 
     def _append_to_data(self, table, line):
@@ -88,40 +84,54 @@ class PatchedMsiDist(bdist_msi):
         """ Validate and translate options to setup internals
         """
         super(PatchedMsiDist, self).finalize_options()
-        if self.progid is not None:
-            self.data.setdefault('ProgId', []).append(
-                (self.progid, None, None, self.distribution.get_description(),
-                    'InstallIcon' if self.install_icon else None, None)
+
+        self.separate_components = {}
+        for n, executable in enumerate(self.distribution.executables):
+            base_name = os.path.basename(executable.target_name)
+            # Trying to make these names unique from any directory name
+            self.separate_components[base_name] = msilib.make_id(
+                '_cx_executable{}_{}'.format(n, executable)
             )
-        if self.separate_components is None:
-            self.separate_components = {}
 
-        if self.extensions is not None:
-            if self.progid is None:
-                raise ValueError('A Program Id (option progid) is required to register extensions')
+        if self.extensions is None:
+            self.extensions = []
 
-            for extension in self.extensions:
-                # Mandatory elements
-                ext, verb, component = extension['extension'], extension['verb'], extension['component']
-                if component not in self.separate_components.values():
-                    raise ValueError('Component for file extension must be defined in separate-components option')
-                # Optional elements
-                mime = extension.get('mime', None)
-                argument = extension.get('argument', None)  # "%1" a better default?
-                context = extension.get('context', '{} {}'.format(self.distribution.get_name(), verb))
-                # Add to self.data safely and without duplicates
-                self._append_to_data('Extension', (ext, component, self.progid, mime, 'default'))
-                self._append_to_data('Verb', (ext, verb, 0, context, argument))
-                self._append_to_data('Registry', (
-                    component, -1, r'Software\Classes\{}'.format(self.progid),
-                    'FriendlyAppName', self.distribution.get_name(), component
-                ))
-                self._append_to_data('Registry', (
-                    '{}.{}'.format(component, verb), -1, r'Software\Classes\{}\shell\{}'.format(self.progid, verb),
-                    'FriendlyAppName', self.distribution.get_name(), component
-                ))
-                if 'mime' in extension:
-                    self._append_to_data('MIME', (extension['mime'], ext, 'None'))
+        for extension in self.extensions:
+            # Mandatory elements
+            ext, verb, executable = extension['extension'], extension['verb'], extension['executable']
+            if executable not in self.separate_components:
+                raise ValueError('Component for file extension must be defined in separate-components option')
+            component = self.separate_components[executable]
+            progid = msilib.make_id('{}.{}.{}'.format(
+                self.distribution.get_name(),
+                os.path.splitext(executable)[0],
+                self.distribution.get_version(),
+            ))
+            # Optional elements
+            mime = extension.get('mime', None)
+            argument = extension.get('argument', None)  # "%1" a better default?
+            context = extension.get('context', '{} {}'.format(self.distribution.get_name(), verb))
+            # Add to self.data safely and without duplicates
+            self._append_to_data('Extension', (ext, component, progid, mime, 'default'))
+            self._append_to_data('Verb', (ext, verb, 0, context, argument))
+            self._append_to_data('ProgId', (
+                progid, None, None, self.distribution.get_description(),
+                'InstallIcon' if self.install_icon else None, None)
+            )
+            self._append_to_data('Registry', (
+                '{}-author'.format(progid), -1, r'Software\Classes\{}\Application'.format(progid),
+                'ApplicationCompany', self.distribution.get_author(), component,
+            ))
+            self._append_to_data('Registry', (
+                '{}-name'.format(progid), -1, r'Software\Classes\{}'.format(progid),
+                'FriendlyAppName', self.distribution.get_name(), component
+            ))
+            self._append_to_data('Registry', (
+                '{}-verb-{}'.format(progid, verb), -1, r'Software\Classes\{}\shell\{}'.format(progid, verb),
+                'FriendlyAppName', self.distribution.get_name(), component
+            ))
+            if 'mime' in extension:
+                self._append_to_data('MIME', (extension['mime'], ext, 'None'))
 
 
     def add_files(self):
@@ -274,7 +284,7 @@ def gtk_resources():
     base, last = os.path.split(os.path.dirname(find_library('libgtk-3-0')))
     include_path = base if last in {'bin', 'lib', 'lib64'} else os.path.join(base, last)
 
-    include_files = [(find_library('gdbus.exe'), os.path.join('lib', 'gi', 'gdbus.exe'))]
+    include_files = []
     resources = [
         'etc',
         os.path.join('lib', 'girepository-1.0'),
@@ -317,7 +327,7 @@ def dlls():
     # libcairo-2.dll libcairo-gobject-2.dll libfontconfig-1.dll libfreetype-6.dll libiconv-2.dll
     # libgettextlib-0-19-8-1.dll libgettextpo-0.dll libgettextsrc-0-19-8-1.dll libintl-8.dll libjasper-4.dll
 
-    include_files = []
+    include_files = [(find_library('gdbus.exe'), 'gdbus.exe')]
     for lib in libs.split():
         path = find_library(lib)
         if path and os.path.exists(path):
@@ -430,11 +440,7 @@ if __name__ == '__main__':
                     },
                     'upgrade_code': '{5D156784-ED69-49FF-A972-CBAD312187F7}',
                     'install_icon': os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico'),
-                    # Patched build system to allow specifying progid, separate components, and extensions/verbs
-                    'progid': 'pympress',
-                    'separate_components': {
-                        'pympress-gui.exe': 'pympressgui',
-                    },
+                    # Patched build system to allow specifying extensions/verbs
                     'extensions': [{
                         'extension': 'pdf',
                         'verb': 'open',
