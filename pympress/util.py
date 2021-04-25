@@ -254,66 +254,49 @@ def fileopen(f):
         subprocess.call(['xdg-open', f])
 
 
-def set_screensaver(must_disable):
+def hard_set_screensaver(disabled):
     """ Enable or disable the screensaver.
 
     Args:
-        must_disable (`bool`):  if `True`, indicates that the screensaver must be disabled; otherwise it will be enabled
+        disabled (`bool`):  if `True`, indicates that the screensaver must be disabled; otherwise it will be enabled
     """
     if IS_MAC_OS:
         # On Mac OS X we can use caffeinate to prevent the display from sleeping
-        if must_disable:
-            if set_screensaver.dpms_was_enabled is None or set_screensaver.dpms_was_enabled.poll():
-                set_screensaver.dpms_was_enabled = subprocess.Popen(['caffeinate', '-d', '-w', str(os.getpid())])
+        if disabled:
+            if hard_set_screensaver.caffeinate_process is None or hard_set_screensaver.caffeinate_process.poll():
+                hard_set_screensaver.caffeinate_process = subprocess.Popen(['caffeinate', '-d', '-w', str(os.getpid())])
         else:
-            if set_screensaver.dpms_was_enabled and not set_screensaver.dpms_was_enabled.poll():
-                set_screensaver.dpms_was_enabled.kill()
-                set_screensaver.dpms_was_enabled.poll()
-                set_screensaver.dpms_was_enabled = None
-
-    elif IS_POSIX:
-        # Import here because util should be imported without depending on gi
-        from gi.repository import Gio
-
-        # On Linux and Wayland we can use a dbus interface to tell the screensaver
-        # to not lock the screen, should work on all freedesktop compliant desktops
-        # eg. Gnome, KDE,...
-        bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
-        iface = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE, None,
-                                       'org.freedesktop.ScreenSaver',
-                                       '/org/freedesktop/ScreenSaver',
-                                       'org.freedesktop.ScreenSaver', None)
-
-        if must_disable and not set_screensaver.dpms_was_enabled:
-            set_screensaver.dbus_cookie = iface.Inhibit("(ss)", "pympress", _("Fullscreen Presentation running"))
-            set_screensaver.dpms_was_enabled = True
-        if not must_disable and set_screensaver.dpms_was_enabled:
-            iface.UnInhibit("(u)", set_screensaver.dbus_cookie)
-            set_screensaver.dbus_cookie = None
-            set_screensaver.dpms_was_enabled = False
+            if hard_set_screensaver.caffeinate_process and not hard_set_screensaver.caffeinate_process.poll():
+                hard_set_screensaver.caffeinate_process.kill()
+                hard_set_screensaver.caffeinate_process.poll()
+                hard_set_screensaver.caffeinate_process = None
 
     elif IS_WINDOWS:
         try:
             with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Control Panel\Desktop', 0,
                                 winreg.KEY_QUERY_VALUE | winreg.KEY_SET_VALUE) as key:
-                if must_disable:
+                if disabled:
                     value, regtype = winreg.QueryValueEx(key, "ScreenSaveActive")
                     assert(regtype == winreg.REG_SZ)
-                    set_screensaver.dpms_was_enabled = (value == "1")
-                    if set_screensaver.dpms_was_enabled:
+                    hard_set_screensaver.dpms_was_enabled = (value == "1")
+                    if hard_set_screensaver.dpms_was_enabled:
                         winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "0")
-                elif set_screensaver.dpms_was_enabled:
+                elif hard_set_screensaver.dpms_was_enabled:
                     winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "1")
         except (OSError, PermissionError):
             logger.exception(_("access denied when trying to access screen saver settings in registry!"))
+
+    elif IS_POSIX:
+        logger.warning(_("Should not require hard enable/disable screensaver on Linux"))
 
     else:
         logger.warning(_("Unsupported OS: can't enable/disable screensaver"))
 
 
 #: remember DPMS setting before we change it
-set_screensaver.dpms_was_enabled = None
-set_screensaver.dbus_cookie = None
+hard_set_screensaver.dpms_was_enabled = None
+#: A :class:`~subprocess.Popen` object to track the child caffeinate process
+hard_set_screensaver.caffeinate_process = None
 
 ##
 # Local Variables:

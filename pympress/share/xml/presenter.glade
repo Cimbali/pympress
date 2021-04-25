@@ -19,7 +19,6 @@
     <signal name="delete-event" handler="app.quit" swapped="no"/>
     <signal name="drag-data-received" handler="on_drag_drop" swapped="no"/>
     <signal name="scroll-event" handler="on_scroll" swapped="no"/>
-    <signal name="window-state-event" handler="on_window_state_event" swapped="no"/>
     <child>
       <object class="GtkBox" id="bigvbox">
         <property name="visible">True</property>

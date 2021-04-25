@@ -160,6 +160,9 @@ class UI(builder.Builder):
     #: A :class:`~pympress.extras.FileWatcher` object to reload modified files
     file_watcher = None
 
+    #: `int` or `None`, may keep track of the Gtk.Application inhibit request
+    inhibit_cookie = None
+
     ##############################################################################
     #############################      UI setup      #############################
     ##############################################################################
@@ -398,7 +401,7 @@ class UI(builder.Builder):
 
         if c_full:
             self.c_win.fullscreen()
-            GLib.idle_add(lambda: util.set_screensaver(True))
+            self.set_screensaver(True)
 
         self.app.set_action_state('content-fullscreen', c_full)
         self.app.set_action_state('presenter-fullscreen', p_full)
@@ -569,7 +572,8 @@ class UI(builder.Builder):
         self.doc.cleanup_media_files()
 
         if self.app.get_action_state('content-fullscreen'):
-            util.set_screensaver(False)
+            # In case we used hard-disabling
+            self.set_screensaver(disabled=False)
 
 
     def menu_about(self, *args):
@@ -1319,24 +1323,35 @@ class UI(builder.Builder):
         else:
             widget.fullscreen()
 
+        if gaction.get_name() == 'content-fullscreen':
+            self.set_screensaver(disabled=toggle_to)
+
         gaction.change_state(GLib.Variant.new_boolean(toggle_to))
         return True
 
 
-    def on_window_state_event(self, widget, event):
-        """ Track whether the preview window is maximized.
+    def set_screensaver(self, disabled):
+        """ Disable or re-enable the screensaver.
 
         Args:
-            widget (:class:`~Gtk.Widget`):  the widget in which the event occurred
-            event (:class:`~Gtk.Event`):  the event that occurred
-
-        Returns:
-            `bool`: whether the event was consumed.
+            disabled (`bool`): `True` iff the screensaver should be disabled, otherwise enabled.
         """
-        if widget.get_name() == self.c_win.get_name():
-            fullscreen = (Gdk.WindowState.FULLSCREEN & event.new_window_state) != 0
-            util.set_screensaver(fullscreen)
-        return False
+        if not disabled:
+            if self.inhibit_cookie:
+                self.app.uninhibit(self.inhibit_cookie)
+            elif self.inhibit_cookie is not None:
+                util.hard_set_screensaver(disabled=False)
+            self.inhibit_cookie = None
+
+        else:
+            flags = (Gtk.ApplicationInhibitFlags.LOGOUT | Gtk.ApplicationInhibitFlags.SWITCH |
+                     Gtk.ApplicationInhibitFlags.SUSPEND | Gtk.ApplicationInhibitFlags.IDLE)
+
+            self.inhibit_cookie = self.app.inhibit(self.c_win, flags, _("Fullscreen Presentation running"))
+
+            if not self.inhibit_cookie:
+                logger.warning(_('Gtk.Application.inhibit failed preventing screensaver, trying hard disabling'))
+                util.hard_set_screensaver(disabled=True)
 
 
     def update_frame_position(self, widget, user_data):
