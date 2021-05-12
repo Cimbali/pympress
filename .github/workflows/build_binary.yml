@@ -3,8 +3,8 @@ name: Build source RPM
 on: create
 
 jobs:
-  source:
-    name: Source
+  srpm:
+    name: Source RPM
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -33,3 +33,97 @@ jobs:
       env:
         GHR_PATH: srpm/
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+
+
+  windows-build:
+    name: Windows Binaries
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    strategy:
+      matrix:
+        include:
+          - { arch: x86_64, msystem: MINGW64 }
+          - { arch: i686, msystem: MINGW32 }
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup msys and dependencies
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: true
+          install: >-
+            git
+            zip
+            base-devel
+            mingw-w64-${{ matrix.arch }}-gtk3
+            mingw-w64-${{ matrix.arch }}-cairo
+            mingw-w64-${{ matrix.arch }}-poppler
+            mingw-w64-${{ matrix.arch }}-python3
+            mingw-w64-${{ matrix.arch }}-python3-pip
+            mingw-w64-${{ matrix.arch }}-python3-gobject
+            mingw-w64-${{ matrix.arch }}-python3-cairo
+            mingw-w64-${{ matrix.arch }}-python3-appdirs
+            mingw-w64-${{ matrix.arch }}-python3-setuptools
+            mingw-w64-${{ matrix.arch }}-python3-packaging
+            mingw-w64-${{ matrix.arch }}-python3-cx_Freeze
+            mingw-w64-${{ matrix.arch }}-python3-babel
+            mingw-w64-${{ matrix.arch }}-python3-watchdog
+
+      - name: Install python-only dependencies
+        run: |
+          python3 -m pip install --disable-pip-version-check --upgrade pip
+          python3 -m pip install python-vlc
+
+      - name: Build binary
+        run: python3 setup.py --freeze build_exe
+
+      - name: Build installer
+        run: python3 setup.py --freeze bdist_msi --target-name pympress-`git describe --tags --always`.msi --skip-build
+
+      - name: Make portable install
+        run: |
+          cd build
+          mv exe.* pympress
+          cp ../pympress/share/defaults.conf pympress/pympress.conf
+          zip -r ../dist/pympress-`git describe --tags --always`.zip pympress/
+          cd -
+
+      - name: Install pympress
+        shell: pwsh
+        run: |
+          $installer = gci -path dist\* -include *.msi -name
+          Start-Process msiexec.exe -Wait -NoNewWindow -ArgumentList ('/i "dist\{0}" /qn /norestart /L* installer.log' -f $installer)
+
+          echo "::group::Installer log"
+          get-content installer.log
+          echo "::endgroup::"
+
+      - name: Run pympress
+        shell: pwsh
+        run: |
+          # Check pympress install dir is appended to one of the $PATH variables
+          $dir = (
+            [System.Environment]::GetEnvironmentVariable("Path","Machine").split(";") +
+            [System.Environment]::GetEnvironmentVariable("Path","User").split(";")
+          ) | Select-String 'pympress'
+
+          gci -path $dir -filter *exe
+
+          Start-Process "$dir\pympress.exe" -Wait -NoNewWindow -ArgumentList "--quit"
+
+          echo "::group::Pympress log"
+          get-content "$env:LOCALAPPDATA\pympress.log"
+          echo "::endgroup::"
+
+      - name: Upload to GitHub Release
+        uses: fnkr/github-action-ghr@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GHR_PATH: dist/
+          GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
