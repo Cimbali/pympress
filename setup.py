@@ -199,7 +199,6 @@ class PatchedRpmDist(bdist_rpm):
             line.replace('%{name}', '%{pythonname}')
                 .replace('define name ', 'define pythonname ')
                 .replace('Name: %{pythonname}', 'Name: python3-%{pythonname}')
-                .replace('License: GPLv2+', 'License: GPL-2.0-or-later')
             for line in bdist_rpm._make_spec_file(self) if not line.startswith('Group:')
         ]
 
