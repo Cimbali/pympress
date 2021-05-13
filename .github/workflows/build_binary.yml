@@ -14,7 +14,7 @@ jobs:
         python3 -m pip install --upgrade pip
         python3 -m pip install setuptools wheel twine babel
 
-    - name: Build catalogs
+    - name: Update translations
       env:
         poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
       run: |
@@ -79,6 +79,11 @@ jobs:
         run: |
           python3 -m pip install --disable-pip-version-check --upgrade pip
           python3 -m pip install python-vlc
+
+      - name: Update translations
+        env:
+          poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
+        run: ./scripts/poedit.sh download
 
       - name: Build binary
         run: python3 setup.py --freeze build_exe
