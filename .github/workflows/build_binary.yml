@@ -68,6 +68,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        fetch-depth: 0
 
       - name: Setup msys and dependencies
         uses: msys2/setup-msys2@v2
@@ -106,14 +107,14 @@ jobs:
         run: python3 setup.py --freeze build_exe
 
       - name: Build installer
-        run: python3 setup.py --freeze bdist_msi --target-name pympress-`git describe --tags --always`.msi --skip-build
+        run: python3 setup.py --freeze bdist_msi --target-name pympress-v`git describe --tags --abbrev=0`-${{ matrix.arch }}.msi --skip-build
 
       - name: Make portable install
         run: |
           cd build
           mv exe.* pympress
           cp ../pympress/share/defaults.conf pympress/pympress.conf
-          zip -r ../dist/pympress-`git describe --tags --always`.zip pympress/
+          zip -r ../dist/pympress-v`git describe --tags --abbrev=0`-${{ matrix.arch }}.zip pympress/
           cd -
 
       - name: Install pympress
