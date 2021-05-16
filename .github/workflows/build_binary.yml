@@ -1,6 +1,18 @@
 name: Build binaries
 
-on: [create, workflow_dispatch]
+on:
+  create:
+  workflow_dispatch:
+    # We often mess up the automatic build. Allow to correct manually (optionally with different build numbers)
+    inputs:
+      build:
+        description: 'build number'
+        required: false
+        default: 1
+      tag:
+        description: 'Release tag for which to build'
+        required: true
+
 
 jobs:
   srpm:
@@ -25,31 +37,42 @@ jobs:
         BUILD_DIR: build/rpm
       run: |
         mkdir srpm
-        python3 setup.py bdist_rpm --dist-dir=srpm/ --source-only
+        build=${{ github.event.inputs.build }}
+        python3 setup.py bdist_rpm --dist-dir=srpm/ --source-only --release ${build:-1}
 
     - name: Upload to GitHub Release
-      uses: fnkr/github-action-ghr@v1
-      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        function api() {
+          curl -s -u "Cimbali:$GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" "$@"
+        }
+
+        ref=${{ github.ref }}
+        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
+
+        api -o release.json "https://api.github.com/repos/Cimbali/pympress/releases/tags/$tag"
+        upload_url=`jq -r '.upload_url | gsub("{.*}$"; "")' release.json`
+
+        file=`find srpm/ -name "*.src.rpm"`
+        if ! jq -r '.assets[].name' release.json | grep -qxF "${file#srpm/}"; then
+          echo "Uploading $file"
+          api -X POST -H "Content-Type: application/x-rpm" -d "@$file" "$upload_url?name=${file#srpm/}" | jq .
+        else
+          echo "Skipping $file"
+        fi
+
       env:
-        GHR_PATH: srpm/
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
 
     - name: Upload to COPR
       continue-on-error: true
-      if: startsWith(github.ref, 'refs/tags/')
       run: |
         trap 'rm -f ./copr-config' EXIT && echo "$COPR_TOKEN_CONFIG" > ./copr-config
 
         python3 -m pip install copr-cli
-        copr-cli --config ./copr-config build --nowait cimbali/pympress sprm/python3-pympress-*.src.rpm
+        copr-cli --config ./copr-config build --nowait cimbali/pympress srpm/python3-pympress-*.src.rpm
+
       env:
         COPR_TOKEN_CONFIG: ${{ secrets.COPR_TOKEN_CONFIG }}
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
-      if: "! startsWith(github.ref, 'refs/tags/')"
-      with:
-        path: dist/*
 
 
   windows-build:
@@ -68,7 +91,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        fetch-depth: 0
+        with:
+          fetch-depth: 0
 
       - name: Setup msys and dependencies
         uses: msys2/setup-msys2@v2
@@ -106,15 +130,23 @@ jobs:
       - name: Build binary
         run: python3 setup.py --freeze build_exe
 
+      - name: Make file name
+        id: file
+        run: |
+          ref=${{ github.ref }}
+          [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
+
+          echo ::set-output name=name::pympress-$tag-${{ matrix.arch }}
+
       - name: Build installer
-        run: python3 setup.py --freeze bdist_msi --target-name pympress-v`git describe --tags --abbrev=0`-${{ matrix.arch }}.msi --skip-build
+        run: python3 setup.py --freeze bdist_msi --target-name ${{ steps.file.outputs.name }}.msi --skip-build
 
       - name: Make portable install
         run: |
           cd build
           mv exe.* pympress
           cp ../pympress/share/defaults.conf pympress/pympress.conf
-          zip -r ../dist/pympress-v`git describe --tags --abbrev=0`-${{ matrix.arch }}.zip pympress/
+          zip -r ../dist/${{ steps.file.outputs.name }}.zip pympress/
           cd -
 
       - name: Install pympress
@@ -145,14 +177,32 @@ jobs:
           echo "::endgroup::"
 
       - name: Upload to GitHub Release
-        uses: fnkr/github-action-ghr@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GHR_PATH: dist/
-          GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+        run: |
+          function api() {
+            curl -s -u "Cimbali:$GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" "$@"
+          }
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
-        if: "! startsWith(github.ref, 'refs/tags/')"
-        with:
-          path: dist/*
+          declare -A contents=(
+            ["msi"]=application/x-msdownload
+            ["zip"]=application/zip
+          )
+
+          ref=${{ github.ref }}
+          [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
+
+          api -o release.json https://api.github.com/repos/Cimbali/pympress/releases/tags/${tag}
+          upload_url=`jq -r '.upload_url | gsub("{.*}$"; "")' release.json`
+
+          jq -r '.assets[].name' release.json > skip
+
+          for file in dist/*; do
+            if ! grep -qxF "${file#dist/}" skip; then
+              echo "Uploading $file"
+              api -X POST -H "Content-Type: ${contents[${file##*.}]}" -d "@$file" "$upload_url?name=${file#dist/}" | jq .
+            else
+              echo "Skipping $file"
+            fi
+          done
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
