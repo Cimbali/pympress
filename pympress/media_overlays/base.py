@@ -55,7 +55,10 @@ def get_window_handle(window):
     drawingarea_gpointer = ctypes.pythonapi.PyCapsule_GetPointer(window.__gpointer__, None)
     # get the win32 handle
     gdkdll = ctypes.CDLL('libgdk-3-0.dll')
-    return gdkdll.gdk_win32_window_get_handle(drawingarea_gpointer)
+    handle_getter = gdkdll.gdk_win32_window_get_handle
+    handle_getter.restype = ctypes.c_void_p
+    handle_getter.argtypes = [ctypes.c_void_p]
+    return handle_getter(drawingarea_gpointer)
 
 
 class VideoOverlay(builder.Builder):
