@@ -47,10 +47,10 @@ class Pympress(Gtk.Application):
     gui = None
     #: The :class:`~pympress.config.Config` object that holds pympress conferences
     config = None
-    #: The log level to use
-    log_level = logging.ERROR
-    #: The notes positioning, to pass to the UI when it is created
-    notes_pos = None
+    #: `list` of actions to be passsed to the GUI that were queued before GUI was created
+    action_startup_queue = []
+    #: `bool` to automatically upgrade log level (DEBUG / INFO at init, then ERROR), False if user set log level
+    auto_log_level = True
 
     options = {
         # long_name:  (short_name (int), flags (GLib.OptionFlags), arg (GLib.OptionArg)
@@ -107,7 +107,9 @@ class Pympress(Gtk.Application):
         self.register(None)
 
         if not self.get_is_remote():
-            self.gui = ui.UI(self, self.config)
+            builder.Builder.setup_actions({
+                'log-level': dict(activate=self.set_log_level, state=logger.getEffectiveLevel(), parameter_type=int),
+            }, action_map=self)
 
         # Connect proper exit function to interrupt
         signal.signal(signal.SIGINT, self.quit)
@@ -136,7 +138,6 @@ class Pympress(Gtk.Application):
             Gdk.set_allowed_backends('x11,*')
 
         logger.info(self.version_string)
-        logger.setLevel(logging.WARNING)
         Gtk.Application.do_startup(self)
 
 
@@ -145,11 +146,18 @@ class Pympress(Gtk.Application):
 
         Build them if they do not exist, otherwise bring to front.
         """
-        Gtk.Application.do_activate(self)
-        assert self.gui is not None, 'Activating on non-remote ?!'
-        if not self.get_is_remote():
-            self.gui.activate()
+        if self.gui is None:
+            if self.auto_log_level:
+                self.activate_action('log-level', logging.INFO)
+                self.action_startup_queue.append(('log-level', logging.ERROR))
 
+            # Build the UI and windows
+            self.gui = ui.UI(self, self.config)
+
+            while self.action_startup_queue:
+                self.activate_action(*self.action_startup_queue.pop(0))
+
+        Gtk.Application.do_activate(self)
         self.gui.p_win.present_with_time(timestamp)
 
 
@@ -193,6 +201,10 @@ class Pympress(Gtk.Application):
             name (`str`): the name of the stateful action
             parameter: an object or None to pass as a parameter to the action, wrapped in a GLib.Variant
         """
+        if not self.get_is_remote() and self.gui is None and name not in ['log-level']:
+            self.action_startup_queue.append((name, parameter))
+            return
+
         if parameter is not None:
             parameter = GLib.Variant(builder.Builder._glib_type_strings[type(parameter)], parameter)
 
@@ -224,6 +236,17 @@ class Pympress(Gtk.Application):
         Gtk.Application.do_shutdown(self)
 
 
+    def set_log_level(self, action, param):
+        """ Action that sets the logging level (on the root logger of the active instance)
+
+        Args:
+            action (:class:`~Gio.Action`): The action activatd
+            parameter (:class:~`GLib.Variant`): The desired level as an int wrapped in a GLib.Variant
+        """
+        logging.getLogger(None).setLevel(param.get_int64())
+        action.change_state(param)
+
+
     def do_handle_local_options(self, opts_variant_dict):
         """ Parse command line options, returned as a VariantDict
 
@@ -252,7 +275,8 @@ class Pympress(Gtk.Application):
             elif opt == "log":
                 numeric_level = getattr(logging, arg.upper(), None)
                 if isinstance(numeric_level, int):
-                    logger.setLevel(numeric_level)
+                    self.auto_log_level = False
+                    self.activate_action('log-level', numeric_level)
                 else:
                     print(_("Invalid log level \"{}\", try one of {}").format(
                         arg, "DEBUG, INFO, WARNING, ERROR, CRITICAL"

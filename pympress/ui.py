@@ -284,10 +284,6 @@ class UI(builder.Builder):
         self.p_frame_annot.set_visible(self.show_annotations)
         self.laser.activate_pointermode()
 
-
-    def activate(self):
-        """ Activate application, i.e. bring windows to front.
-        """
         # Setup screens and show all windows
         self.setup_screens()
         self.c_win.show_all()

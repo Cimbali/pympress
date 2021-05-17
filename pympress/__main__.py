@@ -42,7 +42,7 @@ logging.basicConfig(filename=util.get_log_path(), level=logging.DEBUG)
 
 
 def uncaught_handler(*exc_info):
-    """ Exception handler, to log uncuaght exceptiosn to our log file.
+    """ Exception handler, to log uncuaght exceptions to our log file.
     """
     logger.critical('Uncaught exception:\n{}'.format(logging.Formatter().formatException(exc_info)))
     sys.__excepthook__(*exc_info)
