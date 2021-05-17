@@ -619,9 +619,10 @@ class UI(builder.Builder):
 
             if not reloading and docpath:
                 Gtk.RecentManager.get_default().add_item(self.doc.get_uri())
-
-            if not reloading:
                 self.file_watcher.watch_file(self.doc.get_path(), self.reload_document)
+
+            elif not reloading:
+                self.file_watcher.stop_watching()
 
         except GLib.Error:
             if reloading:
