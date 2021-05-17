@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.1 -->
+<!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.2"/>
   <object class="GtkBox" id="media_overlay">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="orientation">vertical</property>
     <signal name="map" handler="handle_embed" swapped="no"/>
     <child>
       <object class="GtkDrawingArea" id="movie_zone">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
         <signal name="button-press-event" handler="play_pause" swapped="no"/>
       </object>
@@ -23,19 +23,19 @@
     <child>
       <object class="GtkBox" id="toolbar">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <child>
           <object class="GtkToolbar">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkToolButton" id="play">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Play</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-media-play</property>
+                <property name="can-focus">False</property>
                 <property name="action-name">media.play</property>
+                <property name="label" translatable="yes">Play</property>
+                <property name="use-underline">True</property>
+                <property name="stock-id">gtk-media-play</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -45,11 +45,11 @@
             <child>
               <object class="GtkToolButton" id="pause">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Pause</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-media-pause</property>
+                <property name="can-focus">False</property>
                 <property name="action-name">media.pause</property>
+                <property name="label" translatable="yes">Pause</property>
+                <property name="use-underline">True</property>
+                <property name="stock-id">gtk-media-pause</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -59,11 +59,11 @@
             <child>
               <object class="GtkToolButton" id="stop">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Stop</property>
-                <property name="use_underline">True</property>
-                <property name="stock_id">gtk-media-stop</property>
+                <property name="can-focus">False</property>
                 <property name="action-name">media.stop</property>
+                <property name="label" translatable="yes">Stop</property>
+                <property name="use-underline">True</property>
+                <property name="stock-id">gtk-media-stop</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -80,8 +80,8 @@
         <child>
           <object class="GtkScale" id="progress">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="value_pos">right</property>
+            <property name="can-focus">False</property>
+            <property name="value-pos">right</property>
             <signal name="change-value" handler="progress_moved" swapped="no"/>
             <signal name="format-value" handler="format_millis" swapped="no"/>
           </object>

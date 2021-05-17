@@ -162,6 +162,12 @@ class VideoOverlay(builder.Builder):
         return self.action_map.lookup_action('set_time').activate(GLib.Variant.new_double(val))
 
 
+    def play_pause(self, *args):
+        """ Callback to toggle play/pausing from clicking on the DrawingArea
+        """
+        return self.action_map.lookup_action('pause').activate()
+
+
     def update_margins_for_page(self, page_type):
         """ Recalculate the margins around the media in the event of a page type change.
 
