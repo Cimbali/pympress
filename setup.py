@@ -332,7 +332,8 @@ def dlls():
     # libcairo-2.dll libcairo-gobject-2.dll libfontconfig-1.dll libfreetype-6.dll libiconv-2.dll
     # libgettextlib-0-19-8-1.dll libgettextpo-0.dll libgettextsrc-0-19-8-1.dll libintl-8.dll libjasper-4.dll
 
-    include_files = [(find_library('gdbus.exe'), 'gdbus.exe')]
+    gdbus = find_library('gdbus.exe')
+    include_files = [(gdbus, os.path.join('lib', 'gi', 'gdbus.exe')), (gdbus, 'gdbus.exe')]
     for lib in libs.split():
         path = find_library(lib)
         if path and os.path.exists(path):
