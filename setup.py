@@ -212,11 +212,13 @@ class PatchedRpmDist(bdist_rpm):
             '%{?python_provide:%python_provide python3-%{pythonname}}',
         ]
 
+        insert.append('%if %{?!rhel:8}%{?rhel} >= 8')
         if self.recommends:
             insert.append('Recommends: ' + ' '.join(self.recommends))
 
         if self.suggests:
             insert.append('Suggests: ' + ' '.join(self.suggests))
+        insert.append('%endif')
 
         if self.license:
             # before %defattr
@@ -411,7 +413,7 @@ if __name__ == '__main__':
     }}
 
     # subtle tweak: don’t put an install section in installed packages
-    with open('README.md') as f:
+    with open('README.md', encoding='utf-8') as f:
         readme = f.readlines()
 
         install_section = find_index_startstring(readme, '# Install')
