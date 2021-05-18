@@ -241,7 +241,7 @@ class Pympress(Gtk.Application):
 
         Args:
             action (:class:`~Gio.Action`): The action activatd
-            parameter (:class:~`GLib.Variant`): The desired level as an int wrapped in a GLib.Variant
+            param (:class:~`GLib.Variant`): The desired level as an int wrapped in a GLib.Variant
         """
         logging.getLogger(None).setLevel(param.get_int64())
         action.change_state(param)
