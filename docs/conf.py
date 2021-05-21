@@ -25,6 +25,7 @@ from __future__ import print_function
 from recommonmark.transform import AutoStructify
 import os
 import re
+import sys
 import subprocess
 import importlib
 
@@ -237,7 +238,7 @@ intersphinx_mapping = {
     'Pango': ('https://lazka.github.io/pgi-docs/Pango-1.0', None),
     'GLib': ('https://lazka.github.io/pgi-docs/GLib-2.0', None),
     'GdkX11': ('https://lazka.github.io/pgi-docs/GdkX11-3.0', None),
-    'python': ('https://docs.python.org/3.4', None),
+    'python': ('https://docs.python.org/{}.{}'.format(*sys.version_info[:2]), None),
     'cairo': ('https://www.cairographics.org/documentation/pycairo/3', None),
     'vlc': load_epydoc_as_intersphinx_v2('https://www.olivieraubert.net/vlc/python-ctypes/doc/')
 }
