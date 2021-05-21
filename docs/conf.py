@@ -18,14 +18,12 @@ from __future__ import print_function
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from recommonmark.transform import AutoStructify
-import os
 import re
-import sys
 import subprocess
 import importlib
 
@@ -104,9 +102,9 @@ def setup(app):
 # The master toctree document.
 master_doc = 'index'
 
-# General information about the project.
+# General information about the project. Make sure we find the right omdule info.
 pkg_meta = importlib.import_module('pympress.__init__')
-project = 'Pympress'
+project = 'pympress'
 copyright = '2009-2011, Thomas Jost; 2015-2020 Cimbali'
 author = 'Thomas Jost, Cimbali'
 
