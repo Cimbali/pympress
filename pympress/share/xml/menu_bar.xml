@@ -40,7 +40,7 @@
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Fullscreen</attribute>
-			<attribute name="action">app.presenter-fullscreen</attribute>
+			<attribute name="action">app.content-fullscreen</attribute>
 		</item>
 		<item>
 			<attribute name="label" translatable="yes">_Swap screens</attribute>
