@@ -69,12 +69,12 @@ class SurfaceCache(object):
         max_pages (`int`): The maximum page number.
     """
 
-    #: The actual cache. It is a `dict` of :class:`~pympress.surfacecache.Cache`:
-    #: its keys are widget names and its values are `dict` whose keys are page
-    #: numbers and values are instances of :class:`~cairo.ImageSurface`.
-    #: In each :class:`~pympress.surfacecache.Cache` keys are ordered by Least Recently
-    #: Used (get or set), when the size is beyond :attr:`max_pages`, pages are
-    #: popped from the start of the cache.
+    #: The actual cache. The `dict`s keys are widget names and its values are
+    #: :class:`~pympress.surfacecache.OrderedDict`, whose keys are page numbers
+    #: and values are instances of :class:`~cairo.ImageSurface`.
+    #: In each :class:`~pympress.surfacecache.OrderedDict` keys are ordered by
+    #: Least Recently Used (get or set), when the size is beyond
+    #: :attr:`max_pages`, pages are popped from the start of the cache.
     surface_cache = {}
 
     #: `dict` containing functions that return a :class:`~cairo.Surface` given a :format:`~cairo.Format`,
@@ -281,10 +281,10 @@ class SurfaceCache(object):
 
 
     def renderer(self, widget_name, page_nb):
-        """ Rendering thread.
+        """ Rendering function.
 
-        This function is meant to be run in the prerendering thread. It runs
-        infinitely (until the program ends) and does the following steps:
+        This function is meant to be scheduled on the GLib main loop. When run,
+        it will go through the following steps:
 
         - check if the job's result is not already available in the cache
         - render it in a new :class:`~cairo.ImageSurface` if necessary
@@ -298,25 +298,25 @@ class SurfaceCache(object):
         with self.locks[widget_name]:
             if page_nb in self.surface_cache[widget_name]:
                 # Already in cache
-                return False
+                return GLib.SOURCE_REMOVE
             ww, wh = self.surface_size[widget_name]
             wtype = self.surface_type[widget_name]
 
         if ww < 0 or wh < 0:
             logger.warning('Widget {} with invalid size {}x{} when rendering'.format(widget_name, ww, wh))
-            return
+            return GLib.SOURCE_REMOVE
 
         with self.doc_lock:
             page = self.doc.page(page_nb)
             if page is None:
-                return False
+                return GLib.SOURCE_REMOVE
 
         # Render to a ImageSurface
         try:
             surface = self.surface_factory[widget_name](cairo.Format.RGB24, ww, wh)
         except AttributeError:
             logger.warning('Widget {} was not mapped when rendering'.format(widget_name), exc_info = True)
-            return False
+            return GLib.SOURCE_REMOVE
 
         context = cairo.Context(surface)
         page.render_cairo(context, ww, wh, wtype)
@@ -332,7 +332,7 @@ class SurfaceCache(object):
             while len(pc) > self.max_pages:
                 pc.popitem(False)
 
-        return False
+        return GLib.SOURCE_REMOVE
 
 
 ##
