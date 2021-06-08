@@ -1,6 +1,6 @@
 name: Run macOS brew install and test
 
-on: [push, pull_request]
+on: push
 
 jobs:
   macos:
@@ -9,8 +9,8 @@ jobs:
     steps:
     - name: Install latest
       run: |
-        brew install Cimbali/core/pympress --only-dependencies
-        brew install Cimbali/core/pympress --build-from-source --HEAD
+        brew install pympress --only-dependencies
+        brew install pympress --build-from-source --HEAD
 
     - name: Test
       run: |
