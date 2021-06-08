@@ -45,22 +45,6 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import GLib
 
 
-class OrderedDict(collections.OrderedDict):
-    """ OrderedDict for python2 compatibility, adding move_to_end().
-    """
-    def move_to_end(self, key):
-        """ Move an existing key to either end of an ordered dictionary.
-
-        Forward or reimplement :meth:`~collections.OrderedDict.move_to_end`
-        """
-        try:
-            collections.OrderedDict.move_to_end(self, key)
-        except AttributeError:
-            val = self[key]
-            del self[key]
-            self[key] = val
-
-
 class SurfaceCache(object):
     """ Pages caching and prerendering made (almost) easy.
 
@@ -70,9 +54,9 @@ class SurfaceCache(object):
     """
 
     #: The actual cache. The `dict`s keys are widget names and its values are
-    #: :class:`~pympress.surfacecache.OrderedDict`, whose keys are page numbers
+    #: :class:`~collections.OrderedDict`, whose keys are page numbers
     #: and values are instances of :class:`~cairo.ImageSurface`.
-    #: In each :class:`~pympress.surfacecache.OrderedDict` keys are ordered by
+    #: In each :class:`~collections.OrderedDict` keys are ordered by
     #: Least Recently Used (get or set), when the size is beyond
     #: :attr:`max_pages`, pages are popped from the start of the cache.
     surface_cache = {}
@@ -124,7 +108,7 @@ class SurfaceCache(object):
         """
         widget_name = widget.get_name() + ('_zoomed' if zoomed else '')
         with self.locks.setdefault(widget_name, threading.Lock()):
-            self.surface_cache[widget_name] = OrderedDict()
+            self.surface_cache[widget_name] = collections.OrderedDict()
             self.surface_size[widget_name] = (-1, -1)
             self.surface_type[widget_name] = wtype
             self.surface_factory[widget_name] = functools.partial(self._create_surface, widget)
