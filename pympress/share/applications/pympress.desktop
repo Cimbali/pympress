@@ -1,5 +1,6 @@
 [Desktop Entry]
 Categories=Office;Viewer;Presentation;GTK;
+Keywords=Presentation;Dual-Screen;Beamer;
 Comment=A simple yet powerful PDF reader designed for dual-screen presentations
 Exec=pympress %f
 Icon=pympress
