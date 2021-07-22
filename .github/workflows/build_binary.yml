@@ -103,6 +103,8 @@ jobs:
             git
             zip
             base-devel
+            mingw-w64-${{ matrix.arch }}-jq
+            mingw-w64-${{ matrix.arch }}-curl
             mingw-w64-${{ matrix.arch }}-gtk3
             mingw-w64-${{ matrix.arch }}-cairo
             mingw-w64-${{ matrix.arch }}-poppler
