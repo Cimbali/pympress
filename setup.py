@@ -38,15 +38,6 @@ from distutils.cmd import Command
 from setuptools.command.build_py import build_py
 from setuptools.command.bdist_rpm import bdist_rpm
 
-try:
-    from cx_Freeze.windist import bdist_msi
-    import msilib
-except ImportError:
-    class bdist_msi:
-        """ Dummy class for systems without cx_Freeze or msilib
-        """
-        user_options = []
-
 
 def find_index_startstring(haystack, needle, start=0, stop=sys.maxsize):
     """ Return the index of the first string in haystack starting with needle, or raise ValueError if none match.
@@ -55,114 +46,6 @@ def find_index_startstring(haystack, needle, start=0, stop=sys.maxsize):
         return next(n for n, v in enumerate(haystack[start:stop], start) if v.startswith(needle))
     except StopIteration:
         raise ValueError('No string starts with ' + needle)
-
-
-class PatchedMsiDist(bdist_msi):
-    """ Patched bdist msi to add files
-    """
-    user_options = bdist_msi.user_options + [
-        ('extensions=', None, 'Extensions for which to register Verbs'),
-    ]
-
-
-    def initialize_options(self):
-        """ Prepare variables to receive options
-        """
-        super(PatchedMsiDist, self).initialize_options()
-        self.extensions = None
-
-
-    def _append_to_data(self, table, line):
-        """ Add a line in a table inside self.data, after checking for duplicates
-        """
-        rows = self.data.setdefault(table, [])
-        if line not in rows:
-            rows.append(line)
-
-
-    def finalize_options(self):
-        """ Validate and translate options to setup internals
-        """
-        super(PatchedMsiDist, self).finalize_options()
-
-        self.separate_components = {}
-        for n, executable in enumerate(self.distribution.executables):
-            base_name = os.path.basename(executable.target_name)
-            # Trying to make these names unique from any directory name
-            self.separate_components[base_name] = msilib.make_id(
-                '_cx_executable{}_{}'.format(n, executable)
-            )
-
-        if self.extensions is None:
-            self.extensions = []
-
-        for extension in self.extensions:
-            # Mandatory elements
-            ext, verb, executable = extension['extension'], extension['verb'], extension['executable']
-            if executable not in self.separate_components:
-                raise ValueError('Component for file extension must be defined in separate-components option')
-            component = self.separate_components[executable]
-            progid = msilib.make_id('{}.{}.{}'.format(
-                self.distribution.get_name(),
-                os.path.splitext(executable)[0],
-                self.distribution.get_version(),
-            ))
-            # Optional elements
-            mime = extension.get('mime', None)
-            argument = extension.get('argument', None)  # "%1" a better default?
-            context = extension.get('context', '{} {}'.format(self.distribution.get_name(), verb))
-            # Add to self.data safely and without duplicates
-            self._append_to_data('Extension', (ext, component, progid, mime, 'default'))
-            self._append_to_data('Verb', (ext, verb, 0, context, argument))
-            self._append_to_data('ProgId', (
-                progid, None, None, self.distribution.get_description(),
-                'InstallIcon' if self.install_icon else None, None)
-            )
-            self._append_to_data('Registry', (
-                '{}-author'.format(progid), -1, r'Software\Classes\{}\Application'.format(progid),
-                'ApplicationCompany', self.distribution.get_author(), component,
-            ))
-            self._append_to_data('Registry', (
-                '{}-name'.format(progid), -1, r'Software\Classes\{}'.format(progid),
-                'FriendlyAppName', self.distribution.get_name(), component
-            ))
-            self._append_to_data('Registry', (
-                '{}-verb-{}'.format(progid, verb), -1, r'Software\Classes\{}\shell\{}'.format(progid, verb),
-                'FriendlyAppName', self.distribution.get_name(), component
-            ))
-            if 'mime' in extension:
-                self._append_to_data('MIME', (extension['mime'], ext, 'None'))
-
-
-    def add_files(self):
-        """ Store files in a cab insde the MSI
-        """
-        f = msilib.Feature(self.db, 'default', 'Default Feature', 'Everything', 1, directory='TARGETDIR')
-        f.set_current()
-
-        cab = msilib.CAB('distfiles')
-        rootdir = os.path.abspath(self.bdist_dir)
-        root = msilib.Directory(self.db, cab, None, rootdir, 'TARGETDIR', 'SourceDir')
-        self.db.Commit()
-
-        todo = [root]
-        while todo:
-            dir = todo.pop()
-            for file in os.listdir(dir.absolute):
-                comp = self.separate_components.get(os.path.relpath(os.path.join(dir.absolute, file), self.bdist_dir))
-                if comp is not None:
-                    restore_component = dir.component
-                    dir.start_component(component=comp, flags=0, feature=f, keyfile=file)
-                    dir.add_file(file)
-                    dir.component = restore_component
-                elif os.path.isdir(os.path.join(dir.absolute, file)):
-                    newDir = msilib.Directory(self.db, cab, dir, file, file, "{}|{}".format(dir.make_short(file), file))
-                    todo.append(newDir)
-                else:
-                    dir.add_file(file)
-
-        cab.commit(self.db)
-
 
 
 class PatchedRpmDist(bdist_rpm):
@@ -328,8 +211,8 @@ def dlls():
     libidn2-0.dll libjpeg-8.dll liblcms2-2.dll libnghttp2-14.dll libnspr4.dll libopenjp2-7.dll \
     libpango-1.0-0.dll libpangocairo-1.0-0.dll libpangoft2-1.0-0.dll libpangowin32-1.0-0.dll \
     libplc4.dll libplds4.dll libpoppler-105.dll libpoppler-cpp-0.dll libpoppler-glib-8.dll libpsl-5.dll \
-    libpython3.8.dll libstdc++-6.dll libthai-0.dll libtiff-5.dll libunistring-2.dll libwinpthread-1.dll \
-    libzstd.dll nss3.dll nssutil3.dll smime3.dll'
+    libpython{0.major}.{0.minor}.dll libstdc++-6.dll libthai-0.dll libtiff-5.dll libunistring-2.dll \
+    libwinpthread-1.dll libzstd.dll nss3.dll nssutil3.dll smime3.dll'.format(sys.version_info)
     # these appear superfluous, though unexpectedly so:
     # libcairo-2.dll libcairo-gobject-2.dll libfontconfig-1.dll libfreetype-6.dll libiconv-2.dll
     # libgettextlib-0-19-8-1.dll libgettextpo-0.dll libgettextsrc-0-19-8-1.dll libintl-8.dll libjasper-4.dll
@@ -408,7 +291,6 @@ if __name__ == '__main__':
     options = {'cmdclass': {
         'build_py': BuildWithCatalogs,
         'bdist_rpm': PatchedRpmDist,
-        'bdist_msi': PatchedMsiDist,
         'compile_catalog': compile_catalog,
     }}
 
