@@ -50,12 +50,9 @@ gi.require_version('Poppler', '0.18')
 from gi.repository import Poppler
 
 try:
-    from urllib.parse import urljoin, scheme_chars
-    from urllib.request import pathname2url
+    from urllib.request import url2pathname
 except ImportError:
-    from urlparse import urljoin, scheme_chars
-    from urllib import pathname2url
-
+    from urllib import url2pathname
 
 from pympress.util import fileopen
 
@@ -623,7 +620,7 @@ class Document(object):
     Args:
         builder (:class:`pympress.builder.Builder`):  A builder to load callbacks
         pop_doc (:class:`~pympress.Poppler.Document`):  Instance of the Poppler document that this class will wrap
-        path (`str`):  Absolute path to the PDF file to open
+        uri (`str`):  URI of the PDF file to open
         page (`int`):  page number to which the file should be opened
     """
 
@@ -655,7 +652,7 @@ class Document(object):
     #: callback, to be connected to :func:`~pympress.ui.UI.goto_page`
     navigate = lambda *args: None
 
-    def __init__(self, builder, pop_doc, path):
+    def __init__(self, builder, pop_doc, uri):
         if builder is not None:
             # Connect callbacks
             self.play_media                = builder.get_callback_handler('medias.play')
@@ -665,7 +662,7 @@ class Document(object):
             self.goto_prev_hist            = builder.get_callback_handler('doc_hist_prev')
 
         # Setup PDF file
-        self.path = path
+        self.uri = uri
         self.doc = pop_doc
 
         # Pages number
@@ -752,43 +749,22 @@ class Document(object):
 
 
     @staticmethod
-    def path_to_uri(path):
-        """ Transform a path to a file URI, and maintains others URIs.
-        """
-        # Do not trust urlsplit, manually check we have an URI
-        pos = path.index(':') if ':' in path else -1
-        if path[pos:pos + 3] == '://' and pos > 1 and set(path[:pos]) <= set(scheme_chars):
-            return path
-
-        try:
-            # A msys/mingw path on windows has unexpected forward-slashes
-            return urljoin('file:', pathname2url(path))
-        except OSError:
-            return 'file://' + path
-
-
-    @staticmethod
-    def create(builder, path):
+    def create(builder, uri):
         """ Initializes a Document by passing it a :class:`~Poppler.Document`.
 
         Args:
             builder (:class:`pympress.builder.Builder`):  A builder to load callbacks
-            path (`str`):  Absolute path to the PDF file to open
+            uri (`str`):  URI to the PDF file to open
             page (`int`):  page number to which the file should be opened
 
         Returns:
             :class:`~pympress.document.Document`: The initialized document
         """
-        if path is None:
+        if uri is None:
             doc = EmptyDocument()
         else:
-            uri = Document.path_to_uri(path)
             poppler_doc = Poppler.Document.new_from_file(uri, None)
-
-            if uri == path:
-                scheme, path = path.split('://', 1)
-
-            doc = Document(builder, poppler_doc, path)
+            doc = Document(builder, poppler_doc, uri)
 
         return doc
 
@@ -1022,22 +998,13 @@ class Document(object):
         return self.history[self.hist_pos]
 
 
-    def get_path(self):
-        """ Gives access to the path of this document.
-
-        Returns:
-            `str`: the path to the file currently opened.
-        """
-        return self.path
-
-
     def get_uri(self):
         """ Gives access to the URI, rather than the path, of this document.
 
         Returns:
             `str`: the URI to the file currently opened.
         """
-        return self.path_to_uri(self.path)
+        return self.uri
 
 
     def get_full_path(self, filename):
@@ -1053,7 +1020,7 @@ class Document(object):
         if os.path.isabs(filename):
             return os.path.normpath(filename) if os.path.exists(filename) else None
 
-        for d in [os.path.dirname(self.path), os.getcwd()]:
+        for d in [os.path.dirname(url2pathname(self.uri.split('://', 1)[1])), os.getcwd()]:
             filepath = os.path.normpath(os.path.join(d, filename))
             if os.path.exists(filepath):
                 return filepath

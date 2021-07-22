@@ -602,24 +602,24 @@ class UI(builder.Builder):
     ############################ Document manangement ############################
     ##############################################################################
 
-    def swap_document(self, docpath, page=0, reloading=False):
+    def swap_document(self, doc_uri, page=0, reloading=False):
         """ Replace the currently open document with a new one.
 
-        The new document is possibly and EmptyDocument if docpath is None.
+        The new document is possibly and EmptyDocument if doc_uri is None.
         The state of the ui and cache are updated accordingly.
 
         Args:
-            docpath (`str`): the absolute path to the new document
+            doc_uri (`str`): the URI to the new document
             page (`int`): the page at which to start the presentation
             reloading (`bool`): whether we are reloading or detecting stuff from the document
         """
         run_gc = self.doc.doc is not None
         try:
-            self.doc = document.Document.create(self, docpath)
+            self.doc = document.Document.create(self, doc_uri)
 
-            if not reloading and docpath:
-                Gtk.RecentManager.get_default().add_item(self.doc.get_uri())
-                self.file_watcher.watch_file(self.doc.get_path(), self.reload_document)
+            if not reloading and doc_uri:
+                Gtk.RecentManager.get_default().add_item(doc_uri)
+                self.file_watcher.watch_file(doc_uri, self.reload_document)
 
             elif not reloading:
                 self.file_watcher.stop_watching()
@@ -629,7 +629,7 @@ class UI(builder.Builder):
                 return
 
             self.doc = document.Document.create(self, None)
-            self.error_opening_file(docpath)
+            self.error_opening_file(doc_uri)
             self.file_watcher.stop_watching()
 
         self.current_page = self.preview_page = self.doc.goto(page)
@@ -746,7 +746,7 @@ class UI(builder.Builder):
         response = dialog.run()
 
         if response == Gtk.ResponseType.OK:
-            self.swap_document(os.path.abspath(dialog.get_filename()))
+            self.swap_document(dialog.get_uri())
 
         dialog.destroy()
 

@@ -37,6 +37,11 @@ from gi.repository import Gtk, Gdk, GLib, Gio
 import mimetypes
 import functools
 
+try:
+    from urllib.request import url2pathname
+except ImportError:
+    from urllib import url2pathname
+
 from pympress import document, builder
 
 
@@ -794,13 +799,13 @@ class FileWatcher(object):
         self.observer = None
 
 
-    def watch_file(self, path, callback, *args, **kwargs):
+    def watch_file(self, uri, callback, *args, **kwargs):
         """ Watches a new file with a new callback. Removes any precedent watched files.
 
         If the optional watchdog dependency is missing, does nothing.
 
         Args:
-            path (`str`): full path to the file to watch
+            uri (`str`): URI of the file to watch
             callback (`function`): callback to call with all the further arguments when the file changes
         """
         if self.observer is None:
@@ -808,7 +813,13 @@ class FileWatcher(object):
 
         self.stop_watching()
 
-        directory = os.path.dirname(path[7 if path.startswith('file:///') else 0:])
+        scheme, path = uri.split('://', 1)
+        path = url2pathname(path)
+        directory = os.path.dirname(path)
+        if scheme != 'file':
+            logger.error('Impossible to watch files with {} schemes'.format(scheme), exc_info = True)
+            return
+
         self.monitor.on_modified = lambda e: self._enqueue(callback, *args, **kwargs) if e.src_path == path else None
         try:
             self.observer.schedule(self.monitor, directory)
