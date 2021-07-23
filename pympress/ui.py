@@ -647,6 +647,8 @@ class UI(builder.Builder):
             # don't toggle from NONE to NONE
             if target_mode:
                 self.app.activate_action('notes-pos', target_mode.name.lower())
+        else:
+            self.doc.set_notes_after(self.notes_mode.direction() == 'page number')
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
@@ -672,7 +674,7 @@ class UI(builder.Builder):
     def reload_document(self):
         """ Reload the current document.
         """
-        self.swap_document(self.doc.path, page=self.current_page, reloading=True)
+        self.swap_document(self.doc.get_uri(), page=self.current_page, reloading=True)
 
 
     def populate_recent_menu(self, gaction, is_opening=None):
