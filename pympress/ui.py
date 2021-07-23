@@ -777,6 +777,10 @@ class UI(builder.Builder):
 
     def open_file(self, gaction, target):
         """ Open a document.
+
+        Returns:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            target (:class:`~GLib.Variant`): the file to open as a string variant
         """
         self.swap_document(target.get_string())
 
@@ -1420,9 +1424,12 @@ class UI(builder.Builder):
     def switch_blanked(self, gaction, param):
         """ Switch the blanked mode of the content screen.
 
-        Returns:
+        Args:
             gaction (:class:`~Gio.Action`): the action triggering the call
             param (:class:`~GLib.Variant`): the parameter as a variant, or None
+
+        Returns:
+            `bool`: whether the notes blanking has been toggled.
         """
         self.blanked = not self.blanked
         self.c_da.queue_draw()
@@ -1433,6 +1440,12 @@ class UI(builder.Builder):
 
     def layout_name(self, notes_mode):
         """ Return the layout made for the selected notes_mode
+
+        Args:
+            notes_mode (:class:`~pympress.document.PdfPage`): the mode/positioning of notes
+
+        Returns:
+            `str`: a string representing the appropriate layout
         """
         if notes_mode.direction() == 'page number':
             return 'note_pages'
@@ -1464,7 +1477,12 @@ class UI(builder.Builder):
         """ Switch the position of the nodes in the slide.
 
         Returns:
-            `bool`: whether the mode has been toggled.
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            target (:class:`~GLib.Variant`): the notes position as a string variant
+            force (`bool`): Whether to force the notes switch even if it’s already enabled
+
+        Returns:
+            `bool`: whether the notes position has been toggled
         """
         target_mode = document.PdfPage[target.get_string().upper()]
 
@@ -1489,7 +1507,12 @@ class UI(builder.Builder):
         """ Switch the display mode to "Notes mode" or "Normal mode" (without notes).
 
         Returns:
-            `bool`: whether the mode has been toggled.
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            target_mode (:class:`~pympress.document.PdfPage`): the mode to which we should switch
+            force (`bool`): Whether to force the mode switch even if it’s already enabled
+
+        Returns:
+            `bool`: whether the notes mode has been toggled
         """
         if target_mode is None:
             target_mode = document.PdfPage.NONE if self.notes_mode else self.chosen_notes_mode
@@ -1530,6 +1553,10 @@ class UI(builder.Builder):
 
     def switch_annotations(self, gaction, target):
         """ Switch the display to show annotations or to hide them.
+
+        Returns:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            target (:class:`~GLib.Variant`): the parameter as a variant, or None
 
         Returns:
             `bool`: whether the mode has been toggled.
