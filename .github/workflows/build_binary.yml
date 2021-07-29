@@ -31,6 +31,7 @@ jobs:
         poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
       run: |
         ./scripts/poedit.sh download
+        python3 setup.py compile_catalog
 
     - name: Build binaries
       env:
@@ -127,7 +128,9 @@ jobs:
       - name: Update translations
         env:
           poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
-        run: ./scripts/poedit.sh download
+        run: |
+          ./scripts/poedit.sh download
+          python3 setup.py compile_catalog
 
       - name: Build binary
         run: python3 setup.py --freeze build_exe
