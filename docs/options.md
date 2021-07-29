@@ -92,3 +92,34 @@ A few further remarks:
 
 -  If you set "resizeable" to `false`, the panes won’t be resizeable dynamically with a handle in the middle
 - "proportions" are normalized, and saved on exit if you resize panes during the execution. If you set them to `4` and `1`, the panes will be `4 / (4 + 1) = 20%` and `1 / (4 + 1) = 100%`, so the ini will contain something like `0.2` and `0.8` after executing pympress.
+
+## Themes on Windows
+
+Pympress uses the default Gtk theme of your system, which makes it easy to change on many OSs either globally via your Gtk preferences or [per application](https://www.linuxuprising.com/2019/10/how-to-use-different-gtk-3-theme-for.html).
+Here’s the way to do it on windows:
+
+1. Install a theme
+
+    There are 2 locations, either install the theme for all your gtk apps, e.g. in `C:\Users\%USERNAME%\AppData\Local\themes`, or just for pympress, so in `%INSTALLDIR%\share\themes` (for me that’s `C:\Users\%USERNAME%\AppData\Local\Programs\pympress\share\themes`)
+
+    Basically pick a theme [e.g. from this list of dark themes](https://www.gnome-look.org/browse/cat/135/ord/rating/?tag=dark) and make sure to unpack it in the selected directory, it needs at least `%THEMENAME%\gtk-3.0\gtk.css` and `%THEMENAME%\index.theme`, where `THEMENAME` is the name of the theme.
+
+    There are 2 pitfalls to be aware of, to properly install a theme:
+    - themes that are not self-contained (relying on re-using css from default linux themes that you might not have), and
+    - linux links (files under gtk-3.0/ that point to a directory above and that need to be replaced by a directory containing the contents of the target directory that has the same name as the link file).
+
+2. Set the theme as default
+
+    Create a `settings.ini` file, either under `C:\Users\%USERNAME%\AppData\Local\gtk-3.0` (global setting) or `%INSTALLDIR%\etc\gtk-3.0` (just pympress) and set the contents:
+
+    ```ini
+    [Settings]
+    gtk-theme-name=THEMENAME
+    ```
+
+Here’s what it looks like with the [Obscure-Orange](https://www.gnome-look.org/p/1254680/) theme.
+![VirtualBox_Win64_16_05_2021_01_23_19](https://user-images.githubusercontent.com/6126377/118380851-70d3d080-b5e5-11eb-97ac-65961f343a2d.png)
+
+In testing this  found these 2 stackoverflow questions useful:
+- [Change GTK+3 look on Windows](https://stackoverflow.com/a/39041558/1387346) which contains a list of all interesting directories
+- [How to get native windows decorations on GTK3 on Windows 7+ and MSYS2](https://stackoverflow.com/a/37060369/1387346) which details the process
