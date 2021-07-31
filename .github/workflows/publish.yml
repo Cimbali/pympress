@@ -4,6 +4,14 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag for which to build'
+        required: true
+      skip_pypi:
+        description: 'skip uploading to pypi'
+        required: false
+        default: no
 
 jobs:
   pypi:
@@ -21,19 +29,20 @@ jobs:
         python -m pip install --upgrade pip
         pip install setuptools wheel twine babel
 
-    - name: Build catalogs
+    - name: Build catalogs and packages
       env:
         poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
       run: |
         ./scripts/poedit.sh download
         python setup.py compile_catalog
+        python setup.py sdist bdist_wheel
 
-    - name: Build and publish
+    - name: Upload
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      if: ${{ github.event.inputs.skip_pypi == 'no' }}
       run: |
-        python setup.py sdist bdist_wheel
         twine upload dist/*
 
   brew:
@@ -45,9 +54,10 @@ jobs:
     - name: Install dependencies
       run: |
         brew update
-        brew install jq
+        brew install jq pipgrip
 
     - name: Wait a reasonable amount of time for pypi to update its info
+      if: ${{ github.event.inputs.skip_pypi == 'no' }}
       run: sleep 60  # be patient with pypi
 
     - name: Configure brew repo
@@ -70,7 +80,9 @@ jobs:
 
     - name: Make a brew PR from pypi’s metadata
       run: |
-        tag=${GITHUB_REF#refs/tags/}
+        ref=${{ github.ref }}
+        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
+
         jq_script=`printf '.releases."%s"[]? | select(.python_version == "source") | @text "--url=\(.url) --sha256=\(.digests.sha256)"' ${tag#v}`
         brew bump-formula-pr --strict --no-browse `curl -s https://pypi.org/pypi/pympress/json | jq -r "$jq_script"` pympress
       env:
