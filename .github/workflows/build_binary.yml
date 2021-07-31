@@ -54,7 +54,7 @@ jobs:
         upload_url=`jq -r '.upload_url | gsub("{.*}$"; "")' release.json`
 
         file=`find srpm/ -name "*.src.rpm"`
-        if ! jq -r '.assets[].name' release.json | grep -qxF "${file#srpm/}"; then
+        if ! jq -r '.assets[]?.name?' release.json | grep -qxF "${file#srpm/}"; then
           echo "Uploading $file"
           api -X POST -H "Content-Type: application/x-rpm" -d "@$file" "$upload_url?name=${file#srpm/}" | jq .
         else
@@ -198,7 +198,7 @@ jobs:
           api -o release.json https://api.github.com/repos/Cimbali/pympress/releases/tags/${tag}
           upload_url=`jq -r '.upload_url | gsub("{.*}$"; "")' release.json`
 
-          jq -r '.assets[].name' release.json > skip
+          jq -r '.assets[]?.name?' release.json > skip
 
           for file in dist/*; do
             if ! grep -qxF "${file#dist/}" skip; then
