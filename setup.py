@@ -366,9 +366,9 @@ if __name__ == '__main__':
         # Normal behaviour: use setuptools, load options from setup.cfg
         print('Using setuptools.setup():', file=sys.stderr)
 
-        setuptols_version = tuple(int(n) for n in setuptools.__version__.split('.'))
+        setuptools_version = tuple(int(n) for n in setuptools.__version__.split('.')[:2])
         # older versions are missing out!
-        if setuptols_version >= (30, 5):
+        if setuptools_version >= (30, 5):
             options['data_files'] = [
                 ('share/pixmaps/', ['pympress/share/pixmaps/pympress.png']),
                 ('share/applications/', ['pympress/share/applications/pympress.desktop']),
