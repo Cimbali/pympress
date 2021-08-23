@@ -43,6 +43,8 @@ jobs:
 
     - name: Upload to GitHub Release
       run: |
+        du -b dist/*
+
         function api() {
           curl -s -u "Cimbali:$GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" "$@"
         }
@@ -51,12 +53,15 @@ jobs:
         [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
 
         api -o release.json "https://api.github.com/repos/Cimbali/pympress/releases/tags/$tag"
+        jq . release.json
+
         upload_url=`jq -r '.upload_url | gsub("{.*}$"; "")' release.json`
 
         file=`find srpm/ -name "*.src.rpm"`
         if ! jq -r '.assets[]?.name?' release.json | grep -qxF "${file#srpm/}"; then
-          echo "Uploading $file"
-          api -X POST -H "Content-Type: application/x-rpm" -d "@$file" "$upload_url?name=${file#srpm/}" | jq .
+          size=`stat -c %s "$file"`
+          echo "Uploading $file with $size bytes"
+          api -X POST -H "Content-Type: application/x-rpm" -H "Content-Length: $size" -d "@$file" "$upload_url?name=${file#srpm/}" | jq .
         else
           echo "Skipping $file"
         fi
@@ -181,8 +186,17 @@ jobs:
           get-content "$env:LOCALAPPDATA\pympress.log"
           echo "::endgroup::"
 
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: |
+            dist/*.zip
+            dist/*.msi
+
       - name: Upload to GitHub Release
         run: |
+          du -b dist/*
+
           function api() {
             curl -s -u "Cimbali:$GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" "$@"
           }
@@ -196,14 +210,17 @@ jobs:
           [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
 
           api -o release.json https://api.github.com/repos/Cimbali/pympress/releases/tags/${tag}
+          jq . release.json
+
           upload_url=`jq -r '.upload_url | gsub("{.*}$"; "")' release.json`
 
           jq -r '.assets[]?.name?' release.json > skip
 
           for file in dist/*; do
             if ! grep -qxF "${file#dist/}" skip; then
-              echo "Uploading $file"
-              api -X POST -H "Content-Type: ${contents[${file##*.}]}" -d "@$file" "$upload_url?name=${file#dist/}" | jq .
+              size=`stat -c %s "$file"`
+              echo "Uploading $file with $size bytes"
+              api -X POST -H "Content-Type: ${contents[${file##*.}]}" -H "Content-Length: $size" -d "@$file" "$upload_url?name=${file#dist/}" | jq .
             else
               echo "Skipping $file"
             fi
