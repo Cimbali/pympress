@@ -220,7 +220,8 @@ jobs:
             if ! grep -qxF "${file#dist/}" skip; then
               size=`stat -c %s "$file"`
               echo "Uploading $file with $size bytes"
-              api -X POST -H "Content-Type: ${contents[${file##*.}]}" -H "Content-Length: $size" -d "@$file" "$upload_url?name=${file#dist/}" | jq .
+              api -X POST -H "Content-Type: ${contents[${file##*.}]}" -H "Content-Length: $size" -d "@$file" "$upload_url?name=${file#dist/}" --verbose --no-progress-meter -o reply.json
+              jq . reply.json && rm reply.json
             else
               echo "Skipping $file"
             fi
