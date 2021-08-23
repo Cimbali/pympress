@@ -41,7 +41,7 @@ jobs:
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      if: ${{ github.event.inputs.skip_pypi == 'no' }}
+      if: ${{ github.event_name == 'release' || github.event.inputs.skip_pypi == 'no' }}
       run: |
         twine upload dist/*
 
@@ -57,7 +57,7 @@ jobs:
         brew install jq pipgrip
 
     - name: Wait a reasonable amount of time for pypi to update its info
-      if: ${{ github.event.inputs.skip_pypi == 'no' }}
+      if: ${{ github.event_name == 'release' || github.event.inputs.skip_pypi == 'no' }}
       run: sleep 60  # be patient with pypi
 
     - name: Configure brew repo
@@ -71,6 +71,7 @@ jobs:
         git remote add gh "https://github.com/Cimbali/homebrew-core/"
         git fetch gh
         # Attempt a rebase of changes in our repo copy
+        git checkout --detach
         git rebase origin/master gh/master && git branch -f master HEAD || git rebase --abort
         # Now use master and update remote so we can use the bump-formula-pr
         git checkout master
