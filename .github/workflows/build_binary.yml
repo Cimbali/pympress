@@ -41,35 +41,25 @@ jobs:
         build=${{ github.event.inputs.build }}
         python3 setup.py bdist_rpm --dist-dir=srpm/ --source-only --release ${build:-1}
 
-    - name: Upload to GitHub Release
+    - name: Make tag name
+      id: name
       run: |
-        du -b dist/*
-
-        function api() {
-          curl -s -u "Cimbali:$GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" "$@"
-        }
-
         ref=${{ github.ref }}
         [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
+        echo ::set-output name=tag::$tag
 
-        api -o release.json "https://api.github.com/repos/Cimbali/pympress/releases/tags/$tag"
-        jq . release.json
-
-        upload_url=`jq -r '.upload_url | gsub("{.*}$"; "")' release.json`
-
-        file=`find srpm/ -name "*.src.rpm"`
-        if ! jq -r '.assets[]?.name?' release.json | grep -qxF "${file#srpm/}"; then
-          size=`stat -c %s "$file"`
-          echo "Uploading $file with $size bytes"
-          api -X POST -H "Content-Type: application/x-rpm" -H "Content-Length: $size" -d "@$file" "$upload_url?name=${file#srpm/}" | jq .
-        else
-          echo "Skipping $file"
-        fi
-
+    - name: Create GitHub Release and upload
+      uses: softprops/action-gh-release@v1
+      with:
+        draft: true
+        tag_name: ${{ steps.name.outputs.tag }}
+        fail_on_unmatched_files: true
+        files: srpm/*.src.rpm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
 
     - name: Upload to COPR
+      # TODO: Should be in publish really
       continue-on-error: true
       run: |
         trap 'rm -f ./copr-config' EXIT && echo "$COPR_TOKEN_CONFIG" > ./copr-config
@@ -140,23 +130,24 @@ jobs:
       - name: Build binary
         run: python3 setup.py --freeze build_exe
 
-      - name: Make file name
-        id: file
+      - name: Make file and tag names
+        id: name
         run: |
           ref=${{ github.ref }}
           [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
 
-          echo ::set-output name=name::pympress-$tag-${{ matrix.arch }}
+          echo ::set-output name=file::pympress-$tag-${{ matrix.arch }}
+          echo ::set-output name=tag::$tag
 
       - name: Build installer
-        run: python3 setup.py --freeze bdist_msi --target-name ${{ steps.file.outputs.name }}.msi --skip-build
+        run: python3 setup.py --freeze bdist_msi --target-name ${{ steps.name.outputs.file }}.msi --skip-build
 
       - name: Make portable install
         run: |
           cd build
           mv exe.* pympress
           cp ../pympress/share/defaults.conf pympress/pympress.conf
-          zip -r ../dist/${{ steps.file.outputs.name }}.zip pympress/
+          zip -r ../dist/${{ steps.name.outputs.file }}.zip pympress/
           cd -
 
       - name: Install pympress
@@ -186,46 +177,14 @@ jobs:
           get-content "$env:LOCALAPPDATA\pympress.log"
           echo "::endgroup::"
 
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+      - name: Create GitHub Release and upload
+        uses: softprops/action-gh-release@v1
         with:
-          path: |
+          draft: true
+          tag_name: ${{ steps.name.outputs.tag }}
+          fail_on_unmatched_files: true
+          files: |
             dist/*.zip
             dist/*.msi
-
-      - name: Upload to GitHub Release
-        run: |
-          du -b dist/*
-
-          function api() {
-            curl -s -u "Cimbali:$GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" "$@"
-          }
-
-          declare -A contents=(
-            ["msi"]=application/x-msdownload
-            ["zip"]=application/zip
-          )
-
-          ref=${{ github.ref }}
-          [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
-
-          api -o release.json https://api.github.com/repos/Cimbali/pympress/releases/tags/${tag}
-          jq . release.json
-
-          upload_url=`jq -r '.upload_url | gsub("{.*}$"; "")' release.json`
-
-          jq -r '.assets[]?.name?' release.json > skip
-
-          for file in dist/*; do
-            if ! grep -qxF "${file#dist/}" skip; then
-              size=`stat -c %s "$file"`
-              echo "Uploading $file with $size bytes"
-              api -X POST -H "Content-Type: ${contents[${file##*.}]}" -H "Content-Length: $size" -d "@$file" "$upload_url?name=${file#dist/}" --verbose --no-progress-meter -o reply.json
-              jq . reply.json && rm reply.json
-            else
-              echo "Skipping $file"
-            fi
-          done
-
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
