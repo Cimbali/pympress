@@ -45,6 +45,33 @@ jobs:
       run: |
         twine upload dist/*
 
+  copr:
+    name: Download source RPM from release and upload to COPR
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download from GitHub Release
+      run: |
+        ref=${{ github.ref }}
+        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
+
+        curl -s -u "Cimbali:$GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" -o release.json "https://api.github.com/repos/Cimbali/pympress/releases/tags/$tag"
+        jq -r '[.assets[] | select(.name | endswith(".src.rpm"))][0]' release.json | tee srpm.json
+
+        curl -L "`jq -r .browser_download_url release.json`" -o "`jq -r .name release.json`"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+
+    - name: Upload to COPR
+      continue-on-error: true
+      run: |
+        trap 'rm -f ./copr-config' EXIT && echo "$COPR_TOKEN_CONFIG" > ./copr-config
+
+        python3 -m pip install copr-cli
+        copr-cli --config ./copr-config build --nowait cimbali/pympress python3-pympress-*.src.rpm
+      env:
+        COPR_TOKEN_CONFIG: ${{ secrets.COPR_TOKEN_CONFIG }}
+
   brew:
     name: Request new pypi package be pulled into Homebrew
     needs: pypi

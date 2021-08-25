@@ -58,18 +58,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
 
-    - name: Upload to COPR
-      # TODO: Should be in publish really
-      continue-on-error: true
-      run: |
-        trap 'rm -f ./copr-config' EXIT && echo "$COPR_TOKEN_CONFIG" > ./copr-config
-
-        python3 -m pip install copr-cli
-        copr-cli --config ./copr-config build --nowait cimbali/pympress srpm/python3-pympress-*.src.rpm
-
-      env:
-        COPR_TOKEN_CONFIG: ${{ secrets.COPR_TOKEN_CONFIG }}
-
 
   windows-build:
     name: Windows Binaries
