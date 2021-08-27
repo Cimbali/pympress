@@ -1,8 +1,10 @@
-name: Upload python package
+name: Upload package to pypi, brew, and copr
 
 on:
+  # When the draft release is converted to a public release, send out the binaries etc. to all the platforms
   release:
     types: [published]
+  # Manual trigger
   workflow_dispatch:
     inputs:
       tag:
@@ -56,9 +58,9 @@ jobs:
         [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
 
         curl -s -u "Cimbali:$GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" -o release.json "https://api.github.com/repos/Cimbali/pympress/releases/tags/$tag"
-        jq -r '[.assets[] | select(.name | endswith(".src.rpm"))][0]' release.json | tee srpm.json
+        jq -r '[.assets[] | select(.name | endswith(".src.rpm"))][0]' release.json | tee srpm.json | jq 'del(.uploader)'
 
-        curl -L "`jq -r .browser_download_url release.json`" -o "`jq -r .name release.json`"
+        curl -L "`jq -r .browser_download_url srpm.json`" -o "`jq -r .name srpm.json`"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
 

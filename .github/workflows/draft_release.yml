@@ -1,9 +1,10 @@
-name: Build binaries
+name: 'Draft release: build binaries etc.'
 
 on:
+  # On new tags, build binaries and srpm, run a full brew test, and create a draft release automatically.
   create:
+  # We often mess up the automatic build. Allow to correct manually (optionally with different build numbers)
   workflow_dispatch:
-    # We often mess up the automatic build. Allow to correct manually (optionally with different build numbers)
     inputs:
       build:
         description: 'build number'
@@ -15,6 +16,20 @@ on:
 
 
 jobs:
+  macos:
+    name: Install and run test on mac
+    runs-on: macos-latest
+    steps:
+    - name: Install latest
+      run: |
+        brew install pympress --only-dependencies
+        brew install pympress --build-from-source --HEAD
+
+    - name: Test
+      run: |
+        brew test pympress
+
+
   srpm:
     name: Source RPM
     runs-on: ubuntu-latest
