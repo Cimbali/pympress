@@ -79,7 +79,7 @@ class Scribbler(builder.Builder):
     #: The `list` containing the radio buttons :class:`~Gtk.ModelButton`
     scribble_preset_buttons = []
 
-    #: The position of the mouse on the slide as `tuple` of `float`s
+    #: The position of the mouse on the slide as `tuple` of `float`
     mouse_pos = None
     #: A :class:`~cairo.Surface` to hold drawn highlights
     scribble_cache = None

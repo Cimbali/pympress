@@ -61,7 +61,7 @@ class SurfaceCache(object):
     #: :attr:`max_pages`, pages are popped from the start of the cache.
     surface_cache = {}
 
-    #: `dict` containing functions that return a :class:`~cairo.Surface` given a :format:`~cairo.Format`,
+    #: `dict` containing functions that return a :class:`~cairo.Surface` given a :class:`~cairo.Format`,
     #: width `int` and height `int`, see :meth:`~Gtk.Window.create_similar_image_surface`
     surface_factory = {}
 

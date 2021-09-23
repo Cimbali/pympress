@@ -215,7 +215,7 @@ class Pympress(Gtk.Application):
         """ Handle opening files. In practice we only open once, the last one.
 
         Args:
-            files (`list` of :class:`~Gio.File`s): representing an array of files to open
+            files (`list` of :class:`~Gio.File`): representing an array of files to open
             n_files (`int`): the number of files passed.
             hint (`str`): a hint, such as view, edit, etc. Should always be the empty string.
         """
