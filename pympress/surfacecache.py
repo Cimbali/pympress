@@ -106,7 +106,7 @@ class SurfaceCache(object):
             prerender_enabled (`bool`):  whether this widget is initially in the list of widgets to prerender
             zoomed (`bool`): whether we will cache a zoomed portion of the widget
         """
-        widget_name = widget.get_name() + ('_zoomed' if zoomed else '')
+        widget_name = widget.get_name().rstrip('0123456789') + ('_zoomed' if zoomed else '')
         with self.locks.setdefault(widget_name, threading.Lock()):
             self.surface_cache[widget_name] = collections.OrderedDict()
             self.surface_size[widget_name] = (-1, -1)

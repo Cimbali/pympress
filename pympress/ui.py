@@ -37,6 +37,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import os.path
+import math
 import sys
 import gc
 
@@ -70,11 +71,15 @@ class UI(builder.Builder):
     #: :class:`~Gtk.DrawingArea` for the current slide in the Presenter window.
     p_da_notes = None
 
-    #: :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
-    p_frame_next = None
+    #: :class:`~Gtk.Grid` for the next slide(s) in the Presenter window.
+    grid_next = None
+    #: `list` of :class:`~Gtk.AspectFrame` for the next slide in the Presenter window.
+    p_frames_next = None
     #: :class:`~Gtk.DrawingArea` for the next slide in the Presenter window.
-    p_da_next = None
-    #: :class:`~Gtk.AspectFrame` for the current slide copy in the Presenter window.
+    p_das_next = None
+    #: `int` the number of next slides currently on display in the “Next slides” pane, initialized to the maximal number
+    next_frames_count = 16
+    #: `list` of :class:`~Gtk.AspectFrame` for the current slide copy in the Presenter window.
     p_frame_cur = None
     #: :class:`~Gtk.DrawingArea` for the current slide copy in the Presenter window.
     p_da_cur = None
@@ -223,6 +228,8 @@ class UI(builder.Builder):
             'validate-input':        dict(activate=self.validate_current_input),
             'cancel-input':          dict(activate=self.cancel_current_input),
             'align-content':         dict(activate=self.adjust_frame_position),
+            'next-frames':           dict(activate=self.reconfigure_next_frames, parameter_type=int,
+                                          state=self.next_frames_count),
         })
 
         self.setup_actions({
@@ -335,10 +342,15 @@ class UI(builder.Builder):
         pane_handles = self.replace_layout(layout, self.p_central, self.placeable_widgets, self.on_pane_event)
         self.pane_handle_pos.update(pane_handles)
 
+        self.p_frames_next = [self.get_object('p_frame_next{}'.format(n)) for n in range(self.next_frames_count)]
+        self.p_das_next = [self.get_object('p_da_next{}'.format(n)) for n in range(self.next_frames_count)]
+        self.reconfigure_next_frames(None, GLib.Variant.new_int64(self.config.getint('presenter', 'next_slide_count')))
+
         slide_type = self.notes_mode.complement()
         self.cache.add_widget(self.p_da_cur, slide_type)
         self.cache.add_widget(self.p_da_cur, slide_type, zoomed = True)
-        self.cache.add_widget(self.p_da_next, slide_type)
+        # A single cache for all next slides
+        self.cache.add_widget(self.p_das_next[0], slide_type)
         self.cache.add_widget(self.p_da_notes, self.notes_mode, prerender_enabled = bool(self.notes_mode))
         self.cache.add_widget(self.scribbler.scribble_p_da, slide_type, prerender_enabled = False)
         self.cache.add_widget(self.scribbler.scribble_p_da, slide_type, zoomed = True)
@@ -352,6 +364,37 @@ class UI(builder.Builder):
 
         self.p_win.insert_action_group('presenter', self.c_win.get_action_group('win'))
         self.p_win.insert_action_group('win', None)
+
+
+    def reconfigure_next_frames(self, gaction, param):
+        """ Set the number of next frames to preview the the “next slides” panel
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the number of slides as a GVariant
+        """
+        n_frames = param.get_int64()
+        if n_frames < 1:
+            n_frames = 1
+        if n_frames > 16:
+            n_frames = 16
+
+        for n in range(self.next_frames_count):
+            self.grid_next.remove(self.p_frames_next[n])
+
+        for n in range(4):
+            self.grid_next.remove_row(n)
+            self.grid_next.remove_column(n)
+
+        rows = int(round(math.sqrt(n_frames)))
+        cols = (n_frames + rows - 1) // rows
+
+        for n in range(n_frames):
+            self.grid_next.attach(self.p_frames_next[n], n % cols, n // cols, 1, 1)
+
+        self.next_frames_count = n_frames
+        self.app.set_action_state('next-frames', n_frames)
+        self.config.set('presenter', 'next_slide_count', str(n_frames))
 
 
     def setup_screens(self):
@@ -478,7 +521,7 @@ class UI(builder.Builder):
         if not event.send_event:
             return
 
-        self.cache.resize_widget(widget.get_name(), event.width, event.height)
+        self.cache.resize_widget(widget.get_name().rstrip('0123456789'), event.width, event.height)
 
         if widget is self.c_da:
             self.medias.resize('content')
@@ -526,7 +569,8 @@ class UI(builder.Builder):
         """
         self.resize_panes = False
         self.p_da_cur.queue_draw()
-        self.p_da_next.queue_draw()
+        for da in self.p_das_next:
+            da.queue_draw()
         if self.notes_mode:
             self.p_da_notes.queue_draw()
         if self.redraw_timeout:
@@ -934,7 +978,7 @@ class UI(builder.Builder):
 
         page_content = self.doc.page(self.current_page)
         page_preview = self.doc.page(self.preview_page)
-        page_next = self.doc.page(self.preview_page + 1)
+        pages_next = [self.doc.page(self.preview_page + n + 1) for n in range(self.next_frames_count)]
         page_notes = self.doc.notes_page(self.preview_page)
 
         # Aspect ratios and queue redraws
@@ -956,11 +1000,12 @@ class UI(builder.Builder):
             self.scribbler.scribble_p_frame.set_property('ratio', content_pr)
             self.scribbler.scribble_p_frame.queue_draw()
 
-        if page_next is not None:
-            next_pr = page_next.get_aspect_ratio(draw_notes)
-            self.p_frame_next.set_property('ratio', next_pr)
-
-        self.p_da_next.queue_draw()
+        next_pr = preview_pr  # A default page ratio
+        for page, frame, da in zip(pages_next, self.p_frames_next, self.p_das_next):
+            if page is not None:
+                next_pr = page.get_aspect_ratio(draw_page)
+            frame.set_property('ratio', next_pr)
+            da.queue_draw()
 
         self.annotations.add_annotations(page_preview.get_annotations())
 
@@ -968,7 +1013,7 @@ class UI(builder.Builder):
         self.page_number.update_page_numbers(self.preview_page, page_preview.label())
 
         # Prerender the 4 next pages and the 2 previous ones
-        page_max = min(self.doc.pages_number(), self.preview_page + 5)
+        page_max = min(self.doc.pages_number(), self.preview_page + self.next_frames_count + 4)
         page_min = max(0, self.preview_page - 2)
         for p in list(range(self.preview_page + 1, page_max)) + list(range(self.preview_page, page_min, -1)):
             self.cache.prerender(p)
@@ -1014,16 +1059,20 @@ class UI(builder.Builder):
         elif widget is self.p_da_notes:
             # Notes page, aligned with preview
             page = self.doc.notes_page(self.preview_page)
-        else:
-            page = self.doc.page(self.preview_page + 1)
+        elif widget in self.p_das_next:
+            offset = 1 + int(widget.get_name()[len('p_da_next'):])
+            page = self.doc.page(self.preview_page + offset)
             # No next page: just return so we won't draw anything
             if page is None:
                 return
+        else:
+            logger.warning(_('Unknown widget "{}" to draw'.format(widget.getname())))
+            return
 
         if not page.can_render():
             return
 
-        name = widget.get_name()
+        name = widget.get_name().rstrip('0123456789')
         nb = page.number()
         wtype = self.cache.get_widget_type(name)
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
@@ -1039,7 +1088,7 @@ class UI(builder.Builder):
 
         pb = self.cache.get(name, nb)
         if pb is None:
-            if self.resize_panes and widget in [self.p_da_next, self.p_da_cur, self.p_da_notes]:
+            if self.resize_panes and widget in self.p_das_next + [self.p_da_cur, self.p_da_notes]:
                 # too slow to render here when resize_panes things
                 return
 
@@ -1231,8 +1280,9 @@ class UI(builder.Builder):
             return False
 
         # Where did the event occur?
-        if widget is self.p_da_next:
-            page = self.doc.page(self.preview_page + 1)
+        if widget in self.p_das_next:
+            offset = 1 + int(widget.get_name()[len('p_da_next'):])
+            page = self.doc.page(self.preview_page + offset)
         elif widget is self.p_da_notes:
             page = self.doc.notes_page(self.preview_page)
         elif widget is self.p_da_cur:
@@ -1269,8 +1319,9 @@ class UI(builder.Builder):
             return False
 
         # Where did the event occur?
-        if widget is self.p_da_next:
-            page = self.doc.page(self.preview_page + 1)
+        if widget in self.p_das_next:
+            offset = 1 + int(widget.get_name()[len('p_da_next'):])
+            page = self.doc.page(self.preview_page + offset)
         elif widget is self.p_da_notes:
             page = self.doc.notes_page(self.preview_page)
         elif widget is self.p_da_cur:

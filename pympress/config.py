@@ -94,7 +94,7 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
 
     #: `dict` of strings that are the valid representations of widgets from the presenter window
     #: that can be dynamically rearranged, mapping to their names
-    placeable_widgets = {"notes": "p_frame_notes", "current": "p_frame_cur", "next": "p_frame_next",
+    placeable_widgets = {"notes": "p_frame_notes", "current": "p_frame_cur", "next": "grid_next",
                          "annotations": "p_frame_annot", "highlight": "scribble_overlay"}
 
     #: `dict` mapping accelerator keys to actions
