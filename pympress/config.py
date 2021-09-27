@@ -23,8 +23,6 @@
 ---------------------------------------
 """
 
-from __future__ import print_function, unicode_literals
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -45,47 +43,6 @@ from gi.repository import Gtk, GLib, Gio
 from pympress import util
 
 
-try:
-    unicode  # trigger NameError in python3
-
-    def recursive_unicode_to_str(obj):
-        """Recursively convert unicode to str (for python2).
-
-        Raises NameError in python3 as 'unicode' is undefined
-
-        Args:
-            obj (`unicode` or `str` or `dict` or `list`): A unicode string to transform,
-                                                          or a container whose children to transform
-        """
-        if isinstance(obj, unicode):
-            return str(obj)
-        elif isinstance(obj, dict):
-            return {recursive_unicode_to_str(k): recursive_unicode_to_str(obj[k]) for k in obj}
-        elif isinstance(obj, list):
-            return [recursive_unicode_to_str(i) for i in obj]
-        else:
-            return obj
-
-except NameError:
-    def recursive_unicode_to_str(obj):
-        """ Dummy function that does nothing, for python3.
-
-        For python2 the equivalent function transforms strings to unicode.
-        """
-        return obj
-
-
-def layout_from_json(layout_string):
-    """ Load the layout from config, with all strings cast to type `str` (even on python2 where they default to `unicode`).
-
-    Raises ValueError until python 3.4, json.decoder.JSONDecodeError afterwards, on invalid input.
-
-    Args:
-        layout_string (`str`): A JSON string to be loaded.
-    """
-    return recursive_unicode_to_str(json.loads(layout_string))
-
-
 class Config(configparser.ConfigParser, object):  # python 2 fix
     """ Manage configuration :Get the configuration from its file and store its back.
     """
@@ -96,6 +53,14 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
     #: that can be dynamically rearranged, mapping to their names
     placeable_widgets = {"notes": "p_frame_notes", "current": "p_frame_cur", "next": "grid_next",
                          "annotations": "p_frame_annot", "highlight": "scribble_overlay"}
+
+    #: `dict` mapping layout ids to tuples of their expected and optional widgets
+    widget_reqs = {
+        'notes':      (set(placeable_widgets.keys()) - {"annotations", "highlight"}, {"annotations"}),
+        'plain':      (set(placeable_widgets.keys()) - {"notes", "highlight"},),
+        'note_pages': (set(placeable_widgets.keys()) - {"current", "highlight"},),
+        'highlight':  ({"highlight"}, set(placeable_widgets.keys()) - {"highlight"})
+    }
 
     #: `dict` mapping accelerator keys to actions
     shortcuts = {}
@@ -424,22 +389,24 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             raise ValueError('Following placeable_widgets were not specified: {}'.format(', '.join(widget_missing)))
 
 
+    def update_layout_tree(self, layout_name, layout):
+        """ Update the layout named `~layout_name`. Throws ValueError on invalid layouts.
+
+        Args:
+            layout_name (`str`): the name of the layout to update
+            layout (`dict`): the hierarchy of dictionaries, lists, and strings representing the layout
+        """
+        self.validate_layout(layout, *self.widget_reqs[layout_name])
+        self.layout[layout_name] = layout
+
+
     def load_window_layouts(self):
         """ Parse and validate layouts loaded from config, with fallbacks if needed.
         """
-        widget_reqs = {
-            'notes':      (set(self.placeable_widgets.keys()) - {"annotations", "highlight"}, {"annotations"}),
-            'plain':      (set(self.placeable_widgets.keys()) - {"notes", "highlight"},),
-            'note_pages': (set(self.placeable_widgets.keys()) - {"current", "highlight"},),
-            'highlight':  ({"highlight"}, set(self.placeable_widgets.keys()) - {"highlight"})
-        }
-
-        for layout_name in widget_reqs:
+        for layout_name in self.widget_reqs:
             # Log error and keep default layout
             try:
-                loaded_layout = layout_from_json(self.get('layout', layout_name))
-                self.validate_layout(loaded_layout, *widget_reqs[layout_name])
-                self.layout[layout_name] = loaded_layout
+                self.update_layout_tree(layout_name, json.loads(self.get('layout', layout_name)))
             except ValueError:
                 logger.exception('Invalid layout for {}'.format(layout_name))
 
@@ -507,10 +474,10 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
     def get_layout(self, layout_name):
         """ Getter for the `~layout_name` layout.
         """
-        return recursive_unicode_to_str(self.layout[layout_name])
+        return self.layout[layout_name]
 
 
-    def update_layout(self, layout_name, widget, pane_handle_pos):
+    def update_layout_from_widgets(self, layout_name, widget, pane_handle_pos):
         """ Setter for the notes layout.
 
         Args:
@@ -518,4 +485,4 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             widget (:class:`~Gtk.Widget`): the widget that will contain the layout.
             pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative handle position (float in 0..1)
         """
-        self.layout[layout_name] = self.widget_layout_to_tree(widget, pane_handle_pos)
+        self.update_layout_tree(layout_name, self.widget_layout_to_tree(widget, pane_handle_pos))

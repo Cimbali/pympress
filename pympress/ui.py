@@ -576,8 +576,10 @@ class UI(builder.Builder):
         if self.redraw_timeout:
             self.redraw_timeout = 0
 
-        self.config.update_layout('highlight' if self.scribbler.scribbling_mode else self.layout_name(self.notes_mode),
-                                  self.p_central.get_children()[0], self.pane_handle_pos)
+        self.config.update_layout_from_widgets(
+            'highlight' if self.scribbler.scribbling_mode else self.layout_name(self.notes_mode),
+            self.p_central.get_children()[0], self.pane_handle_pos
+        )
 
 
     def on_pane_event(self, widget, evt):
