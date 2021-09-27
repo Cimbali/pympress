@@ -235,6 +235,10 @@
 			<attribute name="label" translatable="yes">Portable installation</attribute>
 			<attribute name="action">app.portable-config</attribute>
 		</item>
+		<item>
+			<attribute name="label" translatable="yes">Edit layout</attribute>
+			<attribute name="action">app.edit-layout</attribute>
+		</item>
 	</submenu>
 
 	<submenu>

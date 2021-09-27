@@ -47,7 +47,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import GObject, Gtk, Gdk, GLib, GdkPixbuf, Gio
 
 
-from pympress import document, surfacecache, util, pointer, scribble, builder, talk_time, extras, editable_label
+from pympress import document, surfacecache, util, pointer, scribble, builder, talk_time, dialog, extras, editable_label
 
 
 class UI(builder.Builder):
@@ -149,13 +149,15 @@ class UI(builder.Builder):
 
     #: :class:`~pympress.editable_label.EstimatedTalkTime` to set estimated/remaining talk time
     est_time = None
-    #: :class:`~pympress.extras.TimingReport` popup to show how much time was spent on which part
+    #: :class:`~pympress.dialog.TimingReport` popup to show how much time was spent on which part
     timing = None
     #: :class:`~pympress.talk_time.TimeCounter` clock tracking talk time (elapsed, and remaining)
     talk_time = None
 
     #: A :class:`~Gtk.ShortcutsWindow` to show the shortcuts
     shortcuts_window = None
+    #: :class:`~pympress.dialog.LayoutEditor` popup to configure the layouts of the presenter window
+    layout_editor = None
 
     #: A :class:`~Gtk.AccelGroup` to store the shortcuts
     accel_group = None
@@ -254,8 +256,9 @@ class UI(builder.Builder):
         self.laser = pointer.Pointer(self.config, self)
         self.est_time = editable_label.EstimatedTalkTime(self)
         self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))
-        self.timing = extras.TimingReport(self)
+        self.timing = dialog.TimingReport(self)
         self.talk_time = talk_time.TimeCounter(self, self.est_time, self.timing)
+        self.layout_editor = dialog.LayoutEditor(self, self.config)
         self.file_watcher = extras.FileWatcher()
         self.config.register_actions(self)
 
@@ -824,7 +827,7 @@ class UI(builder.Builder):
     def open_file(self, gaction, target):
         """ Open a document.
 
-        Returns:
+        Args:
             gaction (:class:`~Gio.Action`): the action triggering the call
             target (:class:`~GLib.Variant`): the file to open as a string variant
         """
@@ -834,8 +837,8 @@ class UI(builder.Builder):
     def get_notes_mode(self):
         """ Simple getter.
 
-        Returns (:class:`~pympress.document.PdfPage`):
-            Truthy when we split slides in content + notes
+        Returns:
+             :class:`~pympress.document.PdfPage`: Truthy when we split slides in content + notes
         """
         return self.notes_mode
 

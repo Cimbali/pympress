@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<interface>
+  <requires lib="gtk+" version="3.2"/>
+  <object class="GtkTreeStore" id="layout_treemodel">
+    <columns>
+      <!-- column-name widget -->
+      <column type="gchararray"/>
+      <!-- column-name is_box -->
+      <column type="gboolean"/>
+      <!-- column-name resizeable -->
+      <column type="gboolean"/>
+      <!-- column-name orientation -->
+      <column type="gchararray"/>
+      <!-- column-name next_slide_count -->
+      <column type="gint"/>
+      <!-- column-name widget_name -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+  <object class="GtkListStore" id="layouts_model">
+    <columns>
+      <!-- column-name layout -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">notes</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">plain</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">note_pages</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkAdjustment" id="next_count_adjustment">
+    <property name="lower">1</property>
+    <property name="upper">16</property>
+    <property name="value">1</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">1</property>
+  </object>
+  <object class="GtkListStore" id="orientations_model">
+    <columns>
+      <!-- column-name orientation -->
+      <column type="gchararray"/>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">horizontal</col>
+        <col id="1">horizontal</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">vertical</col>
+        <col id="1">vertical</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkDialog" id="layout_dialog">
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">Presentation timing breakdown</property>
+    <property name="default-height">250</property>
+    <property name="destroy-with-parent">True</property>
+    <property name="type-hint">normal</property>
+    <property name="gravity">north-east</property>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="width-request">400</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can-focus">False</property>
+            <property name="homogeneous">True</property>
+            <property name="layout-style">end</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <child>
+              <object class="GtkComboBox" id="layout_selector">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="valign">center</property>
+                <property name="model">layouts_model</property>
+                <property name="active">0</property>
+                <property name="has-frame">False</property>
+                <property name="has-entry">True</property>
+                <property name="entry-text-column">0</property>
+                <property name="popup-fixed-width">False</property>
+                <property name="id-column">0</property>
+                <property name="active-id">plain</property>
+                <signal name="changed" handler="layout_selected" swapped="no"/>
+                <child internal-child="entry">
+                  <object class="GtkEntry">
+                    <property name="can-focus">False</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkTextView" id="layout_description">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="pixels-above-lines">5</property>
+                <property name="pixels-below-lines">5</property>
+                <property name="editable">False</property>
+                <property name="wrap-mode">word</property>
+                <property name="left-margin">5</property>
+                <property name="right-margin">5</property>
+                <property name="cursor-visible">False</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkTreeView" id="layout_treeview">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="vscroll-policy">natural</property>
+            <property name="model">layout_treemodel</property>
+            <property name="reorderable">True</property>
+            <property name="enable-search">False</property>
+            <property name="enable-grid-lines">vertical</property>
+            <property name="enable-tree-lines">True</property>
+            <signal name="drag-end" handler="normalize_layout" swapped="no"/>
+            <child internal-child="selection">
+              <object class="GtkTreeSelection"/>
+            </child>
+            <child>
+              <object class="GtkTreeViewColumn" id="widget_column">
+                <property name="resizable">True</property>
+                <property name="title" translatable="yes">widget</property>
+                <child>
+                  <object class="GtkCellRendererText" id="widget_renderer"/>
+                  <attributes>
+                    <attribute name="text">5</attribute>
+                  </attributes>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkTreeViewColumn" id="resizeable_column">
+                <property name="title" translatable="yes">resizeable</property>
+                <child>
+                  <object class="GtkCellRendererToggle" id="resizeable_renderer">
+                    <signal name="toggled" handler="resizeable_toggled" object="resizeable_column" swapped="no"/>
+                  </object>
+                  <attributes>
+                    <attribute name="visible">1</attribute>
+                    <attribute name="active">2</attribute>
+                  </attributes>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkTreeViewColumn" id="orientation_column">
+                <property name="title" translatable="yes">orientation</property>
+                <child>
+                  <object class="GtkCellRendererCombo" id="orientation_renderer">
+                    <property name="editable">True</property>
+                    <property name="has-entry">False</property>
+                    <property name="model">orientations_model</property>
+                    <property name="text-column">0</property>
+                    <signal name="changed" handler="orientation_changed" swapped="no"/>
+                  </object>
+                  <attributes>
+                    <attribute name="visible">1</attribute>
+                    <attribute name="text">3</attribute>
+                  </attributes>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkTreeViewColumn" id="next_count_column">
+                <property name="title" translatable="yes">next slides count</property>
+                <child>
+                  <object class="GtkCellRendererSpin" id="next_count_renderer">
+                    <property name="editable">True</property>
+                    <property name="adjustment">next_count_adjustment</property>
+                    <signal name="edited" handler="next_slide_count_edited" swapped="no"/>
+                  </object>
+                  <attributes>
+                    <attribute name="visible">4</attribute>
+                    <attribute name="text">4</attribute>
+                  </attributes>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
