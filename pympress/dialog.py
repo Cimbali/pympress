@@ -28,6 +28,8 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
+import copy
+
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
@@ -200,7 +202,7 @@ class LayoutEditor(builder.Builder):
     orientations_model = None
     #: A :class:`~Gtk.Dialog` to contain the layout edition dialog
     layout_dialog = None
-    #: A :class:`~Gtk.TextView` to contain the description of the layout
+    #: A :class:`~Gtk.Label` to contain the description of the layout
     layout_description = None
     #: :class:`~pympress.config.Config` to remember preferences
     config = None
@@ -212,9 +214,9 @@ class LayoutEditor(builder.Builder):
     ui_load_layout = lambda *args: None
 
     layout_descriptions = {
-        'notes':      _('Layout for notes are on separate slides, with a separate current slide'),
-        'plain':      _('Plain layout, without notes mode'),
-        'note_pages': _('Layout for notes are on separate slides that display the current slide'),
+        'notes':      _('Layout for beamer notes on second screen (no current slide preview in notes)'),
+        'plain':      _('Plain layout, without note slides'),
+        'note_pages': _('Layout for libreoffice notes on separate pages (with current slide preview in notes)'),
     }
 
     _model_columns = ['widget', 'is_box', 'resizeable', 'orientation', 'next_slide_count', 'widget_name']
@@ -235,14 +237,10 @@ class LayoutEditor(builder.Builder):
         })
 
 
-    def load_layout(self, layout):
+    def load_layout(self):
         """ Load the given layout in the treemodel for display and manipulation in the treeview
-
-        Args:
-            layout (`str`): the id of the layout
         """
-        self.current_layout = layout
-        self.layout_description.get_buffer().set_text(self.layout_descriptions[layout])
+        self.layout_description.set_text(self.layout_descriptions[self.current_layout])
         self.layout_treemodel.clear()
 
         # Display names for the widget ids
@@ -257,7 +255,7 @@ class LayoutEditor(builder.Builder):
         }
 
         next_count = self.next_frames_action.get_state().get_int64()
-        dfs_info = [(None, self.config.get_layout(layout))]
+        dfs_info = [(None, self.config.get_layout(self.current_layout))]
 
         while dfs_info:
             it, node = dfs_info.pop()
@@ -274,6 +272,15 @@ class LayoutEditor(builder.Builder):
         self.layout_treeview.expand_all()
 
 
+    def set_current_layout(self, layout):
+        """ Update which is the layout currently used by the UI
+
+        Args:
+            layout (`str`): the layout id
+        """
+        self.current_layout = layout
+
+
     def layout_selected(self, widget, event=None):
         """ Manage events for the layout selector drop-down menu
 
@@ -281,7 +288,8 @@ class LayoutEditor(builder.Builder):
             widget (:class:`~Gtk.ComboBox`):  the widget which has been modified
             event (:class:`~Gdk.Event`):  the GTK event
         """
-        self.load_layout(widget.get_active_id())
+        self.current_layout = widget.get_active_id()
+        self.load_layout()
 
 
     def get_info(self, path):
@@ -411,7 +419,7 @@ class LayoutEditor(builder.Builder):
         self.config.update_layout_tree(self.current_layout, layout)
         self.ui_load_layout(None)
         if reload:
-            self.load_layout(self.current_layout)
+            self.load_layout()
 
 
     def show_editor(self, gaction, param=None):
@@ -421,12 +429,13 @@ class LayoutEditor(builder.Builder):
             gaction (:class:`~Gio.Action`): the action triggering the call
             param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
-        restore_layouts = {layout: self.config.get_layout(layout) for layout in self.layout_descriptions}
+        restore_layouts = {layout: copy.deepcopy(self.config.get_layout(layout)) for layout in self.layout_descriptions}
 
         self.next_frames_action = self.get_application().lookup_action('next-frames')
         restore_next_count = self.next_frames_action.get_state().get_int64()
 
-        self.load_layout(self.get_object('layout_selector').get_active_id())
+        self.get_object('layout_selector').set_active_id(self.current_layout)
+        self.load_layout()
 
         if self.layout_dialog.run() != Gtk.ResponseType.APPLY:
             for layout_name, layout in restore_layouts.items():

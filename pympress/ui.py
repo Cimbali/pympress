@@ -1519,6 +1519,8 @@ class UI(builder.Builder):
         """
         if new is None:
             new = self.layout_name(self.notes_mode)
+        else:
+            self.layout_editor.set_current_layout(new)
 
         pane_handles = self.replace_layout(self.config.get_layout(new), self.p_central,
                                            self.placeable_widgets, self.on_pane_event)

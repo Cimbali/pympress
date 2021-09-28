@@ -116,16 +116,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkTextView" id="layout_description">
+              <object class="GtkLabel" id="layout_description">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixels-above-lines">5</property>
-                <property name="pixels-below-lines">5</property>
-                <property name="editable">False</property>
-                <property name="wrap-mode">word</property>
-                <property name="left-margin">5</property>
-                <property name="right-margin">5</property>
-                <property name="cursor-visible">False</property>
+                <property name="wrap">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
