@@ -1012,7 +1012,7 @@ class UI(builder.Builder):
             frame.set_property('ratio', next_pr)
             da.queue_draw()
 
-        self.annotations.add_annotations(page_preview.get_annotations())
+        self.annotations.load_annotations(page_preview)
 
         # Update display -- needs to be different ?
         self.page_number.update_page_numbers(self.preview_page, page_preview.label())
@@ -1184,6 +1184,19 @@ class UI(builder.Builder):
         return False
 
 
+    def on_key_input(self, widget, event):
+        """ Handle key strokes at top level, only for when editing needs to bypass action accelerators
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the key stroke
+            event (:class:`~Gdk.Event`):  the GTK event, which contains the key stroke details
+        """
+        if self.annotations.key_event(widget, event):
+            return True
+
+        return False
+
+
     def cancel_current_input(self, gaction, param=None):
         """ Handle the action cancelling the input, if applicable.
 
@@ -1199,6 +1212,8 @@ class UI(builder.Builder):
             return True
         elif self.scribbler.try_cancel():
             return True
+        elif self.annotations.try_cancel():
+            return False
 
         return False
 
@@ -1633,7 +1648,7 @@ class UI(builder.Builder):
                     size = parent.get_parent().get_allocated_height()
                 parent.set_position(self.pane_handle_pos[parent] * size)
 
-        self.annotations.add_annotations(self.doc.page(self.preview_page).get_annotations())
+        self.annotations.load_annotations(self.doc.page(self.preview_page))
         gaction.change_state(GLib.Variant.new_boolean(self.show_annotations))
 
         return True

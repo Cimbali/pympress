@@ -291,11 +291,8 @@ class Page(object):
 
         # Read annotations, in particular those that indicate media
         for annotation in self.page.get_annot_mapping():
-            content = annotation.annot.get_contents()
-            if content:
-                self.annotations.append(content)
-
             annot_type = annotation.annot.get_annot_type()
+
             if annot_type == Poppler.AnnotType.LINK:
                 # just an Annot, not subclassed -- probably redundant with links
                 continue
@@ -343,7 +340,11 @@ class Page(object):
                 action = Link.build_closure(fileopen, filename)
             elif annot_type in {Poppler.AnnotType.TEXT, Poppler.AnnotType.POPUP,
                                 Poppler.AnnotType.FREE_TEXT}:
-                # text-only annotations, hide them from screen
+                # text-only annotations, hide them from screen and show them in annotations popup
+                content = annotation.annot.get_contents()
+                if content:
+                    self.annotations.append(annotation.annot)
+
                 self.page.remove_annot(annotation.annot)
                 continue
             elif annot_type in {Poppler.AnnotType.STRIKE_OUT, Poppler.AnnotType.HIGHLIGHT,
@@ -576,6 +577,57 @@ class Page(object):
         return self.annotations
 
 
+    def new_annotation(self, pos, rect=None):
+        """ Add an annotation to this page
+
+        Args:
+            pos (`int`): The position in the list of annotations in which to insert this annotation
+            rect (:class:`~Poppler.Rectangle`): A rectangle for the position of this annotation
+
+        Returns:
+            :class:`~Poppler.Annot`: A new annotation on this page
+        """
+        if pos < 0:
+            pos = 0
+        if pos > len(self.annotations):
+            pos = len(self.annotations)
+
+        if rect is None:
+            rect = Poppler.Rectangle()
+            rect.x1 = self.pw - 20
+            rect.x2 = rect.x1 + 20
+            rect.y2 = self.ph - len(self.annotations) * 20
+            rect.y1 = rect.y2 - 20
+
+        new_annot = Poppler.AnnotText.new(self.parent.doc, rect)
+        new_annot.set_icon(Poppler.ANNOT_TEXT_ICON_NOTE)
+        self.annotations.insert(pos, new_annot)
+        self.parent.made_changes()
+        return new_annot
+
+
+    def set_annotation(self, pos, value):
+        """ Add an annotation to this page
+
+        Args:
+            pos (`int`): The number of the annotation
+            value (`str`): The new contents of the annotation
+        """
+        rect = self.annotations[pos].get_rectangle()
+        self.remove_annotation(pos)
+        self.new_annotation(pos, rect).set_contents(value)
+
+
+    def remove_annotation(self, pos):
+        """ Add an annotation to this page
+
+        Args:
+            pos (`int`): The number of the annotation
+        """
+        self.parent.made_changes()
+        del self.annotations[pos]
+
+
     def get_media(self):
         """ Get the list of medias this page might want to play.
 
@@ -660,6 +712,8 @@ class Document(object):
     page_labels = []
     #: `bool` indicating whether the second half of pages are in fact notes pages
     notes_after = False
+    #: `bool` indicating whether there were modifications to the document
+    changes = False
 
     #: callback, to be connected to :func:`~pympress.extras.Media.play`
     play_media = lambda *args: None
@@ -680,6 +734,7 @@ class Document(object):
         # Setup PDF file
         self.uri = uri
         self.doc = pop_doc
+        self.changes = False
 
         # Pages number
         if pop_doc is not None:
@@ -783,6 +838,37 @@ class Document(object):
             doc = Document(builder, poppler_doc, uri)
 
         return doc
+
+
+    def made_changes(self):
+        """ Notify the document that some changes were made (e.g. annotations edited)
+        """
+        self.changes = True
+
+
+    def has_changes(self):
+        """ Return whether that some changes were made (e.g. annotations edited)
+        """
+        return self.changes
+
+
+    def save_changes(self, dest_uri=None):
+        """ Save the changes
+
+        Args:
+            dest_uri (`str` or `None`): The URI where to save the file, or None to save in-place
+        """
+        for page in self.pages_cache.values():
+            for annot in page.get_annotations():
+                page.page.add_annot(annot)
+
+        self.doc.save(self.uri if dest_uri is None else dest_uri)
+
+        for page in self.pages_cache.values():
+            for annot in page.get_annotations():
+                page.page.remove_annot(annot)
+
+        self.changes = False
 
 
     def guess_notes(self, horizontal, vertical, current_page=0):

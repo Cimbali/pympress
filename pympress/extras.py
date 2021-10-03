@@ -32,7 +32,7 @@ import os.path
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gdk, GLib, Gio
+from gi.repository import Gtk, Gdk, GLib, Gio
 
 import mimetypes
 import functools
@@ -44,24 +44,39 @@ from pympress import document, builder
 class Annotations(object):
     """ Widget displaying a PDF’s text annotations.
     """
-    #: The containing :class:`~Gtk.TextView` widget for the annotations
-    annotations_textview = None
-    #: :class:`~Gtk.ScrolledWindow` making the annotations list scroll if it's too long
-    scrolled_window = None
+    #: The containing :class:`~Gtk.TreeView` widget for the annotations
+    annotations_treeview = None
+    #: The containing :class:`~Gtk.ListStore` storing the annotations to be displayed
+    annotations_liststore = None
+    #: The :class:`~Gtk.Entry` in which we are currently editing an annotation, or None
+    editing = None
+
+    new_doc_annotation = lambda *args: None
+    set_doc_annotation = lambda *args: None
+    remove_doc_annotation = lambda *args: None
 
     def __init__(self, builder):
         super(Annotations, self).__init__()
         builder.load_widgets(self)
+        builder.setup_actions({
+            'add-annotation': dict(activate=self.add_annotation),
+            'remove-annotation': dict(activate=self.remove_annotation),
+        })
 
 
-    def add_annotations(self, annotations):
+    def load_annotations(self, annot_page):
         """ Add annotations to be displayed (typically on going to a new slide).
 
         Args:
-            annotations (`list`): A list of strings, that are the annotations to be displayed
+            annot_page (:class:`~pympress.document.Page`): The page object that contains the annotations
         """
-        buf = self.annotations_textview.get_buffer()
-        buf.set_text('\n'.join(annotations))
+        self.annotations_liststore.clear()
+        for annot in annot_page.get_annotations():
+            self.annotations_liststore.append([annot.get_contents()])
+
+        self.new_doc_annotation = annot_page.new_annotation
+        self.set_doc_annotation = annot_page.set_annotation
+        self.remove_doc_annotation = annot_page.remove_annotation
 
 
     def on_scroll(self, widget, event):
@@ -74,7 +89,7 @@ class Annotations(object):
         Returns:
             `bool`: whether the event was consumed
         """
-        adj = self.scrolled_window.get_vadjustment()
+        adj = self.annotations_treeview.get_vadjustment()
         if event.direction == Gdk.ScrollDirection.UP:
             adj.set_value(adj.get_value() - adj.get_step_increment())
         elif event.direction == Gdk.ScrollDirection.DOWN:
@@ -82,6 +97,105 @@ class Annotations(object):
         else:
             return False
         return True
+
+
+    def try_cancel(self):
+        """ Try to cancel editing
+
+        Returns:
+            `bool`: whether editing was enabled and thus canceled
+        """
+        if self.editing is None:
+            return False
+
+        rows = self.annotations_treeview.get_selection().get_selected_rows()[1]
+        if rows:
+            self.annotations_treeview.set_cursor(rows[0], None, False)
+        return True
+
+
+    def key_event(self, widget, event):
+        """ Handle a key (press/release) event.
+
+        Needed to forward events directly to the :class:`~Gtk.Entry`, bypassing the global action accelerators.
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        if self.editing is None:
+            return False
+        elif event.get_event_type() == Gdk.EventType.KEY_PRESS:
+            return self.editing.do_key_press_event(self.editing, event)
+        elif event.get_event_type() == Gdk.EventType.KEY_RELEASE:
+            return self.editing.do_key_release_event(self.editing, event)
+        return False
+
+
+    def editing_started(self, cell_renderer, widget, entry_number):
+        """ Handle edit start
+
+        Args:
+            cell_renderer (:class:`~Gtk.CellRenderer`): The renderer which received the signal
+            widget (:class:`~Gtk.CellEditable`): the Gtk entry editing the annotation entry
+            entry_number (`str`): the string representation of the path identifying the edited cell
+        """
+        self.editing = widget
+
+
+    def editing_validated(self, cell_renderer, entry_number, new_content):
+        """ Handle successful edit: store the new cell value in the model and the document
+
+        Args:
+            cell_renderer (:class:`~Gtk.CellRenderer`): The renderer which received the signal
+            entry_number (`str`): the string representation of the path identifying the edited cell
+            new_content (`str`): the new value of the edited cell
+        """
+        row = self.annotations_liststore.get_iter(Gtk.TreePath.new_from_string(entry_number))
+        self.annotations_liststore.set_row(row, [new_content])
+        self.set_doc_annotation(int(entry_number), new_content)
+        self.editing_finished(cell_renderer)
+
+
+    def editing_finished(self, cell_renderer):
+        """ Handle the end of editing
+
+        Args:
+            cell_renderer (:class:`~Gtk.CellRenderer`): The renderer which received the signal
+        """
+        self.editing = None
+
+
+    def add_annotation(self, gaction, param=None):
+        """ Add an annotation to the the page’s annotation list
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call, which identifies which backend
+            param (:class:`~GLib.Variant`): an optional parameter
+        """
+        path = self.annotations_liststore.get_path(self.annotations_liststore.append())
+        self.annotations_treeview.set_cursor(path, self.annotations_treeview.get_columns()[0], True)
+        self.new_doc_annotation(path.get_indices()[0])
+        return True
+
+
+    def remove_annotation(self, gaction, param=None):
+        """ Remove an annotation to the from the page’s annotation list
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call, which identifies which backend
+            param (:class:`~GLib.Variant`): an optional parameter
+        """
+        rows = self.annotations_treeview.get_selection().get_selected_rows()[1]
+        if not rows:
+            return False
+        self.annotations_liststore.remove(self.annotations_liststore.get_iter(rows[0]))
+        self.remove_doc_annotation(rows[0].get_indices()[0])
+        return True
+
 
 
 class Media(object):
