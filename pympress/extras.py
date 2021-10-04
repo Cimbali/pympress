@@ -36,11 +36,7 @@ from gi.repository import Gdk, GLib, Gio
 
 import mimetypes
 import functools
-
-try:
-    from urllib.request import url2pathname
-except ImportError:
-    from urllib import url2pathname
+from urllib.request import url2pathname
 
 from pympress import document, builder
 

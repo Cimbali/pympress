@@ -45,15 +45,11 @@ import tempfile
 import mimetypes
 import webbrowser
 import collections
+from urllib.request import url2pathname
 
 import gi
 gi.require_version('Poppler', '0.18')
 from gi.repository import Poppler
-
-try:
-    from urllib.request import url2pathname
-except ImportError:
-    from urllib import url2pathname
 
 from pympress.util import fileopen
 
