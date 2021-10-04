@@ -66,9 +66,9 @@ class VideoOverlay(builder.Builder):
 
     Args:
         container (:class:`~Gtk.Overlay`): The container with the slide, at the top of which we add the movie area
-        show_controls (`bool`): whether to display controls on the video player
         page_type (:class:`~pympress.document.PdfPage`): the part of the page to display
-        relative_margins (:class:`~Poppler.Rectangle`): the margins defining the position of the video in the frame.
+        action_map (:class:`~Gio.ActionMap`): the action map that contains the actions for this media
+        media (:class:`~pympress.document.Media`): the object defining the properties of the video such as position etc.
     """
     #: :class:`~Gtk.Overlay` that is the parent of the VideoOverlay widget.
     parent = None
@@ -86,6 +86,8 @@ class VideoOverlay(builder.Builder):
     relative_margins = None
     #: `bool` that tracks whether we should play automatically
     autoplay = False
+    #: `bool` that tracks whether we should play after we finished playing
+    repeat = False
 
     #: `bool` that tracks whether the user is dragging the position
     dragging_position = False
@@ -99,21 +101,26 @@ class VideoOverlay(builder.Builder):
     #: :class:`~Gio.ActionMap` containing the actios for this video overlay
     action_map = None
 
-    def __init__(self, container, show_controls, relative_margins, page_type, action_map):
+    def __init__(self, container, page_type, action_map, media):
         super(VideoOverlay, self).__init__()
 
         self.parent = container
-        self.relative_page_margins = tuple(getattr(relative_margins, v) for v in ('x1', 'y2', 'x2', 'y1'))
+        self.relative_page_margins = tuple(getattr(media.relative_margins, v) for v in ('x1', 'y2', 'x2', 'y1'))
         self.update_margins_for_page(page_type)
 
         self.load_ui('media_overlay')
-        self.toolbar.set_visible(show_controls)
+        self.toolbar.set_visible(media.show_controls)
 
         self.connect_signals(self)
 
         # medias, here the actions are scoped to the current widget
         self.action_map = action_map
         self.media_overlay.insert_action_group('media', self.action_map)
+        self.set_file(media.filename)
+
+        self.autoplay = media.autoplay
+        self.repeat = media.repeat
+        # TODO: handle poster
 
 
     def handle_embed(self, mapped_widget):
@@ -169,6 +176,15 @@ class VideoOverlay(builder.Builder):
         """ Callback to toggle play/pausing from clicking on the DrawingArea
         """
         return self.action_map.lookup_action('pause').activate()
+
+
+    def handle_end(self):
+        """ End of the stream reached: restart if looping, otherwise hide overlay
+        """
+        if not self.repeat:
+            self.action_map.lookup_action('stop').activate()
+        else:
+            self.action_map.lookup_action('set_time').activate(GLib.Variant.new_double(0))
 
 
     def update_margins_for_page(self, page_type):

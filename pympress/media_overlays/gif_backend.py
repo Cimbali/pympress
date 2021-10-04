@@ -49,16 +49,16 @@ class GifOverlay(base.VideoOverlay):
     #: The :class:`~cairo.Matrix` defining the zoom & shift to scale the gif
     transform = None
 
-    def __init__(self, container, show_controls, relative_margins, page_type, callback_getter):
+    def __init__(self, *args, **kwargs):
+        super(GifOverlay, self).__init__(*args, **kwargs)
+
         # override: no toolbar or interactive stuff for a gif, replace the whole widget area with a GdkPixbuf
-        super(GifOverlay, self).__init__(container, False, relative_margins, page_type, callback_getter)
+        self.autoplay = True
+        self.toolbar.set_visible(False)
 
         # we'll manually draw on the movie zone
         self.movie_zone.connect('draw', self.draw)
         self.movie_zone.connect('configure-event', self.set_transform)
-
-        # automatically show
-        self.autoplay = True
 
 
     def set_file(self, filepath):
@@ -101,7 +101,7 @@ class GifOverlay(base.VideoOverlay):
 
 
     def advance_gif(self):
-        """ Advance the gif,  queue redrawing if the frame changed, and schedule the next frame.
+        """ Advance the gif, queue redrawing if the frame changed, and schedule the next frame.
         """
         if self.iter.advance():
             self.movie_zone.queue_draw()

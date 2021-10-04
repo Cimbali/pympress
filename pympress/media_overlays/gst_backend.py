@@ -66,7 +66,7 @@ class GstOverlay(base.VideoOverlay):
         bus = self.playbin.get_bus()
         bus.add_signal_watch()
         bus.enable_sync_message_emission()
-        bus.connect('message::eos', lambda *args: GLib.idle_add(self.do_hide))
+        bus.connect('message::eos', lambda *args: GLib.idle_add(self.handle_end))
         bus.connect('message::error', lambda _, msg: logger.error('{} {}'.format(*msg.parse_error())))
         bus.connect('message::async-done', self.on_play)
         bus.connect('message::duration-changed', lambda *args: GLib.idle_add(self.do_update_duration))

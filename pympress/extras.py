@@ -197,21 +197,17 @@ class Media(object):
                     'set_time': dict(activate=functools.partial(self.set_time, media_id), parameter_type=float)
                 }, action_group)
 
-                v_da_c = factory(self.c_overlay, media.show_controls, media.relative_margins, page_type, action_group)
-                v_da_p = factory(self.p_overlay, True, media.relative_margins, page_type, action_group)
-
-                v_da_c.set_file(media.filename)
-                v_da_p.set_file(media.filename)
+                v_da_c = factory(self.c_overlay, page_type, action_group, media)
+                v_da_p = factory(self.p_overlay, page_type, action_group, media._replace(show_controls=True))
 
                 self._media_overlays[media_id] = (v_da_c, v_da_p)
 
             self._media_overlays[media_id][0].mute(True)
             self._media_overlays[media_id][1].mute(False)
 
-            for w in self._media_overlays[media_id]:
-                if w.autoplay:
-                    self.set_time(media_id, param=GLib.Variant.new_double(0))
-                    w.show()
+            if any(overlay.autoplay for overlay in self._media_overlays[media_id]):
+                GLib.idle_add(self.play, media_id)
+            # TODO: handle poster
 
 
     def resize(self, which=None):
