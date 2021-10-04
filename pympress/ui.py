@@ -237,6 +237,8 @@ class UI(builder.Builder):
         self.setup_actions({
             'open-file':         dict(activate=self.open_file, parameter_type=str),
             'close-file':        dict(activate=self.close_file),
+            'save-file':         dict(activate=self.save_file),
+            'save-file-as':      dict(activate=self.save_file_as),
             'pick-file':         dict(activate=self.pick_file),
             'list-recent-files': dict(change_state=self.populate_recent_menu, state=False),
             'next-page':         dict(activate=self.doc_goto_next),
@@ -773,6 +775,35 @@ class UI(builder.Builder):
             self.swap_document(os.path.abspath(received))
 
 
+    def save_file_as(self, *args):
+        """ Remove the current document.
+        """
+        # Use a GTK file dialog to choose file
+        dialog = Gtk.FileChooserDialog(title = _('Save as...'), transient_for = self.p_win,
+                                       action = Gtk.FileChooserAction.SAVE)
+        dialog.add_buttons(Gtk.STOCK_SAVE_AS, Gtk.ResponseType.OK)
+        dialog.set_default_response(Gtk.ResponseType.OK)
+        dialog.set_position(Gtk.WindowPosition.CENTER)
+
+        filter = Gtk.FileFilter()
+        filter.set_name(_('PDF files'))
+        filter.add_mime_type('application/pdf')
+        filter.add_pattern('*.pdf')
+        dialog.add_filter(filter)
+
+        filter = Gtk.FileFilter()
+        filter.set_name(_('All files'))
+        filter.add_pattern('*')
+        dialog.add_filter(filter)
+
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            self.doc.save_changes(dialog.get_uri())
+
+        dialog.destroy()
+
+
     def pick_file(self, *args):
         """ Ask the user which file he means to open.
         """
@@ -822,6 +853,12 @@ class UI(builder.Builder):
         """ Remove the current document.
         """
         self.swap_document(None)
+
+
+    def save_file(self, *args):
+        """ Remove the current document.
+        """
+        self.doc.save_changes()
 
 
     def open_file(self, gaction, target):

@@ -18,6 +18,14 @@
                 <attribute name="action">app.close-file</attribute>
             </item>
             <item>
+                <attribute name="label" translatable="yes">_Save</attribute>
+                <attribute name="action">app.save-file</attribute>
+            </item>
+            <item>
+                <attribute name="label" translatable="yes">_Save as</attribute>
+                <attribute name="action">app.save-file-as</attribute>
+            </item>
+            <item>
                 <attribute name="label" translatable="yes">_Quit</attribute>
                 <attribute name="action">app.quit</attribute>
             </item>
