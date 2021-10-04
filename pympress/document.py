@@ -44,6 +44,7 @@ import enum
 import tempfile
 import mimetypes
 import webbrowser
+import collections
 
 import gi
 gi.require_version('Poppler', '0.18')
@@ -233,6 +234,10 @@ class Link(object):
         return lambda *a, **k: fun(*(tuple(args) + tuple(a)), **dict(kwargs, **k))
 
 
+#: A class that holds all the properties for media files
+Media = collections.namedtuple('Media', ['relative_margins', 'filename', 'autoplay', 'repeat', 'poster',
+                                         'show_controls'], defaults=[False, False, False, False])
+
 
 class Page(object):
     """ Class representing a single page.
@@ -254,7 +259,7 @@ class Page(object):
     page_label = None
     #: All the links in the page, as a `list` of :class:`~pympress.document.Link` instances
     links = []
-    #: All the media in the page, as a `list` of tuples of (area, filename)
+    #: All the media in the page, as a `list` of :class:`~pympress.document.Media`
     medias = []
     #: `float`, page width
     pw = 0.
@@ -301,19 +306,27 @@ class Page(object):
             elif annot_type == Poppler.AnnotType.MOVIE:
                 movie = annotation.annot.get_movie()
                 filepath = self.parent.get_full_path(movie.get_filename())
-                if filepath:
-                    # TODO there is no autoplay, or repeatCount
-                    relative_margins = Poppler.Rectangle()
-                    relative_margins.x1 = annotation.area.x1 / self.pw        # left
-                    relative_margins.x2 = 1.0 - annotation.area.x2 / self.pw  # right
-                    relative_margins.y1 = annotation.area.y1 / self.ph        # bottom
-                    relative_margins.y2 = 1.0 - annotation.area.y2 / self.ph  # top
-                    media = (relative_margins, filepath, movie.show_controls())
-                    self.medias.append(media)
-                    action = Link.build_closure(self.parent.play_media, hash(media))
-                else:
+                if not filepath:
                     logger.error(_("Pympress can not find file ") + movie.get_filename())
                     continue
+
+                relative_margins = Poppler.Rectangle()
+                relative_margins.x1 = annotation.area.x1 / self.pw        # left
+                relative_margins.x2 = 1.0 - annotation.area.x2 / self.pw  # right
+                relative_margins.y1 = annotation.area.y1 / self.ph        # bottom
+                relative_margins.y2 = 1.0 - annotation.area.y2 / self.ph  # top
+
+                movie_options = {'show_controls': movie.show_controls(), 'poster': movie.need_poster()}
+                try:
+                    movie_options['repeat'] = movie.get_play_mode() == Poppler.MoviePlayMode.REPEAT
+                    # NB: autoplay not part of Poppler’s MovieActivationParameters struct
+                except AttributeError:
+                    pass  # Missing functions in pre-21.04 Poppler versions
+
+                media = Media(relative_margins, filepath, **movie_options)
+                self.medias.append(media)
+                action = Link.build_closure(self.parent.play_media, hash(media))
+
             elif annot_type == Poppler.AnnotType.SCREEN:
                 action_obj = annotation.annot.get_action()
                 if not action_obj:
@@ -473,14 +486,21 @@ class Page(object):
                     logger.error(_("Pympress can not find file ") + media.get_filename())
                     return None
 
-            # TODO grab the show_controls, autoplay, repeat
             relative_margins = Poppler.Rectangle()
             relative_margins.x1 = rect.x1 / self.pw        # left
             relative_margins.x2 = 1.0 - rect.x2 / self.pw  # right
             relative_margins.y1 = rect.y1 / self.ph        # bottom
             relative_margins.y2 = 1.0 - rect.y2 / self.ph  # top
 
-            media = (relative_margins, filename, False)
+            media_options = {}
+            try:
+                media_options['autoplay'] = media.get_auto_play()
+                media_options['show_controls'] = media.get_show_controls()
+                media_options['repeat'] = media.get_repeat_count() - 1
+                # NB: no poster in Poppler’s MediaParameters
+            except AttributeError:
+                pass
+            media = Media(relative_margins, filename, **media_options)
             self.medias.append(media)
             return Link.build_closure(self.parent.play_media, hash(media))
 

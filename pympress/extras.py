@@ -177,16 +177,16 @@ class Media(object):
 
         self.remove_media_overlays()
 
-        for relative_margins, filename, show_controls in current_page.get_media():
-            media_id = hash((relative_margins, filename, show_controls))
+        for media in current_page.get_media():
+            media_id = hash(media)
 
             if media_id not in self._media_overlays:
-                mime_type, enc = mimetypes.guess_type(filename)
+                mime_type, enc = mimetypes.guess_type(media.filename)
                 factory = self.get_factory(mime_type)
 
                 if not factory:
                     logger.warning('No available overlay for mime type {}, ignoring media {}'
-                                   .format(mime_type, filename))
+                                   .format(mime_type, media.filename))
                     continue
 
                 action_group = Gio.SimpleActionGroup.new()
@@ -197,11 +197,11 @@ class Media(object):
                     'set_time': dict(activate=functools.partial(self.set_time, media_id), parameter_type=float)
                 }, action_group)
 
-                v_da_c = factory(self.c_overlay, show_controls, relative_margins, page_type, action_group)
-                v_da_p = factory(self.p_overlay, True, relative_margins, page_type, action_group)
+                v_da_c = factory(self.c_overlay, media.show_controls, media.relative_margins, page_type, action_group)
+                v_da_p = factory(self.p_overlay, True, media.relative_margins, page_type, action_group)
 
-                v_da_c.set_file(filename)
-                v_da_p.set_file(filename)
+                v_da_c.set_file(media.filename)
+                v_da_p.set_file(media.filename)
 
                 self._media_overlays[media_id] = (v_da_c, v_da_p)
 
