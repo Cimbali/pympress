@@ -187,7 +187,7 @@ A few of the fancier functionalities are listed here:
 # Dependencies
 
 Pympress relies on:
-* Python (version 3.x, python 2.7 is supported only until pympress 1.5.1).
+* Python (version ≥ 3.4, python 2.7 is supported only until pympress 1.5.1, and 3.x < 3.4 until v1.6.4).
 * [Poppler](http://poppler.freedesktop.org/), the PDF rendering library.
 * [Gtk+ 3](http://www.gtk.org/), a toolkit for creating graphical user interfaces, and [its dependencies](https://www.gtk.org/overview.php), specifically:
   * [Cairo](https://www.cairographics.org/) (and python bindings for cairo), the graphics library which is used to pre-render and draw over PDF pages.
