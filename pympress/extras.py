@@ -71,32 +71,12 @@ class Annotations(object):
             annot_page (:class:`~pympress.document.Page`): The page object that contains the annotations
         """
         self.annotations_liststore.clear()
-        for annot in annot_page.get_annotations():
-            self.annotations_liststore.append([annot.get_contents()])
+        for num, annot in enumerate(annot_page.get_annotations()):
+            self.annotations_liststore.append([annot.get_contents(), num])
 
         self.new_doc_annotation = annot_page.new_annotation
         self.set_doc_annotation = annot_page.set_annotation
         self.remove_doc_annotation = annot_page.remove_annotation
-
-
-    def on_scroll(self, widget, event):
-        """ Try scrolling the annotations window.
-
-        Args:
-            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
-            event (:class:`~Gdk.Event`):  the GTK event.
-
-        Returns:
-            `bool`: whether the event was consumed
-        """
-        adj = self.annotations_treeview.get_vadjustment()
-        if event.direction == Gdk.ScrollDirection.UP:
-            adj.set_value(adj.get_value() - adj.get_step_increment())
-        elif event.direction == Gdk.ScrollDirection.DOWN:
-            adj.set_value(adj.get_value() + adj.get_step_increment())
-        else:
-            return False
-        return True
 
 
     def try_cancel(self):
@@ -154,9 +134,10 @@ class Annotations(object):
             entry_number (`str`): the string representation of the path identifying the edited cell
             new_content (`str`): the new value of the edited cell
         """
-        row = self.annotations_liststore.get_iter(Gtk.TreePath.new_from_string(entry_number))
-        self.annotations_liststore.set_row(row, [new_content])
-        self.set_doc_annotation(int(entry_number), new_content)
+        path = Gtk.TreePath.new_from_string(entry_number)
+        row = self.annotations_liststore.get_iter(path)
+        self.annotations_liststore.set_value(row, 0, new_content)
+        self.set_doc_annotation(path.get_indices()[0], new_content)
         self.editing_finished(cell_renderer)
 
 

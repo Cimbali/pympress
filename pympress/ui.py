@@ -1271,8 +1271,6 @@ class UI(builder.Builder):
         # send to spinner if it is active
         elif self.page_number.on_scroll(widget, event):
             return True
-        elif self.annotations.on_scroll(widget, event):
-            return True
         else:
             return False
 

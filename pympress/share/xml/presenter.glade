@@ -2,15 +2,12 @@
 <!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.4"/>
-  <object class="GtkAdjustment" id="annotation_adjustment">
-    <property name="upper">100</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
-  </object>
   <object class="GtkListStore" id="annotations_liststore">
     <columns>
       <!-- column-name annotation_text -->
       <column type="gchararray"/>
+      <!-- column-name annotation_num -->
+      <column type="gint64"/>
     </columns>
   </object>
   <object class="GtkSizeGroup" id="previews_sizegroup"/>
@@ -109,6 +106,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="margin-left">5</property>
+                        <property name="margin-bottom">9</property>
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkAspectFrame" id="p_frame_cur">
@@ -780,64 +778,30 @@
                       <object class="GtkFrame" id="p_frame_annot">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
                         <property name="label-xalign">0</property>
                         <property name="shadow-type">in</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkBox" id="annotations_vbox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkTreeView" id="annotations_treeview">
-                                <property name="visible">True</property>
-                                <property name="can-focus">True</property>
-                                <property name="vadjustment">annotation_adjustment</property>
-                                <property name="vscroll-policy">natural</property>
-                                <property name="model">annotations_liststore</property>
-                                <property name="headers-visible">False</property>
-                                <property name="headers-clickable">False</property>
-                                <property name="reorderable">True</property>
-                                <property name="search-column">0</property>
-                                <property name="enable-tree-lines">True</property>
-                                <child internal-child="selection">
-                                  <object class="GtkTreeSelection"/>
-                                </child>
-                                <child>
-                                  <object class="GtkTreeViewColumn" id="annotation_column">
-                                    <property name="title" translatable="yes">column</property>
-                                    <child>
-                                      <object class="GtkCellRendererText" id="annotation_renderer">
-                                        <property name="editable">True</property>
-                                        <signal name="edited" handler="annotations.editing_validated" swapped="no"/>
-                                        <signal name="editing-canceled" handler="annotations.editing_finished" swapped="no"/>
-                                        <signal name="editing-started" handler="annotations.editing_started" swapped="no"/>
-                                      </object>
-                                      <attributes>
-                                        <attribute name="text">0</attribute>
-                                      </attributes>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkButtonBox">
+                              <object class="GtkButtonBox" id="annotation_buttons">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="halign">end</property>
+                                <property name="valign">end</property>
                                 <property name="layout-style">start</property>
                                 <child>
                                   <object class="GtkButton" id="annotation_add">
-                                    <property name="label" translatable="yes">+</property>
+                                    <property name="label">gtk-add</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
                                     <property name="action-name">app.add-annotation</property>
+                                    <property name="use-stock">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
@@ -847,11 +811,12 @@
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="annotation_remove">
-                                    <property name="label" translatable="yes">-</property>
+                                    <property name="label">gtk-remove</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
                                     <property name="action-name">app.remove-annotation</property>
+                                    <property name="use-stock">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
@@ -862,14 +827,68 @@
                               </object>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="pack-type">end</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkScrolledWindow" id="annotations_scrollwindow">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="hexpand">True</property>
+                                <property name="vexpand">True</property>
+                                <property name="shadow-type">in</property>
+                                <child>
+                                  <object class="GtkTreeView" id="annotations_treeview">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="hexpand">True</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="resize-mode">immediate</property>
+                                    <property name="model">annotations_liststore</property>
+                                    <property name="headers-visible">False</property>
+                                    <property name="headers-clickable">False</property>
+                                    <property name="reorderable">True</property>
+                                    <property name="rules-hint">True</property>
+                                    <property name="search-column">0</property>
+                                    <property name="show-expanders">False</property>
+                                    <property name="enable-tree-lines">True</property>
+                                    <child internal-child="selection">
+                                      <object class="GtkTreeSelection" id="annotations_selection"/>
+                                    </child>
+                                    <child>
+                                      <object class="GtkTreeViewColumn" id="annotation_column">
+                                        <property name="sizing">autosize</property>
+                                        <property name="title" translatable="yes">annotations</property>
+                                        <property name="expand">True</property>
+                                        <child>
+                                          <object class="GtkCellRendererText" id="annotation_renderer">
+                                            <property name="editable">True</property>
+                                            <signal name="edited" handler="annotations.editing_validated" swapped="no"/>
+                                            <signal name="editing-canceled" handler="annotations.editing_finished" swapped="no"/>
+                                            <signal name="editing-started" handler="annotations.editing_started" swapped="no"/>
+                                          </object>
+                                          <attributes>
+                                            <attribute name="text">0</attribute>
+                                          </attributes>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
                                 <property name="fill">True</property>
+                                <property name="pack-type">end</property>
                                 <property name="position">1</property>
                               </packing>
                             </child>
                           </object>
                         </child>
                         <child type="label">
-                          <object class="GtkLabel" id="label4">
+                          <object class="GtkLabel" id="annotations_label">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Annotations</property>
