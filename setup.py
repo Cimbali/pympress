@@ -29,7 +29,7 @@ All configuration is in setup.cfg.
 import os
 import re
 import sys
-import glob
+import pathlib
 import subprocess
 from ctypes.util import find_library
 import setuptools
@@ -140,12 +140,12 @@ class GettextBuildCatalog(Command):
     def run(self):
         """ Run msgfmt before running (parent) develop command
         """
-        po_wildcard = os.path.join(self.directory, '*', 'LC_MESSAGES', self.domain + '.po')
-        for po in glob.glob(po_wildcard):
+        po_wildcard = pathlib.Path(self.directory).glob(str(pathlib.Path('*', 'LC_MESSAGES', self.domain + '.po')))
+        for po in po_wildcard:
             print(po)
-            mo = os.path.splitext(po)[0] + '.mo'
+            mo = po.with_suffix('.po')
 
-            cmd = ['msgfmt', po, '-o', mo]
+            cmd = ['msgfmt', str(po), '-o', str(mo)]
             if self.use_fuzzy:
                 cmd.insert(1, '--use-fuzzy')
             if self.statistics:
@@ -171,26 +171,26 @@ class BuildWithCatalogs(build_py):
 def gtk_resources():
     """ Returns a list of the non-DLL Gtk resources to include in a frozen/binary package.
     """
-    base, last = os.path.split(os.path.dirname(find_library('libgtk-3-0')))
-    include_path = base if last in {'bin', 'lib', 'lib64'} else os.path.join(base, last)
+    include_path = pathlib.Path(find_library('libgtk-3-0')).parent
+    include_path = include_path.parent if include_path.name in {'bin', 'lib', 'lib64'} else include_path
 
     include_files = []
     resources = [
-        'etc',
-        os.path.join('lib', 'girepository-1.0'),
-        os.path.join('lib', 'gtk-3.0'),
-        os.path.join('lib', 'gdk-pixbuf-2.0'),
-        os.path.join('share', 'poppler'),
-        os.path.join('share', 'themes'),
-        os.path.join('share', 'icons'),
-        os.path.join('share', 'glib-2.0'),
-        os.path.join('share', 'xml')
+        pathlib.Path('etc'),
+        pathlib.Path('lib', 'girepository-1.0'),
+        pathlib.Path('lib', 'gtk-3.0'),
+        pathlib.Path('lib', 'gdk-pixbuf-2.0'),
+        pathlib.Path('share', 'poppler'),
+        pathlib.Path('share', 'themes'),
+        pathlib.Path('share', 'icons'),
+        pathlib.Path('share', 'glib-2.0'),
+        pathlib.Path('share', 'xml')
     ]
 
     for f in resources:
-        p = os.path.join(include_path, f)
-        if os.path.exists(p):
-            include_files.append((p, f))
+        p = include_path.joinpath(f)
+        if p.exists():
+            include_files.append((str(p), str(f)))
         else:
             print('WARNING: Can not find {} (at {})'.format(f, p))
 
@@ -217,23 +217,21 @@ def dlls():
     # libcairo-2.dll libcairo-gobject-2.dll libfontconfig-1.dll libfreetype-6.dll libiconv-2.dll
     # libgettextlib-0-19-8-1.dll libgettextpo-0.dll libgettextsrc-0-19-8-1.dll libintl-8.dll libjasper-4.dll
 
-    gdbus = find_library('gdbus.exe')
-    include_files = [(gdbus, os.path.join('lib', 'gi', 'gdbus.exe')), (gdbus, 'gdbus.exe')]
+    cwd = pathlib.Path.cwd().resolve()
+    lib_gtk_dir = pathlib.Path(find_library('libgtk-3-0')).parent
+
+    gdbus = pathlib.Path(find_library('gdbus.exe'))
+    include_files = [(str(gdbus), str(pathlib.Path('lib', 'gi', 'gdbus.exe'))), (str(gdbus), 'gdbus.exe')]
     for lib in libs.split():
-        path = find_library(lib)
-        if path and os.path.exists(path):
-            include_files.append((path, lib))
+        path = pathlib.Path(find_library(lib))
+        if path.resolve() != cwd and path.exists():
+            include_files.append((str(path), lib))
         else:
-            lib_root, lib_ext = os.path.splitext(lib)
-            find_glob = list(glob.glob(os.path.join(
-                os.path.dirname(find_library('libgtk-3-0')),  # other directories to look in ?
-                re.sub('-[0-9.]*$', '-*', lib_root) + lib_ext
-            )))
-            if len(find_glob) == 1:
-                found_path = find_glob[0]
-                found_lib = os.path.basename(found_path)
-                include_files.append((path, lib))
-                print('WARNING: Can not find library {}, including {} instead'.format(lib, found_lib))
+            lib = pathlib.Path(lib)
+            # Look in other directories?
+            for path in lib_gtk_dir.glob(re.sub('-[0-9.]*$', '-*', lib.stem) + lib.suffix):
+                include_files.append((str(path), path.name))
+                print('WARNING: Can not find library {}, including {} instead'.format(lib, path.name))
             else:
                 print('WARNING: Can not find library {}'.format(lib))
 
@@ -257,28 +255,28 @@ def vlc_resources():
     """
     import vlc
     print('Found VLC at ' + vlc.plugin_path)
+    root = pathlib.Path(vlc.plugin_path)
 
     include_files = []
-    for f in glob.glob(os.path.join(vlc.plugin_path, '*.txt')):
-        base, ext = os.path.splitext(os.path.basename(f))
-        include_files.append((f, base + '_VLC' + ext))
+    for f in root.glob('*.txt'):
+        include_files.append((str(f), f.stem + '_VLC' + f.suffix))
 
-    for f in glob.glob(os.path.join(vlc.plugin_path, '*.dll')):
-        include_files.append((f, os.path.basename(f)))
+    for f in root.glob('*.dll'):
+        include_files.append((str(f), f.name))
 
-    base, last = os.path.split(vlc.plugin_path)
-    plugin_dir = os.path.join(base, 'lib', 'vlc', 'plugins') if last == 'bin' else os.path.join(base, last, 'plugins')
-    include_files.append((plugin_dir, 'plugins'))
+    plugin_dir = root.parent.joinpath('lib', 'vlc', 'plugins') if root.name == 'bin' else root.joinpath('plugins')
+    include_files.append((str(plugin_dir), 'plugins'))
     return include_files
 
 
 def pympress_resources():
     """ Return pympress resources. Only for frozen packages, as this is redundant with package_data.
     """
-    resources = [os.path.join('pympress', 'share', 'xml'), os.path.join('pympress', 'share', 'pixmaps'),
-                 os.path.join('pympress', 'share', 'css'), os.path.join('pympress', 'share', 'defaults.conf')]
-    translations = glob.glob(os.path.join('pympress', 'share', 'locale', '*', 'LC_MESSAGES', 'pympress.mo'))
-    return [(f, f.split(os.path.sep, 1)[1]) for f in resources + translations]
+    share = pathlib.Path('pympress', 'share')
+    dirs = [share.joinpath('xml'), share.joinpath('pixmaps'), share.joinpath('css'), share.joinpath('defaults.conf')]
+    translations = share.glob(str(pathlib.Path('*', 'LC_MESSAGES', 'pympress.mo')))
+
+    return [(str(f), str(f.relative_to('pympress'))) for f in dirs + translations]
 
 
 if __name__ == '__main__':
@@ -329,7 +327,7 @@ if __name__ == '__main__':
                                     presentation, python, poppler, gtk, pygi, vlc',
                     },
                     'upgrade_code': '{5D156784-ED69-49FF-A972-CBAD312187F7}',
-                    'install_icon': os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico'),
+                    'install_icon': str(pathlib.Path('pympress', 'share', 'pixmaps', 'pympress.ico')),
                     # Patched build system to allow specifying extensions/verbs
                     'extensions': [{
                         'extension': 'pdf',
@@ -342,11 +340,11 @@ if __name__ == '__main__':
                 }
             },
             'executables': [
-                Executable(os.path.join('pympress', '__main__.py'), target_name='pympress-gui.exe',
+                Executable(str(pathlib.Path('pympress', '__main__.py')), target_name='pympress-gui.exe',
                            base='Win32GUI', shortcut_dir='ProgramMenuFolder', shortcut_name='pympress',
-                           icon=os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico')),
-                Executable(os.path.join('pympress', '__main__.py'), target_name='pympress.exe',
-                           base='Console', icon=os.path.join('pympress', 'share', 'pixmaps', 'pympress.ico')),
+                           icon=str(pathlib.Path('pympress', 'share', 'pixmaps', 'pympress.ico'))),
+                Executable(str(pathlib.Path('pympress', '__main__.py')), target_name='pympress.exe',
+                           base='Console', icon=str(pathlib.Path('pympress', 'share', 'pixmaps', 'pympress.ico'))),
             ]
         }
 

@@ -13,15 +13,13 @@
 """ pympress documentation build configuration file for sphinx_build.
 """
 
-from __future__ import print_function
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
+# documentation root, use the absolute path.
 
 import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import pathlib
+sys.path.insert(0, pathlib.Path(__file__).resolve().parents[1])
 
 from recommonmark.transform import AutoStructify
 import re
@@ -29,6 +27,7 @@ import subprocess
 import importlib
 
 from urllib.parse import urlsplit, urlunsplit, urljoin
+from urllib.request import url2pathname
 
 # -- General configuration ------------------------------------------------
 
@@ -88,12 +87,12 @@ def setup(app):
     # Until relative links are allowed from the toctree, see https://github.com/sphinx-doc/sphinx/issues/701
     find_links = re.compile(r'\[([^\[\]]+)\]\(([^()]+)\)')
 
-    here = os.path.dirname(__file__)
-    with open(os.path.join(here, '..', 'README.md')) as fin, open(os.path.join(here, 'README.md'), 'w') as fout:
+    here = pathlib.Path(__file__).parent
+    with open(here.parent.joinpath('README.md')) as fin, open(here.joinpath('README.md'), 'w') as fout:
         for line in fin:
             print(find_links.sub(lambda m: '[{}]({})'.format(m[1], rewrite_link(m[2])), line), end='', file=fout)
 
-    app.connect('build-finished', lambda app, config: os.unlink(os.path.join(app.srcdir, 'README.md')))
+    app.connect('build-finished', lambda app, config: pathlib.Path(app.srcdir).joinpath('README.md').unlink())
 
 
 # The encoding of source files.
@@ -189,15 +188,12 @@ def load_epydoc_as_intersphinx_v2(url):
     import tempfile
 
     def guess_epydoc_role(name, uri):
-        if '#' in uri:
-            uri, fragment = uri.split('#')
-        else:
-            fragment = ''
+        uri = urlsplit(uri)
 
         # filenames in URI are name-module.html or name-class.html
-        base = os.path.splitext(uri)[0].split('-')[-1]
+        base = pathlib.Path(url2pathname(uri.path)).stem.split('-')[-1]
 
-        if not fragment:
+        if not uri.fragment:
             return base
         elif base == 'class':
             # Is it a method or an attribute?
