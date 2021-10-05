@@ -121,6 +121,9 @@ class Pympress(Gtk.Application):
     def quit(self, *args):
         """ Quit and ignore other arguments e.g. sent by signals.
         """
+        if self.gui.unsaved_changes():
+            return
+
         Gtk.Application.quit(self)
         return False
 

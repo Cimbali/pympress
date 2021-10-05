@@ -664,6 +664,13 @@ class UI(builder.Builder):
             page (`int`): the page at which to start the presentation
             reloading (`bool`): whether we are reloading or detecting stuff from the document
         """
+        if self.unsaved_changes(reloading):
+            # If we keep the unsaved changes and were prompted by automatic file change,
+            # stop watching for file changes in the future.
+            if reloading:
+                self.file_watcher.stop_watching()
+            return
+
         run_gc = self.doc.doc is not None
         try:
             self.doc = document.Document.create(self, doc_uri)
@@ -773,6 +780,54 @@ class UI(builder.Builder):
 
         if os.path.isfile(received) and received.lower().endswith('.pdf'):
             self.swap_document(os.path.abspath(received))
+
+
+    def unsaved_changes(self, reload=False):
+        """ Prompt the user about what to do with changes in the document: save, discard, or cancel action
+
+        Args:
+            reload (`bool`): The unsaved changes is prompted by reloading the file
+
+        Returns:
+            `bool`: `True` iff we need to cancel the current action
+        """
+        if not self.doc.has_changes():
+            return False
+
+        dialog = Gtk.MessageDialog(title=_('Unsaved changes'), transient_for=self.p_win, type=Gtk.MessageType.WARNING)
+        dialog.set_position(Gtk.WindowPosition.CENTER)
+        if not reload:
+            dialog.set_markup(_('Save changes before closing?'))
+            dialog.format_secondary_markup(_('Unsaved changes will be lost'))
+
+            dialog.add_button(Gtk.STOCK_SAVE, Gtk.ResponseType.YES)
+            dialog.add_button(_('_Discard'), Gtk.ResponseType.NO).set_image(
+                Gtk.Button.new_from_icon_name('edit-delete', Gtk.IconSize.BUTTON).get_image()
+            )
+            dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+            dialog.set_default_response(Gtk.ResponseType.YES)
+        else:
+            dialog.set_markup(_('The open file was modified outside of pympress but you have made unsaved changes.') +
+                              '\n<b>' + _('Overwrite changes instead of reloading?') + '</b>')
+            dialog.format_secondary_markup(_('Saving changes will overwrite the changed file!') + '\n' +
+                                           _('Unsaved changes will be lost.'))
+
+            dialog.add_button(_('Overwrite'), Gtk.ResponseType.YES).set_image(
+                Gtk.Button.new_from_icon_name('document-save', Gtk.IconSize.BUTTON).get_image()
+            )
+            dialog.add_button(_('Reload'), Gtk.ResponseType.NO).set_image(
+                Gtk.Button.new_from_icon_name('view-refresh', Gtk.IconSize.BUTTON).get_image()
+            )
+            dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+            dialog.set_default_response(Gtk.ResponseType.YES)
+
+        response = dialog.run()
+        dialog.destroy()
+
+        if response == Gtk.ResponseType.YES:
+            self.doc.save_changes()
+
+        return response == Gtk.ResponseType.CANCEL or (reload and Gtk.ResponseType == Gtk.ResponseType.YES)
 
 
     def save_file_as(self, *args):

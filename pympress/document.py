@@ -41,11 +41,13 @@ logger = logging.getLogger(__name__)
 import os
 import math
 import enum
+import pathlib
 import tempfile
 import mimetypes
 import webbrowser
 import collections
-from urllib.request import url2pathname
+from urllib.request import url2pathname, pathname2url
+from urllib.parse import urlsplit, urlunsplit
 
 import gi
 gi.require_version('Poppler', '0.18')
@@ -862,13 +864,24 @@ class Document(object):
             for annot in page.get_annotations():
                 page.page.add_annot(annot)
 
-        self.doc.save(self.uri if dest_uri is None else dest_uri)
+        if dest_uri is not None and dest_uri != self.uri:
+            if self.doc.save(dest_uri):
+                self.changes = False
+        else:
+            # We can’t overwrite the current file directly, so create a temporary file and then overwrite
+            uri_parts = urlsplit(self.uri)
+            cur_path = pathlib.Path(url2pathname(uri_parts.path))
+            with tempfile.NamedTemporaryFile('wb', suffix=cur_path.suffix, prefix=cur_path.stem, dir=cur_path.parent,
+                                             delete=False) as f:
+                temp_path = pathlib.Path(f.name)
+
+            if self.doc.save(urlunsplit(uri_parts._replace(path=pathname2url(str(temp_path))))):
+                self.changes = False
+                temp_path.replace(cur_path)
 
         for page in self.pages_cache.values():
             for annot in page.get_annotations():
                 page.page.remove_annot(annot)
-
-        self.changes = False
 
 
     def guess_notes(self, horizontal, vertical, current_page=0):
