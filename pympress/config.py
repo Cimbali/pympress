@@ -457,6 +457,7 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
                     ratio = pane_handle_pos[widget]
                 else:
                     ratio = float(position) / widget_size
+                    pane_handle_pos[widget] = ratio
 
                 proportions = [ratio] + [(1 - ratio) * p for p in proportions]
                 reverse_children.append(right_pane)

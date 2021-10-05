@@ -46,7 +46,9 @@ class Builder(Gtk.Builder):
     #: `set` of :class:`~Gtk.Widget`s that have been built by the builder, and translated
     __built_widgets = set()
 
-    #: `dict` mapping :class:`~Gtk.Paned` names to the handler ids of their size-allocate signal
+    #: `dict` mapping :class:`~Gtk.Paned` names to a `tuple` of (handler id of the size-allocate signal, remaining
+    #: number of times we allow this signal to run), and we run the signal 2 * (depth + 1) for each pane.
+    #: This is because size allocation is done bottom-up but each pane sets a top-down constraint.
     pending_pane_resizes = {}
 
     _glib_type_strings = {
@@ -211,7 +213,7 @@ class Builder(Gtk.Builder):
             setattr(target, attr, self.get_object(attr))
 
 
-    def replace_layout(self, layout, top_widget, leaf_widgets, pane_resize_handler = None):
+    def replace_layout(self, layout, top_widget, leaf_widgets, pane_resize_handler=None):
         """ Remix the layout below top_widget with the layout configuration given in 'layout' (assumed to be valid!).
 
         Args:
@@ -263,8 +265,8 @@ class Builder(Gtk.Builder):
 
                     # Add on resize events
                     if pane_resize_handler:
-                        w.connect("notify::position", pane_resize_handler)
-                        w.connect("button-release-event", pane_resize_handler)
+                        w.connect('notify::position', pane_resize_handler)
+                        w.connect('button-release-event', pane_resize_handler)
 
                     # left pane is first child
                     widgets_to_add.append((w, w_desc['children'].pop()))
@@ -274,15 +276,15 @@ class Builder(Gtk.Builder):
                         left_pane  = w_desc['proportions'].pop()
                         w_desc['proportions'].append(left_pane + right_pane)
 
-                        pane_handle_pos[w] = float(left_pane) / (left_pane + right_pane)
+                        pane_handle_pos[w] = left_pane / (left_pane + right_pane)
                         pane_resize.add(w)
                     else:
                         pane_handle_pos[w] = 0.5
 
-                    hid = w.connect("size-allocate", self.resize_paned, pane_handle_pos[w])
+                    hid = w.connect('size-allocate', self.resize_paned, pane_handle_pos[w])
 
                     w.set_name('GtkPaned{}'.format(len(self.pending_pane_resizes)))
-                    self.pending_pane_resizes[w.get_name()] = hid
+                    self.pending_pane_resizes[w.get_name()] = (hid, 2 * len(self.pending_pane_resizes) + 1)
 
                     # if more than 2 children are to be added, add the 2+ from the right side in a new child Gtk.Paned
                     widgets_to_add.append((w, w_desc['children'][0] if len(w_desc['children']) == 1 else w_desc))
@@ -331,7 +333,13 @@ class Builder(Gtk.Builder):
         handle_pos = int(round(relpos * size))
         GLib.idle_add(paned.set_position, handle_pos)
 
-        paned.disconnect(self.pending_pane_resizes.pop(paned.get_name()))
+        name = paned.get_name()
+        handler_id, sizes = self.pending_pane_resizes[name]
+        self.pending_pane_resizes[name] = (handler_id, sizes - 1)
+
+        if sizes <= 0:
+            paned.disconnect(handler_id)
+
         return True
 
 

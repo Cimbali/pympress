@@ -1737,9 +1737,9 @@ class UI(builder.Builder):
             parent = self.p_frame_annot.get_parent()
             if issubclass(type(parent), Gtk.Paned):
                 if parent.get_orientation() == Gtk.Orientation.HORIZONTAL:
-                    size = parent.get_parent().get_allocated_width()
+                    size = parent.get_allocated_width()
                 else:
-                    size = parent.get_parent().get_allocated_height()
+                    size = parent.get_allocated_height()
                 parent.set_position(self.pane_handle_pos[parent] * size)
 
         self.annotations.load_annotations(self.doc.page(self.preview_page))
