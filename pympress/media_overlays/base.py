@@ -238,7 +238,7 @@ class VideoOverlay(builder.Builder):
         """ Sets the media file to be played by the widget.
 
         Args:
-            filepath (`str`): The path to the media file path
+            filepath (`pathlib.Path`): The path to the media file path
         """
         raise NotImplementedError
 

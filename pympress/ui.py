@@ -38,8 +38,8 @@ import pathlib
 import math
 import sys
 import gc
-from urllib.request import url2pathname, pathname2url
-from urllib.parse import urlsplit, urlunsplit
+from urllib.request import url2pathname
+from urllib.parse import urlsplit
 
 import gi
 import cairo
@@ -776,10 +776,9 @@ class UI(builder.Builder):
         """
         uri_parts = urlsplit(data.get_text())
         path = pathlib.Path(url2pathname(uri_parts.path) if uri_parts.scheme else uri_parts.path)
-        scheme = uri_parts.scheme if uri_parts.scheme else 'file'
 
         if path.is_file() and path.suffix.lower() == '.pdf':
-            self.swap_document(urlunsplit(uri_parts._replace(scheme=scheme, path=pathname2url(str(path.resolve())))))
+            self.swap_document(path.as_uri())
 
 
     def unsaved_changes(self, reload=False):

@@ -63,9 +63,9 @@ class GifOverlay(base.VideoOverlay):
         """ Sets the media file to be played by the widget.
 
         Args:
-            filepath (`str`): The path to the media file path
+            filepath (`pathlib.Path`): The path to the media file path
         """
-        self.anim = GdkPixbuf.PixbufAnimation.new_from_file(filepath)
+        self.anim = GdkPixbuf.PixbufAnimation.new_from_file(str(filepath))
         self.base_size = (self.anim.get_width(), self.anim.get_height())
         self.iter = self.anim.get_iter(None)
 

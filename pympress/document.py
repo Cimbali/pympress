@@ -43,8 +43,8 @@ import tempfile
 import mimetypes
 import webbrowser
 import collections
-from urllib.request import url2pathname, pathname2url
-from urllib.parse import urlsplit, urlunsplit
+from urllib.request import url2pathname
+from urllib.parse import urlsplit
 
 import gi
 gi.require_version('Poppler', '0.18')
@@ -693,7 +693,9 @@ class Document(object):
 
     #: Current PDF document (:class:`~Poppler.Document` instance)
     doc = None
-    #: Path to pdf
+    #: `str` full path to pdf
+    uri = None
+    #: :class:`~pathlib.Path` to pdf if uri is a file: URI
     path = None
     #: Number of pages in the document
     nb_pages = -1
@@ -734,6 +736,14 @@ class Document(object):
         self.uri = uri
         self.doc = pop_doc
         self.changes = False
+
+        if uri is not None:
+            uri_parts = urlsplit(uri, scheme='file')
+            self.path = pathlib.Path(url2pathname(uri_parts.path))
+            if uri_parts.scheme == 'file':
+                self.path = pathlib.Path.cwd().joinpath(self.path.name)
+        else:
+            self.path = None
 
         # Pages number
         if pop_doc is not None:
@@ -866,15 +876,13 @@ class Document(object):
                 self.changes = False
         else:
             # We can’t overwrite the current file directly, so create a temporary file and then overwrite
-            uri_parts = urlsplit(self.uri)
-            cur_path = pathlib.Path(url2pathname(uri_parts.path))
-            with tempfile.NamedTemporaryFile('wb', suffix=cur_path.suffix, prefix=cur_path.stem, dir=cur_path.parent,
+            with tempfile.NamedTemporaryFile('wb', suffix=self.path.suffix, prefix=self.path.stem, dir=self.path.parent,
                                              delete=False) as f:
                 temp_path = pathlib.Path(f.name)
 
-            if self.doc.save(urlunsplit(uri_parts._replace(path=pathname2url(str(temp_path))))):
+            if self.doc.save(temp_path.as_uri()):
                 self.changes = False
-                temp_path.replace(cur_path)
+                temp_path.replace(self.path)
 
         for page in self.pages_cache.values():
             for annot in page.get_annotations():
@@ -1123,11 +1131,12 @@ class Document(object):
         """ Returns full path, extrapolated from a path relative to this document or to the current directory.
 
         Args:
-            filename (:class:`~pathlib.Path`):  Name of the file or relative path to it
+            filename (:class:`~pathlib.Path` or `str`):  Name of the file or relative path to it
 
         Returns:
             :class:`~pathlib.Path`: the full path to the file or None if it doesn't exist
         """
+        filename = pathlib.Path(filename)
         if filename.is_absolute():
             return filename.resolve() if filename.exists() else None
 

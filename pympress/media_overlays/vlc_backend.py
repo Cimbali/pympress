@@ -88,9 +88,9 @@ class VlcOverlay(base.VideoOverlay):
         """ Sets the media file to be played by the widget.
 
         Args:
-            filepath (`str`): The path to the media file path
+            filepath (`pathlib.Path`): The path to the media file path
         """
-        self.player.set_media(self._instance.media_new(filepath))
+        self.player.set_media(self._instance.media_new(str(filepath)))
 
 
     def handle_end(self):

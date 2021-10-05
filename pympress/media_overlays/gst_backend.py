@@ -83,9 +83,9 @@ class GstOverlay(base.VideoOverlay):
         """ Sets the media file to be played by the widget.
 
         Args:
-            filepath (`str`): The path to the media file path
+            filepath (`pathlib.Path`): The path to the media file path
         """
-        self.uri = 'file://' + filepath
+        self.uri = filepath.as_uri()
 
 
     def mute(self, value):
