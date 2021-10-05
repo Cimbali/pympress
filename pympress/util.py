@@ -24,8 +24,6 @@
 -------------------------------------------------
 """
 
-from __future__ import print_function, unicode_literals
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -49,11 +47,6 @@ if IS_WINDOWS:
         import winreg
     except ImportError:
         import _winreg as winreg
-
-try:
-    PermissionError
-except NameError:
-    PermissionError = OSError
 
 
 

@@ -23,15 +23,14 @@
 -------------------------------------------------------------------
 """
 
-from __future__ import print_function, unicode_literals
-
 import logging
 logger = logging.getLogger(__name__)
+
+import time
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib
-import time
 
 
 class TimeLabelColorer(object):

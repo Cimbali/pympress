@@ -27,15 +27,16 @@
 ------------------------------------------------------------------------------------
 """
 
-from __future__ import print_function, unicode_literals
-
 import logging
 logger = logging.getLogger(__name__)
 
 import ctypes
 
-from pympress import builder
+import gi
+gi.require_version('Gtk', '3.0')
 from gi.repository import GLib
+
+from pympress import builder
 
 
 def get_window_handle(window):

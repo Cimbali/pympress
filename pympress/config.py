@@ -28,12 +28,8 @@ logger = logging.getLogger(__name__)
 
 import pathlib
 import json
+import configparser
 from collections import deque
-
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -273,7 +269,7 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
 
 
     def getfloat(self, *args, **kwargs):
-        """ Wrapper for confiparser’s to handle parsing errors when a fallback is given.
+        """ Wrapper for configparser’s to handle parsing errors when a fallback is given.
 
         See :meth:`~configparser.Configparser.getfloat()`
         """

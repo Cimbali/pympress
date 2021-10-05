@@ -33,8 +33,6 @@ only rendering itself: the preparation of the target surface must be done
 elsewhere).
 """
 
-from __future__ import print_function, unicode_literals
-
 import logging
 logger = logging.getLogger(__name__)
 

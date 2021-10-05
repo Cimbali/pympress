@@ -31,8 +31,6 @@ current and the next page, as well as a time counter and a clock.
 Both windows are managed by the :class:`~pympress.ui.UI` class.
 """
 
-from __future__ import print_function, unicode_literals
-
 import logging
 logger = logging.getLogger(__name__)
 

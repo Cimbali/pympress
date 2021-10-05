@@ -27,12 +27,10 @@ building the widgets/objects from XML (glade) files, applying translation "manua
 to avoid dealing with all the mess of C/GNU gettext's bad portability.
 """
 
-from __future__ import print_function, unicode_literals
-
 import logging
-import copy
 logger = logging.getLogger(__name__)
 
+import copy
 from collections import deque
 
 import gi

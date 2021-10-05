@@ -23,20 +23,18 @@
 -----------------------------------------------------------------------------------------------------
 """
 
-from __future__ import print_function, unicode_literals
-
 import logging
 logger = logging.getLogger(__name__)
 
 import pathlib
+import mimetypes
+import functools
+from urllib.request import url2pathname
+
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib, Gio
-
-import mimetypes
-import functools
-from urllib.request import url2pathname
 
 from pympress import document, builder
 
