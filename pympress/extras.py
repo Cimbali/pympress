@@ -28,7 +28,7 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
-import os.path
+import pathlib
 import gi
 import cairo
 gi.require_version('Gtk', '3.0')
@@ -747,17 +747,16 @@ class FileWatcher(object):
         self.stop_watching()
 
         scheme, path = uri.split('://', 1)
-        path = url2pathname(path)
-        directory = os.path.dirname(path)
+        path = pathlib.Path(url2pathname(path))
         if scheme != 'file':
             logger.error('Impossible to watch files with {} schemes'.format(scheme), exc_info = True)
             return
 
         self.monitor.on_modified = lambda e: self._enqueue(callback, *args, **kwargs) if e.src_path == path else None
         try:
-            self.observer.schedule(self.monitor, directory)
+            self.observer.schedule(self.monitor, str(path.parent))
         except OSError:
-            logger.error('Impossible to open dir at {}'.format(directory), exc_info = True)
+            logger.error('Impossible to open dir at {}'.format(str(path.parent)), exc_info = True)
 
 
     def stop_watching(self):

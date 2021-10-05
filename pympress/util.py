@@ -33,6 +33,7 @@ import subprocess
 import importlib
 import os
 import sys
+import pathlib
 
 if not getattr(sys, 'frozen', False):
     # doesn’t play too well with cx_Freeze
@@ -99,39 +100,20 @@ def __get_resource_path(*path_parts):
         to the resource, relative to the pympress distribution
 
     Returns:
-        `str`: The path to the resource
+        :class:`~pathlib.Path`: The path to the resource
     """
     if getattr(sys, 'frozen', False):
-        return os.path.join(os.path.dirname(sys.executable), *path_parts)
+        return pathlib.Path(sys.executable).parent.joinpath(*path_parts)
     else:
         req = pkg_resources.Requirement.parse('pympress')
-        return pkg_resources.resource_filename(req, '/'.join(('pympress',) + path_parts))
-
-
-def __get_resource_list(*path_parts):
-    """ Return the list of elements in a directory based on whether its frozen or not.
-
-    Paths parts given should be relative to the pympress package dir.
-
-    Args:
-        name (`tuple` of `str`): The directories that constitute the path to the resource,
-        relative to the pympress distribution
-
-    Returns:
-        `list` of `str`: The paths to the resources in the directory
-    """
-    if getattr(sys, 'frozen', False):
-        return os.listdir(os.path.join(os.path.dirname(sys.executable), *path_parts))
-    else:
-        req = pkg_resources.Requirement.parse('pympress')
-        return pkg_resources.resource_listdir(req, '/'.join(('pympress',) + path_parts))
+        return pathlib.Path(pkg_resources.resource_filename(req, '/'.join(('pympress',) + path_parts)))
 
 
 def get_locale_dir():
     """ Returns the path to the locale directory.
 
     Returns:
-        str: The path to the locale directory
+        :class:`~pathlib.Path`: The path to the locale directory
     """
     return __get_resource_path('share', 'locale')
 
@@ -140,7 +122,7 @@ def get_portable_config():
     """ Returns the path to the configuration file for a portable install (i.e. in the install root).
 
     Returns:
-        str: The path to the portable configuration file.
+        :class:`~pathlib.Path`: The path to the portable configuration file.
     """
     return __get_resource_path('pympress.conf')
 
@@ -149,31 +131,31 @@ def get_default_config():
     """ Returns the path to the configuration file containing the defaults.
 
     Returns:
-        str: The path to the portable configuration file.
+        :class:`~pathlib.Path`: The path to the portable configuration file.
     """
     return __get_resource_path('share', 'defaults.conf')
 
 
 def get_user_config():
-    """ Returns the path to the configuration file in the user config directory.
+    """ Returns the path to the configuration file in the user config directory
 
     Returns:
-        `str`: path to the user configuration file.
+        :class:`~pathlib.Path`: path to the user configuration file.
     """
     if IS_WINDOWS:
-        base_dir = os.getenv('APPDATA')
+        base_dir = pathlib.Path(os.getenv('APPDATA'))
     elif IS_MAC_OS:
-        base_dir = os.path.expanduser('~/Library/Preferences')
+        base_dir = pathlib.Path('~/Library/Preferences').expanduser()
     else:
-        base_dir = os.getenv('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
-        if not os.path.isdir(base_dir):
-            os.mkdir(base_dir)
+        base_dir = pathlib.Path(os.getenv('XDG_CONFIG_HOME', '~/.config')).expanduser()
+        if not base_dir.exists():
+            base_dir.mkdir(parents=True)
 
-    return os.path.join(base_dir, 'pympress' + ('.ini' if IS_WINDOWS else ''))
+    return base_dir.joinpath('pympress' + ('.ini' if IS_WINDOWS else ''))
 
 
 def load_style_provider(style_provider):
-    """ Load the css and in a style provider.
+    """ Load the css and in a style provider
 
     Args:
         style_provider (:class:`~Gtk.CssProvider`): The style provider in which to load CSS
@@ -181,24 +163,24 @@ def load_style_provider(style_provider):
     Returns:
         :class:`~Gtk.CssProvider`: The style provider with CSS loaded
     """
-    style_provider.load_from_path(__get_resource_path('share', 'css', 'default.css'))
+    style_provider.load_from_path(str(__get_resource_path('share', 'css', 'default.css')))
     return style_provider
 
 
 def get_icon_path(name):
-    """ Load an image from pympress' resources in a Gdk Pixbuf.
+    """ Get the path for an image from pympress' resources
 
     Args:
         name (`str`): The name of the icon to load
 
     Returns:
-        :class:`~GdkPixbuf.Pixbuf`: The loaded icon
+        `str`: The path to the icon to load
     """
-    return __get_resource_path('share', 'pixmaps', name)
+    return str(__get_resource_path('share', 'pixmaps', name))
 
 
 def get_ui_resource_file(name, ext='.glade'):
-    """ Load an UI definition file from pympress' resources.
+    """ Load an UI definition file from pympress' resources
 
     Args:
         name (`str`): The name of the UI to load
@@ -207,7 +189,7 @@ def get_ui_resource_file(name, ext='.glade'):
     Returns:
         `str`: The full path to the glade file
     """
-    return __get_resource_path('share', 'xml', name + ext)
+    return str(__get_resource_path('share', 'xml', name + ext))
 
 
 def list_icons():
@@ -216,42 +198,40 @@ def list_icons():
     Returns:
         `list` of `str`: The paths to the icons in the pixmaps directory
     """
-    icons = __get_resource_list('share', 'pixmaps')
-
-    return [get_icon_path(i) for i in icons if os.path.splitext(i)[1].lower() == '.png' and i[:9] == 'pympress-']
+    return list(map(str, __get_resource_path('share', 'pixmaps').glob('pympress-*.png')))
 
 
 def get_log_path():
     """ Returns the appropriate path to the log file in the user app dirs.
 
     Returns:
-        `str`: path to the log file.
+        :class:`~pathlib.Path`: path to the log file.
     """
     if IS_WINDOWS:
-        base_dir = os.getenv('LOCALAPPDATA', os.getenv('APPDATA'))
+        base_dir = pathlib.Path(os.getenv('LOCALAPPDATA', os.getenv('APPDATA')))
     elif IS_MAC_OS:
-        base_dir = os.path.expanduser('~/Library/Logs')
+        base_dir = pathlib.Path('~/Library/Logs').expanduser()
     else:
-        base_dir = os.getenv('XDG_CACHE_HOME', os.path.expanduser('~/.cache'))
+        base_dir = pathlib.Path(os.getenv('XDG_CACHE_HOME', '~/.cache')).expanduser()
 
-    if not os.path.isdir(base_dir):
-        os.makedirs(base_dir)
+    if not base_dir.exists():
+        base_dir.mkdir(parents=True)
 
-    return os.path.join(base_dir, 'pympress.log')
+    return base_dir.joinpath('pympress.log')
 
 
 def fileopen(f):
     """ Call the right function to open files, based on the platform.
 
     Args:
-        f (`str`): path to the file to open
+        f (path-like): path to the file to open
     """
     if IS_WINDOWS:
         os.startfile(f)
     elif IS_MAC_OS:
-        subprocess.call(['open', f])
+        subprocess.call(['open', str(f)])
     else:
-        subprocess.call(['xdg-open', f])
+        subprocess.call(['xdg-open', str(f)])
 
 
 def hard_set_screensaver(disabled):

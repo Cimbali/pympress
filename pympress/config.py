@@ -26,8 +26,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
-import os
-import shutil
+import pathlib
 import json
 from collections import deque
 
@@ -66,23 +65,27 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
     shortcuts = {}
 
     @staticmethod
-    def path_to_config(search_legacy_locations = False):
+    def path_to_config(search_legacy_locations=False):
         """ Return the path to the currently used configuration file.
 
         Args:
             search_legacy_locations (`bool`): whether to look in previously used locations
+
+        Returns:
+            :class:`~pathlib.Path`: The path to the config file to use
         """
         portable_config = util.get_portable_config()
-        if os.path.exists(portable_config):
+        if portable_config.exists():
             return portable_config
 
         user_config = util.get_user_config()
 
         # migrate old configuration files from previously-used erroneous locations
-        if search_legacy_locations and (util.IS_POSIX or util.IS_MAC_OS) and not os.path.exists(user_config):
-            for legacy_location in [os.path.expanduser('~/.pympress'), os.path.expanduser('~/.config/pympress')]:
-                if os.path.exists(legacy_location):
-                    shutil.move(legacy_location, user_config)
+        if search_legacy_locations and (util.IS_POSIX or util.IS_MAC_OS) and not user_config.exists():
+            for legacy_location in ['~/.pympress', '~/.config/pympress']:
+                legacy_location = pathlib.Path(legacy_location).expanduser()
+                if legacy_location.exists():
+                    legacy_location.rename(user_config)
 
         return user_config
 
@@ -96,10 +99,11 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
 
         No need to populate the new config file, this will be done on pympress exit.
         """
+        portable_config = util.get_portable_config()
         if Config.using_portable_config():
-            os.remove(util.get_portable_config())
+            portable_config.unlink()
         else:
-            with open(util.get_portable_config(), 'w'):
+            with open(portable_config, 'w'):
                 pass
 
 
@@ -110,7 +114,7 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         Returns:
             `bool`: `True` iff we are using the portable (i.e. in install dir) location
         """
-        return util.get_portable_config() == Config.path_to_config()
+        return util.get_portable_config().exists()
 
 
     def __init__(config):

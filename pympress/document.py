@@ -38,7 +38,6 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
-import os
 import math
 import enum
 import pathlib
@@ -331,12 +330,12 @@ class Page(object):
                     continue
             elif annot_type == Poppler.AnnotType.FILE_ATTACHMENT:
                 attachment = annotation.annot.get_attachment()
-                prefix, ext = os.path.splitext(attachment.name)
-                with tempfile.NamedTemporaryFile('wb', suffix=ext, prefix=prefix, delete=False) as f:
+                filename = pathlib.Path(attachment.name)
+                with tempfile.NamedTemporaryFile('wb', suffix=filename.suffix, prefix=filename.stem, delete=False) as f:
                     # now the file name is shotgunned
-                    filename = f.name
+                    filename = pathlib.Path(f.name)
                     self.parent.remove_on_exit(filename)
-                if not attachment.save(filename):
+                if not attachment.save(str(filename)):
                     logger.error(_("Pympress can not extract attached file"))
                     continue
                 action = Link.build_closure(fileopen, filename)
@@ -474,9 +473,9 @@ class Page(object):
                 ext = get_extension(media.get_mime_type())
                 with tempfile.NamedTemporaryFile('wb', suffix=ext, prefix='pdf_embed_', delete=False) as f:
                     # now the file name is shotgunned
-                    filename = f.name
+                    filename = pathlib.Path(f.name)
                     self.parent.remove_on_exit(filename)
-                if not media.save(filename):
+                if not media.save(str(filename)):
                     logger.error(_("Pympress can not extract embedded media"))
                     return None
             else:
@@ -704,7 +703,7 @@ class Document(object):
     #: navigation in the document faster by avoiding calls to Poppler when loading
     #: a page that has already been loaded.
     pages_cache = {}
-    #: Files that are temporary and need to be removed
+    #: `set` of :class:`~pathlib.Path` representing the temporary files which need to be removed
     temp_files = set()
     #: History of pages we have visited
     history = []
@@ -1126,18 +1125,17 @@ class Document(object):
         """ Returns full path, extrapolated from a path relative to this document or to the current directory.
 
         Args:
-            filename (`str`):  Name of the file or relative path to it
+            filename (:class:`~pathlib.Path`):  Name of the file or relative path to it
 
         Returns:
-            `str`: the full path to the file or None if it doesn't exist
+            :class:`~pathlib.Path`: the full path to the file or None if it doesn't exist
         """
-        filepath = None
-        if os.path.isabs(filename):
-            return os.path.normpath(filename) if os.path.exists(filename) else None
+        if filename.is_absolute():
+            return filename.resolve() if filename.exists() else None
 
-        for d in [os.path.dirname(url2pathname(self.uri.split('://', 1)[1])), os.getcwd()]:
-            filepath = os.path.normpath(os.path.join(d, filename))
-            if os.path.exists(filepath):
+        for dirname in [pathlib.Path(url2pathname(urlsplit(self.uri).path)).parent, pathlib.Path.cwd()]:
+            filepath = dirname.joinpath(filename)
+            if filepath.exists():
                 return filepath
 
 
@@ -1145,7 +1143,7 @@ class Document(object):
         """ Remember a temporary file to delete later.
 
         Args:
-            filename (`str`): The path to the file to delete
+            filename (:class:`~pathlib.Path`): The path to the file to delete
         """
         self.temp_files.add(filename)
 
@@ -1154,7 +1152,8 @@ class Document(object):
         """ Removes all files that were extracted from the pdf into the filesystem.
         """
         for f in self.temp_files:
-            os.remove(f)
+            if f.exists():
+                f.unlink()
         self.temp_files.clear()
 
 

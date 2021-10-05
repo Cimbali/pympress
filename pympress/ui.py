@@ -36,10 +36,12 @@ from __future__ import print_function, unicode_literals
 import logging
 logger = logging.getLogger(__name__)
 
-import os.path
+import pathlib
 import math
 import sys
 import gc
+from urllib.request import url2pathname, pathname2url
+from urllib.parse import urlsplit, urlunsplit
 
 import gi
 import cairo
@@ -635,9 +637,9 @@ class UI(builder.Builder):
         about.set_copyright(_('Contributors:') + '\n' + pympress['contributors'])
         about.set_comments(_('pympress is a little PDF reader written in Python ' +
                              'using Poppler for PDF rendering and GTK for the GUI.\n') +
-                           _('Some preferences are saved in ') + self.config.path_to_config() + '\n' +
-                           _('Resources are loaded from ') + os.path.dirname(util.get_locale_dir()) + '\n' +
-                           _('The log is written to ') + util.get_log_path() + '\n\n' +
+                           _('Some preferences are saved in ') + str(self.config.path_to_config()) + '\n' +
+                           _('Resources are loaded from ') + str(util.get_locale_dir().parent) + '\n' +
+                           _('The log is written to ') + str(util.get_log_path()) + '\n\n' +
                            _('Media support uses {}.').format(self.medias.backend_version) + '\n' +
                            _('Python version {}').format(sys.version))
         about.set_website('https://github.com/Cimbali/pympress')
@@ -774,12 +776,12 @@ class UI(builder.Builder):
             info (`int`): info on the target
             time (`int`): time of the drop
         """
-        received = data.get_text()
-        if received.startswith('file://'):
-            received = received[len('file://'):]
+        uri_parts = urlsplit(data.get_text())
+        path = pathlib.Path(url2pathname(uri_parts.path) if uri_parts.scheme else uri_parts.path)
+        scheme = uri_parts.scheme if uri_parts.scheme else 'file'
 
-        if os.path.isfile(received) and received.lower().endswith('.pdf'):
-            self.swap_document(os.path.abspath(received))
+        if path.is_file() and path.suffix.lower() == '.pdf':
+            self.swap_document(urlunsplit(uri_parts._replace(scheme=scheme, path=pathname2url(str(path.resolve())))))
 
 
     def unsaved_changes(self, reload=False):
@@ -888,17 +890,22 @@ class UI(builder.Builder):
         dialog.destroy()
 
 
-    def error_opening_file(self, filename):
+    def error_opening_file(self, uri):
         """ Remove the current document.
+
+        Args:
+            uri (`str`): the URI of the document
         """
         # Check if the path is valid
-        if not os.path.exists(filename):
+        uri_parts = urlsplit(uri)
+        filename = pathlib.Path(url2pathname(uri_parts.path))
+        if uri_parts.scheme == 'file' and not filename.exists():
             msg = _('Could not find the file "{}"').format(filename)
         else:
-            msg = _('Error opening the file "{}"').format(filename)
-        dialog = Gtk.MessageDialog(transient_for = self.p_win, flags = Gtk.DialogFlags.MODAL,
-                                   message_type = Gtk.MessageType.ERROR, message_format = msg)
-        dialog.add_buttons(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+            msg = _('Error opening the file "{}"').format(uri)
+        dialog = Gtk.MessageDialog(transient_for=self.p_win, flags=Gtk.DialogFlags.MODAL,
+                                   message_type=Gtk.MessageType.ERROR, message_format=msg)
+        dialog.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         dialog.set_position(Gtk.WindowPosition.CENTER)
         dialog.run()
         dialog.destroy()

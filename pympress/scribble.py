@@ -176,7 +176,7 @@ class Scribbler(builder.Builder):
         masks = [cairo.ImageSurface.create_from_png(util.get_icon_path('marker_fill_{}.png'.format(n))) for n in ms]
 
         self.marker_surfaces = list(zip(icons, masks))
-        self.eraser_surface = cairo.ImageSurface.create_from_png(util.get_icon_path('eraser.png'))
+        self.eraser_surface = cairo.ImageSurface.create_from_png(str(util.get_icon_path('eraser.png')))
 
         # Load color and active pen preferences. Pen 0 is the eraser.
         self.color_width = [(Gdk.RGBA(0, 0, 0, 0), 150)] + list(zip(
