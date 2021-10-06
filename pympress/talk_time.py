@@ -142,6 +142,8 @@ class TimeCounter(object):
     Args:
         builder (builder.Builder): The builder from which to load widgets.
         ett (`int`): the estimated time for the talk, in seconds.
+        timing_tracker: (:class:`~pympress.extras.TimingReport`): to inform when the slides change
+        autoplay: (:class:`~pympress.dialog.AutoPlay`): to adjust the timer display if we’re auto-playing/looping slides
     """
     #: Elapsed time :class:`~Gtk.Label`
     label_time = None
@@ -166,13 +168,16 @@ class TimeCounter(object):
 
     #: The :class:`~pympress.extras.TimingReport`, needs to know when the slides change
     timing_tracker = None
+    #: The :class:`~pympress.dialog.AutoPlay`, to adjust the timer display if we’re auto-playing/looping slides
+    autoplay = None
 
-    def __init__(self, builder, ett, timing_tracker):
+    def __init__(self, builder, ett, timing_tracker, autoplay):
         super(TimeCounter, self).__init__()
 
         self.label_colorer = TimeLabelColorer(builder.get_object('label_time'))
         self.ett = ett
         self.timing_tracker = timing_tracker
+        self.autoplay = autoplay
 
         builder.load_widgets(self)
 
@@ -214,6 +219,9 @@ class TimeCounter(object):
         self.elapsed_time += time.time() - self.restart_time
         self.timing_tracker.end_time = self.elapsed_time
 
+        if self.autoplay.is_looping():
+            self.autoplay.pause()
+
         self.update_time()
         return True
 
@@ -232,6 +240,9 @@ class TimeCounter(object):
         self.paused = False
         self.pause_action.change_state(GLib.Variant.new_boolean(self.paused))
 
+        if self.autoplay.is_looping():
+            self.autoplay.unpause()
+
         self.update_time()
         return True
 
@@ -243,6 +254,8 @@ class TimeCounter(object):
 
         self.restart_time = time.time()
         self.elapsed_time = 0
+        if self.autoplay.is_looping():
+            self.autoplay.start_looping()
         self.update_time()
 
 
@@ -266,14 +279,18 @@ class TimeCounter(object):
             `bool`: `True` (to prevent the timer from stopping)
         """
         # Current time
-        clock = time.strftime("%X")  # "%H:%M:%S"
+        clock = time.strftime('%X')  # '%H:%M:%S'
+        elapsed = self.current_time()
 
         # Time elapsed since the beginning of the presentation
-        elapsed = self.current_time()
-        display_time = "{:02}:{:02}".format(*divmod(int(elapsed), 60))
+        if self.autoplay.is_looping():
+            first, stop, loop, delay = self.autoplay.get_page_range()
+            display_time = '{} {}-{} / {:.1f}s'.format(_('Loop') if loop else _('Auto'), first + 1, stop, delay / 1000)
+        else:
+            display_time = '{:02}:{:02}'.format(*divmod(int(elapsed), 60))
 
         if self.paused:
-            display_time += " " + _("(paused)")
+            display_time += ' ' + _('(paused)')
 
         self.label_time.set_text(display_time)
         self.label_clock.set_text(clock)

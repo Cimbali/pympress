@@ -158,6 +158,8 @@ class UI(builder.Builder):
     shortcuts_window = None
     #: :class:`~pympress.dialog.LayoutEditor` popup to configure the layouts of the presenter window
     layout_editor = None
+    #: :class:`~pympress.dialog.AutoPlay` popup to configure automatic playing
+    autoplay = None
 
     #: A :class:`~Gtk.AccelGroup` to store the shortcuts
     accel_group = None
@@ -259,7 +261,8 @@ class UI(builder.Builder):
         self.est_time = editable_label.EstimatedTalkTime(self)
         self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))
         self.timing = dialog.TimingReport(self)
-        self.talk_time = talk_time.TimeCounter(self, self.est_time, self.timing)
+        self.autoplay = dialog.AutoPlay(self)
+        self.talk_time = talk_time.TimeCounter(self, self.est_time, self.timing, self.autoplay)
         self.layout_editor = dialog.LayoutEditor(self, self.config)
         self.file_watcher = extras.FileWatcher()
         self.config.register_actions(self)
@@ -712,6 +715,7 @@ class UI(builder.Builder):
         self.cache.swap_document(self.doc)
         self.page_number.set_last(self.doc.pages_number())
         self.page_number.enable_labels(self.doc.has_labels())
+        self.autoplay.set_doc_pages(self.doc.pages_number())
         self.medias.purge_media_overlays()
         self.timing.set_document_metadata(self.doc.get_structure().copy(), self.doc.page_labels[:])
 
@@ -959,18 +963,19 @@ class UI(builder.Builder):
             self.goto_page(display_page_num - 1)
 
 
-    def goto_page(self, page):
+    def goto_page(self, page, autoplay=False):
         """ Handle going to the page passed as argument
 
         Args:
             page (`int`): the page to which to go. Will be clipped to document pages.
+            autoplay (`bool`): whether this page change was triggered automatically
         """
         self.preview_page = self.doc.goto(page)
 
         if not self.page_number.editing:
             self.current_page = self.preview_page
 
-        self.do_page_change()
+        self.do_page_change(autoplay=autoplay)
 
 
     def doc_goto_prev(self, gaction=None, param=None):
@@ -1060,7 +1065,7 @@ class UI(builder.Builder):
         self.goto_page(self.doc.pages_number())
 
 
-    def do_page_change(self, unpause=True):
+    def do_page_change(self, unpause=True, autoplay=False):
         """ Switch to another page and display it.
 
         This is a kind of event which is supposed to be called only from the
@@ -1069,6 +1074,7 @@ class UI(builder.Builder):
         Args:
             is_preview (`bool`):  `True` if the page change should not update the content
             unpause (`bool`):  `True` if the page change should unpause the timer, `False` otherwise
+            autoplay (`bool`):  `True` if the page change is triggered automatically, otherwise cancel auto play
         """
         is_preview = self.page_number.editing
         if not is_preview:
@@ -1133,6 +1139,8 @@ class UI(builder.Builder):
         # Start counter if needed
         if unpause:
             self.talk_time.unpause()
+        if not autoplay:
+            self.autoplay.stop_looping()
 
         self.timing.transition(self.preview_page, self.talk_time.current_time())
 
@@ -1309,7 +1317,9 @@ class UI(builder.Builder):
         elif self.scribbler.try_cancel():
             return True
         elif self.annotations.try_cancel():
-            return False
+            return True
+        elif self.autoplay.stop_looping():
+            return True
 
         return False
 

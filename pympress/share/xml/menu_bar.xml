@@ -223,6 +223,10 @@
 			<attribute name="label" translatable="yes">_Jump to label</attribute>
 			<attribute name="action">app.jumpto-label</attribute>
 		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Automatic navigation</attribute>
+			<attribute name="action">app.autoplay</attribute>
+		</item>
 	</submenu>
 
 	<submenu>

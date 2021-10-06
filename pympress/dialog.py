@@ -26,7 +26,9 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import sys
 import copy
+import itertools
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -125,6 +127,10 @@ class TimingReport(builder.Builder):
 
     def show_report(self, gaction, param=None):
         """ Show the popup with the timing infortmation.
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         times = [time for page, time in self.page_time]
         durations = (e - s for s, e in zip(times, times[1:] + [self.end_time]))
@@ -442,3 +448,161 @@ class LayoutEditor(builder.Builder):
             self.ui_load_layout(None)
 
         self.layout_dialog.hide()
+
+
+
+class AutoPlay(builder.Builder):
+    """ Widget and machinery to setup and play slides automatically, optionally in a loop
+    """
+    #: A :class:`~Gtk.Dialog` to contain the layout edition dialog
+    autoplay_dialog = None
+    #: The :class:`~Gtk.SpinButton` for the lower page
+    autoplay_spin_lower = None
+    #: The :class:`~Gtk.SpinButton` for the upper page
+    autoplay_spin_upper = None
+    #: The :class:`~Gtk.SpinButton` for the transition between slides
+    autoplay_spin_time = None
+    #: The :class:`~Gtk.CheckButton` to loop
+    autoplay_button_loop = None
+    #: :class:`~Glib.Source` which is the source id of the periodic slide transition, or `None` if there is no autoplay
+    source = None
+    #: if the timeout has been paused, `int` which represents the number of milliseconds until the next page slide
+    remain = None
+    #: callback, to be connected to :func:`~pympress.ui.UI.goto_page`
+    goto_page = lambda *args: None
+
+    def __init__(self, parent):
+        super(AutoPlay, self).__init__()
+        self.load_ui('autoplay')
+
+        self.autoplay_dialog.set_transient_for(parent.p_win)
+        self.autoplay_dialog.add_button(Gtk.STOCK_APPLY, Gtk.ResponseType.APPLY)
+        self.autoplay_dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        self.autoplay_dialog.set_default_response(Gtk.ResponseType.APPLY)
+
+        parent.setup_actions({
+            'autoplay': dict(activate=self.run),
+        })
+        self.connect_signals(self)
+        self.goto_page = parent.get_callback_handler('goto_page')
+
+
+    def set_doc_pages(self, n_pages):
+        """ Callback for when a document number of pages changes
+
+        Args:
+            n_pages (`int`): the number of pages of the loaded document
+        """
+        self.autoplay_spin_lower.set_range(1, n_pages - 2)
+        self.autoplay_spin_lower.set_value(1)
+        self.autoplay_spin_upper.set_range(2, n_pages)
+        self.autoplay_spin_upper.set_value(n_pages)
+
+
+    def page_changed(self, spin_button, scroll_direction):
+        """ Callback for when a page spin button is modified, maintains a delta of at least 2 pages between first and
+        last page of the intended loop. (No loops needed to loop a single slide.)
+
+        Args:
+            spin_button (:class:`~Gtk.SpinButton`): The button whose value was changed
+            scroll_direction (:class:`~Gtk.ScrollType`): The speed and amount of change
+        """
+        if spin_button == self.autoplay_spin_lower:
+            minval = self.autoplay_spin_lower.get_value() + 2
+            if self.autoplay_spin_upper.get_value() < minval:
+                self.autoplay_spin_upper.set_value(minval)
+        elif spin_button == self.autoplay_spin_upper:
+            maxval = self.autoplay_spin_upper.get_value() - 2
+            if self.autoplay_spin_lower.get_value() > maxval:
+                self.autoplay_spin_lower.set_value(maxval)
+
+
+    def pause(self):
+        """ Pause the looping if it’s running
+        """
+        if self.source is None or self.remain is not None:
+            return
+        self.remain = self.source.get_ready_time() - self.source.get_time()
+        self.source.set_ready_time(sys.maxsize)
+
+
+    def unpause(self):
+        """ Unpause the looping if it’s paused
+        """
+        if self.source is None or self.remain is None:
+            return
+        self.source.set_ready_time(self.source.get_time() + self.remain)
+        self.remain = None
+
+
+    def is_looping(self):
+        """ Return whether an auto-playing
+        """
+        return self.source is not None
+
+
+    def stop_looping(self):
+        """ Stop the auto-playing
+        """
+        if self.source is not None:
+            self.source.destroy()
+        self.source = None
+        self.remain = None
+
+
+    def start_looping(self):
+        """ Start the auto-playing
+        """
+        self.stop_looping()
+
+        it = itertools.cycle(range(*self.pages[:2])) if self.pages[2] else iter(range(*self.pages[:2]))
+        self.next_page(it)
+
+        self.source = GLib.timeout_source_new(self.pages[3])
+        self.source.attach(GLib.MainContext.default())
+        self.source.set_callback(self.next_page, it)
+
+
+    def next_page(self, it):
+        """ Callback to turn the page to the next slide
+
+        Args:
+            it (`iterator`): An iterator that contains the next pages to load. Stop when there are no more pages.
+
+        Returns:
+            `bool`: `True` if he callback needs to be called again, otherwise `False`
+        """
+        try:
+            self.goto_page(next(it), autoplay=True)
+        except StopIteration:
+            self.stop_looping()
+            return False
+        else:
+            return True
+
+
+    def get_page_range(self):
+        """ Return the autoplay info
+
+        Returns:
+            `tuple`: (first page, stop page, looping, delay i ms)
+        """
+        return self.pages
+
+
+    def run(self, gaction, param=None):
+        """ Show the dialog to setup auto-play, and start the autoplay if « apply » is selected
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
+        """
+        reply = self.autoplay_dialog.run()
+        self.autoplay_dialog.hide()
+
+        if reply != Gtk.ResponseType.APPLY:
+            return
+
+        self.pages = (self.autoplay_spin_lower.get_value_as_int() - 1, self.autoplay_spin_upper.get_value_as_int(),
+                      self.autoplay_button_loop.get_active(), int(self.autoplay_spin_time.get_value() * 1000))
+        self.start_looping()
