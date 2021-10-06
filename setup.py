@@ -217,14 +217,14 @@ def dlls():
     # libcairo-2.dll libcairo-gobject-2.dll libfontconfig-1.dll libfreetype-6.dll libiconv-2.dll
     # libgettextlib-0-19-8-1.dll libgettextpo-0.dll libgettextsrc-0-19-8-1.dll libintl-8.dll libjasper-4.dll
 
-    cwd = pathlib.Path.cwd().resolve()
     lib_gtk_dir = pathlib.Path(find_library('libgtk-3-0')).parent
 
     gdbus = pathlib.Path(find_library('gdbus.exe'))
     include_files = [(str(gdbus), str(pathlib.Path('lib', 'gi', 'gdbus.exe'))), (str(gdbus), 'gdbus.exe')]
     for lib in libs.split():
-        path = pathlib.Path(find_library(lib))
-        if path.resolve() != cwd and path.exists():
+        path = find_library(lib)
+        path = pathlib.Path(path) if path is not None else path
+        if path is not None and path.exists():
             include_files.append((str(path), lib))
         else:
             lib = pathlib.Path(lib)
@@ -276,7 +276,7 @@ def pympress_resources():
     dirs = [share.joinpath('xml'), share.joinpath('pixmaps'), share.joinpath('css'), share.joinpath('defaults.conf')]
     translations = share.glob(str(pathlib.Path('*', 'LC_MESSAGES', 'pympress.mo')))
 
-    return [(str(f), str(f.relative_to('pympress'))) for f in dirs + translations]
+    return [(str(f), str(f.relative_to('pympress'))) for f in dirs + list(translations)]
 
 
 if __name__ == '__main__':
