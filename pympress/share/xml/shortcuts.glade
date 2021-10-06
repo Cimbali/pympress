@@ -233,6 +233,22 @@
             </child>
 
             <child>
+              <object class="GtkShortcutsShortcut" id="shortcut_save_file">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;s</property>
+                <property name="title" translatable="yes">Save file</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkShortcutsShortcut" id="shortcut_save_file_as">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;s</property>
+                <property name="title" translatable="yes">Save file as</property>
+              </object>
+            </child>
+
+            <child>
               <object class="GtkShortcutsShortcut" id="shortcut_quit">
                 <property name="visible">1</property>
                 <property name="accelerator">q</property>

@@ -867,6 +867,9 @@ class Document(object):
         Args:
             dest_uri (`str` or `None`): The URI where to save the file, or None to save in-place
         """
+        if self.doc is None:
+            return
+
         for page in self.pages_cache.values():
             for annot in page.get_annotations():
                 page.page.add_annot(annot)
