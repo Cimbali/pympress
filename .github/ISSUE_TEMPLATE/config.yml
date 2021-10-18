@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Discussions
+    url: https://github.com/Cimbali/pympress/discussions
+    about: To ask and answer questions that don’t fit in the categories above.
