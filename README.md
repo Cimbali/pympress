@@ -30,20 +30,14 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
   ```sh
   dnf copr enable cimbali/pympress
   dnf install python3-pympress
-
-  # optionally, required for VLC video support:
-  dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-  dnf install python3-vlc vlc
   ```
 
   With zypper, fetch the link of the .repo in the table at the bottom of the COPR page and add it as a source.
 
   ```sh
   zypper addrepo https://copr.fedorainfracloud.org/coprs/cimbali/pympress/repo/opensuse-tumbleweed/cimbali-pympress-opensuse-tumbleweed.repo
-  zypper install python3-pympress python3-python-vlc vlc  # both *vlc packages optional, required for VLC video support
+  zypper install python3-pympress
   ```
-
-  If `python3-vlc` or `python3-python-vlc` are not available on your system, your can use `python3 -m pip install python-vlc`.
 
 - Arch Linux ![arch linux logo][arch_linux] from AUR [![AUR version badge][aur_version]][aur_package] (maintained by [@Jose1711](https://github.com/jose1711))
 
@@ -51,27 +45,26 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
   git clone https://aur.archlinux.org/python-pympress.git
   cd python-pympress
   makepkg -si
-  pacman -S poppler-glib vlc  # dependency temporarily missing from AUR package, and VLC optional for video support
+  pacman -S poppler-glib  # dependency temporarily missing from AUR package
   ```
 
   Or using any other tool to manage AUR packages (yay, pacaur, etc.):
 
   ```sh
   yay -S python-pympress
-  pacman -S poppler-glib vlc  # dependency temporarily missing from AUR package, and VLC optional for video support
+  pacman -S poppler-glib  # dependency temporarily missing from AUR package
   ```
 
 - macOS ![apple logo][apple] using [Homebrew](https://brew.sh/) ![homebrew version badge][homebrew_version]
 
   ```sh
   brew install pympress
-  brew cask install vlc  # optional, to support playing videos with VLC integration
   ```
 
 - Windows ![windows logo][windows] with [Chocolatey](https://chocolatey.org/) [![chocolatey version badge][chocolatey_version]][chocolatey_package] (maintained by [@ComFreek](https://github.com/ComFreek))
 
   ```batch
-  choco install pympress vlc  # vlc optional, to support playing videos with VLC integration
+  choco install pympress
   ```
 
   Or download the latest installer from the [latest Github release][github_release].
@@ -88,10 +81,8 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 - Other systems, directly from PyPI ![pypi version badge][pypi_version] − requires [python, gtk+3, poppler, and their python bindings](#dependencies):
 
   ```
-  pip install "pympress[vlc_video]"
+  pip install "pympress"
   ```
-
-where `[vlc_video]` is optional and specifies the dependency on `python-vlc` for VLC video support.
 
   <details><summary>Troubleshooting</summary>
 
@@ -176,6 +167,9 @@ A few of the fancier functionalities are listed here:
 - **Resize Current/Next slide**: You can drag the bar between both slides on the Presenter window to adjust their relative sizes to your liking.
 - **Preferences**: Some of your choices are saved in a configuration file, and more options are accessible there. See the [configuration file documentation](docs/options.md) for more details.
 - **Caching**: For efficiency, Pympress caches rendered pages (up to 200 by default). If this is too memory consuming for you, you can change this number in the configuration file.
+- **Configurability**: Layout of presenter window dynamically configurable, with 1 to 16 next slides preview
+- **Editable PDF annotations**: Annotations can be added, removed, or changed, and the modified PDF files can be saved
+- **Automatic next slide and looping**
 
 ## Command line arguments
 
@@ -183,6 +177,46 @@ A few of the fancier functionalities are listed here:
 - `-t mm[:ss], --talk-time=mm[:ss]`: The estimated (intended) talk time in minutes and optionally seconds.
 - `-n position, --notes=position`: Set the position of notes on the pdf page (none, left, right, top, or bottom). Overrides the detection from the file.
 - `--log=level`: Set level of verbosity in log file (DEBUG, INFO, WARNING, ERROR).
+
+## Media and autoplay
+
+To enable media playback, you need to have either:
+- Gstreamer installed (enabled by default), with plugins gstreamer-good/-bad/-ugly based on which codecs you need, or
+- VLC installed (and the python-vlc module), with `enabled = on` under the `[vlc]` section of your config file.
+
+To produce PDFs with media inclusion, the ideal method is to use beamer’s multimedia package, always with `\movie`:
+
+```latex
+\documentclass{beamer}
+\usepackage{multimedia}
+
+\begin{frame}{Just a mp4 here}
+    \centering
+    \movie[width=0.3\textwidth]{\includegraphics[width=0.9\textwidth]{frame1.png}}{movie.mp4}
+
+    \movie[width=0.3\textwidth]{}{animation.gif}
+
+    \movie[width=0.3\textwidth]{}{ding.ogg}
+\end{frame}
+```
+
+If you desire autoplay, ensure you have pympress ≥ 1.7.0 and poppler ≥ 21.04, and use the `movie15` package as follows:
+
+```latex
+\documentclass{beamer}
+\usepackage{movie15}
+\begin{document}
+
+\begin{frame}
+  \begin{center}
+    \includemovie[attach=false,autoplay,text={%
+        \includegraphics{files/mailto.png}%
+      }]{0.4\linewidth}{0.3\linewidth}{files/random.mpg}
+  \end{center}
+\end{frame}
+
+\end{document}
+```
 
 # Dependencies
 
@@ -196,6 +230,7 @@ Pympress relies on:
   * Introspection bindings for poppler may be shipped separately, ensure you have those as well (`typelib-1_0-Poppler-0_18` on OpenSUSE, `gir1.2-poppler-0.18` on Ubuntu)
 * optionally [VLC](https://www.videolan.org/vlc/), to play videos (with the same bitness as Python)
   and the [python-vlc](https://pypi.org/project/python-vlc/) bindings.
+* optionally Gstreamer to play videos (which is a Gtk library)
 
 ### On linux platforms
 The dependencies are often installed by default, or easily available through your package or software manager.
