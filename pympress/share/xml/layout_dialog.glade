@@ -22,16 +22,21 @@
     <columns>
       <!-- column-name layout -->
       <column type="gchararray"/>
+      <!-- column-name layout_name -->
+      <column type="gchararray"/>
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">notes</col>
+        <col id="0">notes</col>
+        <col id="1" translatable="yes">Notes</col>
       </row>
       <row>
-        <col id="0" translatable="yes">plain</col>
+        <col id="0">plain</col>
+        <col id="1" translatable="yes">Plain</col>
       </row>
       <row>
-        <col id="0" translatable="yes">note_pages</col>
+        <col id="0">note_pages</col>
+        <col id="1" translatable="yes">Note pages</col>
       </row>
     </data>
   </object>
@@ -98,7 +103,7 @@
                 <property name="active">0</property>
                 <property name="has-frame">False</property>
                 <property name="has-entry">True</property>
-                <property name="entry-text-column">0</property>
+                <property name="entry-text-column">1</property>
                 <property name="popup-fixed-width">False</property>
                 <property name="id-column">0</property>
                 <property name="active-id">plain</property>
