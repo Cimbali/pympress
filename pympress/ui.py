@@ -243,6 +243,8 @@ class UI(builder.Builder):
             'save-file-as':      dict(activate=self.save_file_as),
             'pick-file':         dict(activate=self.pick_file),
             'list-recent-files': dict(change_state=self.populate_recent_menu, state=False),
+            'page':              dict(activate=lambda gaction, param: self.goto_page(param.get_int64()),
+                                      parameter_type=int, state=self.current_page),
             'next-page':         dict(activate=self.doc_goto_next),
             'next-label':        dict(activate=self.doc_label_next),
             'prev-page':         dict(activate=self.doc_goto_prev),
@@ -1079,6 +1081,7 @@ class UI(builder.Builder):
         is_preview = self.page_number.editing
         if not is_preview:
             self.preview_page = self.current_page
+            self.app.set_action_state('page', self.current_page + 1)
 
         draw_notes = self.notes_mode
         draw_page = draw_notes.complement()
