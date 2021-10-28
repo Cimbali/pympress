@@ -7,6 +7,51 @@ msgstr ""
 msgid "(paused)"
 msgstr ""
 
+msgid "10th next slide"
+msgstr ""
+
+msgid "11th next slide"
+msgstr ""
+
+msgid "12th next slide"
+msgstr ""
+
+msgid "13th next slide"
+msgstr ""
+
+msgid "14th next slide"
+msgstr ""
+
+msgid "15th next slide"
+msgstr ""
+
+msgid "16th next slide"
+msgstr ""
+
+msgid "2nd next slide"
+msgstr ""
+
+msgid "3rd next slide"
+msgstr ""
+
+msgid "4th next slide"
+msgstr ""
+
+msgid "5th next slide"
+msgstr ""
+
+msgid "6th next slide"
+msgstr ""
+
+msgid "7th next slide"
+msgstr ""
+
+msgid "8th next slide"
+msgstr ""
+
+msgid "9th next slide"
+msgstr ""
+
 msgid "Additional features"
 msgstr ""
 
@@ -22,6 +67,9 @@ msgstr ""
 msgid "Annotations"
 msgstr ""
 
+msgid "Auto"
+msgstr ""
+
 msgid "Big buttons"
 msgstr ""
 
@@ -31,9 +79,6 @@ msgstr ""
 msgid "Blank/unblank content screen"
 msgstr ""
 
-msgid "Building FileWatcher"
-msgstr ""
-
 msgid "Cairo can not draw gif"
 msgstr ""
 
@@ -41,6 +86,9 @@ msgid "Cancel goto/jump/highlighting/zooming"
 msgstr ""
 
 msgid "Caused by "
+msgstr ""
+
+msgid "Choose parameters for automatically playing slides"
 msgstr ""
 
 msgid "Clear and restore per page label"
@@ -82,6 +130,9 @@ msgstr ""
 msgid "ERROR: Gobject Introspections and/or pycairo module is missing, make sure Gtk, pygobject and pycairo are installed on your system."
 msgstr ""
 
+msgid "Edit layout"
+msgstr ""
+
 msgid "Error loading icon for about window"
 msgstr ""
 
@@ -118,6 +169,9 @@ msgstr ""
 msgid "Go to page number"
 msgstr ""
 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr ""
+
 msgid "Highlight"
 msgstr ""
 
@@ -137,6 +191,15 @@ msgid "Jump to page label"
 msgstr ""
 
 msgid "Last slide"
+msgstr ""
+
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr ""
+
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr ""
+
+msgid "Loop"
 msgstr ""
 
 msgid "Manage files"
@@ -172,6 +235,9 @@ msgstr ""
 msgid "Not starting content or presenter window full screen because there is only one monitor"
 msgstr ""
 
+msgid "Note pages"
+msgstr ""
+
 msgid "Notes"
 msgstr ""
 
@@ -190,10 +256,22 @@ msgstr ""
 msgid "Overrides the detection from the file."
 msgstr ""
 
+msgid "Overwrite"
+msgstr ""
+
+msgid "Overwrite changes instead of reloading?"
+msgstr ""
+
 msgid "PDF files"
 msgstr ""
 
 msgid "Pause"
+msgstr ""
+
+msgid "Plain"
+msgstr ""
+
+msgid "Plain layout, without note slides"
 msgstr ""
 
 msgid "Play"
@@ -262,6 +340,9 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
+msgid "Reload"
+msgstr ""
+
 msgid "Reset talk timer"
 msgstr ""
 
@@ -269,6 +350,21 @@ msgid "Reset timer"
 msgstr ""
 
 msgid "Resources are loaded from "
+msgstr ""
+
+msgid "Save as..."
+msgstr ""
+
+msgid "Save changes before closing?"
+msgstr ""
+
+msgid "Save file"
+msgstr ""
+
+msgid "Save file as"
+msgstr ""
+
+msgid "Saving changes will overwrite the changed file!"
 msgstr ""
 
 msgid "Set estimated talk time"
@@ -281,6 +377,9 @@ msgid "Set talk _Time"
 msgstr ""
 
 msgid "Set the position of notes on the pdf page"
+msgstr ""
+
+msgid "Should not require hard enable/disable screensaver on Linux"
 msgstr ""
 
 msgid "Slide number"
@@ -301,10 +400,16 @@ msgstr ""
 msgid "The log is written to "
 msgstr ""
 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr ""
+
 msgid "Time elapsed"
 msgstr ""
 
 msgid "Time estimation"
+msgstr ""
+
+msgid "Time per slide (s):"
 msgstr ""
 
 msgid "Timers"
@@ -349,7 +454,19 @@ msgstr ""
 msgid "Unknow widget {} to be fullscreened, aborting."
 msgstr ""
 
+msgid "Unknown widget \"{}\" to draw"
+msgstr ""
+
 msgid "Unrecognized named destination: "
+msgstr ""
+
+msgid "Unsaved changes"
+msgstr ""
+
+msgid "Unsaved changes will be lost"
+msgstr ""
+
+msgid "Unsaved changes will be lost."
 msgstr ""
 
 msgid "Unsupported OS: can't enable/disable screensaver"
@@ -376,6 +493,9 @@ msgstr ""
 msgid "_Annotations"
 msgstr ""
 
+msgid "_Automatic navigation"
+msgstr ""
+
 msgid "_Blank screen"
 msgstr ""
 
@@ -389,6 +509,9 @@ msgid "_Close"
 msgstr ""
 
 msgid "_Disabled"
+msgstr ""
+
+msgid "_Discard"
 msgstr ""
 
 msgid "_File"
@@ -463,6 +586,12 @@ msgstr ""
 msgid "_Right half of slide"
 msgstr ""
 
+msgid "_Save"
+msgstr ""
+
+msgid "_Save as"
+msgstr ""
+
 msgid "_Shortcuts"
 msgstr ""
 
@@ -484,13 +613,40 @@ msgstr ""
 msgid "access denied when trying to access screen saver settings in registry!"
 msgstr ""
 
+msgid "annotations"
+msgstr ""
+
+msgid "annotations (hideable)"
+msgstr ""
+
+msgid "box"
+msgstr ""
+
+msgid "current slide"
+msgstr ""
+
 msgid "duration"
+msgstr ""
+
+msgid "horizontal"
 msgstr ""
 
 msgid "name"
 msgstr ""
 
+msgid "next slide(s)"
+msgstr ""
+
+msgid "next slides count"
+msgstr ""
+
 msgid "no action defined for this link!"
+msgstr ""
+
+msgid "notes"
+msgstr ""
+
+msgid "orientation"
 msgstr ""
 
 msgid "page label"
@@ -502,6 +658,9 @@ msgstr ""
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 msgstr ""
 
+msgid "resizeable"
+msgstr ""
+
 msgid "slide"
 msgstr ""
 
@@ -509,6 +668,12 @@ msgid "slide #"
 msgstr ""
 
 msgid "time"
+msgstr ""
+
+msgid "vertical"
+msgstr ""
+
+msgid "widget"
 msgstr ""
 
 msgid "{}, {}, {}, {}, or {}"
