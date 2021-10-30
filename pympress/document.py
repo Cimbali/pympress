@@ -780,12 +780,12 @@ class Document(object):
         while True:
             action = index_iter.get_action()
             title = ''
+            page = None
             try:
                 if action.type == Poppler.ActionType.GOTO_DEST:
                     title = action.goto_dest.title
                     if action.goto_dest.dest.type == Poppler.DestType.NAMED:
-                        dest = self.doc.find_dest(action.goto_dest.dest.named_dest)
-                        page = dest.page_num - 1
+                        page = self.doc.find_dest(action.goto_dest.dest.named_dest).page_num - 1
                     elif action.goto_dest.dest.type == Poppler.DestType.UNKNOWN:
                         raise AssertionError('Unknown type of destination')
                     else:
@@ -806,11 +806,11 @@ class Document(object):
 
             # there should not be synonymous sections, correct the page here to a better guess
             if page in index:
-                lower_bound = max(index)
+                lower_bound = max(index.keys())
                 find = index[lower_bound]
                 while 'children' in find:
-                    lower_bound = max(find)
-                    find = find[lower_bound]
+                    lower_bound = max(find['children'].keys())
+                    find = find['children'][lower_bound]
 
                 try:
                     page = min(number for number, label in enumerate(self.page_labels)
