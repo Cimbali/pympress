@@ -255,7 +255,7 @@ class VideoOverlay(builder.Builder):
             self.parent.reorder_overlay(self.media_overlay, 2)
             self.resize()
             self.parent.queue_draw()
-        self.media_overlay.show()
+        self.media_overlay.hide() # hide it initially; it will be shown in the play function
 
 
     def do_hide(self, *args):

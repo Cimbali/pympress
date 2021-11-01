@@ -101,6 +101,7 @@ class GstOverlay(base.VideoOverlay):
     def on_play(self, *args):
         """ Start the scroll bar updating process.
         """
+        self.media_overlay.show() # player initialized; show the video now
         GLib.idle_add(self.do_update_duration)
         GLib.timeout_add(200, self.do_update_time)
 
