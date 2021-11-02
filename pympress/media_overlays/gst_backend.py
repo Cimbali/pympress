@@ -44,16 +44,13 @@ class GstOverlay(base.VideoOverlay):
     #: A :class:`~Gst.Playbin` to be play videos
     playbin = None
 
-    #: `str` holding the path to the current file
-    uri = None
-
     def __init__(self, *args, **kwargs):
-        super(GstOverlay, self).__init__(*args, **kwargs)
-
         # Create GStreamer playbin
         self.playbin = Gst.ElementFactory.make('playbin', None)
         self.sink = Gst.ElementFactory.make('gtksink', None)
         self.playbin.set_property('video-sink', self.sink)
+
+        super(GstOverlay, self).__init__(*args, **kwargs)
 
         self.media_overlay.remove(self.movie_zone)
         self.media_overlay.pack_start(self.sink.props.widget, True, True,  0)
@@ -85,7 +82,8 @@ class GstOverlay(base.VideoOverlay):
         Args:
             filepath (`pathlib.Path`): The path to the media file path
         """
-        self.uri = filepath.as_uri()
+        self.playbin.set_property('uri', filepath.as_uri())
+        self.playbin.set_state(Gst.State.READY)
 
 
     def mute(self, value):
@@ -129,7 +127,6 @@ class GstOverlay(base.VideoOverlay):
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
-        self.playbin.set_property('uri', self.uri)
         self.playbin.set_state(Gst.State.PLAYING)
 
         return False
@@ -152,6 +149,7 @@ class GstOverlay(base.VideoOverlay):
         """ Stops playing in the backend player.
         """
         self.playbin.set_state(Gst.State.NULL)
+        self.playbin.set_state(Gst.State.READY)
 
         return False
 
