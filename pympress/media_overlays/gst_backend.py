@@ -55,7 +55,7 @@ class GstOverlay(base.VideoOverlay):
         self.media_overlay.remove(self.movie_zone)
         self.media_overlay.pack_start(self.sink.props.widget, True, True,  0)
         self.media_overlay.reorder_child(self.sink.props.widget, 0)
-        self.sink.props.widget.show()
+        self.sink.props.widget.hide()
 
         # Create bus to get events from GStreamer playin
         bus = self.playbin.get_bus()
@@ -101,6 +101,7 @@ class GstOverlay(base.VideoOverlay):
         """
         GLib.idle_add(self.do_update_duration)
         GLib.timeout_add(200, self.do_update_time)
+        self.sink.props.widget.show()
 
 
     def do_update_duration(self, *args):
@@ -150,6 +151,7 @@ class GstOverlay(base.VideoOverlay):
         """
         self.playbin.set_state(Gst.State.NULL)
         self.playbin.set_state(Gst.State.READY)
+        self.sink.props.widget.hide()
 
         return False
 
