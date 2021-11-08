@@ -402,6 +402,8 @@ class Media(object):
             self._backends['gst'] = GstOverlay
             if self.conf.getboolean('gst', 'enabled'):
                 self.types_list['gst'] = self.conf.getlist('gst', 'mime_types')
+            else:
+                gst_version += ' (disabled)'
 
         except Exception as e:
             gst_version = 'GStreamer not available'
@@ -416,6 +418,8 @@ class Media(object):
             self._backends['vlc'] = VlcOverlay
             if self.conf.getboolean('vlc', 'enabled'):
                 self.types_list['vlc'] = self.conf.getlist('vlc', 'mime_types')
+            else:
+                vlc_version += ' (disabled)'
 
         except Exception as e:
             vlc_version = 'VLC not available'
