@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 import os
 import vlc
+import ctypes
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -35,6 +36,29 @@ from gi.repository import GLib
 
 from pympress.util import IS_WINDOWS
 from pympress.media_overlays import base
+
+
+def get_window_handle(window):
+    """ Uses ctypes to call gdk_win32_window_get_handle which is not available in python gobject introspection porting.
+
+    Solution from http://stackoverflow.com/a/27236258/1387346
+
+    Args:
+        window (:class:`~Gdk.Window`): The window for which we want to get the handle
+
+    Returns:
+        The handle to the win32 window
+    """
+    # get the c gpointer of the gdk window
+    ctypes.pythonapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
+    ctypes.pythonapi.PyCapsule_GetPointer.argtypes = [ctypes.py_object]
+    drawingarea_gpointer = ctypes.pythonapi.PyCapsule_GetPointer(window.__gpointer__, None)
+    # get the win32 handle
+    gdkdll = ctypes.CDLL('libgdk-3-0.dll')
+    handle_getter = gdkdll.gdk_win32_window_get_handle
+    handle_getter.restype = ctypes.c_void_p
+    handle_getter.argtypes = [ctypes.c_void_p]
+    return handle_getter(drawingarea_gpointer)
 
 
 class VlcOverlay(base.VideoOverlay):
