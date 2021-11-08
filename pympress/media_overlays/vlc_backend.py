@@ -74,6 +74,8 @@ class VlcOverlay(base.VideoOverlay):
         self.player = self._instance.media_player_new()  # before loading UI, needed to connect "map" signal
 
         super(VlcOverlay, self).__init__(*args, **kwargs)
+        # Simple black background painting to avoid glitching outside of video area
+        self.movie_zone.connect('draw', lambda widget, context: context.paint())
 
         event_manager = self.player.event_manager()
         event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.handle_end))
