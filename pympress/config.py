@@ -191,6 +191,11 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
                 self.set('highlight', key, val)
             self.remove_section('scribble')
 
+        if self.has_section('gst'):
+            for key, val in self.items('gst'):
+                self.set('gstreamer', key, 'on' if key == 'enabled' else val)
+            self.remove_section('gst')
+
         # When we went from gtk signal handlers to actions, some renaming had to be done
         for old, new in {
             'next':                 'next-page',

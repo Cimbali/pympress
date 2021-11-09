@@ -398,10 +398,10 @@ class Media(object):
         try:
             from pympress.media_overlays.gst_backend import GstOverlay
 
-            gst_version = GstOverlay.setup_backend(self.conf.getlist('gst', 'init_options'))
-            self._backends['gst'] = GstOverlay
-            if self.conf.getboolean('gst', 'enabled'):
-                self.types_list['gst'] = self.conf.getlist('gst', 'mime_types')
+            gst_version = GstOverlay.setup_backend(self.conf.getlist('gstreamer', 'init_options'))
+            self._backends['gstreamer'] = GstOverlay
+            if self.conf.getboolean('gstreamer', 'enabled'):
+                self.types_list['gstreamer'] = self.conf.getlist('gstreamer', 'mime_types')
             else:
                 gst_version += ' (disabled)'
 
