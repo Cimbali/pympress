@@ -433,20 +433,16 @@ class Media(object):
     def get_factory(self, mime_type):
         """ Returns a class of type :attr:`~_backend`.
         """
-        if mime_type in {'image/gif', 'image/svg+xml'}:
-            return self._backends['gif']
+        # Search for specific mime type, if no matches fall back to empty lists which mean any mime types
+        options = [backend for backend, mime_types in self.types_list.items() if mime_type in mime_types]
+        if not options:
+            options = [backend for backend, mime_types in self.types_list.items() if len(mime_types) == 0]
 
-        # Search for specific mime type
-        for backend, mime_types in self.types_list.items():
-            if mime_type in mime_types:
-                return self._backends[backend]
+        if not options:
+            return None
 
-        # Search for empty list, meaning fallback
-        for backend, mime_types in self.types_list.items():
-            if len(mime_types) == 0:
-                return self._backends[backend]
-
-        return None
+        # Prefer more stable backends with less external dependencies
+        return self._backends[sorted(options, key=['gif', 'gstreamer', 'vlc'].index)[0]]
 
 
 
