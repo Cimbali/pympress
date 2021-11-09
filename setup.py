@@ -36,7 +36,6 @@ import setuptools
 
 from distutils.cmd import Command
 from setuptools.command.build_py import build_py
-from setuptools.command.bdist_rpm import bdist_rpm
 
 
 def find_index_startstring(haystack, needle, start=0, stop=sys.maxsize):
@@ -46,75 +45,6 @@ def find_index_startstring(haystack, needle, start=0, stop=sys.maxsize):
         return next(n for n, v in enumerate(haystack[start:stop], start) if v.startswith(needle))
     except StopIteration:
         raise ValueError('No string starts with ' + needle)
-
-
-class PatchedRpmDist(bdist_rpm):
-    """ Patched bdist rpm to avoid running seds and breaking up the build system
-    """
-    user_options = bdist_rpm.user_options + [
-        ('recommends=', None, "capabilities recommendd by this package"),
-        ('suggests=', None, "capabilities suggestd by this package"),
-        ('license=', None, "License file"),
-    ]
-
-    def initialize_options(self):
-        """ Initialize the additional and inherited options
-        """
-        bdist_rpm.initialize_options(self)
-        self.recommends = None
-        self.suggests = None
-        self.license = None
-
-    def finalize_package_data(self):
-        """ Add recommends/suggests option validation
-        """
-        bdist_rpm.finalize_package_data(self)
-
-        self.ensure_string_list('recommends')
-        self.ensure_string_list('suggests')
-        self.ensure_filename('license')
-
-
-    def _make_spec_file(self):
-        # Make the package name python3-pympress instead of pympress
-        # NB: %{name} evaluates to the RPM package name
-        spec = [
-            line.replace('%{name}', '%{pythonname}')
-                .replace('define name ', 'define pythonname ')
-                .replace('Name: %{pythonname}', 'Name: python3-%{pythonname}')
-            for line in bdist_rpm._make_spec_file(self) if not line.startswith('Group:')
-        ]
-
-        insert_pos = find_index_startstring(spec, 'Requires:') + 1
-        insert = [
-            # Define what this package provides in terms of capabilities
-            'Provides: python3dist(%{pythonname}) = %{version}',
-            'Provides: python%{python3_version}dist(%{pythonname}) = %{version}',
-
-            # For Fedora, this adds python-name to provides if python3 is the default
-            '%{?python_provide:%python_provide python3-%{pythonname}}',
-        ]
-
-        insert.append('%if %{?!rhel:8}%{?rhel} >= 8')
-        if self.recommends:
-            insert.append('Recommends: ' + ' '.join(self.recommends))
-
-        if self.suggests:
-            insert.append('Suggests: ' + ' '.join(self.suggests))
-        insert.append('%endif')
-
-        if self.license:
-            # before %defattr
-            spec.insert(len(spec) - 1, '%license ' + self.license)
-
-        # Roll our own py3_dist if it doesn’t exist on this platform, only for requires.
-        # Also define typelib_deps if we are on suse or mageia, to specify dependencies using typelib capabilities.
-        return [
-            '%define normalize() %(echo %* | tr "[:upper:]_ " "[:lower:]--")',
-            '%{?!py3_dist:%define py3_dist() (python%{python3_version}dist(%{normalize %1}) or python3-%1)}',
-            '%{?suse_version:%define typelib_deps 1}', '%{?mga_version:%define typelib_deps 1}', ''
-        ] + spec[:insert_pos] + insert + spec[insert_pos:]
-
 
 
 class GettextBuildCatalog(Command):
@@ -288,7 +218,6 @@ if __name__ == '__main__':
 
     options = {'cmdclass': {
         'build_py': BuildWithCatalogs,
-        'bdist_rpm': PatchedRpmDist,
         'compile_catalog': compile_catalog,
     }}
 

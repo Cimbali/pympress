@@ -1,4 +1,0 @@
-if [ $1 -gt 1 ]; then
-	# On update, check for directories left by previous versions
-	find `%__python3 -c 'import site; print("\n".join(site.getsitepackages()))'` -maxdepth 1 -name 'pympress-1.5.*' -exec rm -rf {} + 2>/dev/null
-fi

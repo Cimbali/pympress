@@ -39,7 +39,7 @@ jobs:
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install setuptools wheel twine babel
+        python3 -m pip install setuptools wheel twine babel pysrpm rpmlint
 
     - name: Update translations
       env:
@@ -54,7 +54,7 @@ jobs:
       run: |
         mkdir srpm
         build=${{ github.event.inputs.build }}
-        python3 setup.py bdist_rpm --dist-dir=srpm/ --source-only --release ${build:-1}
+        pysrpm --dest-dir=srpm/ --source-only --release ${build:-1} .
 
     - name: Make tag name
       id: name
@@ -72,6 +72,10 @@ jobs:
         files: srpm/*.src.rpm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+
+    - name: Check built RPM with rpmlint
+      run: rpmlint srpm/*.src.rpm
+
 
 
   windows-build:
