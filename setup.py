@@ -110,6 +110,7 @@ def gtk_resources():
         pathlib.Path('lib', 'girepository-1.0'),
         pathlib.Path('lib', 'gtk-3.0'),
         pathlib.Path('lib', 'gdk-pixbuf-2.0'),
+        pathlib.Path('lib', 'gstreamer-1.0'),
         pathlib.Path('share', 'poppler'),
         pathlib.Path('share', 'themes'),
         pathlib.Path('share', 'icons'),
@@ -140,9 +141,10 @@ def dlls():
     libgio-2.0-0.dll libgirepository-1.0-1.dll libglib-2.0-0.dll libgobject-2.0-0.dll libgtk-3-0.dll \
     libidn2-0.dll libjpeg-8.dll liblcms2-2.dll libnghttp2-14.dll libnspr4.dll libopenjp2-7.dll \
     libpango-1.0-0.dll libpangocairo-1.0-0.dll libpangoft2-1.0-0.dll libpangowin32-1.0-0.dll \
-    libplc4.dll libplds4.dll libpoppler-105.dll libpoppler-cpp-0.dll libpoppler-glib-8.dll libpsl-5.dll \
+    libplc4.dll libplds4.dll libpoppler-113.dll libpoppler-cpp-0.dll libpoppler-glib-8.dll libpsl-5.dll \
     libpython{0.major}.{0.minor}.dll libstdc++-6.dll libthai-0.dll libtiff-5.dll libunistring-2.dll \
-    libwinpthread-1.dll libzstd.dll nss3.dll nssutil3.dll smime3.dll'.format(sys.version_info)
+    libwinpthread-1.dll libzstd.dll nss3.dll nssutil3.dll smime3.dll libgstbase-1.0-0.dll \
+    libgstcheck-1.0-0.dll libgstcontroller-1.0-0.dll libgstnet-1.0-0.dll libgstreamer-1.0-0.dll'.format(sys.version_info)
     # these appear superfluous, though unexpectedly so:
     # libcairo-2.dll libcairo-gobject-2.dll libfontconfig-1.dll libfreetype-6.dll libiconv-2.dll
     # libgettextlib-0-19-8-1.dll libgettextpo-0.dll libgettextsrc-0-19-8-1.dll libintl-8.dll libjasper-4.dll
@@ -180,25 +182,6 @@ def check_cli_arg(val):
     return False
 
 
-def vlc_resources():
-    """ Return the list of VLC resources (DLLs, plugins, license file...) to redistribute.
-    """
-    import vlc
-    print('Found VLC at ' + vlc.plugin_path)
-    root = pathlib.Path(vlc.plugin_path)
-
-    include_files = []
-    for f in root.glob('*.txt'):
-        include_files.append((str(f), f.stem + '_VLC' + f.suffix))
-
-    for f in root.glob('*.dll'):
-        include_files.append((str(f), f.name))
-
-    plugin_dir = root.parent.joinpath('lib', 'vlc', 'plugins') if root.name == 'bin' else root.joinpath('plugins')
-    include_files.append((str(plugin_dir), 'plugins'))
-    return include_files
-
-
 def pympress_resources():
     """ Return pympress resources. Only for frozen packages, as this is redundant with package_data.
     """
@@ -232,12 +215,12 @@ if __name__ == '__main__':
         options['long_description'] = ''.join(readme)
 
 
-    # Check our options: whether to freeze, and whether to include VLC resources (DLLs, plugins, etc).
+    # Check whether to create a frozen distribution
     if check_cli_arg('--freeze'):
         print('Using cx_Freeze.setup():', file=sys.stderr)
         from cx_Freeze import setup, Executable
 
-        setup_opts = {
+        setup(**{
             **options,
             'options': {
                 'build_exe': {
@@ -257,7 +240,6 @@ if __name__ == '__main__':
                     },
                     'upgrade_code': '{5D156784-ED69-49FF-A972-CBAD312187F7}',
                     'install_icon': str(pathlib.Path('pympress', 'share', 'pixmaps', 'pympress.ico')),
-                    # Patched build system to allow specifying extensions/verbs
                     'extensions': [{
                         'extension': 'pdf',
                         'verb': 'open',
@@ -275,20 +257,7 @@ if __name__ == '__main__':
                 Executable(str(pathlib.Path('pympress', '__main__.py')), target_name='pympress.exe',
                            base='Console', icon=str(pathlib.Path('pympress', 'share', 'pixmaps', 'pympress.ico'))),
             ]
-        }
-
-        # NB checking both to consume the arguments if either is present
-        if not check_cli_arg('--without-vlc') and check_cli_arg('--with-vlc'):
-            try:
-                setup_opts['options']['build_exe']['include_files'] += vlc_resources()
-            except ImportError:
-                print('ERROR: VLC python module not available!')
-                exit(-1)
-            except Exception as e:
-                print('ERROR: Cannot include VLC: ' + str(e))
-                exit(-1)
-
-        setup(**setup_opts)
+        })
     else:
         # Normal behaviour: use setuptools, load options from setup.cfg
         print('Using setuptools.setup():', file=sys.stderr)

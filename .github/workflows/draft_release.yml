@@ -114,6 +114,10 @@ jobs:
             mingw-w64-${{ matrix.arch }}-python3
             mingw-w64-${{ matrix.arch }}-python3-pip
             mingw-w64-${{ matrix.arch }}-python3-gobject
+            mingw-w64-${{ matrix.arch }}-python3-gstreamer
+            mingw-w64-${{ matrix.arch }}-python3-gst-plugins-base
+            mingw-w64-${{ matrix.arch }}-python3-gst-plugins-good
+            mingw-w64-${{ matrix.arch }}-python3-gst-plugins-ugly
             mingw-w64-${{ matrix.arch }}-python3-cairo
             mingw-w64-${{ matrix.arch }}-python3-appdirs
             mingw-w64-${{ matrix.arch }}-python3-setuptools
