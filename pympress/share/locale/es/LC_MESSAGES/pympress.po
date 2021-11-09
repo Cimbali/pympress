@@ -77,7 +77,7 @@ msgstr "Diapositiva actual"
 
 #: 
 msgid "ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system."
-msgstr ""
+msgstr "ERROR: falta el paquete python Gobject Introspections, asegúrese que Gtk y pygobject son bien instalados en su sistema."
 
 #: 
 msgid "Error loading icon for about window"
@@ -89,7 +89,7 @@ msgstr "No se puede abrir el archivo \"{}\""
 
 #: 
 msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
-msgstr ""
+msgstr "Para instrucciones (en inglés), remítase a https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
 
 #: 
 msgid "GtkImage gif player"
@@ -101,7 +101,7 @@ msgstr "Resaltar"
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
-msgstr ""
+msgstr "Si está utilizando virtualenv o anaconda, puede o permitir el acceso a los paquetes del sistema, o ejecutar: pip install pygobject"
 
 #: 
 msgid "Invalid log level \"{}\", try one of {}"
@@ -169,11 +169,11 @@ msgstr "Puntero"
 
 #: 
 msgid "Portable installation"
-msgstr ""
+msgstr "Instalación portátil"
 
 #: 
 msgid "Presentation timing breakdown"
-msgstr ""
+msgstr "Desglose del tiempo de presentación"
 
 #: 
 msgid "Presenter fullscreen"
@@ -257,7 +257,7 @@ msgstr "Duración estimada (prevista) de la presentación, en minutos"
 
 #: 
 msgid "The log is written to "
-msgstr ""
+msgstr "El registro se encuentro en "
 
 #: 
 msgid "This help"
@@ -273,11 +273,11 @@ msgstr "Tiempo estimado"
 
 #: 
 msgid "Timing breakdown"
-msgstr ""
+msgstr "Desglose del tiempo de presentación"
 
 #: 
 msgid "Unexpected action in index \"{}\""
-msgstr ""
+msgstr "Acción imprevista en el índice \"{}\""
 
 #: 
 msgid "Unknow widget {} to be fullscreened, aborting."
@@ -361,7 +361,7 @@ msgstr "Derecha"
 
 #: 
 msgid "_Manual"
-msgstr ""
+msgstr "_Manual"
 
 #: 
 msgid "_Navigation"
@@ -381,7 +381,7 @@ msgstr "Temporizador en _pausa"
 
 #: 
 msgid "_Permanent"
-msgstr ""
+msgstr "_Permanente"
 
 #: 
 msgid "_Presentation"
@@ -433,15 +433,15 @@ msgstr "acceso denegado al cambiar la configuración del protector de pantalla d
 
 #: 
 msgid "column"
-msgstr ""
+msgstr "columna"
 
 #: 
 msgid "duration"
-msgstr ""
+msgstr "duración"
 
 #: 
 msgid "name"
-msgstr ""
+msgstr "nombre"
 
 #: 
 msgid "no action defined for this link!"
@@ -453,7 +453,7 @@ msgstr "etiqueta de página"
 
 #: 
 msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
-msgstr ""
+msgstr "pip descargará y compilara pygobject, por lo que se requieren las cabeceras (o los paquetes de desarollo) de Gtk"
 
 #: 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
@@ -463,15 +463,15 @@ msgstr "pympress es un lector de PDF ligero escrito en Python, usando Poppler pa
 
 #: 
 msgid "slide"
-msgstr ""
+msgstr "diapositiva"
 
 #: 
 msgid "slide #"
-msgstr ""
+msgstr "diapositiva #"
 
 #: 
 msgid "time"
-msgstr ""
+msgstr "tiempo"
 
 #: 
 msgid "{}, {}, {}, {}, or {}"
@@ -499,11 +499,11 @@ msgstr "Primera diapositiva"
 
 #: 
 msgid "Go back in slide history"
-msgstr ""
+msgstr "Atrás en el historial de dispositivas"
 
 #: 
 msgid "Go forward in slide history"
-msgstr ""
+msgstr "Adelante en el historial de dispositivas"
 
 #: 
 msgid "Go to page number"
@@ -583,7 +583,7 @@ msgstr "Alternar resaltado"
 
 #: 
 msgid "Toggle laserpointer"
-msgstr ""
+msgstr "Alternar puntero"
 
 #: 
 msgid "Toggle notes mode"
@@ -599,7 +599,7 @@ msgstr "Deshacer zoom"
 
 #: 
 msgid "Validate goto/jump destination"
-msgstr ""
+msgstr "Validar diapositiva de destinación"
 
 #: 
 msgid "Windows"
@@ -611,13 +611,409 @@ msgstr "Zoom"
 
 #: 
 msgid "Unrecognized named destination: "
-msgstr ""
+msgstr "Destinación nombrada no reconocida: "
 
 #: 
 msgid "Unsupported link clicked. "
-msgstr ""
+msgstr "Enlace no soportado. "
 
 #: 
 msgid "Fullscreen Presentation running"
+msgstr "Presentación ejecutando en pantalla completa"
+
+#: 
+msgid "Caused by "
+msgstr "Causado por "
+
+#: 
+msgid "Building FileWatcher"
+msgstr "Inicializando FileWatcher"
+
+#: 
+msgid "Missing dependency: python \"{}\" package"
+msgstr "Falta dependencia: paquete python \"{}\""
+
+#: 
+msgid "Monitoring of changes to reload files automatically is not available"
+msgstr "Monitorización de cambios para refrescar ficheros automáticamente está desactivado"
+
+#: 
+msgid "ERROR: Gobject Introspections and/or pycairo module is missing, make sure Gtk, pygobject and pycairo are installed on your system."
+msgstr "ERROR: falta une de los paquetes python Gobject Introspections o pycairo, asegúrese que Gtk, pygobject y pycairo son bien instalados en su sistema."
+
+#: 
+msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject pycairo"
+msgstr "Si está utilizando virtualenv o anaconda, puede o permitir el acceso a los paquetes del sistema, o ejecutar: pip install pygobject pycairo"
+
+#: 
+msgid "pip will then download and compile pygobject, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "pip descargará y compilara pygobject, por lo que se requieren las cabeceras (o los paquetes de desarollo) de Gtk"
+
+#: 
+msgid "(none, left, right, top, or bottom)."
+msgstr "(ninguna [none], izquierda [left], derecha [right], arriba [top] o abajo [bottom])."
+
+#: 
+msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
+msgstr "Si está utilizando virtualenv o anaconda, también puede permitir el acceso a los paquetes del sistema"
+
+#: 
+msgid "Set the position of notes on the pdf page"
+msgstr "Establecer la posición de las notas en la página del pdf"
+
+#: 
+msgid "Try your operating system’s package manager, or try running: pip install pygobject pycairo"
+msgstr "Intente buscar en el gestor de paquetes de su sistema operativo, o ejecutar: pip install pygobject pycairo"
+
+#: 
+msgid "pip will then download and compile pygobject and pycairo, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "pip descargará y compilara pygobject y pycairo, por lo que se requieren las cabeceras (o los paquetes de desarollo) de Gtk y cairo"
+
+#: 
+msgid "(none, left, right, top, bottom, or after)."
+msgstr "(ninguna [none], izquierda [left], derecha [right], arriba [top], abajo [bottom] o detrás [after])."
+
+#: 
+msgid "_After slide pages"
+msgstr "_Después de las dispositivas"
+
+#: 
+msgid "_Bottom half of slide"
+msgstr "Parte _inferior de la dispositiva"
+
+#: 
+msgid "_Left half of slide"
+msgstr "Parte _izquierda de la diapositiva"
+
+#: 
+msgid "_Right half of slide"
+msgstr "Parte _derecha de la diapositiva"
+
+#: 
+msgid "_Top half of slide"
+msgstr "Parte _superior de la diapositiva"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to bool"
+msgstr "Error convirtiendo opción del fichero de configuración {}.{} \"{}\" en booleano"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to float"
+msgstr "Error convirtiendo opción del fichero de configuración {}.{} \"{}\" en número"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to int"
+msgstr "Error convirtiendo opción del fichero de configuración {}.{} \"{}\" en número entero"
+
+#: 
+msgid "Blank/unblank content screen"
+msgstr "Ocultar/revelar pantalla"
+
+#: 
+msgid "Close opened pympress instance"
+msgstr "Salir de la instancia abierta de pympress"
+
+#: 
+msgid "Print version and exit"
+msgstr "Enseñar versión y salir"
+
+#: 
+msgid "Reset talk timer"
+msgstr "Reiniciar temporizador"
+
+#: 
+msgid "Toggle pause of talk timer"
+msgstr "Alternar pausa del temporizador"
+
+#: 
+msgid "GdkPixbuf gif player"
+msgstr "Reproductor de gif GdkPixbuf"
+
+#: 
+msgid "Media support loaded: "
+msgstr "Los medios se soportan con: "
+
+#: 
+msgid "Media support using {} is disabled."
+msgstr "El soporte de medios con {} está desactivado."
+
+#: 
+msgid "Media support: "
+msgstr "Soporte de medios: "
+
+#: 
+msgid "Align _content"
+msgstr "Alinear _contenido"
+
+#: 
+msgid "Clear and restore per page label"
+msgstr "Limpiar y restaurar por etiqueta de página"
+
+#: 
+msgid "Clear and restore per page number"
+msgstr "Limpiar y restaurar por número de página"
+
+#: 
+msgid "Clear on page change"
+msgstr "Limpiar al cambio de página"
+
+#: 
+msgid "Highlight mode"
+msgstr "Modo de resaltado"
+
+#: 
+msgid "Never clear (manually only)"
+msgstr "Limipiar manualmente"
+
+#: 
+msgid "Tools below slide"
+msgstr "Herramientas debajo de la dispositiva"
+
+#: 
+msgid "Tools next to slide"
+msgstr "Herramientas al lado de la dispositiva"
+
+#: 
+msgid "_Close"
+msgstr "_Cerrar"
+
+#: 
+msgid "_Open"
+msgstr "_Abrir"
+
+#: 
+msgid "_Pointer"
+msgstr "_Puntero"
+
+#: 
+msgid "_Quit"
+msgstr "_Salir"
+
+#: 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr ""
+
+#: 
+msgid "Should not require hard enable/disable screensaver on Linux"
+msgstr ""
+
+#: 
+msgid "10th next slide"
+msgstr ""
+
+#: 
+msgid "11th next slide"
+msgstr ""
+
+#: 
+msgid "12th next slide"
+msgstr ""
+
+#: 
+msgid "13th next slide"
+msgstr ""
+
+#: 
+msgid "14th next slide"
+msgstr ""
+
+#: 
+msgid "15th next slide"
+msgstr ""
+
+#: 
+msgid "16th next slide"
+msgstr ""
+
+#: 
+msgid "2nd next slide"
+msgstr ""
+
+#: 
+msgid "3rd next slide"
+msgstr ""
+
+#: 
+msgid "4th next slide"
+msgstr ""
+
+#: 
+msgid "5th next slide"
+msgstr ""
+
+#: 
+msgid "6th next slide"
+msgstr ""
+
+#: 
+msgid "7th next slide"
+msgstr ""
+
+#: 
+msgid "8th next slide"
+msgstr ""
+
+#: 
+msgid "9th next slide"
+msgstr ""
+
+#: 
+msgid "Edit layout"
+msgstr ""
+
+#: 
+msgid "Plain layout, without notes mode"
+msgstr ""
+
+#: 
+msgid "Unknown widget \"{}\" to draw"
+msgstr ""
+
+#: 
+msgid "annotations (hideable)"
+msgstr ""
+
+#: 
+msgid "box"
+msgstr ""
+
+#: 
+msgid "current slide"
+msgstr ""
+
+#: 
+msgid "horizontal"
+msgstr ""
+
+#: 
+msgid "next slide(s)"
+msgstr ""
+
+#: 
+msgid "next slides count"
+msgstr ""
+
+#: 
+msgid "orientation"
+msgstr ""
+
+#: 
+msgid "resizeable"
+msgstr ""
+
+#: 
+msgid "vertical"
+msgstr ""
+
+#: 
+msgid "widget"
+msgstr ""
+
+#: 
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr ""
+
+#: 
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr ""
+
+#: 
+msgid "Plain layout, without note slides"
+msgstr ""
+
+#: 
+msgid "Overwrite"
+msgstr ""
+
+#: 
+msgid "Overwrite changes instead of reloading?"
+msgstr ""
+
+#: 
+msgid "Reload"
+msgstr ""
+
+#: 
+msgid "Save as..."
+msgstr ""
+
+#: 
+msgid "Save changes before closing?"
+msgstr ""
+
+#: 
+msgid "Saving changes will overwrite the changed file!"
+msgstr ""
+
+#: 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr ""
+
+#: 
+msgid "Unsaved changes"
+msgstr ""
+
+#: 
+msgid "Unsaved changes will be lost"
+msgstr ""
+
+#: 
+msgid "Unsaved changes will be lost."
+msgstr ""
+
+#: 
+msgid "_Discard"
+msgstr ""
+
+#: 
+msgid "_Save"
+msgstr ""
+
+#: 
+msgid "_Save as"
+msgstr ""
+
+#: 
+msgid "annotations"
+msgstr ""
+
+#: 
+msgid "Auto"
+msgstr ""
+
+#: 
+msgid "Choose parameters for automatically playing slides"
+msgstr ""
+
+#: 
+msgid "Loop"
+msgstr ""
+
+#: 
+msgid "Save file"
+msgstr ""
+
+#: 
+msgid "Save file as"
+msgstr ""
+
+#: 
+msgid "Time per slide (s):"
+msgstr ""
+
+#: 
+msgid "_Automatic navigation"
+msgstr ""
+
+#: 
+msgid "Note pages"
+msgstr ""
+
+#: 
+msgid "Plain"
+msgstr ""
+
+#: 
+msgid "notes"
 msgstr ""
 

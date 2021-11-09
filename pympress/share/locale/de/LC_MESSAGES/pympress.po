@@ -611,13 +611,409 @@ msgstr "Zoom"
 
 #: 
 msgid "Unrecognized named destination: "
-msgstr ""
+msgstr "Unbekanntes benanntes Ziel: "
 
 #: 
 msgid "Unsupported link clicked. "
-msgstr ""
+msgstr "Nicht unterstützter Link wurde angeklickt. "
 
 #: 
 msgid "Fullscreen Presentation running"
+msgstr "Vollbild-Präsentation läuft"
+
+#: 
+msgid "Caused by "
+msgstr "Verursacht durch "
+
+#: 
+msgid "Building FileWatcher"
+msgstr ""
+
+#: 
+msgid "Missing dependency: python \"{}\" package"
+msgstr "fehlende Abhängigkeit: python \"{}\" Paket"
+
+#: 
+msgid "Monitoring of changes to reload files automatically is not available"
+msgstr ""
+
+#: 
+msgid "ERROR: Gobject Introspections and/or pycairo module is missing, make sure Gtk, pygobject and pycairo are installed on your system."
+msgstr "Fehler: Gobject Introspections und/oder pycairo Modul fehlt. Überprüfe ob Gtk, pygobject und pycairo auf deinem System installiert sind."
+
+#: 
+msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject pycairo"
+msgstr ""
+
+#: 
+msgid "pip will then download and compile pygobject, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "pip wird dann pygoobject downloaden und compilieren, für das Gtk und cairo header (oder Entwicklungspakete) benötigt werden."
+
+#: 
+msgid "(none, left, right, top, or bottom)."
+msgstr "(keine, links, rechts, oben oder unten)"
+
+#: 
+msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
+msgstr ""
+
+#: 
+msgid "Set the position of notes on the pdf page"
+msgstr "Positionierung der Notizen auf der PDF Seite"
+
+#: 
+msgid "Try your operating system’s package manager, or try running: pip install pygobject pycairo"
+msgstr "Versuche die Paketverwaltung des Betriebssystem oder Versuche folgenden Befehl auszuführen: pip install pygobject pycairo"
+
+#: 
+msgid "pip will then download and compile pygobject and pycairo, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "pip wird dann pygobject und pycairo downloaden und compilieren. Dafür werden Gtk und cairo Header-Dateien (oder die Entwickler-Pakete) benötigt."
+
+#: 
+msgid "(none, left, right, top, bottom, or after)."
+msgstr "(keine, links, rechts, oben, unten oder hinter)"
+
+#: 
+msgid "_After slide pages"
+msgstr ""
+
+#: 
+msgid "_Bottom half of slide"
+msgstr "_Untere Hälfte der Folie"
+
+#: 
+msgid "_Left half of slide"
+msgstr "_Linke Seite der Folie"
+
+#: 
+msgid "_Right half of slide"
+msgstr "_Rechte Hälfte der Folie"
+
+#: 
+msgid "_Top half of slide"
+msgstr "_Obere Hälfte der Folie"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to bool"
+msgstr ""
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to float"
+msgstr ""
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to int"
+msgstr ""
+
+#: 
+msgid "Blank/unblank content screen"
+msgstr ""
+
+#: 
+msgid "Close opened pympress instance"
+msgstr ""
+
+#: 
+msgid "Print version and exit"
+msgstr ""
+
+#: 
+msgid "Reset talk timer"
+msgstr ""
+
+#: 
+msgid "Toggle pause of talk timer"
+msgstr ""
+
+#: 
+msgid "GdkPixbuf gif player"
+msgstr ""
+
+#: 
+msgid "Media support loaded: "
+msgstr ""
+
+#: 
+msgid "Media support using {} is disabled."
+msgstr ""
+
+#: 
+msgid "Media support: "
+msgstr ""
+
+#: 
+msgid "Align _content"
+msgstr ""
+
+#: 
+msgid "Clear and restore per page label"
+msgstr ""
+
+#: 
+msgid "Clear and restore per page number"
+msgstr ""
+
+#: 
+msgid "Clear on page change"
+msgstr ""
+
+#: 
+msgid "Highlight mode"
+msgstr ""
+
+#: 
+msgid "Never clear (manually only)"
+msgstr ""
+
+#: 
+msgid "Tools below slide"
+msgstr ""
+
+#: 
+msgid "Tools next to slide"
+msgstr ""
+
+#: 
+msgid "_Close"
+msgstr ""
+
+#: 
+msgid "_Open"
+msgstr ""
+
+#: 
+msgid "_Pointer"
+msgstr ""
+
+#: 
+msgid "_Quit"
+msgstr ""
+
+#: 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr ""
+
+#: 
+msgid "Should not require hard enable/disable screensaver on Linux"
+msgstr ""
+
+#: 
+msgid "10th next slide"
+msgstr ""
+
+#: 
+msgid "11th next slide"
+msgstr ""
+
+#: 
+msgid "12th next slide"
+msgstr ""
+
+#: 
+msgid "13th next slide"
+msgstr ""
+
+#: 
+msgid "14th next slide"
+msgstr ""
+
+#: 
+msgid "15th next slide"
+msgstr ""
+
+#: 
+msgid "16th next slide"
+msgstr ""
+
+#: 
+msgid "2nd next slide"
+msgstr ""
+
+#: 
+msgid "3rd next slide"
+msgstr ""
+
+#: 
+msgid "4th next slide"
+msgstr ""
+
+#: 
+msgid "5th next slide"
+msgstr ""
+
+#: 
+msgid "6th next slide"
+msgstr ""
+
+#: 
+msgid "7th next slide"
+msgstr ""
+
+#: 
+msgid "8th next slide"
+msgstr ""
+
+#: 
+msgid "9th next slide"
+msgstr ""
+
+#: 
+msgid "Edit layout"
+msgstr ""
+
+#: 
+msgid "Plain layout, without notes mode"
+msgstr ""
+
+#: 
+msgid "Unknown widget \"{}\" to draw"
+msgstr ""
+
+#: 
+msgid "annotations (hideable)"
+msgstr ""
+
+#: 
+msgid "box"
+msgstr ""
+
+#: 
+msgid "current slide"
+msgstr ""
+
+#: 
+msgid "horizontal"
+msgstr ""
+
+#: 
+msgid "next slide(s)"
+msgstr ""
+
+#: 
+msgid "next slides count"
+msgstr ""
+
+#: 
+msgid "orientation"
+msgstr ""
+
+#: 
+msgid "resizeable"
+msgstr ""
+
+#: 
+msgid "vertical"
+msgstr ""
+
+#: 
+msgid "widget"
+msgstr ""
+
+#: 
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr ""
+
+#: 
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr ""
+
+#: 
+msgid "Plain layout, without note slides"
+msgstr ""
+
+#: 
+msgid "Overwrite"
+msgstr ""
+
+#: 
+msgid "Overwrite changes instead of reloading?"
+msgstr ""
+
+#: 
+msgid "Reload"
+msgstr ""
+
+#: 
+msgid "Save as..."
+msgstr ""
+
+#: 
+msgid "Save changes before closing?"
+msgstr ""
+
+#: 
+msgid "Saving changes will overwrite the changed file!"
+msgstr ""
+
+#: 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr ""
+
+#: 
+msgid "Unsaved changes"
+msgstr ""
+
+#: 
+msgid "Unsaved changes will be lost"
+msgstr ""
+
+#: 
+msgid "Unsaved changes will be lost."
+msgstr ""
+
+#: 
+msgid "_Discard"
+msgstr ""
+
+#: 
+msgid "_Save"
+msgstr ""
+
+#: 
+msgid "_Save as"
+msgstr ""
+
+#: 
+msgid "annotations"
+msgstr ""
+
+#: 
+msgid "Auto"
+msgstr ""
+
+#: 
+msgid "Choose parameters for automatically playing slides"
+msgstr ""
+
+#: 
+msgid "Loop"
+msgstr ""
+
+#: 
+msgid "Save file"
+msgstr ""
+
+#: 
+msgid "Save file as"
+msgstr ""
+
+#: 
+msgid "Time per slide (s):"
+msgstr ""
+
+#: 
+msgid "_Automatic navigation"
+msgstr ""
+
+#: 
+msgid "Note pages"
+msgstr ""
+
+#: 
+msgid "Plain"
+msgstr ""
+
+#: 
+msgid "notes"
 msgstr ""
 

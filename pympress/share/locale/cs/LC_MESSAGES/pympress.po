@@ -611,13 +611,409 @@ msgstr "Přiblížení"
 
 #: 
 msgid "Unrecognized named destination: "
-msgstr ""
+msgstr "Pojmenovaný cíl nerozeznán: "
 
 #: 
 msgid "Unsupported link clicked. "
-msgstr ""
+msgstr "Kliknuto na nepodporovaný odkaz. "
 
 #: 
 msgid "Fullscreen Presentation running"
+msgstr "Běží prezentace na celou obrazovku"
+
+#: 
+msgid "Caused by "
+msgstr "Způsobeno "
+
+#: 
+msgid "Building FileWatcher"
+msgstr "Vytváření FileWatcher"
+
+#: 
+msgid "Missing dependency: python \"{}\" package"
+msgstr "Chybí nutný balíček: python \"{}\" package"
+
+#: 
+msgid "Monitoring of changes to reload files automatically is not available"
+msgstr "Sledování změn pro automatickou aktualizaci souborů není dostupné"
+
+#: 
+msgid "ERROR: Gobject Introspections and/or pycairo module is missing, make sure Gtk, pygobject and pycairo are installed on your system."
+msgstr "ERROR: chybí Gobject Introspections a/nebo pycairo modul, ujistěte se, že Gtk, pygobject a pycairo jsou instalovány ve vašem systému."
+
+#: 
+msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject pycairo"
+msgstr "Při použití virtualenv nebo anaconda prostředí můžete buďto zkusit povolit systémové balíčky, nebo spustit: pip install pygobject pycairo"
+
+#: 
+msgid "pip will then download and compile pygobject, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "Program pip poté stáhne a zkompiluje pygobject, pro které potřebujete Gtk a cairo hlavičky (nebo vývojové balíčky)."
+
+#: 
+msgid "(none, left, right, top, or bottom)."
+msgstr "(žádný, vlevo, vpravo, nahoře nebo dole)."
+
+#: 
+msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
+msgstr "Při použití virtualenv nebo anaconda prostředí můžete také zkusit povolit systémové balíčky."
+
+#: 
+msgid "Set the position of notes on the pdf page"
+msgstr "Nastavit pozici poznámek na stránce pdf"
+
+#: 
+msgid "Try your operating system’s package manager, or try running: pip install pygobject pycairo"
+msgstr "Zkuste použít správce balíčků Vašeho operačního systému, nebo spustit: pip install pygobject pycairo"
+
+#: 
+msgid "pip will then download and compile pygobject and pycairo, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "Program pip poté stáhne a zkompiluje pygobject a pycairo, pro které potřebujete Gtk a cairo hlavičky (nebo vývojové balíčky)"
+
+#: 
+msgid "(none, left, right, top, bottom, or after)."
+msgstr "(žádný, vlevo, vpravo, nahoře, dole nebo za)."
+
+#: 
+msgid "_After slide pages"
+msgstr "_Za stránkami slidů"
+
+#: 
+msgid "_Bottom half of slide"
+msgstr "_Dolní část slidu"
+
+#: 
+msgid "_Left half of slide"
+msgstr "_Levá polovina slidu"
+
+#: 
+msgid "_Right half of slide"
+msgstr "_Pravá polovina slidu"
+
+#: 
+msgid "_Top half of slide"
+msgstr "_Horní polovina slidu"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to bool"
+msgstr "Chyba čtení z konfiguračního souboru {}.{} \"{}\" do booleanu"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to float"
+msgstr "Chyba čtení z konfiguračního souboru {}.{} \"{}\" do desetiných čísel"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to int"
+msgstr "Chyba čtení z konfiguračního souboru {}.{} \"{}\" do celých čísel"
+
+#: 
+msgid "Blank/unblank content screen"
+msgstr "Prázdný/neprázdný obsah obrazovky"
+
+#: 
+msgid "Close opened pympress instance"
+msgstr "Zavřít otevřenou pympress instanci"
+
+#: 
+msgid "Print version and exit"
+msgstr "Vytisknout verzi a zavřít"
+
+#: 
+msgid "Reset talk timer"
+msgstr "Resetovat časovače řeči"
+
+#: 
+msgid "Toggle pause of talk timer"
+msgstr "Přepnutí pauzy časovače řeči"
+
+#: 
+msgid "GdkPixbuf gif player"
+msgstr "GdkPixbuf přehrávač gifů"
+
+#: 
+msgid "Media support loaded: "
+msgstr "Podpora médií načtena: "
+
+#: 
+msgid "Media support using {} is disabled."
+msgstr "Podpora médií pomocí {} je zakázána."
+
+#: 
+msgid "Media support: "
+msgstr "Podpora médií: "
+
+#: 
+msgid "Align _content"
+msgstr "Zarovnat _obsah"
+
+#: 
+msgid "Clear and restore per page label"
+msgstr "Vyčistit a obnovit podle popisku stránky"
+
+#: 
+msgid "Clear and restore per page number"
+msgstr "Vyčistit a obnovit podle čísla stránky"
+
+#: 
+msgid "Clear on page change"
+msgstr "Vyčistit při změně stránky"
+
+#: 
+msgid "Highlight mode"
+msgstr "Zvýrazňovací režim"
+
+#: 
+msgid "Never clear (manually only)"
+msgstr "Nikdy nečistit (pouze manuálně)"
+
+#: 
+msgid "Tools below slide"
+msgstr "Nástroje pod slidem"
+
+#: 
+msgid "Tools next to slide"
+msgstr "Nástroje vedle slidu"
+
+#: 
+msgid "_Close"
+msgstr "_Zavřít"
+
+#: 
+msgid "_Open"
+msgstr "_Otevřít"
+
+#: 
+msgid "_Pointer"
+msgstr "_Ukazovátko"
+
+#: 
+msgid "_Quit"
+msgstr "_Ukončit"
+
+#: 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr "Gtk.Application.inhibit se nepodařilo předejít zapnutí spořiče obrazovky, pokus o jeho zakázání."
+
+#: 
+msgid "Should not require hard enable/disable screensaver on Linux"
+msgstr "Nemělo by vyžadovat natvrdo povolit/zakázat spořič obrazovky na Linuxu"
+
+#: 
+msgid "10th next slide"
+msgstr ""
+
+#: 
+msgid "11th next slide"
+msgstr ""
+
+#: 
+msgid "12th next slide"
+msgstr ""
+
+#: 
+msgid "13th next slide"
+msgstr ""
+
+#: 
+msgid "14th next slide"
+msgstr ""
+
+#: 
+msgid "15th next slide"
+msgstr ""
+
+#: 
+msgid "16th next slide"
+msgstr ""
+
+#: 
+msgid "2nd next slide"
+msgstr ""
+
+#: 
+msgid "3rd next slide"
+msgstr ""
+
+#: 
+msgid "4th next slide"
+msgstr ""
+
+#: 
+msgid "5th next slide"
+msgstr ""
+
+#: 
+msgid "6th next slide"
+msgstr ""
+
+#: 
+msgid "7th next slide"
+msgstr ""
+
+#: 
+msgid "8th next slide"
+msgstr ""
+
+#: 
+msgid "9th next slide"
+msgstr ""
+
+#: 
+msgid "Edit layout"
+msgstr ""
+
+#: 
+msgid "Plain layout, without notes mode"
+msgstr ""
+
+#: 
+msgid "Unknown widget \"{}\" to draw"
+msgstr ""
+
+#: 
+msgid "annotations (hideable)"
+msgstr ""
+
+#: 
+msgid "box"
+msgstr ""
+
+#: 
+msgid "current slide"
+msgstr ""
+
+#: 
+msgid "horizontal"
+msgstr ""
+
+#: 
+msgid "next slide(s)"
+msgstr ""
+
+#: 
+msgid "next slides count"
+msgstr ""
+
+#: 
+msgid "orientation"
+msgstr ""
+
+#: 
+msgid "resizeable"
+msgstr ""
+
+#: 
+msgid "vertical"
+msgstr ""
+
+#: 
+msgid "widget"
+msgstr ""
+
+#: 
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr ""
+
+#: 
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr ""
+
+#: 
+msgid "Plain layout, without note slides"
+msgstr ""
+
+#: 
+msgid "Overwrite"
+msgstr ""
+
+#: 
+msgid "Overwrite changes instead of reloading?"
+msgstr ""
+
+#: 
+msgid "Reload"
+msgstr ""
+
+#: 
+msgid "Save as..."
+msgstr ""
+
+#: 
+msgid "Save changes before closing?"
+msgstr ""
+
+#: 
+msgid "Saving changes will overwrite the changed file!"
+msgstr ""
+
+#: 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr ""
+
+#: 
+msgid "Unsaved changes"
+msgstr ""
+
+#: 
+msgid "Unsaved changes will be lost"
+msgstr ""
+
+#: 
+msgid "Unsaved changes will be lost."
+msgstr ""
+
+#: 
+msgid "_Discard"
+msgstr ""
+
+#: 
+msgid "_Save"
+msgstr ""
+
+#: 
+msgid "_Save as"
+msgstr ""
+
+#: 
+msgid "annotations"
+msgstr ""
+
+#: 
+msgid "Auto"
+msgstr ""
+
+#: 
+msgid "Choose parameters for automatically playing slides"
+msgstr ""
+
+#: 
+msgid "Loop"
+msgstr ""
+
+#: 
+msgid "Save file"
+msgstr ""
+
+#: 
+msgid "Save file as"
+msgstr ""
+
+#: 
+msgid "Time per slide (s):"
+msgstr ""
+
+#: 
+msgid "_Automatic navigation"
+msgstr ""
+
+#: 
+msgid "Note pages"
+msgstr ""
+
+#: 
+msgid "Plain"
+msgstr ""
+
+#: 
+msgid "notes"
 msgstr ""
 

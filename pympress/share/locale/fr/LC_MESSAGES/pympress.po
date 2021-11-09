@@ -297,7 +297,7 @@ msgstr "La prise en charge vidéo grâce à {} est désactivée"
 
 #: 
 msgid "_Align content"
-msgstr "_Aligner le contenu"
+msgstr "_Aligner la diapo"
 
 #: 
 msgid "_Annotations"
@@ -333,7 +333,7 @@ msgstr "Plein écran"
 
 #: 
 msgid "_Go to..."
-msgstr "Aller au numéro de page"
+msgstr "Aller à la diapo"
 
 #: 
 msgid "_Green"
@@ -349,7 +349,7 @@ msgstr "Feutre"
 
 #: 
 msgid "_Jump to label"
-msgstr "Aller à la page"
+msgstr "Aller au numéro de page"
 
 #: 
 msgid "_Last"
@@ -449,7 +449,7 @@ msgstr "pas d'action définie pour ce lien !"
 
 #: 
 msgid "page label"
-msgstr "nom de page"
+msgstr "numéro de page"
 
 #: 
 msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
@@ -507,11 +507,11 @@ msgstr "Aller à la diapo suivante chronologiquement"
 
 #: 
 msgid "Go to page number"
-msgstr "Aller au numéro de page"
+msgstr "Aller à la diapo"
 
 #: 
 msgid "Jump to page label"
-msgstr "Aller à la page"
+msgstr "Aller au numéro de page"
 
 #: 
 msgid "Last slide"
@@ -599,7 +599,7 @@ msgstr "Annuler le zoom"
 
 #: 
 msgid "Validate goto/jump destination"
-msgstr "Valider la page de destination"
+msgstr "Valider la destination"
 
 #: 
 msgid "Windows"
@@ -620,4 +620,400 @@ msgstr "Lien non supporté activé. "
 #: 
 msgid "Fullscreen Presentation running"
 msgstr "Présentation en plein écran en cours"
+
+#: 
+msgid "Caused by "
+msgstr "Causé(e) par"
+
+#: 
+msgid "Building FileWatcher"
+msgstr "Construction du FileWatcher"
+
+#: 
+msgid "Missing dependency: python \"{}\" package"
+msgstr "Il manque une dépendance : le module python \"{}\" "
+
+#: 
+msgid "Monitoring of changes to reload files automatically is not available"
+msgstr "Le contrôle des changements pour recharger automatiquement les fichiers n’est pas disponible"
+
+#: 
+msgid "ERROR: Gobject Introspections and/or pycairo module is missing, make sure Gtk, pygobject and pycairo are installed on your system."
+msgstr "Erreur: le module Gobject Introspections et/ou le module pycairo sont/est manquant. Assurez-vous d’avoir installé Gtk, pygobject et pycairo sur votre système."
+
+#: 
+msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject pycairo"
+msgstr "Si vous utilisez un environnement virtuel ou anaconda, vous pouvez soit autoriser les modules installé sur votre système, soit exécuter: pip install pygobject pycairo"
+
+#: 
+msgid "pip will then download and compile pygobject, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "pip téléchargera et compilera pygobject, pour lequel vous avez besoin des headers (ou modules de développement) Gtk et cairo."
+
+#: 
+msgid "(none, left, right, top, or bottom)."
+msgstr "(aucune, gauche, droite, haut ou bas)"
+
+#: 
+msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
+msgstr "Si vous utilisez un environnement virtuel ou anaconda, vous pouvez aussi essayer de permettre l’utilisation des modules installés sur votre système."
+
+#: 
+msgid "Set the position of notes on the pdf page"
+msgstr "Définissez la position des notes sur la page pdf."
+
+#: 
+msgid "Try your operating system’s package manager, or try running: pip install pygobject pycairo"
+msgstr "Vous pouvez chercher dans le gestionnaire de paquets de votre système d’exploitation, ou essayer: pip install pyobject pycairo"
+
+#: 
+msgid "pip will then download and compile pygobject and pycairo, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "pip téléchargera et compilera pygobject et pycairo, ce pour quoi il vous faudra les fichiers d’en-têtes (ou les paquets de développement) de Gtk et cairo"
+
+#: 
+msgid "(none, left, right, top, bottom, or after)."
+msgstr "(aucun [none], left [gauche], droite [right], haut [top], bas [bottom], ou après [after])"
+
+#: 
+msgid "_After slide pages"
+msgstr "_Après les diapos"
+
+#: 
+msgid "_Bottom half of slide"
+msgstr "_Bas des diapos"
+
+#: 
+msgid "_Left half of slide"
+msgstr "_Gauche des diapos"
+
+#: 
+msgid "_Right half of slide"
+msgstr "_Droite des diapos"
+
+#: 
+msgid "_Top half of slide"
+msgstr "_Haut des diaops"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to bool"
+msgstr "Erreur de conversion d’une option dans le fichier de configuration {}.{} en booléen: \"{}\""
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to float"
+msgstr "Erreur de conversion d’une option dans le fichier de configuration {}.{} en nombre flottant: \"{}\""
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to int"
+msgstr "Erreur de conversion d’une option dans le fichier de configuration {}.{} en nombre entier: \"{}\""
+
+#: 
+msgid "Blank/unblank content screen"
+msgstr "Masquer/dé l’écran"
+
+#: 
+msgid "Close opened pympress instance"
+msgstr "Fermer l’instance de pympress ouverte"
+
+#: 
+msgid "Print version and exit"
+msgstr "Afficher la version et quitter"
+
+#: 
+msgid "Reset talk timer"
+msgstr "Réinitialiser le timer"
+
+#: 
+msgid "Toggle pause of talk timer"
+msgstr "Mettre en pause ou reprendre le timer"
+
+#: 
+msgid "GdkPixbuf gif player"
+msgstr "Lecteur de gif Gdkixbuf"
+
+#: 
+msgid "Media support loaded: "
+msgstr "Médias supportés: "
+
+#: 
+msgid "Media support using {} is disabled."
+msgstr "Le support média {} est désactivé"
+
+#: 
+msgid "Media support: "
+msgstr "Médias supportés: "
+
+#: 
+msgid "Align _content"
+msgstr "Aligner la diapo"
+
+#: 
+msgid "Clear and restore per page label"
+msgstr "Effacer et restaurer par diapo"
+
+#: 
+msgid "Clear and restore per page number"
+msgstr "Effacer et restaurer par numéro de page"
+
+#: 
+msgid "Clear on page change"
+msgstr "Effacer en changeant de diapo"
+
+#: 
+msgid "Highlight mode"
+msgstr "Mode feutre"
+
+#: 
+msgid "Never clear (manually only)"
+msgstr "Effacer manuellement"
+
+#: 
+msgid "Tools below slide"
+msgstr "Outils sous la diapo"
+
+#: 
+msgid "Tools next to slide"
+msgstr "Outils à droite de la diapo"
+
+#: 
+msgid "_Close"
+msgstr "_Fermer"
+
+#: 
+msgid "_Open"
+msgstr "_Ouvrir"
+
+#: 
+msgid "_Pointer"
+msgstr "_Pointeur"
+
+#: 
+msgid "_Quit"
+msgstr "_Quitter"
+
+#: 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr "Gtk.Application.inhibit n’a pas réussi à désactiver l’économiseur d’écran, recours à la méthode forte"
+
+#: 
+msgid "Should not require hard enable/disable screensaver on Linux"
+msgstr "La méthode forte de désactivation d’économiseur d’écran ne devrait pas être nécessaire sur Linux"
+
+#: 
+msgid "10th next slide"
+msgstr "10ème diapo suivante"
+
+#: 
+msgid "11th next slide"
+msgstr "11ème diapo suivante"
+
+#: 
+msgid "12th next slide"
+msgstr "12ème diapo suivante"
+
+#: 
+msgid "13th next slide"
+msgstr "13ème diapo suivante"
+
+#: 
+msgid "14th next slide"
+msgstr "14ème diapo suivante"
+
+#: 
+msgid "15th next slide"
+msgstr "15ème diapo suivante"
+
+#: 
+msgid "16th next slide"
+msgstr "16ème diapo suivante"
+
+#: 
+msgid "2nd next slide"
+msgstr "2ème diapo suivante"
+
+#: 
+msgid "3rd next slide"
+msgstr "3ème diapo suivante"
+
+#: 
+msgid "4th next slide"
+msgstr "4ème diapo suivante"
+
+#: 
+msgid "5th next slide"
+msgstr "5ème diapo suivante"
+
+#: 
+msgid "6th next slide"
+msgstr "6ème diapo suivante"
+
+#: 
+msgid "7th next slide"
+msgstr "7ème diapo suivante"
+
+#: 
+msgid "8th next slide"
+msgstr "8ème diapo suivante"
+
+#: 
+msgid "9th next slide"
+msgstr "9ème diapo suivante"
+
+#: 
+msgid "Edit layout"
+msgstr "Modifier la mise en page"
+
+#: 
+msgid "Plain layout, without notes mode"
+msgstr "Mise en page normale, sans diapos de notes"
+
+#: 
+msgid "Unknown widget \"{}\" to draw"
+msgstr "Élément visuel à afficher \"{}\" inconnu"
+
+#: 
+msgid "annotations (hideable)"
+msgstr "annotations (masquable)"
+
+#: 
+msgid "box"
+msgstr "conteneur"
+
+#: 
+msgid "current slide"
+msgstr "diapo actuelle"
+
+#: 
+msgid "horizontal"
+msgstr "horizontal"
+
+#: 
+msgid "next slide(s)"
+msgstr "diapo(s) suivante(s)"
+
+#: 
+msgid "next slides count"
+msgstr "nombre de diapos suivantes"
+
+#: 
+msgid "orientation"
+msgstr "orientation"
+
+#: 
+msgid "resizeable"
+msgstr "redimensionnable"
+
+#: 
+msgid "vertical"
+msgstr "vertical"
+
+#: 
+msgid "widget"
+msgstr "élément visuel"
+
+#: 
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr "Mise en page pour diapo de notes beamer sur la même page (sans aperçu de la diapo actuelle dans les notes)"
+
+#: 
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr "Mise en page pour diapo de notes libreoffice sur page séparée (avec aperçu de la diapo actuelle dans les notes)"
+
+#: 
+msgid "Plain layout, without note slides"
+msgstr "Mise en page sans diapos de notes"
+
+#: 
+msgid "Overwrite"
+msgstr "Écraser"
+
+#: 
+msgid "Overwrite changes instead of reloading?"
+msgstr "Écraser les modifications au lieu de recharger?"
+
+#: 
+msgid "Reload"
+msgstr "Recharger"
+
+#: 
+msgid "Save as..."
+msgstr "Enregistrer sous…"
+
+#: 
+msgid "Save changes before closing?"
+msgstr "Sauvegarder les changements avant de fermer?"
+
+#: 
+msgid "Saving changes will overwrite the changed file!"
+msgstr "Sauvegarder les changements écrasera le fichier modifié!"
+
+#: 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr "Le fichier ouvert a été modifié en dehors de pympress, mais vous avez fait des modifications non sauvegardées."
+
+#: 
+msgid "Unsaved changes"
+msgstr "Modifications non sauvegardées"
+
+#: 
+msgid "Unsaved changes will be lost"
+msgstr "Les modifications non sauvegardées seront perdues"
+
+#: 
+msgid "Unsaved changes will be lost."
+msgstr "Les modifications non sauvegardées seront perdues."
+
+#: 
+msgid "_Discard"
+msgstr "Ignorer"
+
+#: 
+msgid "_Save"
+msgstr "Enregistrer"
+
+#: 
+msgid "_Save as"
+msgstr "Enregistrer sous"
+
+#: 
+msgid "annotations"
+msgstr "annotations"
+
+#: 
+msgid "Auto"
+msgstr "Auto"
+
+#: 
+msgid "Choose parameters for automatically playing slides"
+msgstr "Choisissez les paramètre pour passer les diapos automatiquement"
+
+#: 
+msgid "Loop"
+msgstr "Boucler"
+
+#: 
+msgid "Save file"
+msgstr "Sauvegarder le fichier"
+
+#: 
+msgid "Save file as"
+msgstr "Sauvegarder le fichier sous…"
+
+#: 
+msgid "Time per slide (s):"
+msgstr "Temps par slide (s)"
+
+#: 
+msgid "_Automatic navigation"
+msgstr "Passage automatique"
+
+#: 
+msgid "Note pages"
+msgstr "Diapo de notes"
+
+#: 
+msgid "Plain"
+msgstr "Sans notes"
+
+#: 
+msgid "notes"
+msgstr ""
 

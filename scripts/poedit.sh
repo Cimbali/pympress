@@ -15,13 +15,13 @@ upload() {
 languages() {
     curl -sX POST https://api.poeditor.com/v2/languages/list \
           -F api_token="$poeditor_api_token" \
-          -F id="301055" | jq -r 'select(.response.code == "200") | .result.languages[].code'
+          -F id="301055" | jq -r 'select(.response.code == "200") | .result.languages[] | select(.percentage > 5) | .code'
 }
 
 contributors() {
     curl -sX POST https://api.poeditor.com/v2/contributors/list \
           -F api_token="$poeditor_api_token" \
-          -F id="301055" | jq -r 'select(.response.code == "200") | .result.contributors[].name' |
+          -F id="301055" | jq --arg lang "$*" -r 'select(.response.code == "200") | .result.contributors[] | select(IN(.permissions[].languages[]; $lang | split(" ")[])) | .name' |
         while read name; do
             # hold "name,", hold & delete any line matching name, at the last translator insert the hold space
             sed -e "1{h;s/.*/${name},/;x}" -e "/\<${name}\>/{h;d}" -e '/<!-- last translator -->/{x;G}' -i README.md
@@ -62,16 +62,15 @@ while [ $# -gt 0 ]; do
         languages
     elif test "$1" = "download"; then
         getpass
-        for lang in `languages`; do
+        avail_lang=`languages`
+        for lang in $avail_lang; do
             download $lang
         done
-        contributors
+        contributors $avail_lang
     elif test "$1" = "contributors"; then
         getpass
-        contributors
-    elif test "$1" = "contributors"; then
-        getpass
-        contributors
+        avail_lang=`languages`
+        contributors $avail_lang
     else
         echo "Unrecognised command $1 use one of: upload, languages, download, contributors"
         exit 1

@@ -317,10 +317,13 @@ If you want to add or contribute to a translation, check [pympress’ page on PO
 [@polaksta](https://github.com/polaksta),
 [@susobaco](https://github.com/susobaco),
 Agnieszka,
+Ferdinand Fichtner,
 [FriedrichFröbel](https://github.com/FriedrichFroebel),
 [Jaroslav Svoboda](https://github.com/multiflexi),
 Jeertmans,
+Kristýna,
 Lorenzo. pacchiardi,
+Luis Sibaja,
 Nico,
 Saulpierotti,
 and <!-- last translator --> Cimbali.
