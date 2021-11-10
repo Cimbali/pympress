@@ -113,6 +113,10 @@ jobs:
             mingw-w64-${{ matrix.arch }}-gtk3
             mingw-w64-${{ matrix.arch }}-cairo
             mingw-w64-${{ matrix.arch }}-poppler
+            mingw-w64-${{ matrix.arch }}-gstreamer
+            mingw-w64-${{ matrix.arch }}-gst-plugins-base
+            mingw-w64-${{ matrix.arch }}-gst-plugins-good
+            mingw-w64-${{ matrix.arch }}-gst-plugins-ugly
             mingw-w64-${{ matrix.arch }}-python3
             mingw-w64-${{ matrix.arch }}-python3-pip
             mingw-w64-${{ matrix.arch }}-python3-gobject

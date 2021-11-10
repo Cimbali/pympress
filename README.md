@@ -274,10 +274,10 @@ Alternately, in order to install from pypi or from source on windows, there are 
 
 1. using MSYS2 (replace x86_64 with i686 if you're using a 32 bit machine).
 
-   **Warning:** this can take a substantial amount of disk size as it requires a full software distribution and building platform.
+   **Warning:** this can take a substantial amount of disk size as it requires a full software distribution and building platform − 3.2GB when last tested.
 
     ```sh
-    pacman -S --needed mingw-w64-x86_64-gtk3 mingw-w64-x86_64-cairo mingw-w64-x86_64-poppler mingw-w64-x86_64-python3 mingw-w64-x86_64-vlc python3-pip mingw-w64-x86_64-python3-pip mingw-w64-x86_64-python3-gobject mingw-w64-x86_64-python3-cairo
+    pacman -S --needed mingw-w64-x86_64-gtk3 mingw-w64-x86_64-cairo mingw-w64-x86_64-poppler mingw-w64-x86_64-gstreamer mingw-w64-x86_64-gst-plugins-base mingw-w64-x86_64-gst-plugins-good mingw-w64-x86_64-gst-plugins-ugly mingw-w64-x86_64-python3 mingw-w64-x86_64-python3-pip mingw-w64-x86_64-python3-gobject mingw-w64-x86_64-python3-cairo mingw-w64-x86_64-python3-appdirs mingw-w64-x86_64-python3-setuptools mingw-w64-x86_64-python3-packaging mingw-w64-x86_64-python3-cx_Freeze mingw-w64-x86_64-python3-babel mingw-w64-x86_64-python3-watchdog
     ```
 
     This is also the strategy used to automate [builds on appveyor](https://github.com/Cimbali/pympress/tree/master/scripts/build_msi_mingw.sh).
