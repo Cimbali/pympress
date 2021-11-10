@@ -110,7 +110,6 @@ def gtk_resources():
         pathlib.Path('lib', 'girepository-1.0'),
         pathlib.Path('lib', 'gtk-3.0'),
         pathlib.Path('lib', 'gdk-pixbuf-2.0'),
-        pathlib.Path('lib', 'gstreamer-1.0'),
         pathlib.Path('share', 'poppler'),
         pathlib.Path('share', 'themes'),
         pathlib.Path('share', 'icons'),
@@ -141,10 +140,9 @@ def dlls():
     libgio-2.0-0.dll libgirepository-1.0-1.dll libglib-2.0-0.dll libgobject-2.0-0.dll libgtk-3-0.dll \
     libidn2-0.dll libjpeg-8.dll liblcms2-2.dll libnghttp2-14.dll libnspr4.dll libopenjp2-7.dll \
     libpango-1.0-0.dll libpangocairo-1.0-0.dll libpangoft2-1.0-0.dll libpangowin32-1.0-0.dll \
-    libplc4.dll libplds4.dll libpoppler-113.dll libpoppler-cpp-0.dll libpoppler-glib-8.dll libpsl-5.dll \
+    libplc4.dll libplds4.dll libpoppler-105.dll libpoppler-cpp-0.dll libpoppler-glib-8.dll libpsl-5.dll \
     libpython{0.major}.{0.minor}.dll libstdc++-6.dll libthai-0.dll libtiff-5.dll libunistring-2.dll \
-    libwinpthread-1.dll libzstd.dll nss3.dll nssutil3.dll smime3.dll libgstbase-1.0-0.dll \
-    libgstcheck-1.0-0.dll libgstcontroller-1.0-0.dll libgstnet-1.0-0.dll libgstreamer-1.0-0.dll'.format(sys.version_info)
+    libwinpthread-1.dll libzstd.dll nss3.dll nssutil3.dll smime3.dll'.format(sys.version_info)
     # these appear superfluous, though unexpectedly so:
     # libcairo-2.dll libcairo-gobject-2.dll libfontconfig-1.dll libfreetype-6.dll libiconv-2.dll
     # libgettextlib-0-19-8-1.dll libgettextpo-0.dll libgettextsrc-0-19-8-1.dll libintl-8.dll libjasper-4.dll
