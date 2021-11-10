@@ -36,7 +36,7 @@ import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib, Gio
 
-from pympress import document, builder
+from pympress import document, builder, util
 
 
 class Annotations(object):
@@ -395,36 +395,34 @@ class Media(object):
             logger.info(_('Caused by ') + type(e).__name__ + ': ' + str(e))
 
 
-        try:
-            from pympress.media_overlays.gst_backend import GstOverlay
-
-            gst_version = GstOverlay.setup_backend(self.conf.getlist('gstreamer', 'init_options'))
-            self._backends['gstreamer'] = GstOverlay
-            if self.conf.getboolean('gstreamer', 'enabled'):
+        if not self.conf.getboolean('gstreamer', 'enabled'):
+            gst_version = 'GStreamer disabled'
+        else:
+            try:
+                from pympress.media_overlays.gst_backend import GstOverlay
+                gst_version = GstOverlay.setup_backend(self.conf.getlist('gstreamer', 'init_options'))
+            except Exception as e:
+                gst_version = 'GStreamer not available'
+                logger.debug(_('Media support using {} is disabled.').format('GStreamer'))
+                logger.debug(_('Caused by ') + type(e).__name__ + ': ' + str(e))
+            else:
+                self._backends['gstreamer'] = GstOverlay
                 self.types_list['gstreamer'] = self.conf.getlist('gstreamer', 'mime_types')
+
+
+        if not self.conf.getboolean('vlc', 'enabled'):
+            vlc_version = 'VLC disabled'
+        else:
+            try:
+                from pympress.media_overlays.vlc_backend import VlcOverlay
+                vlc_version = VlcOverlay.setup_backend(self.conf.getlist('vlc', 'init_options'))
+            except Exception as e:
+                vlc_version = 'VLC not available'
+                logger.debug(_('Media support using {} is disabled.').format('VLC'))
+                logger.debug(_('Caused by ') + type(e).__name__ + ': ' + str(e))
             else:
-                gst_version += ' (disabled)'
-
-        except Exception as e:
-            gst_version = 'GStreamer not available'
-            logger.debug(_('Media support using {} is disabled.').format('GStreamer'))
-            logger.debug(_('Caused by ') + type(e).__name__ + ': ' + str(e))
-
-
-        try:
-            from pympress.media_overlays.vlc_backend import VlcOverlay
-
-            vlc_version = VlcOverlay.setup_backend(self.conf.getlist('vlc', 'init_options'))
-            self._backends['vlc'] = VlcOverlay
-            if self.conf.getboolean('vlc', 'enabled'):
+                self._backends['vlc'] = VlcOverlay
                 self.types_list['vlc'] = self.conf.getlist('vlc', 'mime_types')
-            else:
-                vlc_version += ' (disabled)'
-
-        except Exception as e:
-            vlc_version = 'VLC not available'
-            logger.debug(_('Media support using {} is disabled.').format('VLC'))
-            logger.debug(_('Caused by ') + type(e).__name__ + ': ' + str(e))
 
         self.backend_version = ', '.join([gif_version, gst_version, vlc_version])
         logger.info(_('Media support: ') + self.backend_version)
@@ -442,7 +440,8 @@ class Media(object):
             return None
 
         # Prefer more stable backends with less external dependencies
-        return self._backends[sorted(options, key=['gif', 'gstreamer', 'vlc'].index)[0]]
+        priority = ['gif', 'vlc', 'gstreamer'] if util.IS_WINDOWS else ['gif', 'gstreamer', 'vlc']
+        return self._backends[sorted(options, key=priority.index)[0]]
 
 
 

@@ -95,7 +95,7 @@ class VlcOverlay(base.VideoOverlay):
             logger.error('No window in which to embed the VLC player!')
             return False
         elif IS_WINDOWS:
-            self.player.set_hwnd(base.get_window_handle(window))  # get_property('window')
+            self.player.set_hwnd(get_window_handle(window))  # get_property('window')
         else:
             self.player.set_xwindow(window.get_xid())
         return False
@@ -116,7 +116,7 @@ class VlcOverlay(base.VideoOverlay):
         Args:
             filepath (`pathlib.Path`): The path to the media file path
         """
-        self.player.set_media(self._instance.media_new(str(filepath)))
+        self.player.set_media(self._instance.media_new(filepath.resolve().as_uri()))
 
 
     def handle_end(self):
