@@ -671,11 +671,12 @@ class Scribbler(builder.Builder):
         if not self.scribbling_mode:
             return False
 
+        self.scribbling_mode = False
+
         extras.Cursor.set_cursor(self.scribble_p_da, 'default')
         self.load_layout(None)
         self.off_render.add(self.scribble_overlay)
 
-        self.scribbling_mode = False
         self.get_application().lookup_action('highlight').change_state(GLib.Variant.new_boolean(self.scribbling_mode))
         self.pen_action.set_enabled(self.scribbling_mode)
 
