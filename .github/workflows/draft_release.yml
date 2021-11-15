@@ -38,6 +38,8 @@ jobs:
 
     - name: Install dependencies
       run: |
+        sudo apt-get update -q
+        sudo apt-get install -qy python3-rpm
         python3 -m pip install --upgrade pip
         python3 -m pip install setuptools wheel twine babel pysrpm rpmlint
 
