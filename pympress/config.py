@@ -87,13 +87,17 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
 
 
     @staticmethod
-    def toggle_portable_config(*args):
+    def toggle_portable_config(gaction, param=None):
         """ Create or remove a configuration file for portable installs.
 
         The portable install file will be used by default, and deleting it causes the config
         to fall back to the user profile location.
 
         No need to populate the new config file, this will be done on pympress exit.
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         portable_config = util.get_portable_config()
         if Config.using_portable_config():
@@ -101,6 +105,7 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         else:
             with open(portable_config, 'w'):
                 pass
+        gaction.set_state(GLib.Variant.new_boolean(Config.using_portable_config()))
 
 
     @staticmethod
