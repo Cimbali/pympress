@@ -704,6 +704,12 @@ class FileWatcher(object):
     # `int` that is a GLib timeout id to delay the callback
     timeout = 0
 
+    #: The :class:`~pathlib.Path` to the file being watched
+    path = None
+
+    #: Callback to be called on file changes, usually connected to :meth:`~pympress.ui.UI.reload_document`
+    callback = lambda: None
+
     def __init__(self):
         try:
             from watchdog.observers import Observer
@@ -744,16 +750,17 @@ class FileWatcher(object):
         self.stop_watching()
 
         scheme, path = uri.split('://', 1)
-        path = pathlib.Path(url2pathname(path))
+        self.path = pathlib.Path(url2pathname(path))
         if scheme != 'file':
             logger.error('Impossible to watch files with {} schemes'.format(scheme), exc_info = True)
             return
 
-        self.monitor.on_modified = lambda e: self._enqueue(callback, *args, **kwargs) if e.src_path == path else None
+        self.callback = lambda: callback(*args, **kwargs)
+        self.monitor.on_modified = self._enqueue
         try:
-            self.observer.schedule(self.monitor, str(path.parent))
+            self.observer.schedule(self.monitor, str(self.path.parent), recursive=False)
         except OSError:
-            logger.error('Impossible to open dir at {}'.format(str(path.parent)), exc_info = True)
+            logger.error('Impossible to open dir at {}'.format(str(self.path.parent)), exc_info = True)
 
 
     def stop_watching(self):
@@ -762,23 +769,22 @@ class FileWatcher(object):
         self.observer.unschedule_all()
 
 
-    def _enqueue(self, callback, *args, **kwargs):
-        """ Do not call callback directly, instead delay as to avoid repeated calls in short periods of time.
+    def _enqueue(self, event):
+        """ Call callback with delay, to avoid repeated calls in short periods of time.
 
         Args:
-            callback (`function`): callback to call with all the further arguments
+            event (:class:`~watchdog.events.FileSystemEvent`): the event that caused the callback to be triggered
         """
+        if event.src_path != str(self.path):
+            return
         if self.timeout:
             GLib.Source.remove(self.timeout)
-        self.timeout = GLib.timeout_add(200, self._call, callback, *args, **kwargs)
+        self.timeout = GLib.timeout_add(200, self._call)
 
 
-    def _call(self, callback, *args, **kwargs):
+    def _call(self):
         """ Call the callback.
-
-        Args:
-            callback (`function`): callback to call with all the further arguments
         """
         if self.timeout:
             self.timeout = 0
-        callback(*args, **kwargs)
+        self.callback()
