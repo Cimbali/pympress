@@ -115,6 +115,8 @@ def gtk_resources():
         pathlib.Path('share', 'themes'),
         pathlib.Path('share', 'icons'),
         pathlib.Path('share', 'glib-2.0'),
+        pathlib.Path('share', 'gir-1.0'),
+        pathlib.Path('share', 'gstreamer-1.0'),
         pathlib.Path('share', 'xml')
     ]
 
@@ -144,10 +146,13 @@ def dlls():
     libplc4.dll libplds4.dll libpoppler-113.dll libpoppler-cpp-0.dll libpoppler-glib-8.dll libpsl-5.dll \
     libpython{0.major}.{0.minor}.dll libstdc++-6.dll libthai-0.dll libtiff-5.dll libunistring-2.dll \
     libwinpthread-1.dll libzstd.dll nss3.dll nssutil3.dll smime3.dll libgstcheck-1.0-0.dll \
-    libgstbase-1.0-0.dll libgstcontroller-1.0-0.dll libgstnet-1.0-0.dll libgstreamer-1.0-0.dll'.format(sys.version_info)
+    libgstbase-1.0-0.dll libgstcontroller-1.0-0.dll libgstnet-1.0-0.dll libgstreamer-1.0-0.dll \
+    libgstallocators-1.0-0.dll libgstinsertbin-1.0-0.dll libgstplayer-1.0-0.dll libgsttranscoder-1.0-0.dll \
+    libcairo-2.dll libcairo-gobject-2.dll libfontconfig-1.dll libfreetype-6.dll libiconv-2.dll \
+    libgettextlib-0-19-8-1.dll libgettextpo-0.dll libgettextsrc-0-19-8-1.dll libintl-8.dll libjasper-4.dll \
+    '.format(sys.version_info)
+
     # these appear superfluous, though unexpectedly so:
-    # libcairo-2.dll libcairo-gobject-2.dll libfontconfig-1.dll libfreetype-6.dll libiconv-2.dll
-    # libgettextlib-0-19-8-1.dll libgettextpo-0.dll libgettextsrc-0-19-8-1.dll libintl-8.dll libjasper-4.dll
 
     lib_gtk_dir = pathlib.Path(find_library('libgtk-3-0')).parent
 
