@@ -208,6 +208,8 @@ class LayoutEditor(builder.Builder):
     layout_dialog = None
     #: A :class:`~Gtk.Label` to contain the description of the layout
     layout_description = None
+    #: A :class:`~Gtk.ComboBoxText` to select the layout to edit
+    layout_selector = None
     #: :class:`~pympress.config.Config` to remember preferences
     config = None
     #: :class:`~Gio.Action` containing the number of next frames
@@ -231,6 +233,7 @@ class LayoutEditor(builder.Builder):
         self.layout_dialog.set_transient_for(parent.p_win)
         self.layout_dialog.add_button(Gtk.STOCK_APPLY, Gtk.ResponseType.APPLY)
         self.layout_dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        self.layout_selector.get_child().set_editable(False)
 
         self.config = config
         self.ui_load_layout = parent.get_callback_handler('load_layout')
@@ -438,7 +441,7 @@ class LayoutEditor(builder.Builder):
         self.next_frames_action = self.get_application().lookup_action('next-frames')
         restore_next_count = self.next_frames_action.get_state().get_int64()
 
-        self.get_object('layout_selector').set_active_id(self.current_layout)
+        self.layout_selector.set_active_id(self.current_layout)
         self.load_layout()
 
         if self.layout_dialog.run() != Gtk.ResponseType.APPLY:
