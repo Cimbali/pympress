@@ -214,6 +214,8 @@ class LayoutEditor(builder.Builder):
     config = None
     #: :class:`~Gio.Action` containing the number of next frames
     next_frames_action = None
+    #: :class:`~Gio.Action` containing the orientation
+    hltools_orientation_action = None
     #: `str` containing the layout currently edited
     current_layout = 'plain'
     #: callback, to be connected to :func:`~pympress.ui.UI.load_layout`
@@ -223,9 +225,11 @@ class LayoutEditor(builder.Builder):
         'notes':      _('Layout for beamer notes on second screen (no current slide preview in notes)'),
         'plain':      _('Plain layout, without note slides'),
         'note_pages': _('Layout for libreoffice notes on separate pages (with current slide preview in notes)'),
+        'highlight':  _('Layout to draw on the current slide'),
     }
 
-    _model_columns = ['widget', 'is_box', 'resizeable', 'orientation', 'next_slide_count', 'widget_name']
+    _model_columns = ['widget', 'has_resizeable', 'resizeable', 'has_orientation', 'orientation', 'next_slide_count',
+                      'widget_name']
 
     def __init__(self, parent, config):
         super(LayoutEditor, self).__init__()
@@ -256,24 +260,28 @@ class LayoutEditor(builder.Builder):
             'notes':       _('notes'),
             'current':     _('current slide'),
             'next':        _('next slide(s)'),
+            'highlight':   _('highlighting'),
             'annotations': _('annotations (hideable)'),
             'vertical':    _('vertical'),
             'horizontal':  _('horizontal'),
         }
 
         next_count = self.next_frames_action.get_state().get_int64()
+        hltools_orientation = self.hltools_orientation_action.get_state().get_string()
         dfs_info = [(None, self.config.get_layout(self.current_layout))]
 
         while dfs_info:
             it, node = dfs_info.pop()
 
             if type(node) is str:
-                self.layout_treemodel.append(it, [node, False, False, '', next_count if node == 'next' else 0,
+                orientation = names[hltools_orientation] if node == 'highlight' else ''
+                next_slides = next_count if node == 'next' else 0
+                self.layout_treemodel.append(it, [node, False, None, bool(orientation), orientation, next_slides,
                                                   names[node]])
 
             else:
-                next_it = self.layout_treemodel.append(it, ['box', True, node['resizeable'], names[node['orientation']],
-                                                            0, names['box']])
+                next_it = self.layout_treemodel.append(it, ['box', True, node['resizeable'],
+                                                            True, names[node['orientation']], 0, names['box']])
                 dfs_info.extend((next_it, child) for child in reversed(node['children']))
 
         self.layout_treeview.expand_all()
@@ -340,7 +348,10 @@ class LayoutEditor(builder.Builder):
         """
         value = self.orientations_model.get_value(orient_it, 1)
         node, tree_it = self.get_info(path)
-        node['orientation'] = value
+        if node == 'highlight':
+            self.hltools_orientation_action.activate(GLib.Variant.new_string(value))
+        else:
+            node['orientation'] = value
         self.layout_treemodel.set_value(tree_it, self._model_columns.index('orientation'), value)
         self.normalize_layout(reload=False)
 
@@ -375,7 +386,7 @@ class LayoutEditor(builder.Builder):
             node = dict(zip(self._model_columns, values))
 
             # Make the node conform to either a string or a dictionary with 'children' key
-            if node.pop('is_box'):
+            if node.pop('has_resizeable'):
                 node['children'] = []
                 del node['widget']
             else:
@@ -439,7 +450,9 @@ class LayoutEditor(builder.Builder):
         restore_layouts = {layout: copy.deepcopy(self.config.get_layout(layout)) for layout in self.layout_descriptions}
 
         self.next_frames_action = self.get_application().lookup_action('next-frames')
+        self.hltools_orientation_action = self.get_application().lookup_action('highlight-tools-orientation')
         restore_next_count = self.next_frames_action.get_state().get_int64()
+        restore_hltools_orientation = self.hltools_orientation_action.get_state().get_string()
 
         self.layout_selector.set_active_id(self.current_layout)
         self.load_layout()
@@ -448,6 +461,7 @@ class LayoutEditor(builder.Builder):
             for layout_name, layout in restore_layouts.items():
                 self.config.update_layout_tree(layout_name, layout)
             self.next_frames_action.activate(GLib.Variant.new_int64(restore_next_count))
+            self.hltools_orientation_action.activate(GLib.Variant.new_string(restore_hltools_orientation))
             self.ui_load_layout(None)
 
         self.layout_dialog.hide()
