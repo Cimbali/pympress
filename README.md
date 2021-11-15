@@ -81,14 +81,14 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 - Other systems, directly from PyPI ![pypi version badge][pypi_version] − requires [python, gtk+3, poppler, and their python bindings](#dependencies):
 
   ```
-  pip install "pympress"
+  python3 -m pip install "pympress"
   ```
 
   <details><summary>Troubleshooting</summary>
 
   - Make sure you have all [the dependencies](#dependencies). (These are already included in binary packages or their dependencies.)
-  - Using pip, you may want to use `python3 -m pip` if `pip` points to the python 2.x pip. You may also want to install with the `--user` option,
-    or install from github or downloaded sources. See [the python documentation on installing](https://docs.python.org/3.7/installing/index.html).
+  - Using pip, you may want to install with the `--user` option, or install from github or downloaded sources.
+    See [the python documentation on installing](https://docs.python.org/3.7/installing/index.html).
   - If your python environment lacks the Gobject Introspections module, try
      1. using `--system-site-packages` for [virtual environments](https://docs.python.org/3.7/library/venv.html),
      2. installing pygobject from pip (`pip install pygobject`, which requires the correct development/header packages.
