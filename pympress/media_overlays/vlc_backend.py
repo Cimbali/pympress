@@ -75,7 +75,7 @@ class VlcOverlay(base.VideoOverlay):
 
         super(VlcOverlay, self).__init__(*args, **kwargs)
         # Simple black background painting to avoid glitching outside of video area
-        self.movie_zone.connect('draw', lambda widget, context: context.paint())
+        self.movie_zone.connect('draw', self.paint_backdrop)
 
         event_manager = self.player.event_manager()
         event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.handle_end))
@@ -98,6 +98,7 @@ class VlcOverlay(base.VideoOverlay):
             self.player.set_hwnd(get_window_handle(window))  # get_property('window')
         else:
             self.player.set_xwindow(window.get_xid())
+        self.movie_zone.queue_draw()
         return False
 
 
@@ -147,7 +148,29 @@ class VlcOverlay(base.VideoOverlay):
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
         self.player.play()
+        self.movie_zone.queue_draw()
         return False
+
+
+    def paint_backdrop(self, widget, context):
+        """ Draw behind/around the video, aka the black bars
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget to update
+            context (:class:`~cairo.Context`):  the Cairo context (or `None` if called directly)
+        """
+        context.save()
+        context.set_source_rgb(0, 0, 0)
+        context.fill()
+        context.paint()
+        context.restore()
+
+
+    def show(self):
+        """ Bring the widget to the top of the overlays if necessary − also force redraw of movie zone
+        """
+        super(VlcOverlay, self).show()
+        self.movie_zone.queue_draw()
 
 
     def do_play_pause(self):
