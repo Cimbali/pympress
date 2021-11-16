@@ -80,6 +80,15 @@ jobs:
     runs-on: macos-latest
 
     steps:
+    - name: Define name
+      id: name
+      run: |
+        ref=${{ github.ref }}
+        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
+        if echo ${tag#v} | grep -qxE '[0-9]+(\.[0-9]+)*' ; then final=true; else final=false; fi
+        echo ::set-output name=tag::$tag
+        echo ::set-output name=final::$final
+
     - name: Install dependencies
       run: |
         brew update
@@ -109,11 +118,9 @@ jobs:
         PASSWORD: ${{ secrets.GITHUB_HOMEBREW_TOKEN }}
 
     - name: Make a brew PR from pypi’s metadata
+      if: ${{ steps.name.outputs.final }}
       run: |
-        ref=${{ github.ref }}
-        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
-
-        jq_script=`printf '.releases."%s"[]? | select(.python_version == "source") | @text "--url=\(.url) --sha256=\(.digests.sha256)"' ${tag#v}`
+        jq_script=`printf '.releases."%s"[]? | select(.python_version == "source") | @text "--url=\(.url) --sha256=\(.digests.sha256)"' ${{ steps.name.outputs.tag }}`
         brew bump-formula-pr --strict --no-browse `curl -s https://pypi.org/pypi/pympress/json | jq -r "$jq_script"` pympress
       env:
         HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_HOMEBREW_TOKEN }}
