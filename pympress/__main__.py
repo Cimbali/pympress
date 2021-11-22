@@ -59,7 +59,7 @@ gettext.install('pympress', util.get_locale_dir())
 
 
 try:
-    # python 2.7 does not have this
+    # python <3.6 does not have this
     ModuleNotFoundError
 except NameError:
     ModuleNotFoundError = ImportError

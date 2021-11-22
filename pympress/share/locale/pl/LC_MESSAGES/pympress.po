@@ -1022,3 +1022,15 @@ msgstr ""
 msgid "notes"
 msgstr ""
 
+#: 
+msgid "Highlighting"
+msgstr ""
+
+#: 
+msgid "Layout to draw on the current slide"
+msgstr ""
+
+#: 
+msgid "highlighting"
+msgstr ""
+
