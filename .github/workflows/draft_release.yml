@@ -20,6 +20,25 @@ jobs:
     name: Install and run test on mac
     runs-on: macos-latest
     steps:
+    - name: Configure brew repo
+      continue-on-error: true
+      run: |
+        cd "`brew --repo homebrew/core`"
+        # Credentials and remotes
+        git remote add gh "https://github.com/Cimbali/homebrew-core/"
+        git fetch gh
+        # Attempt a rebase of changes in our repo copy
+        git checkout --detach
+        git rebase origin/master gh/master && git branch -f master HEAD || git rebase --abort
+        # Now use master and update remote so we can use the bump-formula-pr
+        git checkout master
+        cd
+
+    - name: Run the audit
+      continue-on-error: true
+      run: |
+        brew audit --strict pympress
+
     - name: Install latest
       run: |
         brew install pympress --only-dependencies
