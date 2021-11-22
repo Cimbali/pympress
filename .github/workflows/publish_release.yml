@@ -1,4 +1,4 @@
-name: Upload package to pypi, brew, and copr
+name: 'Publish package: upload to pypi, brew, and copr'
 
 on:
   # When the draft release is converted to a public release, send out the binaries etc. to all the platforms
