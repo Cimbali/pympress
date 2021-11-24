@@ -35,6 +35,7 @@ from ctypes.util import find_library
 import setuptools
 
 from distutils.cmd import Command
+from distutils.errors import DistutilsOptionError
 from setuptools.command.build_py import build_py
 
 
@@ -52,6 +53,13 @@ class GettextBuildCatalog(Command):
 
     This is used for build systems that do not have easy access to Babel
     """
+    user_options = [
+        ('domain=', 'D', "domains of PO files (space separated list, default 'messages')"),
+        ('directory=', 'd', 'path to base directory containing the catalogs'),
+        ('use-fuzzy', 'f', 'also include fuzzy translations'),
+        ('statistics', None, 'print statistics about translations')
+    ]
+
     def initialize_options(self):
         """ Initialize options
         """
@@ -73,7 +81,7 @@ class GettextBuildCatalog(Command):
         po_wildcard = pathlib.Path(self.directory).glob(str(pathlib.Path('*', 'LC_MESSAGES', self.domain + '.po')))
         for po in po_wildcard:
             print(po)
-            mo = po.with_suffix('.po')
+            mo = po.with_suffix('.mo')
 
             cmd = ['msgfmt', str(po), '-o', str(mo)]
             if self.use_fuzzy:
@@ -93,7 +101,13 @@ class BuildWithCatalogs(build_py):
     def run(self):
         """ Run compile_catalog before running (parent) develop command
         """
-        self.distribution.run_command('compile_catalog')
+        try:
+            self.distribution.run_command('compile_catalog')
+        except DistutilsOptionError as err:
+            if err.args == ('no message catalogs found',):
+                pass  # Running from a source tarball − compiling already done
+            else:
+                raise
         build_py.run(self)
 
 
