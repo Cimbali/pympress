@@ -78,6 +78,35 @@ jobs:
         fi
 
 
+  aur:
+    name: Publish to AUR
+    runs-on: ubuntu-latest
+    needs: pypi
+    steps:
+      - name: Clone repo
+        run: git clone https://github.com/Cimbali/pympress-pkgbuild aur-repo
+
+      - name: Update info
+        run: |
+          while read param value; do
+            sed -i -r "s,^(\\s*$param ?=[('\" ]*)[A-Za-z0-9\${\}:/._-]+([ '\")]*)$,\1$value\2," aur-repo/.SRCINFO aur-repo/PKGBUILD
+          done <<EOF
+          source ${{ needs.pypi.outputs.url }}
+          sha256sums ${{ needs.pypi.outputs.tag }}
+          pkgver ${{ needs.pypi.outputs.tag }}
+          pkgrel 2
+          EOF
+
+      - name: Push the changes
+        run: |
+          trap 'rm -f ./ssh-key' EXIT && echo "$AUR_PRIVATE_KEY" > ./ssh-key && chmod 0600 ./ssh-key
+          ssh='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ../ssh-key'
+
+          git -C aur-repo -c user.name=Cimbali -c user.email="me@cimba.li" commit -am "Update to ${{ needs.pypi.outputs.tag }}"
+          git -C aur-repo -c core.sshCommand="$ssh" push git@github.com:Cimbali/pympress-pkgbuild.git "master:master"
+
+        env:
+          AUR_PRIVATE_KEY: ${{ secrets.AUR_PRIVATE_KEY }}
 
   copr:
     name: Download source RPM from release and upload to COPR and OpenBuildService
@@ -87,7 +116,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update -q
-        sudo apt-get install -qy osc cpio rpm2cpio
+        sudo apt-get install -qy osc cpio rpm2cpio python3-m2crypto
 
     - name: Download from GitHub Release
       run: |
