@@ -35,4 +35,6 @@ jobs:
     - name: Lint changes with flake8
       run: |
         # Reduced list of ignores, applied on the changed lines only
-        git diff FETCH_HEAD -U0 | flake8 --diff --count --show-source --statistics --ignore=D107,D200,D210,D413,E251,E302,E303,W504
+        set -o pipefail
+        git diff FETCH_HEAD -U0 | flake8 --diff --count --show-source --statistics --ignore=D107,D200,D210,D413,E251,E302,E303,W504 |
+           sed -r 'h;s/^(\S+):([0-9]+):([0-9]+): /::error file=\1,line=\2,col=\3::/p;g'

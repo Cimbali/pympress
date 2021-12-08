@@ -25,7 +25,8 @@ jobs:
     - name: Lint with flake8
       run: |
         # Full list of ignores, fail on errors. No Docs errors.
-        flake8 . --count --show-source --statistics --select=E,F,W,C
+        set -o pipefail
+        flake8 . --count --show-source --statistics --select=E,F,W,C | sed -r 'h;s/^(\S+):([0-9]+):([0-9]+): /::error file=\1,line=\2,col=\3::/p;g'
 
     - name: Install dependencies to lint docstrings
       if: matrix.python-version == 3.9
@@ -35,4 +36,5 @@ jobs:
     - name: Lint docstrings
       if: matrix.python-version == 3.9
       run: |
+        set -o pipefail
         flake8 . --count --show-source --statistics --select=D | sed -r 'h;s/^(\S+):([0-9]+):([0-9]+): /::warning file=\1,line=\2,col=\3::/p;g'
