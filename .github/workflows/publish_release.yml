@@ -49,10 +49,7 @@ jobs:
         pip install setuptools wheel twine babel
 
     - name: Build catalogs and packages
-      env:
-        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
       run: |
-        ./scripts/poedit.sh download
         python setup.py compile_catalog
         python setup.py sdist bdist_wheel
 
@@ -73,6 +70,15 @@ jobs:
         done
         echo ::set-output name=url::`jq -r .digests.sha256 lastsource.json`
         echo ::set-output name=sha256::`jq -r .digests.sha256 lastsource.json`
+
+    - name: Run a check on the generated file
+      run: |
+        if ! jq -r '"\(.digests.sha256) dist/\(.filename)"' lastsource.json | sha256sum -c ; then
+          echo '::warning:: Generated sdist file did not match pypi sha256sum'
+        fi
+
+
+
   copr:
     name: Download source RPM from release and upload to COPR
     runs-on: ubuntu-latest
@@ -132,6 +138,7 @@ jobs:
 
     - name: Make a brew PR from pypi’s metadata
       if: ${{ needs.pypi.outputs.release == 'final' }}
+      continue-on-error: true
       run: |
         brew bump-formula-pr --strict --no-browse --url="${{needs.pypi.outputs.url}}" --sha256="${{needs.pypi.outputs.sha256}}" pympress
       env:
