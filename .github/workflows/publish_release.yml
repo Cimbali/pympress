@@ -80,10 +80,15 @@ jobs:
 
 
   copr:
-    name: Download source RPM from release and upload to COPR
+    name: Download source RPM from release and upload to COPR and OpenBuildService
     runs-on: ubuntu-latest
 
     steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -qy osc cpio rpm2cpio
+
     - name: Download from GitHub Release
       run: |
         ref=${{ github.ref }}
@@ -101,10 +106,26 @@ jobs:
       run: |
         trap 'rm -f ./copr-config' EXIT && echo "$COPR_TOKEN_CONFIG" > ./copr-config
 
+
         python3 -m pip install copr-cli
         copr-cli --config ./copr-config build --nowait cimbali/pympress python3-pympress-*.src.rpm
       env:
         COPR_TOKEN_CONFIG: ${{ secrets.COPR_TOKEN_CONFIG }}
+
+    - name: Upload to OpenBuildService
+      continue-on-error: true
+      run: |
+        trap 'rm -f ./osc-config' EXIT && echo "$OPENBUILDSERVICE_TOKEN_SECRET" > ./osc-config
+        osc -c ./osc-config co -o osc home:cimbali python-pympress
+
+        cd osc/
+        osc -c ../osc-config rm pympress-*.tar.gz
+
+        rpm2cpio ../python3-pympress-*.src.rpm | cpio -idmv
+        osc -c ../osc-config add pympress-*.tar.gz
+        osc -c ../osc-config ci -m "Update to ${{ needs.pypi.outputs.tag }}"
+      env:
+        OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
 
   brew:
     name: Request new pypi package be pulled into Homebrew
