@@ -15,7 +15,7 @@ upload() {
 languages() {
     curl -sX POST https://api.poeditor.com/v2/languages/list \
           -F api_token="$poeditor_api_token" \
-          -F id="301055" | jq -r 'select(.response.code == "200") | .result.languages[] | select(.percentage > 5) | .code'
+          -F id="301055" | jq -r "select(.response.code == \"200\") | .result.languages[] | select(.percentage > $1) | \"\(.code)\t\(.percentage)%\""
 }
 
 contributors() {
@@ -31,13 +31,16 @@ contributors() {
 download() {
     lang=$1
     printf "Updating %s:\n" "$lang"
+    # Normalize separator to _ and capitalised locale
+    norm=`echo "$lang" | sed -E 's/-(\w+)$/_\U\1\E/'`
 
     url=`curl -sX POST https://api.poeditor.com/v2/projects/export \
           -F api_token="$poeditor_api_token" \
           -F id="301055" -F language="$lang" -F type="po" \
         | jq -r 'select(.response.code == "200") | .result.url'`
 
-    test -n "$url" && curl -so "pympress/share/locale/${lang}/LC_MESSAGES/pympress.po" "$url"
+    test -n "$url" && mkdir -p "pympress/share/locale/${norm}/LC_MESSAGES" &&
+        curl -so - "$url" | sed "/Language/s/$lang/$norm/" > "pympress/share/locale/${norm}/LC_MESSAGES/pympress.po"
 }
 
 getpass() {
@@ -50,7 +53,8 @@ getpass() {
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <command>"
     echo "Where command is one of: upload, languages, download, contributors"
-    echo "requires curl and jq"
+    echo
+    echo "MIN_LANG_COMPLETE can be set to override minimum percentage of completion. Requires curl and jq."
 fi
 
 while [ $# -gt 0 ]; do
@@ -59,10 +63,10 @@ while [ $# -gt 0 ]; do
         upload
     elif test "$1" = "languages"; then
         getpass
-        languages
+        languages ${MIN_LANG_COMPLETE:-0}
     elif test "$1" = "download"; then
         getpass
-        avail_lang=`languages`
+        avail_lang=`languages ${MIN_LANG_COMPLETE:-5} | cut -f1`
         for lang in $avail_lang; do
             download $lang
         done
