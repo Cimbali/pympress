@@ -122,6 +122,14 @@ class Scribbler(builder.Builder):
 
     #: `int` that is the currently selected element
     active_preset = -1
+    #: `int` to remember the previously selected element, before holding “eraser”
+    previous_preset = -1
+    #: `list` that contains the modifiers which, when held on scribble start, toggle the eraser
+    toggle_erase_modifiers = []
+    #: `list` that contains the non-modifier shortcuts which, when held on scribble start, toggle the eraser
+    toggle_erase_shortcuts = []
+    #: `str` or `None` that indicates whether a modifier + click or a held shortcut is toggling the eraser
+    toggle_erase_source = None
 
     #: The :class:`~Gio.Action` that contains the currently selected pen
     pen_action = None
@@ -201,6 +209,9 @@ class Scribbler(builder.Builder):
                                                 parameter_type=str),
         })
 
+        parsed_eraser_keys = [Gtk.accelerator_parse(keys) for keys in config.shortcuts.get('highlight-hold-erase', [])]
+        self.toggle_erase_modifiers = [mod for keycode, mod in parsed_eraser_keys if not keycode]
+        self.toggle_erase_shortcuts = [(keycode, mod) for keycode, mod in parsed_eraser_keys if keycode]
 
         self.pen_action = self.get_application().lookup_action('highlight-use-pen')
         self.load_preset(self.pen_action, int(active_pen) if active_pen.isnumeric() else 0)
@@ -300,6 +311,37 @@ class Scribbler(builder.Builder):
         return self.scribble_drawing
 
 
+    def key_event(self, widget, event):
+        """ Handle key events to activate the eraser while the shortcut is held
+
+        Args:
+            widget (:class:`~Gtk.Widget`):  the widget which has received the event.
+            event (:class:`~Gdk.Event`):  the GTK event.
+
+        Returns:
+            `bool`: whether the event was consumed
+        """
+        if not self.scribbling_mode:
+            return False
+        elif event.type != Gdk.EventType.KEY_PRESS and event.type != Gdk.EventType.KEY_RELEASE:
+            return False
+        elif not (*event.get_keyval()[1:], event.get_state()) in self.toggle_erase_shortcuts:
+            return False
+
+        if event.type == Gdk.EventType.KEY_PRESS and self.active_preset and self.toggle_erase_source is None:
+            self.previous_preset = self.active_preset
+            self.toggle_erase_source = 'shortcut'
+            self.load_preset(target=0)
+        elif event.type == Gdk.EventType.KEY_RELEASE and self.toggle_erase_source == 'shortcut' \
+                and self.previous_preset and not self.active_preset:
+            self.load_preset(target=self.previous_preset)
+            self.previous_preset = 0
+            self.toggle_erase_source = None
+        else:
+            return False
+        return True
+
+
     def toggle_scribble(self, widget, event):
         """ Start/stop drawing scribbles.
 
@@ -314,6 +356,12 @@ class Scribbler(builder.Builder):
             return False
 
         if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
+            if any(mod & event.get_state() == mod for mod in self.toggle_erase_modifiers) and self.active_preset \
+                    and self.toggle_erase_source is None:
+                self.previous_preset = self.active_preset
+                self.toggle_erase_source = 'modifier'
+                self.load_preset(target=0)
+
             self.scribble_list.append((self.scribble_color, self.scribble_width, []))
             self.scribble_drawing = True
 
@@ -321,6 +369,12 @@ class Scribbler(builder.Builder):
         elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
             self.scribble_drawing = False
             self.prerender()
+
+            if not self.active_preset and self.previous_preset and self.toggle_erase_source == 'modifier':
+                self.load_preset(target=self.previous_preset)
+                self.previous_preset = 0
+                self.toggle_erase_source = None
+
             return True
 
         return False
@@ -713,6 +767,10 @@ class Scribbler(builder.Builder):
         self.scribble_width_selector.set_value(self.scribble_width)
         self.scribble_color_selector.set_sensitive(target != 'eraser')
         self.scribble_width_selector.set_sensitive(target != 'eraser')
+
+        # Re-draw the eraser
+        self.scribble_p_da.queue_draw()
+        self.c_da.queue_draw()
 
         return True
 

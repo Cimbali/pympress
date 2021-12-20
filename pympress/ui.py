@@ -282,6 +282,8 @@ class UI(builder.Builder):
         self.connect_signals(self)
 
         for action, shortcut_list in self.config.shortcuts.items():
+            if action == 'highlight-hold-erase':
+                continue  # Not really an action but we define a shortcut for it
             self.app.set_accels_for_action('app.' + action, shortcut_list)
 
         # Common to both windows
@@ -1275,6 +1277,8 @@ class UI(builder.Builder):
             event (:class:`~Gdk.Event`):  the GTK event, which contains the key stroke details
         """
         if self.annotations.key_event(widget, event):
+            return True
+        elif self.scribbler.key_event(widget, event):
             return True
 
         return False
