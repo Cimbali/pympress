@@ -1252,28 +1252,6 @@ class UI(builder.Builder):
     ############################     User inputs      ############################
     ##############################################################################
 
-    def on_navigation(self, widget, event):
-        """ Manage key presses for both windows.
-
-        Args:
-            widget (:class:`~Gtk.Widget`):  the widget in which the event occurred (ignored)
-            event (:class:`~Gdk.Event`):  the event that occurred
-
-        Returns:
-            `bool`: whether the event was consumed
-        """
-        if event.type != Gdk.EventType.KEY_PRESS:
-            return False
-
-        # Try passing events to special-behaviour widgets (spinner, ett, zooming, scribbler) in case they are enabled
-        if self.page_number.on_keypress(widget, event):
-            return True
-        elif self.est_time.on_keypress(widget, event):
-            return True
-
-        return False
-
-
     def validate_current_input(self, gaction, param=None):
         """ Handle the action validating the input, if applicable.
 

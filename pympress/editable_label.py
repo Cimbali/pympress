@@ -95,7 +95,7 @@ class EditableLabel(object):
             widget (:class:`~Gtk.Widget`):  the widget which has received the event.
             event (:class:`~Gdk.Event`):  the GTK event.
             name (`str`): the name of the key stroke
-            command (`str`): the name of the command in case this function is called by on_navigation
+            command (`str`): the name of the command in case this function is called by on_key_input
 
         Returns:
             `bool`: whether the event was consumed
