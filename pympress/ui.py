@@ -1132,7 +1132,8 @@ class UI(builder.Builder):
             return
 
         # Remove scribbles and scribbling/zooming modes
-        self.scribbler.disable_scribbling()
+        if self.scribbler.page_change_exits:
+            self.scribbler.disable_scribbling()
         self.scribbler.page_change(self.preview_page, page_preview.label())
         self.zoom.stop_zooming()
 

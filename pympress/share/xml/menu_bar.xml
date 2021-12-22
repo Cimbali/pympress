@@ -141,14 +141,8 @@
 			</section>
 			<section>
 				<item>
-					<attribute name="label" translatable="yes">Tools next to slide</attribute>
-					<attribute name="action">app.highlight-tools-orientation</attribute>
-					<attribute name="target">vertical</attribute>
-				</item>
-				<item>
-					<attribute name="label" translatable="yes">Tools below slide</attribute>
-					<attribute name="action">app.highlight-tools-orientation</attribute>
-					<attribute name="target">horizontal</attribute>
+					<attribute name="label" translatable="yes">Exit highlight on page change</attribute>
+					<attribute name="action">app.highlight-page-exit</attribute>
 				</item>
 			</section>
 		</submenu>

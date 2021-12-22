@@ -140,6 +140,8 @@ class Scribbler(builder.Builder):
     # per-page means we manage a set of scribbles per document page, and clear or restore them on page change
     # per-label means we manage a set of scribbles per document page, but defined by label and not page number
     highlight_mode = 'single-page'
+    #: `bool` indicating whether we exit highlighting mode on page change
+    page_change_exits = True
 
     #: `dict` of scribbles per page
     remembered_scribbles = {}
@@ -198,6 +200,7 @@ class Scribbler(builder.Builder):
         self.adjust_tools_orientation()
 
         active_pen = config.get('highlight', 'active_pen')
+        self.page_change_exits = config.getboolean('highlight', 'page_change_exits')
         self.setup_actions({
             'highlight':         dict(activate=self.switch_scribbling, state=False),
             'highlight-use-pen': dict(activate=self.load_preset, state=active_pen, parameter_type=str, enabled=False),
@@ -205,6 +208,7 @@ class Scribbler(builder.Builder):
             'highlight-redo':    dict(activate=self.redo_scribble),
             'highlight-undo':    dict(activate=self.pop_scribble),
             'highlight-mode':    dict(activate=self.set_mode, state=self.highlight_mode, parameter_type=str),
+            'highlight-page-exit': dict(activate=self.page_change_action, state=self.page_change_exits),
             'highlight-tools-orientation': dict(activate=self.set_tools_orientation, state=self.tools_orientation,
                                                 parameter_type=str),
         })
@@ -216,6 +220,20 @@ class Scribbler(builder.Builder):
         self.pen_action = self.get_application().lookup_action('highlight-use-pen')
         self.load_preset(self.pen_action, int(active_pen) if active_pen.isnumeric() else 0)
         self.set_mode(None, GLib.Variant.new_string(config.get('highlight', 'mode')))
+
+
+    def page_change_action(self, gaction, param):
+        """ Change whether we exit or stay in highlighting mode on page changes
+
+        Args:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the new mode as a string wrapped in a GLib.Variant
+        """
+        self.page_change_exits = not gaction.get_state().get_boolean()
+        self.config.set('highlight', 'page_change_exits', 'on' if self.page_change_exits else 'off')
+        gaction.change_state(GLib.Variant.new_boolean(self.page_change_exits))
+
+        return True
 
 
     def set_mode(self, gaction, param):
