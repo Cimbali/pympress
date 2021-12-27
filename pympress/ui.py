@@ -282,7 +282,7 @@ class UI(builder.Builder):
         self.connect_signals(self)
 
         for action, shortcut_list in self.config.shortcuts.items():
-            if action == 'highlight-hold-erase':
+            if action == 'highlight-hold-to-erase':
                 continue  # Not really an action but we define a shortcut for it
             self.app.set_accels_for_action('app.' + action, shortcut_list)
 

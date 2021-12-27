@@ -213,9 +213,9 @@ class Scribbler(builder.Builder):
                                                 parameter_type=str),
         })
 
-        parsed_eraser_keys = [Gtk.accelerator_parse(keys) for keys in config.shortcuts.get('highlight-hold-erase', [])]
-        self.toggle_erase_modifiers = [mod for keycode, mod in parsed_eraser_keys if not keycode]
-        self.toggle_erase_shortcuts = [(keycode, mod) for keycode, mod in parsed_eraser_keys if keycode]
+        hold_erase = [Gtk.accelerator_parse(keys) for keys in config.shortcuts.get('highlight-hold-to-erase', [])]
+        self.toggle_erase_modifiers = [mod for keycode, mod in hold_erase if not keycode]
+        self.toggle_erase_shortcuts = [(keycode, mod) for keycode, mod in hold_erase if keycode]
 
         self.pen_action = self.get_application().lookup_action('highlight-use-pen')
         self.load_preset(self.pen_action, int(active_pen) if active_pen.isnumeric() else 0)
