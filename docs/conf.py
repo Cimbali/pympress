@@ -21,7 +21,6 @@ import sys
 import pathlib
 sys.path.insert(0, pathlib.Path(__file__).resolve().parents[1])
 
-from recommonmark.transform import AutoStructify
 import re
 import subprocess
 import importlib
@@ -39,7 +38,7 @@ needs_sphinx = '1.3'  # for sphinx.ext.napoleon
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'recommonmark',
+    'myst_parser',
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
@@ -74,15 +73,6 @@ def rewrite_link(url):
 def setup(app):
     """ Function called by sphinx to setup this documentation.
     """
-    app.add_config_value('recommonmark_config', {
-        'url_resolver': lambda url: url[3:] if url.startswith('../README') else url,
-        'enable_auto_toc_tree': True,
-        'auto_toc_maxdepth': 2,
-        'auto_toc_tree_section': 'Contents',
-        'enable_eval_rst': True
-    }, True)
-    app.add_transform(AutoStructify)
-
     # get the README.md as a source, but we need to move it here and adjust the relative links into docs/
     # Until relative links are allowed from the toctree, see https://github.com/sphinx-doc/sphinx/issues/701
     find_links = re.compile(r'\[([^\[\]]+)\]\(([^()]+)\)')

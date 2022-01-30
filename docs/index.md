@@ -2,14 +2,18 @@
 
 ## Contents
 
-- [Readme](../README.md)
-- [Configuration file](./options.md)
-- [Module documentation](./pympress.md)
+```{toctree}
+:maxdepth: 2
+
+README.md
+options.md
+pympress.md
+```
 
 
 ## Indices and tables
 
-```eval_rst
+```{eval-rst}
 * :ref:`genindex`
 * :ref:`modindex`
 ```
