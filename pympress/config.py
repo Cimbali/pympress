@@ -386,9 +386,12 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
                     elif type(w_desc['proportions']) is not list or \
                             any(type(n) is not float for n in w_desc['proportions']) or \
                             len(w_desc['proportions']) != len(w_desc['children']) or \
-                            abs(sum(w_desc['proportions']) - 1) > 1e-10:
+                            sum(w_desc['proportions']) < 1e-2:
                         raise ValueError('"proportions" must be a list of floats (one per separator), '
-                                         'between 0 and 1, at node {}'.format(w_desc))
+                                         'that sum to 1, at node {}'.format(w_desc))
+                    elif abs(sum(w_desc['proportions']) - 1) > 1e-10:
+                        w_desc['proportions'] = [p / sum(w_desc['proportions']) for p in w_desc['proportions']]
+
 
                 next_visits.extend(w_desc['children'])
             else:
