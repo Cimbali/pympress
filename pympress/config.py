@@ -387,7 +387,7 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
                             any(type(n) is not float for n in w_desc['proportions']) or \
                             len(w_desc['proportions']) != len(w_desc['children']) or \
                             abs(sum(w_desc['proportions']) - 1) > 1e-10:
-                        raise ValueError('"proportions" must be a list of floats (one per separator), ' -
+                        raise ValueError('"proportions" must be a list of floats (one per separator), '
                                          'between 0 and 1, at node {}'.format(w_desc))
 
                 next_visits.extend(w_desc['children'])
