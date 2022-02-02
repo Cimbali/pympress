@@ -86,21 +86,29 @@ class Builder(Gtk.Builder):
                 pass
 
     @staticmethod
-    def __recursive_translate_widgets(a_widget):
+    def __recursive_translate_menu(menu):
         """ Calls gettext on all strings we can find in widgets, and recursively on its children.
 
         Args:
-            a_widget (:class:`~GObject.Object`): an object built by the builder, usually a widget
+            menu (:class:`~Gio.Menu`): the menu to translate
         """
-        Builder.__translate_widget_strings(a_widget)
+        menu_items = []
+        for n in range(menu.get_n_items()):
+            item = Gio.MenuItem.new_from_model(menu, n)
 
-        if issubclass(type(a_widget), Gtk.Container):
-            # NB: Parent-loop in widgets would cause infinite loop here, but that's absurd (right?)
-            # NB2: maybe forall instead of foreach if we miss some strings?
-            a_widget.foreach(Builder.__recursive_translate_widgets)
+            label = item.get_attribute_value(Gio.MENU_ATTRIBUTE_LABEL, GLib.VariantType('s'))
+            if label:
+                item.set_label(_(label.get_string()))
 
-        if issubclass(type(a_widget), Gtk.MenuItem) and a_widget.get_submenu() is not None:
-            Builder.__recursive_translate_widgets(a_widget.get_submenu())
+            menu_items.append(item)
+
+            link_iter = menu.iterate_item_links(n)
+            while link_iter.next():
+                Builder.__recursive_translate_menu(link_iter.get_value())
+
+        menu.remove_all()
+        for item in menu_items:
+            menu.append_item(item)
 
 
     def get_callback_handler(self, handler_name):
@@ -172,7 +180,10 @@ class Builder(Gtk.Builder):
 
         for obj in new_objects:
             # pass new objects to manual translation
-            self.__translate_widget_strings(obj)
+            if isinstance(obj, Gio.Menu):
+                self.__recursive_translate_menu(obj)
+            else:
+                self.__translate_widget_strings(obj)
 
             # Instrospectively load objects. If we have a self.attr == None and this attr is the name of a built object,
             # link it together.
