@@ -86,6 +86,7 @@
                   <item id="plain" translatable="yes">Plain</item>
                   <item id="note_pages" translatable="yes">Note pages</item>
                   <item id="highlight" translatable="yes">Highlighting</item>
+                  <item id="highlight_notes" translatable="yes">Highlighting with notes</item>
                 </items>
                 <signal name="changed" handler="layout_selected" swapped="no"/>
                 <child internal-child="entry">

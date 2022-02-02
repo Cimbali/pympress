@@ -54,7 +54,8 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         'notes':      (set(placeable_widgets.keys()) - {"annotations", "highlight"}, {"annotations"}),
         'plain':      (set(placeable_widgets.keys()) - {"notes", "highlight"},),
         'note_pages': (set(placeable_widgets.keys()) - {"current", "highlight"},),
-        'highlight':  ({"highlight"}, set(placeable_widgets.keys()) - {"highlight"})
+        'highlight':  ({"highlight"}, set(placeable_widgets.keys()) - {"highlight"}),
+        'highlight_notes':  ({"highlight"}, set(placeable_widgets.keys()) - {"highlight"}),
     }
 
     #: `dict` mapping accelerator keys to actions

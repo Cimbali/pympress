@@ -226,6 +226,7 @@ class LayoutEditor(builder.Builder):
         'plain':      _('Plain layout, without note slides'),
         'note_pages': _('Layout for libreoffice notes on separate pages (with current slide preview in notes)'),
         'highlight':  _('Layout to draw on the current slide'),
+        'highlight_notes':  _('Layout to draw on the current slide with notes displayed'),
     }
 
     _model_columns = ['widget', 'has_resizeable', 'resizeable', 'has_orientation', 'orientation', 'next_slide_count',
