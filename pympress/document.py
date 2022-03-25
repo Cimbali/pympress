@@ -89,9 +89,13 @@ class PdfPage(enum.IntEnum):
     #: Complementary of AFTER: for a notes page, the slide page is BEFORE by half a document
     BEFORE  = 7
     #: Slides on even pages (0-indexed), notes on uneven pages
-    ODD  = 8
+    ODD     = 8
     #: Complementary of ODD
     EVEN    = 9
+    #: An arbitrary mapping of notes pages to slide pages
+    MAP     = 10
+    #: Reverse the arbitrary mapping MAP
+    RMAP    = 11
 
     def complement(val):
         """ Return the enum value for the other part of the page.
@@ -119,6 +123,8 @@ class PdfPage(enum.IntEnum):
             return 'page number'
         elif val == PdfPage.EVEN or val == PdfPage.ODD:
             return 'page parity'
+        elif val == PdfPage.MAP or val == PdfPage.RMAP:
+            return 'page mapping'
         else:
             return None
 
@@ -715,12 +721,10 @@ class Document(object):
     history = []
     #: Our position in the history
     hist_pos = -1
-    #: `dict` of all the page labels
+    #: `list` of all the page labels
     page_labels = []
-    #: `bool` indicating whether the second half of pages are in fact notes pages
-    notes_after = False
-    #: `bool` indicating whether every other page in fact a notes pages
-    notes_parity = False
+    #: `list` of (slide page number, notes page number) tuples, or `None` if there are no notes
+    notes_mapping = None
     #: `bool` indicating whether there were modifications to the document
     changes = False
 
@@ -753,13 +757,9 @@ class Document(object):
         else:
             self.path = None
 
-        # Pages number
-        if pop_doc is not None:
-            self.nb_pages = self.doc.get_n_pages()
-            self.page_labels = [self.doc.get_page(n).get_label() for n in range(self.nb_pages)]
-        else:
-            self.nb_pages = 0
-            self.page_labels = []
+        # Pages numbers and labels
+        self.nb_pages = 0 if pop_doc is None else self.doc.get_n_pages()
+        self.page_labels = [self.doc.get_page(n).get_label() for n in range(self.nb_pages)]
 
         # Pages cache
         self.pages_cache = {}
@@ -910,6 +910,9 @@ class Document(object):
         Returns:
             :class:`~pympress.document.PdfPage`: the notes mode
         """
+        if any(label.startswith('notes:') for label in self.page_labels):
+            return PdfPage.MAP
+
         page = self.page(current_page)
         if page is None or not page.can_render():
             return PdfPage.NONE
@@ -949,22 +952,33 @@ class Document(object):
         return PdfPage.NONE
 
 
-    def set_notes_after(self, notes_after):
-        """ Set whether there are notes pages after normal pages (aka Libreoffice notes mode)
+    def set_notes_pos(self, notes_direction):
+        """ Set whether where the notes pages are relative to normal pages
+
+        Valid values are returned by :meth:`~pympress.document.PdfPage.direction`
+        - page number (aka Libreoffice notes mode)
+        - page parity (can not be detected automatically, where every other page contains notes)
+        - page mapping (where labels of notes pages are corresponding slide labels prefixed with “notes:”)
 
         Args:
-            notes_after (`bool`):  Whether there are notes pages
+            notes_direction (`str`):  Where the notes pages are
         """
-        self.notes_after = notes_after
-
-
-    def set_notes_parity(self, notes_parity):
-        """ Set whether there are notes pages alternating with normal pages
-
-        Args:
-            notes_parity (`bool`):  Whether there are notes pages
-        """
-        self.notes_parity = notes_parity
+        if notes_direction == 'page number':
+            self.notes_mapping = [(n, n + self.nb_pages // 2) for n in range(self.nb_pages // 2)]
+        elif notes_direction == 'page parity':
+            self.notes_mapping = [(n, n + 1) for n in range(0, self.nb_pages, 2)]
+        elif notes_direction == 'page mapping':
+            notes_mapping = collections.OrderedDict()
+            for n, (label, prev_label) in enumerate(zip(self.page_labels, [None, *self.page_labels[:-1]])):
+                # Here the condition (could be adjusted) is 2 successive pages labeled <label> and notes:<label>,
+                # with the prior page not being a notes page.
+                if n - 1 in notes_mapping and label == 'notes:' + prev_label:
+                    notes_mapping[n - 1] = n
+                else:
+                    notes_mapping[n] = None
+            self.notes_mapping = list(notes_mapping.items())
+        else:
+            self.notes_mapping = None
 
 
     def page(self, number):
@@ -979,8 +993,8 @@ class Document(object):
         if number >= self.pages_number() or number < 0:
             return None
 
-        if self.notes_parity:
-            number = 2 * number
+        if self.notes_mapping is not None:
+            number = self.notes_mapping[number][0]
 
         if number not in self.pages_cache:
             self.pages_cache[number] = Page(self.doc.get_page(number), number, self)
@@ -999,10 +1013,11 @@ class Document(object):
         if number >= self.pages_number() or number < 0:
             return None
 
-        if self.notes_after:
-            number = number + self.pages_number()
-        elif self.notes_parity:
-            number = 2 * number + 1
+        if self.notes_mapping is not None:
+            number = self.notes_mapping[number][1]
+
+        if number is None:
+            return None
 
         if number not in self.pages_cache:
             self.pages_cache[number] = Page(self.doc.get_page(number), number, self)
@@ -1015,7 +1030,7 @@ class Document(object):
         Returns:
             `int`: the number of pages in the document
         """
-        return (self.nb_pages // 2) if self.notes_after or self.notes_parity else self.nb_pages
+        return len(self.notes_mapping) if self.notes_mapping is not None else self.nb_pages
 
 
     def has_labels(self):

@@ -188,6 +188,11 @@
 				<attribute name="action">app.notes-pos</attribute>
 				<attribute name="target">odd</attribute>
 			</item>
+			<item>
+				<attribute name="label" translatable="yes">_Prefixed labels</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">map</attribute>
+			</item>
 		</submenu>
 
 		<item>

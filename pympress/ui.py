@@ -711,8 +711,7 @@ class UI(builder.Builder):
             if target_mode:
                 self.app.activate_action('notes-pos', target_mode.name.lower())
         else:
-            self.doc.set_notes_after(self.notes_mode.direction() == 'page number')
-            self.doc.set_notes_parity(self.notes_mode.direction() == 'page parity')
+            self.doc.set_notes_pos(self.notes_mode.direction())
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
@@ -1093,10 +1092,10 @@ class UI(builder.Builder):
         page_notes = self.doc.notes_page(self.preview_page)
 
         # Aspect ratios and queue redraws
-        if draw_notes:
+        if draw_notes and page_notes is not None:
             note_pr = page_notes.get_aspect_ratio(draw_notes)
             self.p_frame_notes.set_property('ratio', note_pr)
-            self.p_da_notes.queue_draw()
+        self.p_da_notes.queue_draw()
 
         preview_pr = page_preview.get_aspect_ratio(draw_page)
 
@@ -1180,7 +1179,11 @@ class UI(builder.Builder):
             if page is None:
                 return
         else:
-            logger.warning(_('Unknown widget "{}" to draw'.format(widget.getname())))
+            logger.warning(_('Unknown widget "{}" to draw'.format(widget.get_name())))
+
+        if page is None:
+            if widget is not self.p_da_notes or self.notes_mode.direction() != 'page mapping':
+                logger.warning(_('Unexpected missing page to draw for widget "{}"'.format(widget.get_name())))
             return
 
         if not page.can_render():
@@ -1686,8 +1689,7 @@ class UI(builder.Builder):
             return False
 
         self.scribbler.disable_scribbling()
-        self.doc.set_notes_after(target_mode.direction() == 'page number')
-        self.doc.set_notes_parity(target_mode.direction() == 'page parity')
+        self.doc.set_notes_pos(target_mode.direction())
 
         self.load_layout(self.layout_name(target_mode))
 
