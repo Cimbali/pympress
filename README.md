@@ -149,6 +149,12 @@ Keyboard shortcuts are also listed in these menus. Some more usual shortcuts are
 A few of the fancier functionalities are listed here:
 - **Two-screen display**: See on your laptop or tablet display the current slide, the next slide, the talk time and wall-clock time, and annotations (either PDF annotations, beamer notes on second slide, or Libreoffice notes pages).
   The position of the beamer or Libreoffice notes in the slide is detected automatically and can be overridden via a menu option.
+
+  If you do not want to use second-slide beamer notes but prefer to have notes on their own pages, you can enable auto-detection of these notes.
+  Use the following snippet that prefixes the page labels with `notes:` on notes pages:
+  ```latex
+  \addtobeamertemplate{note page}{}{\thispdfpagelabel{notes:\insertframenumber}}
+  ```
 - **Media support**: supports playing video, audio, and gif files embedded in (or linked from) the PDF file.
 - **Highlight mode**: Allows one to draw freehand on the slide currently on screen.
 - **Go To Slide**: To jump to a selected slide without flashing through the whole presentation on the projector, press `G` or click the "current  slide" box.
