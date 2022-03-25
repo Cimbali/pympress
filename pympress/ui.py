@@ -712,6 +712,7 @@ class UI(builder.Builder):
                 self.app.activate_action('notes-pos', target_mode.name.lower())
         else:
             self.doc.set_notes_after(self.notes_mode.direction() == 'page number')
+            self.doc.set_notes_parity(self.notes_mode.direction() == 'page parity')
 
         # Some things that need updating
         self.cache.swap_document(self.doc)
@@ -1654,7 +1655,7 @@ class UI(builder.Builder):
         if target_mode == self.chosen_notes_mode:
             return False
 
-        # Update the choice, except for NONE or BEFORE/AFTER
+        # Update the choice, except for NONE or BEFORE/AFTER or EVEN/ODD
         if target_mode:
             self.chosen_notes_mode = target_mode
             gaction.change_state(target)
@@ -1686,8 +1687,21 @@ class UI(builder.Builder):
 
         self.scribbler.disable_scribbling()
         self.doc.set_notes_after(target_mode.direction() == 'page number')
+        self.doc.set_notes_parity(target_mode.direction() == 'page parity')
 
         self.load_layout(self.layout_name(target_mode))
+
+        # Transform or clip page number appropriately
+        renumber_page = (target_mode.direction() == 'page parity') - (self.notes_mode.direction() == 'page parity')
+        if renumber_page < 0:
+            self.preview_page *= 2
+            self.current_page *= 2
+        elif renumber_page > 0:
+            self.preview_page //= 2
+            self.current_page //= 2
+        elif target_mode.direction() == 'page number':
+            self.preview_page = min(self.preview_page, self.doc.pages_number())
+            self.current_page = min(self.current_page, self.doc.pages_number())
 
         self.notes_mode = target_mode
         page_type = self.notes_mode.complement()
@@ -1706,6 +1720,10 @@ class UI(builder.Builder):
         else:
             self.cache.disable_prerender('p_da_notes')
             self.cache.enable_prerender('p_da_cur')
+
+        # Most widgets will be resized so will need to clear anyway
+        # sometimes page numbers may be reinterpreted
+        self.cache.clear_cache()
 
         self.medias.adjust_margins_for_mode(page_type)
         self.do_page_change(unpause=False)

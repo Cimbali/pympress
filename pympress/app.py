@@ -71,7 +71,7 @@ class Pympress(Gtk.Application):
         'talk-time': (_('The estimated (intended) talk time in minutes') + ' ' +
                       _('(and optionally seconds)'), 'mm[:ss]'),
         'notes':     (_('Set the position of notes on the pdf page') + ' ' +
-                      _('(none, left, right, top, bottom, or after).') + ' ' +
+                      _('(none, left, right, top, bottom, after, or odd).') + ' ' +
                       _('Overrides the detection from the file.'), '<position>'),
         'log':       (_('Set level of verbosity in log file:') + ' ' +
                       _('{}, {}, {}, {}, or {}').format('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'), '<level>'),
@@ -291,6 +291,7 @@ class Pympress(Gtk.Application):
                 if arg == 't': self.activate_action('notes-pos', 'top')
                 if arg == 'b': self.activate_action('notes-pos', 'bottom')
                 if arg == 'a': self.activate_action('notes-pos', 'after')
+                if arg == 'o': self.activate_action('notes-pos', 'odd')
 
             elif opt == "talk-time":
                 t = ["0" + n.strip() for n in arg.split(':')]

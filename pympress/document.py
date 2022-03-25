@@ -86,8 +86,12 @@ class PdfPage(enum.IntEnum):
     LEFT    = 5
     #: Full page + draw another page for notes, which is after the slides
     AFTER   = 6
-    #: Complemntary of AFTER: for a notes page, the slide page is BEFORE by half a document
+    #: Complementary of AFTER: for a notes page, the slide page is BEFORE by half a document
     BEFORE  = 7
+    #: Slides on even pages (0-indexed), notes on uneven pages
+    ODD  = 8
+    #: Complementary of ODD
+    EVEN    = 9
 
     def complement(val):
         """ Return the enum value for the other part of the page.
@@ -113,6 +117,8 @@ class PdfPage(enum.IntEnum):
             return 'vertical'
         elif val == PdfPage.AFTER or val == PdfPage.BEFORE:
             return 'page number'
+        elif val == PdfPage.EVEN or val == PdfPage.ODD:
+            return 'page parity'
         else:
             return None
 
@@ -713,6 +719,8 @@ class Document(object):
     page_labels = []
     #: `bool` indicating whether the second half of pages are in fact notes pages
     notes_after = False
+    #: `bool` indicating whether every other page in fact a notes pages
+    notes_parity = False
     #: `bool` indicating whether there were modifications to the document
     changes = False
 
@@ -950,6 +958,15 @@ class Document(object):
         self.notes_after = notes_after
 
 
+    def set_notes_parity(self, notes_parity):
+        """ Set whether there are notes pages alternating with normal pages
+
+        Args:
+            notes_parity (`bool`):  Whether there are notes pages
+        """
+        self.notes_parity = notes_parity
+
+
     def page(self, number):
         """ Get the specified page.
 
@@ -961,6 +978,9 @@ class Document(object):
         """
         if number >= self.pages_number() or number < 0:
             return None
+
+        if self.notes_parity:
+            number = 2 * number
 
         if number not in self.pages_cache:
             self.pages_cache[number] = Page(self.doc.get_page(number), number, self)
@@ -981,6 +1001,8 @@ class Document(object):
 
         if self.notes_after:
             number = number + self.pages_number()
+        elif self.notes_parity:
+            number = 2 * number + 1
 
         if number not in self.pages_cache:
             self.pages_cache[number] = Page(self.doc.get_page(number), number, self)
@@ -993,7 +1015,7 @@ class Document(object):
         Returns:
             `int`: the number of pages in the document
         """
-        return (self.nb_pages // 2) if self.notes_after else self.nb_pages
+        return (self.nb_pages // 2) if self.notes_after or self.notes_parity else self.nb_pages
 
 
     def has_labels(self):
