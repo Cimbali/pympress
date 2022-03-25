@@ -255,7 +255,7 @@ yum install python36 python3-pip gtk3 poppler-glib cairo gdk-pixbuf2 python3-gob
 And on Arch Linux:
 
 ```sh
-pacman -S --needed python python-pip gtk3 poppler cairo gobject-introspection poppler-glib python-gobject
+pacman -S --needed python python-pip gtk3 poppler cairo gobject-introspection poppler-glib python-gobject gst-plugin-gtk
 ```
 
 
