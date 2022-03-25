@@ -1190,7 +1190,7 @@ class UI(builder.Builder):
             return
 
         name = widget.get_name().rstrip('0123456789')
-        nb = page.number()
+        nb = page.number()  # Use PDF page numbering for the cache
         wtype = self.cache.get_widget_type(name)
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
         window = widget.get_window()
@@ -1722,10 +1722,6 @@ class UI(builder.Builder):
         else:
             self.cache.disable_prerender('p_da_notes')
             self.cache.enable_prerender('p_da_cur')
-
-        # Most widgets will be resized so will need to clear anyway
-        # sometimes page numbers may be reinterpreted
-        self.cache.clear_cache()
 
         self.medias.adjust_margins_for_mode(page_type)
         self.do_page_change(unpause=False)

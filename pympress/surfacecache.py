@@ -127,9 +127,7 @@ class SurfaceCache(object):
         with self.doc_lock:
             self.doc = new_doc
 
-        for widget_name in self.locks:
-            with self.locks[widget_name]:
-                self.surface_cache[widget_name].clear()
+        self.clear_cache()
 
 
     def disable_prerender(self, widget_name):
@@ -307,7 +305,8 @@ class SurfaceCache(object):
         page.render_cairo(context, ww, wh, wtype)
         del context
 
-        # Save if possible and necessary
+        # Save if possible and necessary − using PDF page numbering
+        page_nb = page.page_nb
         with self.locks[widget_name]:
             pc = self.surface_cache[widget_name]
             if (ww, wh) == self.surface_size[widget_name] and page_nb not in pc:
