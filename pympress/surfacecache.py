@@ -175,14 +175,15 @@ class SurfaceCache(object):
         return self.surface_type[widget_name]
 
 
-    def clear_cache(self, widget_name):
+    def clear_cache(self, widget_name=None):
         """ Remove all cached values for a given widget. Useful for zoomed views.
 
         Args:
-            widget_name (`str`):  name of the widget that is resized
+            widget_name (`str`):  name of the widget that is resized, `None` for all widgets.
         """
-        with self.locks[widget_name]:
-            self.surface_cache[widget_name].clear()
+        for widget in [widget_name] if widget_name is not None else self.locks:
+            with self.locks[widget]:
+                self.surface_cache[widget].clear()
 
 
     def resize_widget(self, widget_name, width, height):
