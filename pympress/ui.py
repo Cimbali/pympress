@@ -696,7 +696,6 @@ class UI(builder.Builder):
             self.file_watcher.stop_watching()
 
         self.current_page = self.preview_page = self.doc.goto(page)
-        self.doc.goto(self.current_page)
 
         # Guess notes mode by default if the document has notes
         if not reloading:

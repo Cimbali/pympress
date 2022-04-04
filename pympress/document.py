@@ -693,8 +693,8 @@ class Page(object):
 class Document(object):
     """ This is the main document handling class.
 
-    .. note:: The internal page numbering scheme is the same as in Poppler: it
-       starts at 0.
+    The page numbering starts as 0 and is aware of notes (i.e. number of pages may change to account for note pages).
+    The document page numbers are the same as in Poppler, and also start at 0 but do not depend on notes.
 
     Args:
         builder (:class:`pympress.builder.Builder`):  A builder to load callbacks
@@ -717,13 +717,15 @@ class Document(object):
     pages_cache = {}
     #: `set` of :class:`~pathlib.Path` representing the temporary files which need to be removed
     temp_files = set()
-    #: History of pages we have visited
+    #: History of pages we have visited, using note-aware page numbers
     history = []
     #: Our position in the history
     hist_pos = -1
-    #: `list` of all the page labels
+    #: `list` of slide page labels, indexed on note-aware page numbers
     page_labels = []
-    #: `list` of (slide page number, notes page number) tuples, or `None` if there are no notes
+    #: `list` of all the page labels, indexed on document page numbers
+    doc_page_labels = []
+    #: `list` of (slide's document page number, notes' document page number) tuples, or `None` if there are no notes
     notes_mapping = None
     #: `bool` indicating whether there were modifications to the document
     changes = False
@@ -759,7 +761,8 @@ class Document(object):
 
         # Pages numbers and labels
         self.nb_pages = 0 if pop_doc is None else self.doc.get_n_pages()
-        self.page_labels = [self.doc.get_page(n).get_label() for n in range(self.nb_pages)]
+        self.doc_page_labels = [self.doc.get_page(n).get_label() for n in range(self.nb_pages)]
+        self.page_labels = self.doc_page_labels
 
         # Pages cache
         self.pages_cache = {}
@@ -969,7 +972,7 @@ class Document(object):
             self.notes_mapping = [(n, n + 1) for n in range(0, self.nb_pages, 2)]
         elif notes_direction == 'page mapping':
             notes_mapping = collections.OrderedDict()
-            for n, (label, prev_label) in enumerate(zip(self.page_labels, [None, *self.page_labels[:-1]])):
+            for n, (label, prev_label) in enumerate(zip(self.doc_page_labels, [None, *self.doc_page_labels[:-1]])):
                 # Here the condition (could be adjusted) is 2 successive pages labeled <label> and notes:<label>,
                 # with the prior page not being a notes page.
                 if n - 1 in notes_mapping and label == 'notes:' + prev_label:
@@ -979,6 +982,10 @@ class Document(object):
             self.notes_mapping = list(notes_mapping.items())
         else:
             self.notes_mapping = None
+            self.page_labels = self.doc_page_labels
+            return
+
+        self.page_labels = [self.doc_page_labels[page] for page, note in self.notes_mapping]
 
 
     def page(self, number):
@@ -995,6 +1002,8 @@ class Document(object):
 
         if self.notes_mapping is not None:
             number = self.notes_mapping[number][0]
+            if number < 0:
+                return None
 
         if number not in self.pages_cache:
             self.pages_cache[number] = Page(self.doc.get_page(number), number, self)
@@ -1039,7 +1048,7 @@ class Document(object):
         Returns:
             `bool`: False iff there are no labels or they are just the page numbers
         """
-        return self.page_labels != [str(n + 1) for n in range(self.nb_pages)]
+        return self.doc_page_labels != [str(n + 1) for n in range(self.nb_pages)]
 
 
     def lookup_label(self, label, prefix_unique=True):
@@ -1081,7 +1090,7 @@ class Document(object):
 
 
     def goto(self, number):
-        """ Switch to another page.
+        """ Switch to another page. Validates the number and returns one in the correct range. Also updates history.
 
         Args:
             number (`int`):  number of the destination page
