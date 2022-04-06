@@ -17,7 +17,7 @@
             <property name="title" translatable="yes">Navigating</property>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_next">
+              <object class="GtkShortcutsShortcut" id="shortcut_next_page">
                 <property name="visible">1</property>
                 <property name="accelerator">Right Down Page_Down space</property>
                 <property name="title" translatable="yes">Next slide</property>
@@ -25,7 +25,7 @@
             </child>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_prev">
+              <object class="GtkShortcutsShortcut" id="shortcut_prev_page">
                 <property name="visible">1</property>
                 <property name="accelerator">Left Up Page_Up</property>
                 <property name="title" translatable="yes">Previous slide</property>
@@ -49,7 +49,7 @@
             </child>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_first">
+              <object class="GtkShortcutsShortcut" id="shortcut_first_page">
                 <property name="visible">1</property>
                 <property name="accelerator">Home</property>
                 <property name="title" translatable="yes">First slide</property>
@@ -57,7 +57,7 @@
             </child>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_last">
+              <object class="GtkShortcutsShortcut" id="shortcut_last_page">
                 <property name="visible">1</property>
                 <property name="accelerator">End</property>
                 <property name="title" translatable="yes">Last slide</property>
@@ -121,7 +121,7 @@
             </child>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_talk_time">
+              <object class="GtkShortcutsShortcut" id="shortcut_edit_talk_time">
                 <property name="visible">1</property>
                 <property name="accelerator">t</property>
                 <property name="title" translatable="yes">Set estimated talk time</property>
@@ -153,7 +153,7 @@
             </child>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_highlighting">
+              <object class="GtkShortcutsShortcut" id="shortcut_highlight">
                 <property name="visible">1</property>
                 <property name="accelerator">h</property>
                 <property name="title" translatable="yes">Toggle highlighting</property>
@@ -161,7 +161,7 @@
             </child>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_toggle_pointermode">
+              <object class="GtkShortcutsShortcut" id="shortcut_pointer_mode_toggle">
                 <property name="visible">1</property>
                 <property name="accelerator">l</property>
                 <property name="title" translatable="yes">Toggle laserpointer</property>
@@ -185,7 +185,7 @@
             </child>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_undo_scribble">
+              <object class="GtkShortcutsShortcut" id="shortcut_highlight_undo">
                 <property name="visible">1</property>
                 <property name="accelerator">&lt;ctrl&gt;z</property>
                 <property name="title" translatable="yes">Undo highlight stroke</property>
@@ -193,7 +193,15 @@
             </child>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_validate">
+              <object class="GtkShortcutsShortcut" id="shortcut_highlight_redo">
+                <property name="visible">1</property>
+                <property name="accelerator">&lt;ctrl&gt;r</property>
+                <property name="title" translatable="yes">Redo highlight stroke</property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkShortcutsShortcut" id="shortcut_validate_input">
                 <property name="visible">1</property>
                 <property name="accelerator">Return</property>
                 <property name="title" translatable="yes">Validate goto/jump destination</property>
@@ -201,7 +209,7 @@
             </child>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_cancel">
+              <object class="GtkShortcutsShortcut" id="shortcut_cancel_input">
                 <property name="visible">1</property>
                 <property name="accelerator">Escape</property>
                 <property name="title" translatable="yes">Cancel goto/jump/highlighting/zooming</property>
@@ -217,7 +225,7 @@
             <property name="title" translatable="yes">Manage files</property>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_open_file">
+              <object class="GtkShortcutsShortcut" id="shortcut_pick_file">
                 <property name="visible">1</property>
                 <property name="accelerator">o</property>
                 <property name="title" translatable="yes">Open file</property>
@@ -265,7 +273,7 @@
             <property name="title" translatable="yes">Windows</property>
 
             <child>
-              <object class="GtkShortcutsShortcut" id="shortcut_fullscreen_content">
+              <object class="GtkShortcutsShortcut" id="shortcut_content_fullscreen">
                 <property name="visible">1</property>
                 <property name="accelerator">f F11 &lt;ctrl&gt;l</property>
                 <property name="title" translatable="yes">Toggle fullscreen</property>

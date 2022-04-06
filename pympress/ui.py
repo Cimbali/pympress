@@ -496,7 +496,7 @@ class UI(builder.Builder):
         self.shortcuts_window = shortcuts_builder.get_object('shortcuts_window')
 
         for command, shortcut_list in self.config.items('shortcuts'):
-            display_shortcut = shortcuts_builder.get_object('shortcut_' + command)
+            display_shortcut = shortcuts_builder.get_object('shortcut_' + command.replace('-', '_').replace('::', '_'))
             if display_shortcut is not None:
                 display_shortcut.props.accelerator = shortcut_list
 
