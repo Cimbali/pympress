@@ -464,7 +464,7 @@ msgstr "pip 将之后下载并编译 pygobject，因为你需要 Gtk 头文件�
 #: 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 ""
-msgstr "pympress 是使用 Python 编写的小型 PDF 阅读器，使用 Poppler 渲染 PDF，使用 GTK 制作 GUI。"
+msgstr "pympress 是使用 Python 编写的小型 PDF 阅读器，使用 Poppler 渲染 PDF，使用 GTK 制作 GUI。\n"
 
 #: 
 msgid "slide"
