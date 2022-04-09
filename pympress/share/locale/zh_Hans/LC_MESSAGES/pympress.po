@@ -1,0 +1,1064 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: pympress\n"
+"Language: zh-Hans\n"
+
+#: 
+msgid "(and optionally seconds)"
+msgstr "(以及可选的秒数)"
+
+#: 
+#, fuzzy
+msgid "(paused)"
+msgstr "(已暂停)"
+
+#: 
+#, fuzzy
+msgid "Adjust alignment of slides in projector screen"
+msgstr "在放映屏幕中调整幻灯片的对齐位置"
+
+#: 
+msgid "All files"
+msgstr "所有文件"
+
+#: 
+msgid "Annotations"
+msgstr "注释"
+
+#: 
+#, fuzzy
+msgid "Big buttons"
+msgstr "大按键"
+
+#: 
+msgid "Cairo can not draw gif"
+msgstr "Cairo 无法绘制 gif"
+
+#: 
+msgid "Clock"
+msgstr "时钟"
+
+#: 
+#, fuzzy
+msgid "Content and presenter window must not be on the same monitor if you start full screen!"
+msgstr "使用全屏模式时，放映窗口与演示者窗口无法在同一显示器中显示!"
+
+#: 
+#, fuzzy
+msgid "Content blanked"
+msgstr "放映黑屏"
+
+#: 
+msgid "Content fullscreen"
+msgstr "全屏放映"
+
+#: 
+msgid "Contributors:"
+msgstr "贡献者:"
+
+#: 
+msgid "Could not disable DPMS screen blanking: got status "
+msgstr "无法禁用 DPMS 屏幕黑屏：得到状态码 "
+
+#: 
+msgid "Could not enable DPMS screen blanking: got status "
+msgstr "无法启用 DPMS 屏幕黑屏：得到状态码 "
+
+#: 
+#, fuzzy
+msgid "Could not find the file \"{}\""
+msgstr "无法找到文件 \"{}\""
+
+#: 
+msgid "Could not set screensaver status: got status "
+msgstr "无法设定屏保状态：得到状态码 "
+
+#: 
+msgid "Current slide"
+msgstr "当前幻灯片"
+
+#: 
+msgid "ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system."
+msgstr "错误：Gobject Introspections 模块丢失，请确保 Gtk 以及 pygobject 已在您的系统上正确安装。"
+
+#: 
+msgid "Error loading icon for about window"
+msgstr "加载关于窗口标志时出现错误"
+
+#: 
+msgid "Error opening the file \"{}\""
+msgstr "打开文件 \"{}\" 时出现错误"
+
+#: 
+msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
+msgstr "请参考 https://github.com/Cimbali/pympress/blob/master/README.md#dependencies 以获取更多帮助"
+
+#: 
+msgid "GtkImage gif player"
+msgstr "GtkImage gif 播放器"
+
+#: 
+msgid "Highlight"
+msgstr "高亮"
+
+#: 
+msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
+msgstr "如果正在使用 virtualenv 或 anaconda，那么可以允许系统级包，或者运行：pip install pygobject"
+
+#: 
+msgid "Invalid log level \"{}\", try one of {}"
+msgstr "无效的日志级别 \"{}\"，尝试 {} 其中之一"
+
+#: 
+msgid "Invalid time (mm or mm:ss expected), got \"{}\""
+msgstr "无效的时间（应为 mm 或者 mm:ss），得到 \"{}\""
+
+#: 
+msgid "Media support uses {}."
+msgstr "媒体由 {} 支持。"
+
+#: 
+msgid "Next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "No action was defined for this link"
+msgstr "此链接没有定义动作。"
+
+#: 
+msgid "Not starting content or presenter window full screen because there is only one monitor"
+msgstr "因为只有一个显示器，所以无法启动放映或演示者窗口"
+
+#: 
+msgid "Notes"
+msgstr "备注"
+
+#: 
+msgid "Notes position"
+msgstr "备注位置"
+
+#: 
+msgid "Open _Recent"
+msgstr "打开 _最近"
+
+#: 
+msgid "Open..."
+msgstr "打开..."
+
+#: 
+msgid "Options:"
+msgstr "选项:"
+
+#: 
+msgid "Overrides the detection from the file."
+msgstr "从文件覆盖检测。"
+
+#: 
+msgid "PDF files"
+msgstr "PDF 文件"
+
+#: 
+msgid "Pause"
+msgstr "暂停"
+
+#: 
+msgid "Play"
+msgstr "播放"
+
+#: 
+msgid "Pointer"
+msgstr "激光笔"
+
+#: 
+msgid "Portable installation"
+msgstr "便携安装"
+
+#: 
+msgid "Presentation timing breakdown"
+msgstr "演讲时间统计"
+
+#: 
+msgid "Presenter fullscreen"
+msgstr "全屏演示者视图"
+
+#: 
+msgid "Pympress Content"
+msgstr "Pympress 放映窗口"
+
+#: 
+msgid "Pympress Presenter"
+msgstr "Pympress 演示者视图"
+
+#: 
+msgid "Pympress can not extract attached file"
+msgstr "Pympress 不能提取附件"
+
+#: 
+msgid "Pympress can not extract embedded media"
+msgstr "Pympress 不能提取内嵌媒体"
+
+#: 
+msgid "Pympress can not find file "
+msgstr "Pympress 不能找到文件 "
+
+#: 
+msgid "Pympress can not interpret annotation of type:"
+msgstr "Pympress 不能解析注释类型:"
+
+#: 
+msgid "Pympress does not recognize link type \"{}\""
+msgstr "Pympress 不能识别链接类型 \"{}\""
+
+#: 
+msgid "Pympress does not recognize link type \"{}\" to \"{}\""
+msgstr "Pympress 不能识别链接类型 \"{}\" 为 \"{}\""
+
+#: 
+msgid "Pympress does not yet support link type \"{}\""
+msgstr "Pympress 不能支持链接类型 \"{}\""
+
+#: 
+msgid "Pympress does not yet support link type \"{}\" to \"{}\""
+msgstr "Pympress 不能支持链接类型 \"{}\" 为 \"{}\""
+
+#: 
+msgid "Python version {}"
+msgstr "Python 版本 {}"
+
+#: 
+msgid "Resources are loaded from "
+msgstr "资源装载自 "
+
+#: 
+msgid "Set level of verbosity in log file:"
+msgstr "设置日志保留级别:"
+
+#: 
+msgid "Set talk _Time"
+msgstr "设定演讲 _时长"
+
+#: 
+msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
+msgstr "设定备注在 PDF 页面上的位置（无, 左, 右, 顶, 底）。"
+
+#: 
+msgid "Slide number"
+msgstr "幻灯片编号"
+
+#: 
+msgid "Some preferences are saved in "
+msgstr "部分首选项设置保存在 "
+
+#: 
+msgid "Stop"
+msgstr "停止"
+
+#: 
+msgid "The estimated (intended) talk time in minutes"
+msgstr "预计演讲时长（分钟）"
+
+#: 
+msgid "The log is written to "
+msgstr "日志用以 "
+
+#: 
+msgid "This help"
+msgstr "这将帮助"
+
+#: 
+msgid "Time elapsed"
+msgstr "已进行"
+
+#: 
+msgid "Time estimation"
+msgstr "预估"
+
+#: 
+msgid "Timing breakdown"
+msgstr "时间统计"
+
+#: 
+msgid "Unexpected action in index \"{}\""
+msgstr "索引 \"{}\" 未预期的动作"
+
+#: 
+msgid "Unknow widget {} to be fullscreened, aborting."
+msgstr "将中止全屏未知部件 {}。"
+
+#: 
+msgid "Unsupported OS: can't enable/disable screensaver"
+msgstr "不支持的操作系统：无法启用/禁用屏保"
+
+#: 
+msgid "Usage: {} [options] <presentation_file>"
+msgstr "使用方法：{} [选项] <演示文件>"
+
+#: 
+msgid "Video support using {} is disabled."
+msgstr "已关闭视频支持 {}。"
+
+#: 
+msgid "_Align content"
+msgstr "_放映内容对齐"
+
+#: 
+msgid "_Annotations"
+msgstr "_注释"
+
+#: 
+msgid "_Blank screen"
+msgstr "_黑屏"
+
+#: 
+msgid "_Blue"
+msgstr "_蓝色"
+
+#: 
+msgid "_Bottom"
+msgstr "_底部"
+
+#: 
+msgid "_Disabled"
+msgstr "_禁用"
+
+#: 
+msgid "_File"
+msgstr "_文件"
+
+#: 
+msgid "_First"
+msgstr "_第一页"
+
+#: 
+msgid "_Fullscreen"
+msgstr "_全屏"
+
+#: 
+msgid "_Go to..."
+msgstr "_转到..."
+
+#: 
+msgid "_Green"
+msgstr "_绿色"
+
+#: 
+msgid "_Help"
+msgstr "_帮助"
+
+#: 
+msgid "_Highlight"
+msgstr "_高亮"
+
+#: 
+msgid "_Jump to label"
+msgstr "_跳转到"
+
+#: 
+msgid "_Last"
+msgstr "_最后一页"
+
+#: 
+msgid "_Left"
+msgstr "_左"
+
+#: 
+msgid "_Manual"
+msgstr "_手动"
+
+#: 
+msgid "_Navigation"
+msgstr "_导航"
+
+#: 
+msgid "_Next"
+msgstr "_下一页"
+
+#: 
+msgid "_Notes mode"
+msgstr "_备注模式"
+
+#: 
+msgid "_Pause timer"
+msgstr "_暂停计时器"
+
+#: 
+msgid "_Permanent"
+msgstr "_总是"
+
+#: 
+msgid "_Presentation"
+msgstr "_演示"
+
+#: 
+msgid "_Previous"
+msgstr "_上一个"
+
+#: 
+msgid "_Red"
+msgstr "_红色"
+
+#: 
+msgid "_Reset timer"
+msgstr "_重置计时器"
+
+#: 
+msgid "_Right"
+msgstr "_右"
+
+#: 
+msgid "_Shortcuts"
+msgstr "_快捷键"
+
+#: 
+msgid "_Starting Configuration"
+msgstr "_启动设置"
+
+#: 
+msgid "_Swap screens"
+msgstr "_交换屏幕"
+
+#: 
+msgid "_Top"
+msgstr "_顶部"
+
+#: 
+msgid "_Undo zoom"
+msgstr "_取消放大"
+
+#: 
+msgid "_Zoom in"
+msgstr "_放大"
+
+#: 
+msgid "access denied when trying to access screen saver settings in registry!"
+msgstr "尝试访问注册表中的屏保设定时，出现访问拒绝。"
+
+#: 
+msgid "column"
+msgstr "列"
+
+#: 
+msgid "duration"
+msgstr "时长"
+
+#: 
+msgid "name"
+msgstr "名称"
+
+#: 
+msgid "no action defined for this link!"
+msgstr "此链接没有定义动作!"
+
+#: 
+msgid "page label"
+msgstr "页面标记"
+
+#: 
+msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
+msgstr "pip 将之后下载并编译 pygobject，因为你需要 Gtk 头文件（或者是开发包）。"
+
+#: 
+msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
+""
+msgstr "pympress 是使用 Python 编写的小型 PDF 阅读器，使用 Poppler 渲染 PDF，使用 GTK 制作 GUI。"
+
+#: 
+msgid "slide"
+msgstr "幻灯片"
+
+#: 
+msgid "slide #"
+msgstr "幻灯片 #"
+
+#: 
+msgid "time"
+msgstr "时间"
+
+#: 
+msgid "{}, {}, {}, {}, or {}"
+msgstr "{}, {}, {}, {}, or {}"
+
+#: 
+msgid "Additional features"
+msgstr "额外功能"
+
+#: 
+msgid "Blank screen"
+msgstr "_黑屏"
+
+#: 
+msgid "Cancel goto/jump/highlighting/zooming"
+msgstr "取消转到/跳转/高亮/放大"
+
+#: 
+msgid "Close file"
+msgstr "_关闭文件"
+
+#: 
+msgid "First slide"
+msgstr "第一个幻灯片"
+
+#: 
+msgid "Go back in slide history"
+msgstr "回退历史记录项"
+
+#: 
+msgid "Go forward in slide history"
+msgstr "前进历史记录项"
+
+#: 
+msgid "Go to page number"
+msgstr "转到页码"
+
+#: 
+msgid "Jump to page label"
+msgstr "跳至标签"
+
+#: 
+msgid "Last slide"
+msgstr "最后一页"
+
+#: 
+msgid "Manage files"
+msgstr "管理文件"
+
+#: 
+msgid "Navigating"
+msgstr "导航"
+
+#: 
+msgid "Next slide with different label"
+msgstr "下一张不同标签的幻灯片"
+
+#: 
+msgid "Open file"
+msgstr "打开文件"
+
+#: 
+msgid "Play/pause timer"
+msgstr "播放/暂停计时器"
+
+#: 
+msgid "Presentation"
+msgstr "演示"
+
+#: 
+msgid "Previous slide"
+msgstr "上一张幻灯片"
+
+#: 
+msgid "Previous slide with different label"
+msgstr "上一张不同标签的幻灯片"
+
+#: 
+msgid "Quit"
+msgstr "_退出"
+
+#: 
+msgid "Reset timer"
+msgstr "_重置计时器"
+
+#: 
+msgid "Set estimated talk time"
+msgstr "设定演讲 _时长"
+
+#: 
+msgid "Swap windows"
+msgstr "互换窗口位置"
+
+#: 
+msgid "Timers"
+msgstr "计时器"
+
+#: 
+msgid "Toggle annotations"
+msgstr "切换注释"
+
+#: 
+msgid "Toggle fullscreen"
+msgstr "切换全屏"
+
+#: 
+msgid "Toggle highlighting"
+msgstr "切换高亮"
+
+#: 
+msgid "Toggle laserpointer"
+msgstr "切换激光笔"
+
+#: 
+msgid "Toggle notes mode"
+msgstr "切换备注模式"
+
+#: 
+msgid "Undo highlight stroke"
+msgstr "撤销高亮笔画"
+
+#: 
+msgid "Unzoom"
+msgstr "缩小"
+
+#: 
+msgid "Validate goto/jump destination"
+msgstr "验证转到/跳转目标"
+
+#: 
+msgid "Windows"
+msgstr "窗口"
+
+#: 
+msgid "Zoom"
+msgstr "放大"
+
+#: 
+msgid "Unrecognized named destination: "
+msgstr "未识别的目标名称："
+
+#: 
+msgid "Unsupported link clicked. "
+msgstr "不支持的点击链接 "
+
+#: 
+msgid "Fullscreen Presentation running"
+msgstr "全屏演示已运行"
+
+#: 
+msgid "Caused by "
+msgstr "由于 "
+
+#: 
+msgid "Building FileWatcher"
+msgstr "构建 FileWatcher"
+
+#: 
+msgid "Missing dependency: python \"{}\" package"
+msgstr "缺失依赖：python \"{}\" 包"
+
+#: 
+msgid "Monitoring of changes to reload files automatically is not available"
+msgstr "自动重载文件变更不可用"
+
+#: 
+msgid "ERROR: Gobject Introspections and/or pycairo module is missing, make sure Gtk, pygobject and pycairo are installed on your system."
+msgstr "错误：Gobject Introspections 与/或 pycairo 模块缺失，请确保 Gtk, pygobject 与 pycario 已在系统中正确安装。"
+
+#: 
+msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject pycairo"
+msgstr "如果正在使用 virtualenv 或 anaconda，那么可以允许系统级包，或者运行：pip install pygobject pycairo"
+
+#: 
+msgid "pip will then download and compile pygobject, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "pip 将之后下载并编译 pygobject，因为你需要 Gtk 和 cairo 头文件（或者是开发包）。"
+
+#: 
+msgid "(none, left, right, top, or bottom)."
+msgstr "(无, 左, 右, 顶, 底)。"
+
+#: 
+msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
+msgstr "如果你在使用 virtualenv 或 anaconda，你也可以尝试允许系统级包。"
+
+#: 
+msgid "Set the position of notes on the pdf page"
+msgstr "设定备注在 PDF 页面上的位置"
+
+#: 
+msgid "Try your operating system’s package manager, or try running: pip install pygobject pycairo"
+msgstr "尝试使用操作系统的包管理器，或运行：pip install pygobject pycairo"
+
+#: 
+msgid "pip will then download and compile pygobject and pycairo, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "pip 将之后下载并编译 pygobject 和 pycairo，因为你需要 Gtk 和 cairo 头文件（或者是开发包）。"
+
+#: 
+msgid "(none, left, right, top, bottom, or after)."
+msgstr "(无, 左, 右, 顶, 底, 之后)。"
+
+#: 
+msgid "_After slide pages"
+msgstr "_幻灯页面之后"
+
+#: 
+msgid "_Bottom half of slide"
+msgstr "_幻灯片底半部"
+
+#: 
+msgid "_Left half of slide"
+msgstr "_幻灯片左半部"
+
+#: 
+msgid "_Right half of slide"
+msgstr "_幻灯片右半部"
+
+#: 
+msgid "_Top half of slide"
+msgstr "_幻灯片顶半部"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to bool"
+msgstr "从配置文件 {}.{} \"{}\" 解析选项为布尔值时发生错误"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to float"
+msgstr "从配置文件 {}.{} \"{}\" 解析选项为浮点数时发生错误"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to int"
+msgstr "从配置文件 {}.{} \"{}\" 解析选项为整型数时发生错误"
+
+#: 
+msgid "Blank/unblank content screen"
+msgstr "黑屏/取消黑屏"
+
+#: 
+msgid "Close opened pympress instance"
+msgstr "关闭已经打开的 pympress 实例"
+
+#: 
+msgid "Print version and exit"
+msgstr "打印版本并退出"
+
+#: 
+msgid "Reset talk timer"
+msgstr "重置计时器"
+
+#: 
+msgid "Toggle pause of talk timer"
+msgstr "切换计时器暂停状态"
+
+#: 
+msgid "GdkPixbuf gif player"
+msgstr "GtkImage gif 播放器"
+
+#: 
+msgid "Media support loaded: "
+msgstr "媒体支持已加载："
+
+#: 
+msgid "Media support using {} is disabled."
+msgstr "媒体支持 {} 已被关闭。"
+
+#: 
+msgid "Media support: "
+msgstr "媒体支持："
+
+#: 
+msgid "Align _content"
+msgstr "_放映内容对齐"
+
+#: 
+msgid "Clear and restore per page label"
+msgstr "清空并恢复每页标签"
+
+#: 
+msgid "Clear and restore per page number"
+msgstr "清空并重置每页编号"
+
+#: 
+msgid "Clear on page change"
+msgstr "页面变更时清空"
+
+#: 
+msgid "Highlight mode"
+msgstr "高亮模式"
+
+#: 
+msgid "Never clear (manually only)"
+msgstr "永不清空（仅手动）"
+
+#: 
+msgid "Tools below slide"
+msgstr "幻灯片底部的工具"
+
+#: 
+msgid "Tools next to slide"
+msgstr "靠近幻灯片的工具"
+
+#: 
+msgid "_Close"
+msgstr "_关闭"
+
+#: 
+msgid "_Open"
+msgstr "_打开"
+
+#: 
+msgid "_Pointer"
+msgstr "_激光笔"
+
+#: 
+msgid "_Quit"
+msgstr "_退出"
+
+#: 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr "Gtk.Application.inhibit 阻止屏保失败，尝试强制关闭"
+
+#: 
+msgid "Should not require hard enable/disable screensaver on Linux"
+msgstr "Linux 上并不需要强制开启/关闭屏保"
+
+#: 
+msgid "10th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "11th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "12th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "13th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "14th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "15th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "16th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "2nd next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "3rd next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "4th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "5th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "6th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "7th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "8th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "9th next slide"
+msgstr "下一张幻灯片"
+
+#: 
+msgid "Edit layout"
+msgstr "编辑布局"
+
+#: 
+msgid "Plain layout, without notes mode"
+msgstr "普通布局，不包含备注模式"
+
+#: 
+msgid "Unknown widget \"{}\" to draw"
+msgstr "无法绘制未知部件 \"{}\""
+
+#: 
+msgid "annotations (hideable)"
+msgstr "注释（可隐藏）"
+
+#: 
+msgid "box"
+msgstr "盒子"
+
+#: 
+msgid "current slide"
+msgstr "当前幻灯片"
+
+#: 
+msgid "horizontal"
+msgstr "水平的"
+
+#: 
+msgid "next slide(s)"
+msgstr "后续幻灯片"
+
+#: 
+msgid "next slides count"
+msgstr "后续幻灯片计数"
+
+#: 
+msgid "orientation"
+msgstr "朝向"
+
+#: 
+msgid "resizeable"
+msgstr "可伸缩的"
+
+#: 
+msgid "vertical"
+msgstr "纵向的"
+
+#: 
+msgid "widget"
+msgstr "部件"
+
+#: 
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr " beamer 第二屏备注的布局（备注中没有当前幻灯片预览）"
+
+#: 
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr "libreoffice 不同页备注的布局（包含当前幻灯片预览）"
+
+#: 
+msgid "Plain layout, without note slides"
+msgstr "普通布局，不包含备注幻灯片"
+
+#: 
+msgid "Overwrite"
+msgstr "覆写"
+
+#: 
+msgid "Overwrite changes instead of reloading?"
+msgstr "覆写更改而不是重新加载？"
+
+#: 
+msgid "Reload"
+msgstr "重新加载"
+
+#: 
+msgid "Save as..."
+msgstr "另存为..."
+
+#: 
+msgid "Save changes before closing?"
+msgstr "关闭前保留更改？"
+
+#: 
+msgid "Saving changes will overwrite the changed file!"
+msgstr "保存更改将会覆写已变更文件！"
+
+#: 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr "打开的文件已被外部更改，但却有未保存的变更。"
+
+#: 
+msgid "Unsaved changes"
+msgstr "未保存的变更"
+
+#: 
+msgid "Unsaved changes will be lost"
+msgstr "未保存的变更将会丢失"
+
+#: 
+msgid "Unsaved changes will be lost."
+msgstr "未保存的变更将会丢失。"
+
+#: 
+msgid "_Discard"
+msgstr "_禁用"
+
+#: 
+msgid "_Save"
+msgstr "_保存"
+
+#: 
+msgid "_Save as"
+msgstr "_另存为"
+
+#: 
+msgid "annotations"
+msgstr "注释"
+
+#: 
+msgid "Auto"
+msgstr "自动"
+
+#: 
+msgid "Choose parameters for automatically playing slides"
+msgstr "选择自动切换幻灯片参数"
+
+#: 
+msgid "Loop"
+msgstr "循环"
+
+#: 
+msgid "Save file"
+msgstr "保存文件"
+
+#: 
+msgid "Save file as"
+msgstr "另存文件为"
+
+#: 
+msgid "Time per slide (s):"
+msgstr "每张时间（秒）:"
+
+#: 
+msgid "_Automatic navigation"
+msgstr "_自动切换"
+
+#: 
+msgid "Note pages"
+msgstr "备注页"
+
+#: 
+msgid "Plain"
+msgstr "普通模式"
+
+#: 
+msgid "notes"
+msgstr "备注"
+
+#: 
+msgid "Highlighting"
+msgstr "高亮模式"
+
+#: 
+msgid "Layout to draw on the current slide"
+msgstr "当前幻灯片的绘制布局"
+
+#: 
+msgid "highlighting"
+msgstr "高亮"
+
+#: 
+msgid "Exit highlight on page change"
+msgstr "页面变更后退出高亮模式"
+
+#: 
+msgid "(none, left, right, top, bottom, after, or odd)."
+msgstr "(无, 左, 右, 顶, 底, 之后, 奇数页)。"
+
+#: 
+msgid "_Every second page"
+msgstr "_每隔一张"
+
+#: 
+msgid "(none, left, right, top, bottom, after, odd, or prefix)."
+msgstr "(无, 左, 右, 顶, 底, 之后, 奇数页, 前缀)。"
+
+#: 
+msgid "Unexpected missing page to draw for widget \"{}\""
+msgstr "未预期的缺失页面绘制，部件 \"{}\""
+
+#: 
+msgid "_Prefixed labels"
+msgstr "_前缀标签"
+
+#: 
+msgid "Redo highlight stroke"
+msgstr "重做高亮笔画"
+
