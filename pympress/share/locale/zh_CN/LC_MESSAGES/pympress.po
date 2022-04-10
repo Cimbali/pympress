@@ -29,7 +29,7 @@ msgstr "注释"
 
 #: 
 msgid "Big buttons"
-msgstr "大按键"
+msgstr "功能按钮"
 
 #: 
 msgid "Cairo can not draw gif"
