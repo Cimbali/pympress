@@ -12,12 +12,10 @@ msgid "(and optionally seconds)"
 msgstr "(以及可选的秒数)"
 
 #: 
-#, fuzzy
 msgid "(paused)"
 msgstr "(已暂停)"
 
 #: 
-#, fuzzy
 msgid "Adjust alignment of slides in projector screen"
 msgstr "在放映屏幕中调整幻灯片的对齐位置"
 
@@ -30,7 +28,6 @@ msgid "Annotations"
 msgstr "注释"
 
 #: 
-#, fuzzy
 msgid "Big buttons"
 msgstr "大按键"
 
@@ -43,12 +40,10 @@ msgid "Clock"
 msgstr "时钟"
 
 #: 
-#, fuzzy
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr "使用全屏模式时，放映窗口与演示者窗口无法在同一显示器中显示!"
 
 #: 
-#, fuzzy
 msgid "Content blanked"
 msgstr "放映黑屏"
 
@@ -69,7 +64,6 @@ msgid "Could not enable DPMS screen blanking: got status "
 msgstr "无法启用 DPMS 屏幕黑屏：得到状态码 "
 
 #: 
-#, fuzzy
 msgid "Could not find the file \"{}\""
 msgstr "无法找到文件 \"{}\""
 
@@ -103,7 +97,7 @@ msgstr "GtkImage gif 播放器"
 
 #: 
 msgid "Highlight"
-msgstr "高亮"
+msgstr "墨迹"
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
@@ -143,7 +137,7 @@ msgstr "备注位置"
 
 #: 
 msgid "Open _Recent"
-msgstr "打开 _最近"
+msgstr "打开 最近"
 
 #: 
 msgid "Open..."
@@ -239,7 +233,7 @@ msgstr "设置日志保留级别:"
 
 #: 
 msgid "Set talk _Time"
-msgstr "设定演讲 _时长"
+msgstr "设定演讲时长"
 
 #: 
 msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
@@ -263,7 +257,7 @@ msgstr "预计演讲时长（分钟）"
 
 #: 
 msgid "The log is written to "
-msgstr "日志用以 "
+msgstr "日志存于 "
 
 #: 
 msgid "This help"
@@ -303,135 +297,135 @@ msgstr "已关闭视频支持 {}。"
 
 #: 
 msgid "_Align content"
-msgstr "_放映内容对齐"
+msgstr "放映内容对齐"
 
 #: 
 msgid "_Annotations"
-msgstr "_注释"
+msgstr "注释"
 
 #: 
 msgid "_Blank screen"
-msgstr "_黑屏"
+msgstr "黑屏"
 
 #: 
 msgid "_Blue"
-msgstr "_蓝色"
+msgstr "蓝色"
 
 #: 
 msgid "_Bottom"
-msgstr "_底部"
+msgstr "底部"
 
 #: 
 msgid "_Disabled"
-msgstr "_禁用"
+msgstr "禁用"
 
 #: 
 msgid "_File"
-msgstr "_文件"
+msgstr "文件"
 
 #: 
 msgid "_First"
-msgstr "_第一页"
+msgstr "第一页"
 
 #: 
 msgid "_Fullscreen"
-msgstr "_全屏"
+msgstr "全屏"
 
 #: 
 msgid "_Go to..."
-msgstr "_转到..."
+msgstr "转到..."
 
 #: 
 msgid "_Green"
-msgstr "_绿色"
+msgstr "绿色"
 
 #: 
 msgid "_Help"
-msgstr "_帮助"
+msgstr "帮助"
 
 #: 
 msgid "_Highlight"
-msgstr "_高亮"
+msgstr "墨迹"
 
 #: 
 msgid "_Jump to label"
-msgstr "_跳转到"
+msgstr "跳转到"
 
 #: 
 msgid "_Last"
-msgstr "_最后一页"
+msgstr "最后一页"
 
 #: 
 msgid "_Left"
-msgstr "_左"
+msgstr "左"
 
 #: 
 msgid "_Manual"
-msgstr "_手动"
+msgstr "手动"
 
 #: 
 msgid "_Navigation"
-msgstr "_导航"
+msgstr "导航"
 
 #: 
 msgid "_Next"
-msgstr "_下一页"
+msgstr "下一页"
 
 #: 
 msgid "_Notes mode"
-msgstr "_备注模式"
+msgstr "备注模式"
 
 #: 
 msgid "_Pause timer"
-msgstr "_暂停计时器"
+msgstr "暂停计时器"
 
 #: 
 msgid "_Permanent"
-msgstr "_总是"
+msgstr "总是"
 
 #: 
 msgid "_Presentation"
-msgstr "_演示"
+msgstr "演示"
 
 #: 
 msgid "_Previous"
-msgstr "_上一个"
+msgstr "上一个"
 
 #: 
 msgid "_Red"
-msgstr "_红色"
+msgstr "红色"
 
 #: 
 msgid "_Reset timer"
-msgstr "_重置计时器"
+msgstr "重置计时器"
 
 #: 
 msgid "_Right"
-msgstr "_右"
+msgstr "右"
 
 #: 
 msgid "_Shortcuts"
-msgstr "_快捷键"
+msgstr "快捷键"
 
 #: 
 msgid "_Starting Configuration"
-msgstr "_启动设置"
+msgstr "启动设置"
 
 #: 
 msgid "_Swap screens"
-msgstr "_交换屏幕"
+msgstr "交换屏幕"
 
 #: 
 msgid "_Top"
-msgstr "_顶部"
+msgstr "顶部"
 
 #: 
 msgid "_Undo zoom"
-msgstr "_取消放大"
+msgstr "取消放大"
 
 #: 
 msgid "_Zoom in"
-msgstr "_放大"
+msgstr "放大"
 
 #: 
 msgid "access denied when trying to access screen saver settings in registry!"
@@ -465,6 +459,7 @@ msgstr "pip 将之后下载并编译 pygobject，因为你需要 Gtk 头文件�
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 ""
 msgstr "pympress 是使用 Python 编写的小型 PDF 阅读器，使用 Poppler 渲染 PDF，使用 GTK 制作 GUI。\n"
+""
 
 #: 
 msgid "slide"
@@ -488,19 +483,19 @@ msgstr "额外功能"
 
 #: 
 msgid "Blank screen"
-msgstr "_黑屏"
+msgstr "黑屏"
 
 #: 
 msgid "Cancel goto/jump/highlighting/zooming"
-msgstr "取消转到/跳转/高亮/放大"
+msgstr "取消转到/跳转/墨迹/放大"
 
 #: 
 msgid "Close file"
-msgstr "_关闭文件"
+msgstr "关闭文件"
 
 #: 
 msgid "First slide"
-msgstr "第一个幻灯片"
+msgstr "第一张幻灯片"
 
 #: 
 msgid "Go back in slide history"
@@ -520,7 +515,7 @@ msgstr "跳至标签"
 
 #: 
 msgid "Last slide"
-msgstr "最后一页"
+msgstr "最后一张幻灯片"
 
 #: 
 msgid "Manage files"
@@ -556,15 +551,15 @@ msgstr "上一张不同标签的幻灯片"
 
 #: 
 msgid "Quit"
-msgstr "_退出"
+msgstr "退出"
 
 #: 
 msgid "Reset timer"
-msgstr "_重置计时器"
+msgstr "重置计时器"
 
 #: 
 msgid "Set estimated talk time"
-msgstr "设定演讲 _时长"
+msgstr "设定演讲时长"
 
 #: 
 msgid "Swap windows"
@@ -584,7 +579,7 @@ msgstr "切换全屏"
 
 #: 
 msgid "Toggle highlighting"
-msgstr "切换高亮"
+msgstr "切换墨迹"
 
 #: 
 msgid "Toggle laserpointer"
@@ -596,7 +591,7 @@ msgstr "切换备注模式"
 
 #: 
 msgid "Undo highlight stroke"
-msgstr "撤销高亮笔画"
+msgstr "撤销墨迹笔画"
 
 #: 
 msgid "Unzoom"
@@ -604,7 +599,7 @@ msgstr "缩小"
 
 #: 
 msgid "Validate goto/jump destination"
-msgstr "验证转到/跳转目标"
+msgstr "确认转到/跳转目标"
 
 #: 
 msgid "Windows"
@@ -680,23 +675,23 @@ msgstr "(无, 左, 右, 顶, 底, 之后)。"
 
 #: 
 msgid "_After slide pages"
-msgstr "_幻灯页面之后"
+msgstr "幻灯页面之后"
 
 #: 
 msgid "_Bottom half of slide"
-msgstr "_幻灯片底半部"
+msgstr "幻灯片底半部"
 
 #: 
 msgid "_Left half of slide"
-msgstr "_幻灯片左半部"
+msgstr "幻灯片左半部"
 
 #: 
 msgid "_Right half of slide"
-msgstr "_幻灯片右半部"
+msgstr "幻灯片右半部"
 
 #: 
 msgid "_Top half of slide"
-msgstr "_幻灯片顶半部"
+msgstr "幻灯片顶半部"
 
 #: 
 msgid "Error parsing option from config file {}.{} \"{}\" to bool"
@@ -748,7 +743,7 @@ msgstr "媒体支持："
 
 #: 
 msgid "Align _content"
-msgstr "_放映内容对齐"
+msgstr "放映内容对齐"
 
 #: 
 msgid "Clear and restore per page label"
@@ -764,7 +759,7 @@ msgstr "页面变更时清空"
 
 #: 
 msgid "Highlight mode"
-msgstr "高亮模式"
+msgstr "墨迹模式"
 
 #: 
 msgid "Never clear (manually only)"
@@ -780,19 +775,19 @@ msgstr "靠近幻灯片的工具"
 
 #: 
 msgid "_Close"
-msgstr "_关闭"
+msgstr "关闭"
 
 #: 
 msgid "_Open"
-msgstr "_打开"
+msgstr "打开"
 
 #: 
 msgid "_Pointer"
-msgstr "_激光笔"
+msgstr "激光笔"
 
 #: 
 msgid "_Quit"
-msgstr "_退出"
+msgstr "退出"
 
 #: 
 msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
@@ -920,7 +915,7 @@ msgstr " beamer 第二屏备注的布局（备注中没有当前幻灯片预览�
 
 #: 
 msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr "libreoffice 不同页备注的布局（包含当前幻灯片预览）"
+msgstr "libreoffice 不同页备注的布局（备注中包含当前幻灯片预览）"
 
 #: 
 msgid "Plain layout, without note slides"
@@ -968,15 +963,15 @@ msgstr "未保存的变更将会丢失。"
 
 #: 
 msgid "_Discard"
-msgstr "_禁用"
+msgstr "放弃"
 
 #: 
 msgid "_Save"
-msgstr "_保存"
+msgstr "保存"
 
 #: 
 msgid "_Save as"
-msgstr "_另存为"
+msgstr "另存为"
 
 #: 
 msgid "annotations"
@@ -988,7 +983,7 @@ msgstr "自动"
 
 #: 
 msgid "Choose parameters for automatically playing slides"
-msgstr "选择自动切换幻灯片参数"
+msgstr "选择定时切换幻灯片参数"
 
 #: 
 msgid "Loop"
@@ -1008,7 +1003,7 @@ msgstr "每张时间（秒）:"
 
 #: 
 msgid "_Automatic navigation"
-msgstr "_自动切换"
+msgstr "定时切换"
 
 #: 
 msgid "Note pages"
@@ -1024,7 +1019,7 @@ msgstr "备注"
 
 #: 
 msgid "Highlighting"
-msgstr "高亮模式"
+msgstr "墨迹模式"
 
 #: 
 msgid "Layout to draw on the current slide"
@@ -1032,11 +1027,11 @@ msgstr "当前幻灯片的绘制布局"
 
 #: 
 msgid "highlighting"
-msgstr "高亮"
+msgstr "墨迹"
 
 #: 
 msgid "Exit highlight on page change"
-msgstr "页面变更后退出高亮模式"
+msgstr "页面变更后退出墨迹模式"
 
 #: 
 msgid "(none, left, right, top, bottom, after, or odd)."
@@ -1044,7 +1039,7 @@ msgstr "(无, 左, 右, 顶, 底, 之后, 奇数页)。"
 
 #: 
 msgid "_Every second page"
-msgstr "_每隔一张"
+msgstr "每隔一张"
 
 #: 
 msgid "(none, left, right, top, bottom, after, odd, or prefix)."
@@ -1056,9 +1051,9 @@ msgstr "未预期的缺失页面绘制，部件 \"{}\""
 
 #: 
 msgid "_Prefixed labels"
-msgstr "_前缀标签"
+msgstr "前缀标签"
 
 #: 
 msgid "Redo highlight stroke"
-msgstr "重做高亮笔画"
+msgstr "重做墨迹笔画"
 
