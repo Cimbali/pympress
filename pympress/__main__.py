@@ -40,7 +40,7 @@ logging.basicConfig(filename=util.get_log_path(), level=logging.DEBUG)
 
 
 def uncaught_handler(*exc_info):
-    """ Exception handler, to log uncuaght exceptions to our log file.
+    """ Exception handler, to log uncaught exceptions to our log file.
     """
     logger.critical('Uncaught exception:\n{}'.format(logging.Formatter().formatException(exc_info)))
     sys.__excepthook__(*exc_info)
@@ -54,7 +54,12 @@ if util.IS_WINDOWS:
         lang, enc = locale.getdefaultlocale()
         os.environ['LANG'] = lang
 
-locale.setlocale(locale.LC_ALL, '')
+try:
+    loaded_locale = locale.setlocale(locale.LC_ALL, '')
+except locale.Error as err:
+    logger.exception('Failed loading locale: {}'.format(err))
+    print('Failed loading locale: {}'.format(err), file=sys.stderr)
+
 gettext.install('pympress', util.get_locale_dir())
 
 
