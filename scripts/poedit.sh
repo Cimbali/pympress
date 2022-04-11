@@ -32,7 +32,7 @@ download() {
     lang=$1
     printf "Updating %s:\n" "$lang"
     # Normalize separator to _ and capitalised locale
-    norm=`echo "$lang" | sed -E 's/-(\w+)$/_\U\1\E/'`
+    norm=`echo "$lang" | sed -E 's/-(\w+)$/_\U\1\E/;s/^zh_HANS$/zh_CN/'`
 
     url=`curl -sX POST https://api.poeditor.com/v2/projects/export \
           -F api_token="$poeditor_api_token" \
