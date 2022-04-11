@@ -260,7 +260,7 @@
 	<submenu>
 		<attribute name="label" translatable="yes">_Help</attribute>
 		<item>
-			<attribute name="label">_About</attribute>
+			<attribute name="label" translatable="yes">_About</attribute>
 			<attribute name="action">app.about</attribute>
 		</item>
 		<item>
