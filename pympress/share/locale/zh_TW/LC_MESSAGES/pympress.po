@@ -5,177 +5,171 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
 "Project-Id-Version: pympress\n"
-"Language: pl\n"
+"Language: zh_TW\n"
 
 #: 
 msgid "(and optionally seconds)"
-msgstr "(oraz opcjonalnie w sekundach)"
+msgstr ""
 
 #: 
-#, fuzzy
 msgid "(paused)"
-msgstr "(wstrzymany)"
+msgstr "（暂停中）"
 
 #: 
-#, fuzzy
 msgid "Adjust alignment of slides in projector screen"
-msgstr "Wyreguluj wyrównanie slajdów na ekranie rzutnika"
+msgstr "调整投影依屏幕的对齐"
 
 #: 
 msgid "All files"
-msgstr "Wszystkie pliki"
+msgstr "所有文件"
 
 #: 
 msgid "Annotations"
-msgstr "Adnotacje"
+msgstr "注释"
 
 #: 
-#, fuzzy
 msgid "Big buttons"
-msgstr "Duże przyciski"
+msgstr "大按钮"
 
 #: 
 msgid "Cairo can not draw gif"
-msgstr "Cairo nie może narysować gif-a"
+msgstr "Cairo 无法绘制 gif"
 
 #: 
 msgid "Clock"
-msgstr "Zegar"
+msgstr "时钟"
 
 #: 
-#, fuzzy
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnego ekranu!"
+msgstr "如果你开启全屏，演讲内容和演讲者窗口不能在同一显示器上！"
 
 #: 
-#, fuzzy
 msgid "Content blanked"
-msgstr "Puste okno treści"
+msgstr "演讲内容空白化"
 
 #: 
 msgid "Content fullscreen"
-msgstr "Okno treści w trybie pełnego ekranu"
+msgstr "演讲内容全屏化"
 
 #: 
 msgid "Contributors:"
-msgstr "Współpracownicy:"
+msgstr "贡献者："
 
 #: 
 msgid "Could not disable DPMS screen blanking: got status "
-msgstr "nie można wyłączyć wygaszania ekranu DPMS: otrzymany status "
+msgstr ""
 
 #: 
 msgid "Could not enable DPMS screen blanking: got status "
-msgstr "nie można włączyć wygaszania ekranu DPMS: otrzymany status "
+msgstr ""
 
 #: 
-#, fuzzy
 msgid "Could not find the file \"{}\""
-msgstr "Nie mogę znaleźć pliku \"{}\""
+msgstr "不能找到文件 \"{}\""
 
 #: 
 msgid "Could not set screensaver status: got status "
-msgstr "nie można ustawić stanu wygaszacza ekranu: otrzymany status "
+msgstr ""
 
 #: 
 msgid "Current slide"
-msgstr "Bieżący slajd"
+msgstr "当前幻灯片"
 
 #: 
 msgid "ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system."
-msgstr "BŁĄD: brakuje modułu Gobject Introspections, upewnij się, że Gtk i pyobject są poprawnie zainstalowane w systemie."
+msgstr ""
 
 #: 
 msgid "Error loading icon for about window"
-msgstr "Błąd ładowania ikony dla okna \"O\""
+msgstr ""
 
 #: 
 msgid "Error opening the file \"{}\""
-msgstr "Błąd podczas otwierania pliku \"{}\""
+msgstr ""
 
 #: 
 msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
-msgstr "Instrukcje: https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
+msgstr ""
 
 #: 
 msgid "GtkImage gif player"
-msgstr "Odtwarzacz gifa GtkImage"
+msgstr ""
 
 #: 
 msgid "Highlight"
-msgstr "Zakreślacz"
+msgstr "高亮"
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
-msgstr "Jeśli używasz vrtualenv lub anacondy, możesz zezwolić na pakiety systemowe albo uruchomić: pip install pygobject"
+msgstr ""
 
 #: 
 msgid "Invalid log level \"{}\", try one of {}"
-msgstr "Nieprawidłowy poziom dziennikowania \"{}\", wypróbuj jeden z {}"
+msgstr ""
 
 #: 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
-msgstr "Nieprawidłowy czas (oczekiwano min lub min:sek), podano (wprowadzono) \"{}\""
+msgstr ""
 
 #: 
 msgid "Media support uses {}."
-msgstr "Obsługa multimediów używa {}"
+msgstr ""
 
 #: 
 msgid "Next slide"
-msgstr "Następny slajd"
+msgstr "下一张幻灯片"
 
 #: 
 msgid "No action was defined for this link"
-msgstr "Dla tego odnośnika nie zdefiniowano żadnych działań"
+msgstr ""
 
 #: 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
-msgstr "Nie uruchomiono okna treści lub okna prezentera w trybie pełnego ekranu, ponieważ jest tylko jeden monitor"
+msgstr "没有全屏显示地启动演讲内容或演讲者窗口，因为只有一个显示器"
 
 #: 
 msgid "Notes"
-msgstr "Notatki"
+msgstr "笔记"
 
 #: 
 msgid "Notes position"
-msgstr "Pozycja notatek"
+msgstr ""
 
 #: 
 msgid "Open _Recent"
-msgstr "Otwórz _Ostatni"
+msgstr "打开 _最近"
 
 #: 
 msgid "Open..."
-msgstr "Otwórz..."
+msgstr "打开..."
 
 #: 
 msgid "Options:"
-msgstr "Opcje:"
+msgstr ""
 
 #: 
 msgid "Overrides the detection from the file."
-msgstr "Nadpisz wykrywanie z pliku."
+msgstr ""
 
 #: 
 msgid "PDF files"
-msgstr "Pliki PDF"
+msgstr "PDF 文件"
 
 #: 
 msgid "Pause"
-msgstr "Wstrzymaj"
+msgstr "暂停"
 
 #: 
 msgid "Play"
-msgstr "Odtwarzaj"
+msgstr "播放"
 
 #: 
 msgid "Pointer"
-msgstr "Wskaźnik"
+msgstr "指针"
 
 #: 
 msgid "Portable installation"
-msgstr "Intalacja przenośna"
+msgstr ""
 
 #: 
 msgid "Presentation timing breakdown"
@@ -183,475 +177,486 @@ msgstr ""
 
 #: 
 msgid "Presenter fullscreen"
-msgstr "Okno prelegenta w trybie pełnego ekranu"
+msgstr "演讲者全屏"
 
 #: 
 msgid "Pympress Content"
-msgstr "Okno treści Pympress"
+msgstr "Pympress 演讲内容"
 
 #: 
 msgid "Pympress Presenter"
-msgstr "Okno presentera Pympress"
+msgstr "Pympress 演讲者"
 
 #: 
 msgid "Pympress can not extract attached file"
-msgstr "Pympress nie może wyodrębnić załączonego pliku"
+msgstr "Pympress 不能提取附件"
 
 #: 
 msgid "Pympress can not extract embedded media"
-msgstr "Pympress nie może wyodrębnić osadzonych mediów"
+msgstr "Pympress 不能提取内嵌媒体"
 
 #: 
 msgid "Pympress can not find file "
-msgstr "Pympress nie może znaleźć pliku "
+msgstr "Pympress 不能找到文件"
 
 #: 
 msgid "Pympress can not interpret annotation of type:"
-msgstr "Pympress nie może zinterpretować adnotacji typu:"
+msgstr "Pympress 不能解析注释类型"
 
 #: 
 msgid "Pympress does not recognize link type \"{}\""
-msgstr "Pympress nie rozpoznaje odsyłacza typu \"{}\""
+msgstr "Pympress 不能识别链接类型 \"{}\""
 
 #: 
 msgid "Pympress does not recognize link type \"{}\" to \"{}\""
-msgstr "Pympress nie rozpoznaje odsyłacza typu \"{}\" do \"{}\""
+msgstr "Pympress 不能识别链接类型 \"{}\" 为 \"{}\""
 
 #: 
 msgid "Pympress does not yet support link type \"{}\""
-msgstr "Pympress jeszcze nie obsługuje odsyłacza typu \"{}\""
+msgstr "Pympress 不能支持链接类型 \"{}\""
 
 #: 
 msgid "Pympress does not yet support link type \"{}\" to \"{}\""
-msgstr "Pympress jeszcze nie obsługuje odsyłacza typu \"{}\" do \"{}\""
+msgstr "Pympress 不能支持链接类型 \"{}\" 为 \"{}\""
 
 #: 
 msgid "Python version {}"
-msgstr "Python wersja {}"
+msgstr ""
 
 #: 
 msgid "Resources are loaded from "
-msgstr "Zasoby są ładowane z "
+msgstr "资源装载自"
 
 #: 
 msgid "Set level of verbosity in log file:"
-msgstr "Ustaw poziom szczegółowości pliku dziennika:"
+msgstr "设定日志文件的冗长程度："
 
 #: 
 msgid "Set talk _Time"
-msgstr "Ustaw _czas trwania wystąpienia (prelekcji)"
+msgstr "设定演讲 _时长"
 
 #: 
 msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
-msgstr "Ustaw pozycję notatek na stronie pdf (brak, lewo, prawo, góra lub dół)."
+msgstr ""
 
 #: 
 msgid "Slide number"
-msgstr "Numer slajdu"
+msgstr "幻灯片编号"
 
 #: 
 msgid "Some preferences are saved in "
-msgstr "Niektóre ustawienia są zapisywane w "
+msgstr "部分偏好设置保存在"
 
 #: 
 msgid "Stop"
-msgstr "Zatrzymaj"
+msgstr "停止"
 
 #: 
 msgid "The estimated (intended) talk time in minutes"
-msgstr "Przewidywany (spodziewany) czas trwania wystąpienia (prelekcji) w minutach"
+msgstr "预计演讲时长（分钟）"
 
 #: 
 msgid "The log is written to "
-msgstr "Logi są zapisywane do "
+msgstr ""
 
 #: 
 msgid "This help"
-msgstr "Niniejsza pomoc"
+msgstr ""
 
 #: 
 msgid "Time elapsed"
-msgstr "Czas, który upłynął"
+msgstr "已进行时间"
 
 #: 
 msgid "Time estimation"
-msgstr "Przewidziany czas"
+msgstr "时间估计"
 
 #: 
 msgid "Timing breakdown"
 msgstr ""
 
 #: 
-#, fuzzy
 msgid "Unexpected action in index \"{}\""
-msgstr "Niespodziewana akcja w indeksie \"{}\""
+msgstr ""
 
 #: 
 msgid "Unknow widget {} to be fullscreened, aborting."
-msgstr "Nie mogę uruchomić w trybie pełnego ekranu, nieznanego widżetu {}, przerywam działanie."
+msgstr ""
 
 #: 
 msgid "Unsupported OS: can't enable/disable screensaver"
-msgstr "Nieobsługiwany system operacyjny: nie można włączyć/wyłączyć wygaszacza ekranu"
+msgstr ""
 
 #: 
 msgid "Usage: {} [options] <presentation_file>"
-msgstr "Sposób użycia: {} [opcje] <plik_z_prezentacją>"
+msgstr ""
 
 #: 
 msgid "Video support using {} is disabled."
-msgstr "Obsługa wideo przy użyciu {} jest wyłączona."
+msgstr ""
 
 #: 
 msgid "_Align content"
-msgstr "_Wyrównaj treść"
+msgstr ""
 
 #: 
 msgid "_Annotations"
-msgstr "_Adnotacje"
+msgstr "_注释"
 
 #: 
 msgid "_Blank screen"
-msgstr "_Pusty ekran"
+msgstr "_空白屏幕"
 
 #: 
 msgid "_Blue"
-msgstr "_Niebieski"
+msgstr "_蓝色"
 
 #: 
 msgid "_Bottom"
-msgstr "Dół"
+msgstr ""
 
 #: 
 msgid "_Disabled"
-msgstr "_Nieaktywny"
+msgstr "_失效的"
 
 #: 
 msgid "_File"
-msgstr "_Plik"
+msgstr "_文件"
 
 #: 
 msgid "_First"
-msgstr "_Pierwszy"
+msgstr "_第一个"
 
 #: 
 msgid "_Fullscreen"
-msgstr "_Tryb pełnego ekranu"
+msgstr "_全屏"
 
 #: 
 msgid "_Go to..."
-msgstr "_Idź do..."
+msgstr "_前往..."
 
 #: 
 msgid "_Green"
-msgstr "_Zielony"
+msgstr "_绿色"
 
 #: 
 msgid "_Help"
-msgstr "_Pomoc"
+msgstr "_帮助"
 
 #: 
 msgid "_Highlight"
-msgstr "_Zakreślacz"
+msgstr "_高亮"
 
 #: 
 msgid "_Jump to label"
-msgstr "Skocz do etykiety"
+msgstr ""
 
 #: 
 msgid "_Last"
-msgstr "_Ostatni"
+msgstr "_最后一个"
 
 #: 
 msgid "_Left"
-msgstr "_Lewo"
+msgstr ""
 
 #: 
 msgid "_Manual"
-msgstr "_Ręczny"
+msgstr ""
 
 #: 
 msgid "_Navigation"
-msgstr "_Nawigacja"
+msgstr "_导航"
 
 #: 
 msgid "_Next"
-msgstr "_Następny"
+msgstr "_下一个"
 
 #: 
 msgid "_Notes mode"
-msgstr "_Tryb notatek"
+msgstr "_笔记模式"
 
 #: 
 msgid "_Pause timer"
-msgstr "_Wstrzymaj timer"
+msgstr "_暂停计时器"
 
 #: 
 msgid "_Permanent"
-msgstr "_Trwały"
+msgstr ""
 
 #: 
 msgid "_Presentation"
-msgstr "_Prezentacja"
+msgstr "_演示"
 
 #: 
 msgid "_Previous"
-msgstr "_Poprzedni"
+msgstr "_之前的"
 
 #: 
 msgid "_Red"
-msgstr "_Czerwony"
+msgstr "_红色"
 
 #: 
 msgid "_Reset timer"
-msgstr "Zresetuj timer"
+msgstr "_重置计时器"
 
 #: 
 msgid "_Right"
-msgstr "P_rawo"
+msgstr ""
 
 #: 
 msgid "_Shortcuts"
-msgstr "_Skróty"
+msgstr ""
 
 #: 
 msgid "_Starting Configuration"
-msgstr "_Konfiguracja startowa"
+msgstr "_启动设置"
 
 #: 
 msgid "_Swap screens"
-msgstr "_Zamień ekrany"
+msgstr "_交换屏幕"
 
 #: 
 msgid "_Top"
-msgstr "Góra"
+msgstr ""
 
 #: 
 msgid "_Undo zoom"
-msgstr "Cofnij zbliżenie"
+msgstr "_取消放大"
 
 #: 
 msgid "_Zoom in"
-msgstr "_Zbliżenie"
+msgstr "_放大"
 
 #: 
 msgid "access denied when trying to access screen saver settings in registry!"
-msgstr "odmowa dostępu przy próbie uzyskania dostępu do ustawień wygaszacza ekranu w rejestrze!"
+msgstr ""
 
 #: 
 msgid "column"
-msgstr "kolumna"
+msgstr ""
 
 #: 
 msgid "duration"
-msgstr "czas trwania"
+msgstr ""
 
 #: 
 msgid "name"
-msgstr "nazwa"
+msgstr ""
 
 #: 
 msgid "no action defined for this link!"
-msgstr "nie określono działania dla tego odnośnika!"
+msgstr "此链接没有定义动作"
 
 #: 
 msgid "page label"
-msgstr "etykieta strony"
+msgstr ""
 
 #: 
-#, fuzzy
 msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
-msgstr "pip ściągnie i skompiluje pyobject, do którego wymagane są nagłówki Gtk (albo pakiet developerski)"
+msgstr ""
 
 #: 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 ""
-msgstr "pympress jest małym czytnikiem PDF napisanym w Pythonie, używającym Popplera do renderowania plików PDF oraz GTK do tworzenia GUI.\n"
+msgstr "pmypress 是用 Python 写的小小 PDF 阅读器，使用 Poppler 渲染 PDF，使用 GTK 制作 GUI。\n"
 ""
 
 #: 
+#, fuzzy
 msgid "slide"
-msgstr "slajd"
+msgstr "下一张幻灯片"
 
 #: 
 msgid "slide #"
-msgstr "slajd #"
+msgstr ""
 
 #: 
 msgid "time"
-msgstr "czas"
+msgstr ""
 
 #: 
 msgid "{}, {}, {}, {}, or {}"
-msgstr "{}, {}, {}, {} lub {}"
+msgstr ""
 
 #: 
 msgid "Additional features"
-msgstr "Dodatkowe funkcje"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Blank screen"
-msgstr "Pusty ekran"
+msgstr "_空白屏幕"
 
 #: 
 msgid "Cancel goto/jump/highlighting/zooming"
-msgstr "Anuluj idź do/skocz/zakreślanie/zbliżanie"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Close file"
-msgstr "Zamknij plik"
+msgstr "_关闭文件"
 
 #: 
+#, fuzzy
 msgid "First slide"
-msgstr "Pierwszy slajd"
+msgstr "当前幻灯片"
 
 #: 
 msgid "Go back in slide history"
-msgstr "Idź wstecz w historii slajdów"
+msgstr ""
 
 #: 
 msgid "Go forward in slide history"
-msgstr "Idź dalej w historii slajdów"
+msgstr ""
 
 #: 
 msgid "Go to page number"
-msgstr "Idź do strony o numerze"
+msgstr ""
 
 #: 
 msgid "Jump to page label"
-msgstr "Skocz do strony o etykiecie"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Last slide"
-msgstr "Ostatni slajd"
+msgstr "下一张幻灯片"
 
 #: 
 msgid "Manage files"
-msgstr "Zarządzaj plikami"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Navigating"
-msgstr "Nawigowanie"
+msgstr "_导航"
 
 #: 
 msgid "Next slide with different label"
-msgstr "Następny slajd"
+msgstr ""
 
 #: 
 msgid "Open file"
-msgstr "Otwórz plik"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Play/pause timer"
-msgstr "Uruchom / wstrzymaj licznik czasu"
+msgstr "_暂停计时器"
 
 #: 
+#, fuzzy
 msgid "Presentation"
-msgstr "Prezentacja"
+msgstr "_演示"
 
 #: 
+#, fuzzy
 msgid "Previous slide"
-msgstr "Poprzedni slajd"
+msgstr "_之前的"
 
 #: 
 msgid "Previous slide with different label"
-msgstr "Poprzedni slajd"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Quit"
-msgstr "Wyjdź"
+msgstr "_退出"
 
 #: 
+#, fuzzy
 msgid "Reset timer"
-msgstr "Zresetuj licznik czasu"
+msgstr "_重置计时器"
 
 #: 
+#, fuzzy
 msgid "Set estimated talk time"
-msgstr "Ustaw szacowany czas trwania prelekcji"
+msgstr "设定演讲 _时长"
 
 #: 
 msgid "Swap windows"
-msgstr "Zamień okna"
+msgstr ""
 
 #: 
 msgid "Timers"
-msgstr "Liczniki czasu"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Toggle annotations"
-msgstr "Przełącz adnotacje"
+msgstr "注释"
 
 #: 
+#, fuzzy
 msgid "Toggle fullscreen"
-msgstr "Przełącz tryb pełnoekranowy"
+msgstr "演讲内容全屏化"
 
 #: 
 msgid "Toggle highlighting"
-msgstr "Przełącz zakreślanie"
+msgstr ""
+
+#: 
+msgid "Toggle laserpointer"
+msgstr ""
 
 #: 
 #, fuzzy
-msgid "Toggle laserpointer"
-msgstr "Włącz/wyłącz wskaźnik laserowy"
-
-#: 
 msgid "Toggle notes mode"
-msgstr "Przełącz tryb notatek"
+msgstr "_笔记模式"
 
 #: 
 msgid "Undo highlight stroke"
-msgstr "Cofnij wyróżnienie obrysu"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Unzoom"
-msgstr "Cofnij powiększanie"
+msgstr "_取消放大"
 
 #: 
 msgid "Validate goto/jump destination"
-msgstr "Potwierdź cel goto/skoku"
+msgstr ""
 
 #: 
 msgid "Windows"
-msgstr "Okna"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Zoom"
-msgstr "Powiększanie"
+msgstr "_放大"
 
 #: 
 msgid "Unrecognized named destination: "
-msgstr "Nie rozpoznano nazwy celu: "
+msgstr ""
 
 #: 
 msgid "Unsupported link clicked. "
-msgstr "Kliknięto niewspierany link. "
+msgstr ""
 
 #: 
 msgid "Fullscreen Presentation running"
-msgstr "Uruchomiona prezentacja w trybie pełnoekranowym"
+msgstr ""
 
 #: 
 msgid "Caused by "
-msgstr "Spowodowane przez "
+msgstr ""
 
 #: 
-#, fuzzy
 msgid "Building FileWatcher"
-msgstr "Budowanie obserwatora plików (FileWatcher)"
+msgstr ""
 
 #: 
-#, fuzzy
 msgid "Missing dependency: python \"{}\" package"
-msgstr "Brakuje zależności: python \"{}\" package"
+msgstr ""
 
 #: 
-#, fuzzy
 msgid "Monitoring of changes to reload files automatically is not available"
-msgstr "Niedostępne monitorowanie zmian w celu automatycznego przeładowania plików"
+msgstr ""
 
 #: 
 msgid "ERROR: Gobject Introspections and/or pycairo module is missing, make sure Gtk, pygobject and pycairo are installed on your system."
-msgstr "BŁĄD: Brak Introspekcji Gobject i/lub modułu pycairo, upewnij się, że Gtk, pygobject i pycairo są zainstalowane w Twoim systemie."
+msgstr ""
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject pycairo"
@@ -671,7 +676,7 @@ msgstr ""
 
 #: 
 msgid "Set the position of notes on the pdf page"
-msgstr "Ustaw pozycję notatek na stronie pdf"
+msgstr ""
 
 #: 
 msgid "Try your operating system’s package manager, or try running: pip install pygobject pycairo"
@@ -730,32 +735,36 @@ msgid "Print version and exit"
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "Reset talk timer"
-msgstr ""
+msgstr "_重置计时器"
 
 #: 
 msgid "Toggle pause of talk timer"
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "GdkPixbuf gif player"
-msgstr ""
+msgstr "GtkImage gif 播放器"
 
 #: 
 msgid "Media support loaded: "
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "Media support using {} is disabled."
-msgstr ""
+msgstr "视频支持已被关闭"
 
 #: 
 msgid "Media support: "
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "Align _content"
-msgstr ""
+msgstr "_对齐内容"
 
 #: 
 msgid "Clear and restore per page label"
@@ -770,8 +779,9 @@ msgid "Clear on page change"
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "Highlight mode"
-msgstr ""
+msgstr "高亮"
 
 #: 
 msgid "Never clear (manually only)"
@@ -782,24 +792,27 @@ msgid "Tools below slide"
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "Tools next to slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "_Close"
-msgstr ""
+msgstr "_关闭文件"
 
 #: 
 msgid "_Open"
-msgstr ""
+msgstr "_打开"
 
 #: 
+#, fuzzy
 msgid "_Pointer"
-msgstr ""
+msgstr "指针"
 
 #: 
 msgid "_Quit"
-msgstr ""
+msgstr "_退出"
 
 #: 
 msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
@@ -810,64 +823,79 @@ msgid "Should not require hard enable/disable screensaver on Linux"
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "10th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "11th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "12th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "13th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "14th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "15th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "16th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "2nd next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "3rd next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "4th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "5th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "6th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "7th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "8th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "9th next slide"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
 msgid "Edit layout"
@@ -882,32 +910,37 @@ msgid "Unknown widget \"{}\" to draw"
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "annotations (hideable)"
-msgstr ""
+msgstr "注释"
 
 #: 
 msgid "box"
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "current slide"
-msgstr ""
+msgstr "当前幻灯片"
 
 #: 
 msgid "horizontal"
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "next slide(s)"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "next slides count"
-msgstr ""
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "orientation"
-msgstr ""
+msgstr "_演示"
 
 #: 
 msgid "resizeable"
@@ -974,8 +1007,9 @@ msgid "Unsaved changes will be lost."
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "_Discard"
-msgstr ""
+msgstr "_失效的"
 
 #: 
 msgid "_Save"
@@ -986,8 +1020,9 @@ msgid "_Save as"
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "annotations"
-msgstr ""
+msgstr "注释"
 
 #: 
 msgid "Auto"
@@ -1014,20 +1049,23 @@ msgid "Time per slide (s):"
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "_Automatic navigation"
-msgstr ""
+msgstr "_启动设置"
 
 #: 
+#, fuzzy
 msgid "Note pages"
-msgstr ""
+msgstr "笔记"
 
 #: 
 msgid "Plain"
 msgstr ""
 
 #: 
+#, fuzzy
 msgid "notes"
-msgstr ""
+msgstr "笔记"
 
 #: 
 msgid "Highlighting"

@@ -5,7 +5,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
 "Project-Id-Version: pympress\n"
-"Language: zh-Hans\n"
+"Language: zh_CN\n"
 
 #: 
 msgid "(and optionally seconds)"
@@ -113,7 +113,7 @@ msgstr "无效的时间（应为 mm 或者 mm:ss），得到 \"{}\""
 
 #: 
 msgid "Media support uses {}."
-msgstr "媒体由 {} 支持。"
+msgstr "媒体支持使用 {}。"
 
 #: 
 msgid "Next slide"
@@ -125,7 +125,7 @@ msgstr "此链接没有定义动作。"
 
 #: 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
-msgstr "因为只有一个显示器，所以无法启动放映或演示者窗口"
+msgstr "因为只有一个显示器，所以无法全屏启动放映或演示者窗口"
 
 #: 
 msgid "Notes"
@@ -285,7 +285,7 @@ msgstr "将中止全屏未知部件 {}。"
 
 #: 
 msgid "Unsupported OS: can't enable/disable screensaver"
-msgstr "不支持的操作系统：无法启用/禁用屏保"
+msgstr "不支持的操作系统：无法启用或禁用屏保"
 
 #: 
 msgid "Usage: {} [options] <presentation_file>"
@@ -883,7 +883,7 @@ msgstr "当前幻灯片"
 
 #: 
 msgid "horizontal"
-msgstr "水平的"
+msgstr "横向"
 
 #: 
 msgid "next slide(s)"
@@ -891,11 +891,11 @@ msgstr "后续幻灯片"
 
 #: 
 msgid "next slides count"
-msgstr "后续幻灯片计数"
+msgstr "后续幻灯片数目"
 
 #: 
 msgid "orientation"
-msgstr "朝向"
+msgstr "方向"
 
 #: 
 msgid "resizeable"
@@ -903,7 +903,7 @@ msgstr "可伸缩的"
 
 #: 
 msgid "vertical"
-msgstr "纵向的"
+msgstr "纵向"
 
 #: 
 msgid "widget"
@@ -911,7 +911,7 @@ msgstr "部件"
 
 #: 
 msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr " beamer 第二屏备注的布局（备注中没有当前幻灯片预览）"
+msgstr "beamer 第二屏备注的布局（备注中没有当前幻灯片预览）"
 
 #: 
 msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
@@ -1056,4 +1056,16 @@ msgstr "前缀标签"
 #: 
 msgid "Redo highlight stroke"
 msgstr "重做墨迹笔画"
+
+#: 
+msgid "_About"
+msgstr "关于"
+
+#: 
+msgid "Highlighting with notes"
+msgstr ""
+
+#: 
+msgid "Layout to draw on the current slide with notes displayed"
+msgstr ""
 

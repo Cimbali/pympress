@@ -33,7 +33,7 @@ msgstr "Botones grandes"
 
 #: 
 msgid "Cairo can not draw gif"
-msgstr "Cairo no puede abrir el gif"
+msgstr "Cairo no puede dibujar el gif"
 
 #: 
 msgid "Clock"
@@ -41,7 +41,7 @@ msgstr "Reloj"
 
 #: 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Atención: Las ventanas de contenido y presentación no pueden estar en la misma pantalla para comenzar en pantalla completa!"
+msgstr "¡Las ventanas de contenido y presentación no pueden estar en la misma pantalla para entrar en pantalla completa!"
 
 #: 
 msgid "Content blanked"
@@ -53,7 +53,7 @@ msgstr "Contenido a pantalla completa"
 
 #: 
 msgid "Contributors:"
-msgstr "Colaboradores"
+msgstr "Colaboradores:"
 
 #: 
 msgid "Could not disable DPMS screen blanking: got status "
@@ -65,11 +65,11 @@ msgstr "No se pudo activar el apagado de pantalla con DPMS: se obtuvo estado "
 
 #: 
 msgid "Could not find the file \"{}\""
-msgstr "No se puede abrir el archivo \"{}\""
+msgstr "No se puede encontrar el archivo \"{}\""
 
 #: 
 msgid "Could not set screensaver status: got status "
-msgstr "Atención: El estado del salvapantallas no se puede recuperar: "
+msgstr "El estado del salvapantallas no se puede recuperar: "
 
 #: 
 msgid "Current slide"
@@ -89,7 +89,7 @@ msgstr "No se puede abrir el archivo \"{}\""
 
 #: 
 msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
-msgstr "Para instrucciones (en inglés), remítase a https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
+msgstr "Para instrucciones (en inglés), vaya a https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
 
 #: 
 msgid "GtkImage gif player"
@@ -113,7 +113,7 @@ msgstr "Tiempo no válido (mm o mm:ss de espera), obtenido \"{}\""
 
 #: 
 msgid "Media support uses {}."
-msgstr "Los medios se soportan con {}"
+msgstr "El soporte de los medios usa {}."
 
 #: 
 msgid "Next slide"
@@ -125,7 +125,7 @@ msgstr "No se definió ninguna acción para este enlace"
 
 #: 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
-msgstr "Es imposible poner el contenido o la ventana de visualización en pantalla completa porque sólo hay un monitor."
+msgstr "Es imposible poner el contenido o la ventana de visualización en pantalla completa porque sólo hay un monitor"
 
 #: 
 msgid "Notes"
@@ -181,7 +181,7 @@ msgstr "Presentación a pantalla completa"
 
 #: 
 msgid "Pympress Content"
-msgstr "Contenido de pympress"
+msgstr "Contenido de Pympress"
 
 #: 
 msgid "Pympress Presenter"
@@ -201,7 +201,7 @@ msgstr "Pympress no puede encontrar el archivo "
 
 #: 
 msgid "Pympress can not interpret annotation of type:"
-msgstr "Pympress no puede interpretar anotaciones del tipo: "
+msgstr "Pympress no puede interpretar anotaciones del tipo:"
 
 #: 
 msgid "Pympress does not recognize link type \"{}\""
@@ -245,7 +245,7 @@ msgstr "Número de diapositiva"
 
 #: 
 msgid "Some preferences are saved in "
-msgstr "Algunas preferencias se guardan en"
+msgstr "Algunas preferencias se guardan en "
 
 #: 
 msgid "Stop"
@@ -285,11 +285,11 @@ msgstr "Elemento visual {} desconocido a pantalla completa, parando."
 
 #: 
 msgid "Unsupported OS: can't enable/disable screensaver"
-msgstr "Sistema operativo no soportado: ningún salvapantallas se puede activar/desactivar."
+msgstr "Sistema operativo no soportado: ningún salvapantallas se puede activar/desactivar"
 
 #: 
 msgid "Usage: {} [options] <presentation_file>"
-msgstr "Uso: {} [opciones] <archivo_de_presentación>."
+msgstr "Uso: {} [options] <presentation_file>"
 
 #: 
 msgid "Video support using {} is disabled."
@@ -309,11 +309,11 @@ msgstr "Ocultar pantalla"
 
 #: 
 msgid "_Blue"
-msgstr "Azul"
+msgstr "_Azul"
 
 #: 
 msgid "_Bottom"
-msgstr "A_bajo"
+msgstr "_Abajo"
 
 #: 
 msgid "_Disabled"
@@ -325,11 +325,11 @@ msgstr "_Fichero"
 
 #: 
 msgid "_First"
-msgstr "Primero"
+msgstr "_Primero"
 
 #: 
 msgid "_Fullscreen"
-msgstr "Pantalla completa"
+msgstr "_Pantalla completa"
 
 #: 
 msgid "_Go to..."
@@ -337,27 +337,27 @@ msgstr "_Ir a..."
 
 #: 
 msgid "_Green"
-msgstr "Verde"
+msgstr "_Verde"
 
 #: 
 msgid "_Help"
-msgstr "Ayuda"
+msgstr "_Ayuda"
 
 #: 
 msgid "_Highlight"
-msgstr "Resaltar"
+msgstr "_Resaltar"
 
 #: 
 msgid "_Jump to label"
-msgstr "Saltar a la etiqueta"
+msgstr "_Saltar a la etiqueta"
 
 #: 
 msgid "_Last"
-msgstr "Último"
+msgstr "_Último"
 
 #: 
 msgid "_Left"
-msgstr "Derecha"
+msgstr "_Derecha"
 
 #: 
 msgid "_Manual"
@@ -369,7 +369,7 @@ msgstr "_Navegación"
 
 #: 
 msgid "_Next"
-msgstr "Siguiente"
+msgstr "_Siguiente"
 
 #: 
 msgid "_Notes mode"
@@ -401,35 +401,35 @@ msgstr "_Reinicializar el temporizador"
 
 #: 
 msgid "_Right"
-msgstr "Izquierda"
+msgstr "_Izquierda"
 
 #: 
 msgid "_Shortcuts"
-msgstr "Acce_sos directos"
+msgstr "_Accesos directos"
 
 #: 
 msgid "_Starting Configuration"
-msgstr "Configuración del inicio"
+msgstr "_Configuración del inicio"
 
 #: 
 msgid "_Swap screens"
-msgstr "Intercambio de pantallas"
+msgstr "_Intercambiar pantallas"
 
 #: 
 msgid "_Top"
-msgstr "Arriba"
+msgstr "_Arriba"
 
 #: 
 msgid "_Undo zoom"
-msgstr "Deshacer zoom"
+msgstr "_Deshacer zoom"
 
 #: 
 msgid "_Zoom in"
-msgstr "Hacer _zoom"
+msgstr "Aumentar _zoom"
 
 #: 
 msgid "access denied when trying to access screen saver settings in registry!"
-msgstr "acceso denegado al cambiar la configuración del protector de pantalla durante el registro !"
+msgstr "¡acceso denegado al cambiar la configuración del protector de pantalla durante el registro!"
 
 #: 
 msgid "column"
@@ -445,7 +445,7 @@ msgstr "nombre"
 
 #: 
 msgid "no action defined for this link!"
-msgstr "ninguna acción definida para este enlace !"
+msgstr "¡ninguna acción definida para este enlace!"
 
 #: 
 msgid "page label"
@@ -453,12 +453,12 @@ msgstr "etiqueta de página"
 
 #: 
 msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
-msgstr "pip descargará y compilara pygobject, por lo que se requieren las cabeceras (o los paquetes de desarollo) de Gtk"
+msgstr "pip descargará y compilara pygobject, por lo que se requieren las cabeceras (o los paquetes de desarollo) de Gtk."
 
 #: 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 ""
-msgstr "pympress es un lector de PDF ligero escrito en Python, usando Poppler para mostrar PDF y GTK en la interfaz gráfica de usuario..\n"
+msgstr "pympress es un lector de PDF ligero escrito en Python, usando Poppler para mostrar PDF y GTK en la interfaz gráfica de usuario.\n"
 ""
 
 #: 
@@ -647,15 +647,15 @@ msgstr "Si está utilizando virtualenv o anaconda, puede o permitir el acceso a 
 
 #: 
 msgid "pip will then download and compile pygobject, for which you need the Gtk and cairo headers (or development packages)."
-msgstr "pip descargará y compilara pygobject, por lo que se requieren las cabeceras (o los paquetes de desarollo) de Gtk"
+msgstr "pip descargará y compilara pygobject, por lo que se requieren las cabeceras (o los paquetes de desarollo) de Gtk."
 
 #: 
 msgid "(none, left, right, top, or bottom)."
-msgstr "(ninguna [none], izquierda [left], derecha [right], arriba [top] o abajo [bottom])."
+msgstr "(ninguna, izquierda, derecha, arriba o abajo)."
 
 #: 
 msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
-msgstr "Si está utilizando virtualenv o anaconda, también puede permitir el acceso a los paquetes del sistema"
+msgstr "Si está utilizando virtualenv o anaconda, también puede permitir el acceso a los paquetes del sistema."
 
 #: 
 msgid "Set the position of notes on the pdf page"
@@ -667,11 +667,11 @@ msgstr "Intente buscar en el gestor de paquetes de su sistema operativo, o ejecu
 
 #: 
 msgid "pip will then download and compile pygobject and pycairo, for which you need the Gtk and cairo headers (or development packages)."
-msgstr "pip descargará y compilara pygobject y pycairo, por lo que se requieren las cabeceras (o los paquetes de desarollo) de Gtk y cairo"
+msgstr "pip descargará y compilara pygobject y pycairo, por lo que se requieren las cabeceras (o los paquetes de desarollo) de Gtk y cairo."
 
 #: 
 msgid "(none, left, right, top, bottom, or after)."
-msgstr "(ninguna [none], izquierda [left], derecha [right], arriba [top], abajo [bottom] o detrás [after])."
+msgstr "(ninguna, izquierda, derecha, arriba, abajo o detrás)."
 
 #: 
 msgid "_After slide pages"
@@ -679,19 +679,19 @@ msgstr "_Después de las dispositivas"
 
 #: 
 msgid "_Bottom half of slide"
-msgstr "Parte _inferior de la dispositiva"
+msgstr "Mitad _inferior de la dispositiva"
 
 #: 
 msgid "_Left half of slide"
-msgstr "Parte _izquierda de la diapositiva"
+msgstr "Mitad _izquierda de la diapositiva"
 
 #: 
 msgid "_Right half of slide"
-msgstr "Parte _derecha de la diapositiva"
+msgstr "Mitad _derecha de la diapositiva"
 
 #: 
 msgid "_Top half of slide"
-msgstr "Parte _superior de la diapositiva"
+msgstr "Mitad _superior de la diapositiva"
 
 #: 
 msgid "Error parsing option from config file {}.{} \"{}\" to bool"
@@ -711,7 +711,7 @@ msgstr "Ocultar/revelar pantalla"
 
 #: 
 msgid "Close opened pympress instance"
-msgstr "Salir de la instancia abierta de pympress"
+msgstr "Salir de la instancia abierta de Pympress"
 
 #: 
 msgid "Print version and exit"
@@ -763,7 +763,7 @@ msgstr "Modo de resaltado"
 
 #: 
 msgid "Never clear (manually only)"
-msgstr "Limipiar manualmente"
+msgstr "Nunca limpiar (sólo manualmente)"
 
 #: 
 msgid "Tools below slide"
@@ -791,241 +791,282 @@ msgstr "_Salir"
 
 #: 
 msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr ""
+msgstr "Gtk.Application.inhibit falló evitando el salvapantallas, pruebe a forzar su desactivación"
 
 #: 
 msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr ""
+msgstr "No se debería requerir forzar la activación/desactivación del salvapantallas en Linux"
 
 #: 
 msgid "10th next slide"
-msgstr ""
+msgstr "10ª siguiente"
 
 #: 
 msgid "11th next slide"
-msgstr ""
+msgstr "11ª siguiente"
 
 #: 
 msgid "12th next slide"
-msgstr ""
+msgstr "12ª siguiente"
 
 #: 
 msgid "13th next slide"
-msgstr ""
+msgstr "13ª siguiente"
 
 #: 
 msgid "14th next slide"
-msgstr ""
+msgstr "14ª siguiente"
 
 #: 
 msgid "15th next slide"
-msgstr ""
+msgstr "15ª siguiente"
 
 #: 
 msgid "16th next slide"
-msgstr ""
+msgstr "16ª siguiente"
 
 #: 
 msgid "2nd next slide"
-msgstr ""
+msgstr "2ª siguiente"
 
 #: 
 msgid "3rd next slide"
-msgstr ""
+msgstr "3ª siguiente"
 
 #: 
 msgid "4th next slide"
-msgstr ""
+msgstr "4ª siguiente"
 
 #: 
 msgid "5th next slide"
-msgstr ""
+msgstr "5ª siguiente"
 
 #: 
 msgid "6th next slide"
-msgstr ""
+msgstr "6ª siguiente"
 
 #: 
 msgid "7th next slide"
-msgstr ""
+msgstr "7ª siguiente"
 
 #: 
 msgid "8th next slide"
-msgstr ""
+msgstr "8ª siguiente"
 
 #: 
 msgid "9th next slide"
-msgstr ""
+msgstr "9ª siguiente"
 
 #: 
 msgid "Edit layout"
-msgstr ""
+msgstr "Editar diseño"
 
 #: 
 msgid "Plain layout, without notes mode"
-msgstr ""
+msgstr "Diseño simple, sin modo de anotaciones"
 
 #: 
 msgid "Unknown widget \"{}\" to draw"
-msgstr ""
+msgstr "Widget \"{}\" desconocido a dibujar"
 
 #: 
 msgid "annotations (hideable)"
-msgstr ""
+msgstr "anotaciones (se puede ocultar)"
 
 #: 
 msgid "box"
-msgstr ""
+msgstr "cuadro"
 
 #: 
 msgid "current slide"
-msgstr ""
+msgstr "diapositiva actual"
 
 #: 
 msgid "horizontal"
-msgstr ""
+msgstr "horizontal"
 
 #: 
 msgid "next slide(s)"
-msgstr ""
+msgstr "Siguiente(s) diapositivas"
 
 #: 
 msgid "next slides count"
-msgstr ""
+msgstr "Cuenta de siguientes"
 
 #: 
 msgid "orientation"
-msgstr ""
+msgstr "orientación"
 
 #: 
 msgid "resizeable"
-msgstr ""
+msgstr "redimensionable"
 
 #: 
 msgid "vertical"
-msgstr ""
+msgstr "vertical"
 
 #: 
 msgid "widget"
-msgstr ""
+msgstr "widget"
 
 #: 
 msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr ""
+msgstr "Diseño para notas de Beamer en la pantalla secundaria (sin vista previa de la diapositiva actual en notas)"
 
 #: 
 msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr ""
+msgstr "Diseño para notas de LibreOffice en páginas separadas (con vista previa de la diapositiva actual en notas)"
 
 #: 
 msgid "Plain layout, without note slides"
-msgstr ""
+msgstr "Diseño simple, sin diapositivas de notas"
 
 #: 
 msgid "Overwrite"
-msgstr ""
+msgstr "Sobreescribir"
 
 #: 
 msgid "Overwrite changes instead of reloading?"
-msgstr ""
+msgstr "¿Guardar los cambios en lugar de recargar?"
 
 #: 
 msgid "Reload"
-msgstr ""
+msgstr "Volver a cargar"
 
 #: 
 msgid "Save as..."
-msgstr ""
+msgstr "Guardar como..."
 
 #: 
 msgid "Save changes before closing?"
-msgstr ""
+msgstr "¿Guardar los cambios antes de cerrar?"
 
 #: 
 msgid "Saving changes will overwrite the changed file!"
-msgstr ""
+msgstr "¡Guardar los cambios sobreescribirá el archivo editado!"
 
 #: 
 msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr ""
+msgstr "El archivo abierto se ha modificado fuera de Pympress, pero has hecho cambios sin guardar."
 
 #: 
 msgid "Unsaved changes"
-msgstr ""
+msgstr "Cambios sin guardar"
 
 #: 
 msgid "Unsaved changes will be lost"
-msgstr ""
+msgstr "Los cambios sin guardar se perderán"
 
 #: 
 msgid "Unsaved changes will be lost."
-msgstr ""
+msgstr "Los cambios sin guardar se perderán."
 
 #: 
 msgid "_Discard"
-msgstr ""
+msgstr "_Descartar"
 
 #: 
 msgid "_Save"
-msgstr ""
+msgstr "_Guardar"
 
 #: 
 msgid "_Save as"
-msgstr ""
+msgstr "_Guardar como"
 
 #: 
 msgid "annotations"
-msgstr ""
+msgstr "anotaciones"
 
 #: 
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #: 
 msgid "Choose parameters for automatically playing slides"
-msgstr ""
+msgstr "Elija parámetros para reproducir diapositivas automáticamente"
 
 #: 
 msgid "Loop"
-msgstr ""
+msgstr "Bucle"
 
 #: 
 msgid "Save file"
-msgstr ""
+msgstr "Guardar"
 
 #: 
 msgid "Save file as"
-msgstr ""
+msgstr "Guardar como"
 
 #: 
 msgid "Time per slide (s):"
-msgstr ""
+msgstr "Tiempo por diapositiva(s):"
 
 #: 
 msgid "_Automatic navigation"
-msgstr ""
+msgstr "_Navegación automática"
 
 #: 
 msgid "Note pages"
-msgstr ""
+msgstr "Página de notas"
 
 #: 
 msgid "Plain"
-msgstr ""
+msgstr "Simple"
 
 #: 
 msgid "notes"
-msgstr ""
+msgstr "notas"
 
 #: 
 msgid "Highlighting"
-msgstr ""
+msgstr "Resaltado"
 
 #: 
 msgid "Layout to draw on the current slide"
+msgstr "Diseño a dibujar en la diapositiva actual"
+
+#. Need context to proper translate this.
+#: 
+msgid "highlighting"
+msgstr "resaltado"
+
+#: 
+msgid "Exit highlight on page change"
+msgstr "Salir del resaltado al cambiar de página"
+
+#: 
+msgid "(none, left, right, top, bottom, after, or odd)."
+msgstr "(ninguna, izquierda, derecha, arriba, abajo, después, o impar)."
+
+#: 
+msgid "_Every second page"
+msgstr "_Cada segunda página"
+
+#: 
+msgid "(none, left, right, top, bottom, after, odd, or prefix)."
+msgstr "(ninguna, izquierda, derecha, arriba, abajo, después, o prefijo)."
+
+#: 
+msgid "Unexpected missing page to draw for widget \"{}\""
+msgstr "Página inesperadamente ausente al dibujar el widget \"{}\""
+
+#: 
+msgid "_Prefixed labels"
+msgstr "_Etiquetas prefijadas"
+
+#: 
+msgid "Redo highlight stroke"
+msgstr "Rehacer trazo de resalta"
+
+#: 
+msgid "_About"
 msgstr ""
 
 #: 
-msgid "highlighting"
+msgid "Highlighting with notes"
+msgstr ""
+
+#: 
+msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 

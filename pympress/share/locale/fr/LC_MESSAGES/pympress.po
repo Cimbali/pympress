@@ -12,10 +12,12 @@ msgid "(and optionally seconds)"
 msgstr "(et secondes, optionellement)"
 
 #: 
+#, fuzzy
 msgid "(paused)"
 msgstr "(en pause)"
 
 #: 
+#, fuzzy
 msgid "Adjust alignment of slides in projector screen"
 msgstr "Ajuster l'alignement des diapos sur l'écran du projecteur"
 
@@ -28,6 +30,7 @@ msgid "Annotations"
 msgstr "Notes"
 
 #: 
+#, fuzzy
 msgid "Big buttons"
 msgstr "Gros boutons"
 
@@ -40,10 +43,12 @@ msgid "Clock"
 msgstr "Horloge"
 
 #: 
+#, fuzzy
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr "Attention: La fenêtre de contenu et de présenteur ne peuvent être sur le même écran pour démarrer en plein écran !"
 
 #: 
+#, fuzzy
 msgid "Content blanked"
 msgstr "Contenu masqué"
 
@@ -64,6 +69,7 @@ msgid "Could not enable DPMS screen blanking: got status "
 msgstr "Attention: Impossible d'activer l'extinction d'écran DPMS: "
 
 #: 
+#, fuzzy
 msgid "Could not find the file \"{}\""
 msgstr "Impossible d'ouvrir le fichier \"{}\""
 
@@ -97,7 +103,7 @@ msgstr "lecteur de gif GtkImage"
 
 #: 
 msgid "Highlight"
-msgstr "Feutre"
+msgstr "Surligner"
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
@@ -281,7 +287,7 @@ msgstr "Action inattendue dans l'index \"{}\""
 
 #: 
 msgid "Unknow widget {} to be fullscreened, aborting."
-msgstr "Élement visuel {} inconnu à mettre en plein écran, abandonnée."
+msgstr "Élément visuel {} inconnu à mettre en plein écran, abandonnée."
 
 #: 
 msgid "Unsupported OS: can't enable/disable screensaver"
@@ -345,7 +351,7 @@ msgstr "Aide"
 
 #: 
 msgid "_Highlight"
-msgstr "Feutre"
+msgstr "Surligner"
 
 #: 
 msgid "_Jump to label"
@@ -487,7 +493,7 @@ msgstr "Masquer l'écran"
 
 #: 
 msgid "Cancel goto/jump/highlighting/zooming"
-msgstr "Annuler modes aller à/feutre/zoom"
+msgstr "Annuler modes aller à/surlignage/zoom"
 
 #: 
 msgid "Close file"
@@ -579,7 +585,7 @@ msgstr "Contenu en plein écran"
 
 #: 
 msgid "Toggle highlighting"
-msgstr "Mode feutre"
+msgstr "Mode surligneur"
 
 #: 
 msgid "Toggle laserpointer"
@@ -591,7 +597,7 @@ msgstr "Mode note"
 
 #: 
 msgid "Undo highlight stroke"
-msgstr "Annuler trait de feutre"
+msgstr "Annuler trait de surligneur"
 
 #: 
 msgid "Unzoom"
@@ -759,7 +765,7 @@ msgstr "Effacer en changeant de diapo"
 
 #: 
 msgid "Highlight mode"
-msgstr "Mode feutre"
+msgstr "Mode surligneur"
 
 #: 
 msgid "Never clear (manually only)"
@@ -1015,17 +1021,57 @@ msgstr "Sans notes"
 
 #: 
 msgid "notes"
-msgstr ""
+msgstr "notes"
 
 #: 
 msgid "Highlighting"
-msgstr ""
+msgstr "Surlignage"
 
 #: 
 msgid "Layout to draw on the current slide"
-msgstr ""
+msgstr "Mise en page pour dessiner sur la diapo"
 
 #: 
 msgid "highlighting"
+msgstr "surlignage"
+
+#: 
+msgid "Exit highlight on page change"
+msgstr "Quitter le mode surligneur en changeant de page"
+
+#: 
+msgid "(none, left, right, top, bottom, after, or odd)."
+msgstr "(aucun [none], left [gauche], droite [right], haut [top], bas [bottom], après [after], ou pages impaires [odd])"
+
+#: 
+msgid "_Every second page"
+msgstr "Pages alternées"
+
+#: 
+msgid "(none, left, right, top, bottom, after, odd, or prefix)."
+msgstr "(aucun [none], left [gauche], droite [right], haut [top], bas [bottom], après [after], pages impaires [odd] ou préfixées [prefix])"
+
+#: 
+msgid "Unexpected missing page to draw for widget \"{}\""
+msgstr "Page manquante de façon inattendue pour le rendu de l’élément visuel \"{}\""
+
+#: 
+msgid "_Prefixed labels"
+msgstr "Numéro de pages _préfixés"
+
+#: 
+msgid "Redo highlight stroke"
+msgstr "Refaire trait de surligneur"
+
+#: 
+msgid "_About"
+msgstr ""
+
+#: 
+msgid "Highlighting with notes"
+msgstr ""
+
+#: 
+msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 

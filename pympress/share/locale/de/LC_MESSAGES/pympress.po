@@ -627,7 +627,7 @@ msgstr "Verursacht durch "
 
 #: 
 msgid "Building FileWatcher"
-msgstr ""
+msgstr "Erstelle FileWatcher"
 
 #: 
 msgid "Missing dependency: python \"{}\" package"
@@ -635,7 +635,7 @@ msgstr "fehlende Abhängigkeit: python \"{}\" Paket"
 
 #: 
 msgid "Monitoring of changes to reload files automatically is not available"
-msgstr ""
+msgstr "Das Beobachten von Änderungen zum Neuladen der Dateien ist nicht verfügbar"
 
 #: 
 msgid "ERROR: Gobject Introspections and/or pycairo module is missing, make sure Gtk, pygobject and pycairo are installed on your system."
@@ -643,7 +643,7 @@ msgstr "Fehler: Gobject Introspections und/oder pycairo Modul fehlt. Überprüfe
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject pycairo"
-msgstr ""
+msgstr "Unter Verwendung von virtualenv oder anaconda können entweder die System-Pakete verwendet oder der folgende Befehl ausgeführt werden: `pip install pygobject pycairo`"
 
 #: 
 msgid "pip will then download and compile pygobject, for which you need the Gtk and cairo headers (or development packages)."
@@ -655,7 +655,7 @@ msgstr "(keine, links, rechts, oben oder unten)"
 
 #: 
 msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
-msgstr ""
+msgstr "Unter Verwendung von virtualenv oder anaconda ist es unter Umständen möglich, Zugriff auf die System-Pakete zu gewähren."
 
 #: 
 msgid "Set the position of notes on the pdf page"
@@ -675,7 +675,7 @@ msgstr "(keine, links, rechts, oben, unten oder hinter)"
 
 #: 
 msgid "_After slide pages"
-msgstr ""
+msgstr "N_ach den Folienseiten"
 
 #: 
 msgid "_Bottom half of slide"
@@ -695,337 +695,377 @@ msgstr "_Obere Hälfte der Folie"
 
 #: 
 msgid "Error parsing option from config file {}.{} \"{}\" to bool"
-msgstr ""
+msgstr "Fehler beim Parsen der Option {}.{} \"{}\" als Wahrheitswert aus der Konfigurationsdatei"
 
 #: 
 msgid "Error parsing option from config file {}.{} \"{}\" to float"
-msgstr ""
+msgstr "Fehler beim Parsen der Option {}.{} \"{}\" als Gleitkommazahl aus der Konfigurationsdatei"
 
 #: 
 msgid "Error parsing option from config file {}.{} \"{}\" to int"
-msgstr ""
+msgstr "Fehler beim Parsen der Option {}.{} \"{}\" als Ganzzahl aus der Konfigurationsdatei"
 
 #: 
 msgid "Blank/unblank content screen"
-msgstr ""
+msgstr "Inhalt verstecken/anzeigen"
 
 #: 
 msgid "Close opened pympress instance"
-msgstr ""
+msgstr "Geöffnet pympress-Instanz schließen"
 
 #: 
 msgid "Print version and exit"
-msgstr ""
+msgstr "Version ausgeben und beenden"
 
 #: 
 msgid "Reset talk timer"
-msgstr ""
+msgstr "Redezeit zurücksetzen"
 
 #: 
 msgid "Toggle pause of talk timer"
-msgstr ""
+msgstr "Pause in Redezeit umschalten"
 
 #: 
 msgid "GdkPixbuf gif player"
-msgstr ""
+msgstr "GdkPixbuf GIF-Player"
 
 #: 
 msgid "Media support loaded: "
-msgstr ""
+msgstr "Medienunterstützung aktiv: "
 
 #: 
 msgid "Media support using {} is disabled."
-msgstr ""
+msgstr "Medienunterstützung mittels {} ist deaktiviert."
 
 #: 
 msgid "Media support: "
-msgstr ""
+msgstr "Medienunterstützung: "
 
 #: 
 msgid "Align _content"
-msgstr ""
+msgstr "Inhalt ausri_chten"
 
 #: 
 msgid "Clear and restore per page label"
-msgstr ""
+msgstr "Löschen und Wiederherstellen pro Seiten-Label"
 
 #: 
 msgid "Clear and restore per page number"
-msgstr ""
+msgstr "Löschen und Wiederherstellen pro Seitenzahl"
 
 #: 
 msgid "Clear on page change"
-msgstr ""
+msgstr "Beim Seitenwechsel löschen"
 
 #: 
 msgid "Highlight mode"
-msgstr ""
+msgstr "Hervorhebungs-Modus"
 
 #: 
 msgid "Never clear (manually only)"
-msgstr ""
+msgstr "Niemals löschen (nur manuell)"
 
 #: 
 msgid "Tools below slide"
-msgstr ""
+msgstr "Werkzeuge unter der Folie"
 
 #: 
 msgid "Tools next to slide"
-msgstr ""
+msgstr "Werkzeuge neben der Folie"
 
 #: 
 msgid "_Close"
-msgstr ""
+msgstr "S_chließen"
 
 #: 
 msgid "_Open"
-msgstr ""
+msgstr "_Öffnen"
 
 #: 
 msgid "_Pointer"
-msgstr ""
+msgstr "_Pointer"
 
 #: 
 msgid "_Quit"
-msgstr ""
+msgstr "_Beenden"
 
 #: 
 msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr ""
+msgstr "Gtk.Application.inhibit konnte den Bildschirmschoner nicht verhindern, versuche harte Deaktivierung"
 
 #: 
 msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr ""
+msgstr "Das harte Aktivieren/Deaktivieren sollte unter Linux nicht notwendig sein"
 
 #: 
 msgid "10th next slide"
-msgstr ""
+msgstr "10. Folie"
 
 #: 
 msgid "11th next slide"
-msgstr ""
+msgstr "11. Folie"
 
 #: 
 msgid "12th next slide"
-msgstr ""
+msgstr "12. Folie"
 
 #: 
 msgid "13th next slide"
-msgstr ""
+msgstr "13. Folie"
 
 #: 
 msgid "14th next slide"
-msgstr ""
+msgstr "14. Folie"
 
 #: 
 msgid "15th next slide"
-msgstr ""
+msgstr "15. Folie"
 
 #: 
 msgid "16th next slide"
-msgstr ""
+msgstr "16. Folie"
 
 #: 
 msgid "2nd next slide"
-msgstr ""
+msgstr "2. Folie"
 
 #: 
 msgid "3rd next slide"
-msgstr ""
+msgstr "3. Folie"
 
 #: 
 msgid "4th next slide"
-msgstr ""
+msgstr "4. Folie"
 
 #: 
 msgid "5th next slide"
-msgstr ""
+msgstr "5. Folie"
 
 #: 
 msgid "6th next slide"
-msgstr ""
+msgstr "6. Folie"
 
 #: 
 msgid "7th next slide"
-msgstr ""
+msgstr "7. Folie"
 
 #: 
 msgid "8th next slide"
-msgstr ""
+msgstr "8. Folie"
 
 #: 
 msgid "9th next slide"
-msgstr ""
+msgstr "9. Folie"
 
 #: 
 msgid "Edit layout"
-msgstr ""
+msgstr "Layout bearbeiten"
 
 #: 
 msgid "Plain layout, without notes mode"
-msgstr ""
+msgstr "Schlichtes Layout, ohne Notizmodus"
 
 #: 
 msgid "Unknown widget \"{}\" to draw"
-msgstr ""
+msgstr "Unbekanntes Widget \"{}\" soll gezeichnet werden"
 
 #: 
 msgid "annotations (hideable)"
-msgstr ""
+msgstr "Anmerkungen (versteckbar)"
 
 #: 
 msgid "box"
-msgstr ""
+msgstr "Box"
 
 #: 
 msgid "current slide"
-msgstr ""
+msgstr "Aktuelle Folie"
 
 #: 
 msgid "horizontal"
-msgstr ""
+msgstr "Horizontal"
 
 #: 
 msgid "next slide(s)"
-msgstr ""
+msgstr "Nächste Folie(n)"
 
 #: 
 msgid "next slides count"
-msgstr ""
+msgstr "Anzahl nächster Folien"
 
 #: 
 msgid "orientation"
-msgstr ""
+msgstr "Orientierung"
 
 #: 
 msgid "resizeable"
-msgstr ""
+msgstr "Größe anpassbar"
 
 #: 
 msgid "vertical"
-msgstr ""
+msgstr "Vertikal"
 
 #: 
 msgid "widget"
-msgstr ""
+msgstr "Widget"
 
 #: 
 msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr ""
+msgstr "Layout für Beamer-Notizen auf zweitem Bildschirm (keine Vorschau der aktuellen Folie in den Notizen)"
 
 #: 
 msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr ""
+msgstr "Layout für LibreOffice-Notizen auf separaten Seiten (mit Vorschau der aktuellen Folie in den Notizen)"
 
 #: 
 msgid "Plain layout, without note slides"
-msgstr ""
+msgstr "Schlichtes Layout, ohne Notizen"
 
 #: 
 msgid "Overwrite"
-msgstr ""
+msgstr "Überschreiben"
 
 #: 
 msgid "Overwrite changes instead of reloading?"
-msgstr ""
+msgstr "Änderungen überschreiben, statt neu zu laden?"
 
 #: 
 msgid "Reload"
-msgstr ""
+msgstr "Neu laden"
 
 #: 
 msgid "Save as..."
-msgstr ""
+msgstr "Speichern unter..."
 
 #: 
 msgid "Save changes before closing?"
-msgstr ""
+msgstr "Änderungen vor dem Schließen speichern?"
 
 #: 
 msgid "Saving changes will overwrite the changed file!"
-msgstr ""
+msgstr "Das Speichern der Änderungen wird die geänderte Datei überschreiben!"
 
 #: 
 msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr ""
+msgstr "Die geöffnete Datei wurde außerhalb von pympress verändert, aber es gibt ungespeicherte Änderungen."
 
 #: 
 msgid "Unsaved changes"
-msgstr ""
+msgstr "Ungespeicherte Änderungen"
 
 #: 
 msgid "Unsaved changes will be lost"
-msgstr ""
+msgstr "Ungespeicherte Änderungen gehen verloren"
 
 #: 
 msgid "Unsaved changes will be lost."
-msgstr ""
+msgstr "Ungespeicherte Änderungen gehen verloren."
 
 #: 
 msgid "_Discard"
-msgstr ""
+msgstr "_Verwerfen"
 
 #: 
 msgid "_Save"
-msgstr ""
+msgstr "_Speichern"
 
 #: 
 msgid "_Save as"
-msgstr ""
+msgstr "_Speichern als"
 
 #: 
 msgid "annotations"
-msgstr ""
+msgstr "Anmerkungen"
 
 #: 
 msgid "Auto"
-msgstr ""
+msgstr "Automatisch"
 
 #: 
 msgid "Choose parameters for automatically playing slides"
-msgstr ""
+msgstr "Parameter für die automatische Folienwiedergabe wählen"
 
 #: 
 msgid "Loop"
-msgstr ""
+msgstr "Schleife"
 
 #: 
 msgid "Save file"
-msgstr ""
+msgstr "Datei speichern"
 
 #: 
 msgid "Save file as"
-msgstr ""
+msgstr "Datei speichern unter"
 
 #: 
 msgid "Time per slide (s):"
-msgstr ""
+msgstr "Zeit pro Folie (s):"
 
 #: 
 msgid "_Automatic navigation"
-msgstr ""
+msgstr "_Automatische Navigation"
 
 #: 
 msgid "Note pages"
-msgstr ""
+msgstr "Notizseiten"
 
 #: 
 msgid "Plain"
-msgstr ""
+msgstr "Schlicht"
 
 #: 
 msgid "notes"
-msgstr ""
+msgstr "Notizen"
 
 #: 
 msgid "Highlighting"
-msgstr ""
+msgstr "Hervorhebung"
 
 #: 
 msgid "Layout to draw on the current slide"
-msgstr ""
+msgstr "Layout zum Zeichnen auf der aktuellen Folie"
 
 #: 
 msgid "highlighting"
+msgstr "Hervorhebung"
+
+#: 
+msgid "Exit highlight on page change"
+msgstr "Hervorheben beim Seitenwechsel beenden"
+
+#: 
+msgid "(none, left, right, top, bottom, after, or odd)."
+msgstr ""
+
+#: 
+msgid "_Every second page"
+msgstr ""
+
+#: 
+msgid "(none, left, right, top, bottom, after, odd, or prefix)."
+msgstr ""
+
+#: 
+msgid "Unexpected missing page to draw for widget \"{}\""
+msgstr ""
+
+#: 
+msgid "_Prefixed labels"
+msgstr ""
+
+#: 
+msgid "Redo highlight stroke"
+msgstr ""
+
+#: 
+msgid "_About"
+msgstr ""
+
+#: 
+msgid "Highlighting with notes"
+msgstr ""
+
+#: 
+msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 

@@ -41,6 +41,9 @@ download() {
 
     test -n "$url" && mkdir -p "pympress/share/locale/${norm}/LC_MESSAGES" &&
         curl -so - "$url" | sed "/Language/s/$lang/$norm/" > "pympress/share/locale/${norm}/LC_MESSAGES/pympress.po"
+
+    # test the file
+    msgfmt --use-fuzzy "pympress/share/locale/${norm}/LC_MESSAGES/pympress.po" -o /dev/null
 }
 
 getpass() {

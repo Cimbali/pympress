@@ -12,10 +12,12 @@ msgid "(and optionally seconds)"
 msgstr "(a případně sekundy)"
 
 #: 
+#, fuzzy
 msgid "(paused)"
 msgstr "(pozastaveno)"
 
 #: 
+#, fuzzy
 msgid "Adjust alignment of slides in projector screen"
 msgstr "Upravit zarovnání snímků na obrazovce projektoru"
 
@@ -25,9 +27,10 @@ msgstr "Všechny soubory"
 
 #: 
 msgid "Annotations"
-msgstr "Popis"
+msgstr "Komentář"
 
 #: 
+#, fuzzy
 msgid "Big buttons"
 msgstr "Velká tlačítka"
 
@@ -40,10 +43,12 @@ msgid "Clock"
 msgstr "Hodiny"
 
 #: 
+#, fuzzy
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr "Obsah a okno s prezentací musí být na stejném monitoru pokud zapnete zobrazení na celé obrazovce!"
 
 #: 
+#, fuzzy
 msgid "Content blanked"
 msgstr "Prázdno"
 
@@ -64,6 +69,7 @@ msgid "Could not enable DPMS screen blanking: got status "
 msgstr "Nelze zapnout DPMS vyprázdnění obrazovky: stav "
 
 #: 
+#, fuzzy
 msgid "Could not find the file \"{}\""
 msgstr "Soubor \"{}\" nenalezen"
 
@@ -201,7 +207,7 @@ msgstr "Pympress nenašel soubor "
 
 #: 
 msgid "Pympress can not interpret annotation of type:"
-msgstr "Pympress nemůže zobrazit popis typu:"
+msgstr "Pympress nemůže zobrazit komentář typu:"
 
 #: 
 msgid "Pympress does not recognize link type \"{}\""
@@ -301,7 +307,7 @@ msgstr "_Zarovnat obsah"
 
 #: 
 msgid "_Annotations"
-msgstr "_Poznámky"
+msgstr "_Komentář"
 
 #: 
 msgid "_Blank screen"
@@ -373,7 +379,7 @@ msgstr "_Další"
 
 #: 
 msgid "_Notes mode"
-msgstr "_Mód s poznámkami"
+msgstr "_Režim s poznámkami"
 
 #: 
 msgid "_Pause timer"
@@ -571,7 +577,7 @@ msgstr "Časovače"
 
 #: 
 msgid "Toggle annotations"
-msgstr "Zobrazit anotace"
+msgstr "Zobrazit komentář"
 
 #: 
 msgid "Toggle fullscreen"
@@ -587,7 +593,7 @@ msgstr "Přepnout ukazovátko"
 
 #: 
 msgid "Toggle notes mode"
-msgstr "Mód poznámek"
+msgstr "Režim s poznámkami"
 
 #: 
 msgid "Undo highlight stroke"
@@ -799,233 +805,273 @@ msgstr "Nemělo by vyžadovat natvrdo povolit/zakázat spořič obrazovky na Lin
 
 #: 
 msgid "10th next slide"
-msgstr ""
+msgstr "10. následující snímek"
 
 #: 
 msgid "11th next slide"
-msgstr ""
+msgstr "11. následující snímek"
 
 #: 
 msgid "12th next slide"
-msgstr ""
+msgstr "12. následující snímek"
 
 #: 
 msgid "13th next slide"
-msgstr ""
+msgstr "13. následující snímek"
 
 #: 
 msgid "14th next slide"
-msgstr ""
+msgstr "14. následující snímek"
 
 #: 
 msgid "15th next slide"
-msgstr ""
+msgstr "15. následující snímek"
 
 #: 
 msgid "16th next slide"
-msgstr ""
+msgstr "16. následující snímek"
 
 #: 
 msgid "2nd next slide"
-msgstr ""
+msgstr "2. následující snímek"
 
 #: 
 msgid "3rd next slide"
-msgstr ""
+msgstr "3. následující snímek"
 
 #: 
 msgid "4th next slide"
-msgstr ""
+msgstr "4. následující snímek"
 
 #: 
 msgid "5th next slide"
-msgstr ""
+msgstr "5. následující snímek"
 
 #: 
 msgid "6th next slide"
-msgstr ""
+msgstr "6. následující snímek"
 
 #: 
 msgid "7th next slide"
-msgstr ""
+msgstr "7. následující snímek"
 
 #: 
 msgid "8th next slide"
-msgstr ""
+msgstr "8. následující snímek"
 
 #: 
 msgid "9th next slide"
-msgstr ""
+msgstr "9. následující snímek"
 
 #: 
 msgid "Edit layout"
-msgstr ""
+msgstr "Upravit rozvržení"
 
 #: 
 msgid "Plain layout, without notes mode"
-msgstr ""
+msgstr "Jednoduché rozvržení, bez režimu s poznámkami"
 
 #: 
 msgid "Unknown widget \"{}\" to draw"
-msgstr ""
+msgstr "Zobrazení neznámého widgetu \"{}\""
 
 #: 
 msgid "annotations (hideable)"
-msgstr ""
+msgstr "komentář (schovatelné)"
 
 #: 
 msgid "box"
-msgstr ""
+msgstr "políčko"
 
 #: 
 msgid "current slide"
-msgstr ""
+msgstr "aktuální snímek"
 
 #: 
 msgid "horizontal"
-msgstr ""
+msgstr "horizontální"
 
 #: 
 msgid "next slide(s)"
-msgstr ""
+msgstr "následující snímek(ky)"
 
 #: 
 msgid "next slides count"
-msgstr ""
+msgstr "počet následujících snímků"
 
 #: 
 msgid "orientation"
-msgstr ""
+msgstr "orientace"
 
 #: 
 msgid "resizeable"
-msgstr ""
+msgstr "upravitelná velikost"
 
 #: 
 msgid "vertical"
-msgstr ""
+msgstr "vertikální"
 
 #: 
 msgid "widget"
-msgstr ""
+msgstr "widget"
 
 #: 
 msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr ""
+msgstr "Rozvržení pro poznámky na druhé obrazovce (bez náhledu aktuálního snímku v poznámkách)"
 
 #: 
 msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr ""
+msgstr "Rozvržení pro LibreOffice poznámky na samostatných stránkách (s náhledem aktuálního snímku v poznámkách)"
 
 #: 
 msgid "Plain layout, without note slides"
-msgstr ""
+msgstr "Jednoduché rozvržení, bez snímků s poznámkami"
 
 #: 
 msgid "Overwrite"
-msgstr ""
+msgstr "Přepsat"
 
 #: 
 msgid "Overwrite changes instead of reloading?"
-msgstr ""
+msgstr "Přepsat změny místo načtení znova?"
 
 #: 
 msgid "Reload"
-msgstr ""
+msgstr "Načíst znovu"
 
 #: 
 msgid "Save as..."
-msgstr ""
+msgstr "Uložit jako..."
 
 #: 
 msgid "Save changes before closing?"
-msgstr ""
+msgstr "Uložit změny před zavřením?"
 
 #: 
 msgid "Saving changes will overwrite the changed file!"
-msgstr ""
+msgstr "Uložení změn přepíše změněný soubor!"
 
 #: 
 msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr ""
+msgstr "Otevřený soubor byl upraven mimo pympress, ale existují neuložené změny."
 
 #: 
 msgid "Unsaved changes"
-msgstr ""
+msgstr "Neuložené změny"
 
 #: 
 msgid "Unsaved changes will be lost"
-msgstr ""
+msgstr "Neuložené změny budou ztraceny"
 
 #: 
 msgid "Unsaved changes will be lost."
-msgstr ""
+msgstr "Neuložené změny budou ztraceny."
 
 #: 
 msgid "_Discard"
-msgstr ""
+msgstr "_Zrušit"
 
 #: 
 msgid "_Save"
-msgstr ""
+msgstr "_Uložit"
 
 #: 
 msgid "_Save as"
-msgstr ""
+msgstr "_Uložit jako"
 
 #: 
 msgid "annotations"
-msgstr ""
+msgstr "komentář"
 
 #: 
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #: 
 msgid "Choose parameters for automatically playing slides"
-msgstr ""
+msgstr "Nastavení parametrů pro automaticky zobrazované snímky"
 
 #: 
 msgid "Loop"
-msgstr ""
+msgstr "Smyčka"
 
 #: 
 msgid "Save file"
-msgstr ""
+msgstr "Uložit soubor"
 
 #: 
 msgid "Save file as"
-msgstr ""
+msgstr "Uložit soubor jako"
 
 #: 
 msgid "Time per slide (s):"
-msgstr ""
+msgstr "Doba na jeden snímek (s):"
 
 #: 
 msgid "_Automatic navigation"
-msgstr ""
+msgstr "_Automatická navigace"
 
 #: 
 msgid "Note pages"
-msgstr ""
+msgstr "Stránky s poznámkami"
 
 #: 
 msgid "Plain"
-msgstr ""
+msgstr "Jednoduchý"
 
 #: 
 msgid "notes"
-msgstr ""
+msgstr "poznámky"
 
 #: 
 msgid "Highlighting"
-msgstr ""
+msgstr "Zvýrazňování"
 
 #: 
 msgid "Layout to draw on the current slide"
-msgstr ""
+msgstr "Rozvržení pro kreslení na aktuální snímek"
 
 #: 
 msgid "highlighting"
+msgstr "zvýrazňování"
+
+#: 
+msgid "Exit highlight on page change"
+msgstr "Opustit zvýraznění na stránce změn"
+
+#: 
+msgid "(none, left, right, top, bottom, after, or odd)."
+msgstr "(žádný, vlevo, vpravo, nahoře, dole, za nebo lichý)."
+
+#: 
+msgid "_Every second page"
+msgstr "_Každou druhou stránku"
+
+#: 
+msgid "(none, left, right, top, bottom, after, odd, or prefix)."
+msgstr "(žádný, vlevo, vpravo, nahoře, dole, za, lichý nebo předpona)."
+
+#: 
+msgid "Unexpected missing page to draw for widget \"{}\""
+msgstr "Neočekávaně chybí stránka pro zobrazení widgetem \"{}\""
+
+#: 
+msgid "_Prefixed labels"
+msgstr "_Štítky s předponou"
+
+#: 
+msgid "Redo highlight stroke"
+msgstr ""
+
+#: 
+msgid "_About"
+msgstr ""
+
+#: 
+msgid "Highlighting with notes"
+msgstr ""
+
+#: 
+msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 
