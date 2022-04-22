@@ -68,7 +68,7 @@ jobs:
         while ! curl -s https://pypi.org/pypi/pympress/json | jq -r -e "$jq_script" > lastsource.json ; do
           sleep 60  # be patient with pypi
         done
-        echo ::set-output name=url::`jq -r .digests.sha256 lastsource.json`
+        echo ::set-output name=url::`jq -r .url lastsource.json`
         echo ::set-output name=sha256::`jq -r .digests.sha256 lastsource.json`
 
     - name: Run a check on the generated file
