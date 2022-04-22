@@ -796,14 +796,6 @@ msgid "_Quit"
 msgstr "_Quitter"
 
 #: 
-msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr "Gtk.Application.inhibit n’a pas réussi à désactiver l’économiseur d’écran, recours à la méthode forte"
-
-#: 
-msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr "La méthode forte de désactivation d’économiseur d’écran ne devrait pas être nécessaire sur Linux"
-
-#: 
 msgid "10th next slide"
 msgstr "10ème diapo suivante"
 
@@ -864,24 +856,8 @@ msgid "9th next slide"
 msgstr "9ème diapo suivante"
 
 #: 
-msgid "Edit layout"
-msgstr "Modifier la mise en page"
-
-#: 
-msgid "Plain layout, without notes mode"
-msgstr "Mise en page normale, sans diapos de notes"
-
-#: 
-msgid "Unknown widget \"{}\" to draw"
-msgstr "Élément visuel à afficher \"{}\" inconnu"
-
-#: 
 msgid "annotations (hideable)"
 msgstr "annotations (masquable)"
-
-#: 
-msgid "box"
-msgstr "conteneur"
 
 #: 
 msgid "current slide"
@@ -916,96 +892,12 @@ msgid "widget"
 msgstr "élément visuel"
 
 #: 
-msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr "Mise en page pour diapo de notes beamer sur la même page (sans aperçu de la diapo actuelle dans les notes)"
-
-#: 
-msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr "Mise en page pour diapo de notes libreoffice sur page séparée (avec aperçu de la diapo actuelle dans les notes)"
-
-#: 
-msgid "Plain layout, without note slides"
-msgstr "Mise en page sans diapos de notes"
-
-#: 
-msgid "Overwrite"
-msgstr "Écraser"
-
-#: 
-msgid "Overwrite changes instead of reloading?"
-msgstr "Écraser les modifications au lieu de recharger?"
-
-#: 
-msgid "Reload"
-msgstr "Recharger"
-
-#: 
-msgid "Save as..."
-msgstr "Enregistrer sous…"
-
-#: 
-msgid "Save changes before closing?"
-msgstr "Sauvegarder les changements avant de fermer?"
-
-#: 
-msgid "Saving changes will overwrite the changed file!"
-msgstr "Sauvegarder les changements écrasera le fichier modifié!"
-
-#: 
-msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr "Le fichier ouvert a été modifié en dehors de pympress, mais vous avez fait des modifications non sauvegardées."
-
-#: 
-msgid "Unsaved changes"
-msgstr "Modifications non sauvegardées"
-
-#: 
-msgid "Unsaved changes will be lost"
-msgstr "Les modifications non sauvegardées seront perdues"
-
-#: 
-msgid "Unsaved changes will be lost."
-msgstr "Les modifications non sauvegardées seront perdues."
-
-#: 
 msgid "_Discard"
 msgstr "Ignorer"
 
 #: 
-msgid "_Save"
-msgstr "Enregistrer"
-
-#: 
-msgid "_Save as"
-msgstr "Enregistrer sous"
-
-#: 
 msgid "annotations"
 msgstr "annotations"
-
-#: 
-msgid "Auto"
-msgstr "Auto"
-
-#: 
-msgid "Choose parameters for automatically playing slides"
-msgstr "Choisissez les paramètre pour passer les diapos automatiquement"
-
-#: 
-msgid "Loop"
-msgstr "Boucler"
-
-#: 
-msgid "Save file"
-msgstr "Sauvegarder le fichier"
-
-#: 
-msgid "Save file as"
-msgstr "Sauvegarder le fichier sous…"
-
-#: 
-msgid "Time per slide (s):"
-msgstr "Temps par slide (s)"
 
 #: 
 msgid "_Automatic navigation"
@@ -1040,10 +932,6 @@ msgid "Exit highlight on page change"
 msgstr "Quitter le mode surligneur en changeant de page"
 
 #: 
-msgid "(none, left, right, top, bottom, after, or odd)."
-msgstr "(aucun [none], left [gauche], droite [right], haut [top], bas [bottom], après [after], ou pages impaires [odd])"
-
-#: 
 msgid "_Every second page"
 msgstr "Pages alternées"
 
@@ -1065,13 +953,5 @@ msgstr "Refaire trait de surligneur"
 
 #: 
 msgid "_About"
-msgstr ""
-
-#: 
-msgid "Highlighting with notes"
-msgstr ""
-
-#: 
-msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 

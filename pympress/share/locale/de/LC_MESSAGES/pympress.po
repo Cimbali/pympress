@@ -790,14 +790,6 @@ msgid "_Quit"
 msgstr "_Beenden"
 
 #: 
-msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr "Gtk.Application.inhibit konnte den Bildschirmschoner nicht verhindern, versuche harte Deaktivierung"
-
-#: 
-msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr "Das harte Aktivieren/Deaktivieren sollte unter Linux nicht notwendig sein"
-
-#: 
 msgid "10th next slide"
 msgstr "10. Folie"
 
@@ -858,24 +850,8 @@ msgid "9th next slide"
 msgstr "9. Folie"
 
 #: 
-msgid "Edit layout"
-msgstr "Layout bearbeiten"
-
-#: 
-msgid "Plain layout, without notes mode"
-msgstr "Schlichtes Layout, ohne Notizmodus"
-
-#: 
-msgid "Unknown widget \"{}\" to draw"
-msgstr "Unbekanntes Widget \"{}\" soll gezeichnet werden"
-
-#: 
 msgid "annotations (hideable)"
 msgstr "Anmerkungen (versteckbar)"
-
-#: 
-msgid "box"
-msgstr "Box"
 
 #: 
 msgid "current slide"
@@ -910,96 +886,12 @@ msgid "widget"
 msgstr "Widget"
 
 #: 
-msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr "Layout für Beamer-Notizen auf zweitem Bildschirm (keine Vorschau der aktuellen Folie in den Notizen)"
-
-#: 
-msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr "Layout für LibreOffice-Notizen auf separaten Seiten (mit Vorschau der aktuellen Folie in den Notizen)"
-
-#: 
-msgid "Plain layout, without note slides"
-msgstr "Schlichtes Layout, ohne Notizen"
-
-#: 
-msgid "Overwrite"
-msgstr "Überschreiben"
-
-#: 
-msgid "Overwrite changes instead of reloading?"
-msgstr "Änderungen überschreiben, statt neu zu laden?"
-
-#: 
-msgid "Reload"
-msgstr "Neu laden"
-
-#: 
-msgid "Save as..."
-msgstr "Speichern unter..."
-
-#: 
-msgid "Save changes before closing?"
-msgstr "Änderungen vor dem Schließen speichern?"
-
-#: 
-msgid "Saving changes will overwrite the changed file!"
-msgstr "Das Speichern der Änderungen wird die geänderte Datei überschreiben!"
-
-#: 
-msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr "Die geöffnete Datei wurde außerhalb von pympress verändert, aber es gibt ungespeicherte Änderungen."
-
-#: 
-msgid "Unsaved changes"
-msgstr "Ungespeicherte Änderungen"
-
-#: 
-msgid "Unsaved changes will be lost"
-msgstr "Ungespeicherte Änderungen gehen verloren"
-
-#: 
-msgid "Unsaved changes will be lost."
-msgstr "Ungespeicherte Änderungen gehen verloren."
-
-#: 
 msgid "_Discard"
 msgstr "_Verwerfen"
 
 #: 
-msgid "_Save"
-msgstr "_Speichern"
-
-#: 
-msgid "_Save as"
-msgstr "_Speichern als"
-
-#: 
 msgid "annotations"
 msgstr "Anmerkungen"
-
-#: 
-msgid "Auto"
-msgstr "Automatisch"
-
-#: 
-msgid "Choose parameters for automatically playing slides"
-msgstr "Parameter für die automatische Folienwiedergabe wählen"
-
-#: 
-msgid "Loop"
-msgstr "Schleife"
-
-#: 
-msgid "Save file"
-msgstr "Datei speichern"
-
-#: 
-msgid "Save file as"
-msgstr "Datei speichern unter"
-
-#: 
-msgid "Time per slide (s):"
-msgstr "Zeit pro Folie (s):"
 
 #: 
 msgid "_Automatic navigation"
@@ -1034,10 +926,6 @@ msgid "Exit highlight on page change"
 msgstr "Hervorheben beim Seitenwechsel beenden"
 
 #: 
-msgid "(none, left, right, top, bottom, after, or odd)."
-msgstr ""
-
-#: 
 msgid "_Every second page"
 msgstr ""
 
@@ -1059,13 +947,5 @@ msgstr ""
 
 #: 
 msgid "_About"
-msgstr ""
-
-#: 
-msgid "Highlighting with notes"
-msgstr ""
-
-#: 
-msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 

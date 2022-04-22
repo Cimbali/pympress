@@ -790,14 +790,6 @@ msgid "_Quit"
 msgstr "_Salir"
 
 #: 
-msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr "Gtk.Application.inhibit falló evitando el salvapantallas, pruebe a forzar su desactivación"
-
-#: 
-msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr "No se debería requerir forzar la activación/desactivación del salvapantallas en Linux"
-
-#: 
 msgid "10th next slide"
 msgstr "10ª siguiente"
 
@@ -858,24 +850,8 @@ msgid "9th next slide"
 msgstr "9ª siguiente"
 
 #: 
-msgid "Edit layout"
-msgstr "Editar diseño"
-
-#: 
-msgid "Plain layout, without notes mode"
-msgstr "Diseño simple, sin modo de anotaciones"
-
-#: 
-msgid "Unknown widget \"{}\" to draw"
-msgstr "Widget \"{}\" desconocido a dibujar"
-
-#: 
 msgid "annotations (hideable)"
 msgstr "anotaciones (se puede ocultar)"
-
-#: 
-msgid "box"
-msgstr "cuadro"
 
 #: 
 msgid "current slide"
@@ -910,96 +886,12 @@ msgid "widget"
 msgstr "widget"
 
 #: 
-msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr "Diseño para notas de Beamer en la pantalla secundaria (sin vista previa de la diapositiva actual en notas)"
-
-#: 
-msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr "Diseño para notas de LibreOffice en páginas separadas (con vista previa de la diapositiva actual en notas)"
-
-#: 
-msgid "Plain layout, without note slides"
-msgstr "Diseño simple, sin diapositivas de notas"
-
-#: 
-msgid "Overwrite"
-msgstr "Sobreescribir"
-
-#: 
-msgid "Overwrite changes instead of reloading?"
-msgstr "¿Guardar los cambios en lugar de recargar?"
-
-#: 
-msgid "Reload"
-msgstr "Volver a cargar"
-
-#: 
-msgid "Save as..."
-msgstr "Guardar como..."
-
-#: 
-msgid "Save changes before closing?"
-msgstr "¿Guardar los cambios antes de cerrar?"
-
-#: 
-msgid "Saving changes will overwrite the changed file!"
-msgstr "¡Guardar los cambios sobreescribirá el archivo editado!"
-
-#: 
-msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr "El archivo abierto se ha modificado fuera de Pympress, pero has hecho cambios sin guardar."
-
-#: 
-msgid "Unsaved changes"
-msgstr "Cambios sin guardar"
-
-#: 
-msgid "Unsaved changes will be lost"
-msgstr "Los cambios sin guardar se perderán"
-
-#: 
-msgid "Unsaved changes will be lost."
-msgstr "Los cambios sin guardar se perderán."
-
-#: 
 msgid "_Discard"
 msgstr "_Descartar"
 
 #: 
-msgid "_Save"
-msgstr "_Guardar"
-
-#: 
-msgid "_Save as"
-msgstr "_Guardar como"
-
-#: 
 msgid "annotations"
 msgstr "anotaciones"
-
-#: 
-msgid "Auto"
-msgstr "Auto"
-
-#: 
-msgid "Choose parameters for automatically playing slides"
-msgstr "Elija parámetros para reproducir diapositivas automáticamente"
-
-#: 
-msgid "Loop"
-msgstr "Bucle"
-
-#: 
-msgid "Save file"
-msgstr "Guardar"
-
-#: 
-msgid "Save file as"
-msgstr "Guardar como"
-
-#: 
-msgid "Time per slide (s):"
-msgstr "Tiempo por diapositiva(s):"
 
 #: 
 msgid "_Automatic navigation"
@@ -1035,10 +927,6 @@ msgid "Exit highlight on page change"
 msgstr "Salir del resaltado al cambiar de página"
 
 #: 
-msgid "(none, left, right, top, bottom, after, or odd)."
-msgstr "(ninguna, izquierda, derecha, arriba, abajo, después, o impar)."
-
-#: 
 msgid "_Every second page"
 msgstr "_Cada segunda página"
 
@@ -1060,13 +948,5 @@ msgstr "Rehacer trazo de resalta"
 
 #: 
 msgid "_About"
-msgstr ""
-
-#: 
-msgid "Highlighting with notes"
-msgstr ""
-
-#: 
-msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 

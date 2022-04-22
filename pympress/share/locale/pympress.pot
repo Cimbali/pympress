@@ -1,7 +1,7 @@
 msgid "(and optionally seconds)"
 msgstr ""
 
-msgid "(none, left, right, top, bottom, or after)."
+msgid "(none, left, right, top, bottom, after, odd, or prefix)."
 msgstr ""
 
 msgid "(paused)"
@@ -148,6 +148,9 @@ msgstr ""
 msgid "Error parsing option from config file {}.{} \"{}\" to int"
 msgstr ""
 
+msgid "Exit highlight on page change"
+msgstr ""
+
 msgid "First slide"
 msgstr ""
 
@@ -178,6 +181,9 @@ msgstr ""
 msgid "Highlight mode"
 msgstr ""
 
+msgid "Highlighting"
+msgstr ""
+
 msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
 msgstr ""
 
@@ -197,6 +203,9 @@ msgid "Layout for beamer notes on second screen (no current slide preview in not
 msgstr ""
 
 msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr ""
+
+msgid "Layout to draw on the current slide"
 msgstr ""
 
 msgid "Loop"
@@ -340,6 +349,9 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
+msgid "Redo highlight stroke"
+msgstr ""
+
 msgid "Reload"
 msgstr ""
 
@@ -436,12 +448,6 @@ msgstr ""
 msgid "Toggle pause of talk timer"
 msgstr ""
 
-msgid "Tools below slide"
-msgstr ""
-
-msgid "Tools next to slide"
-msgstr ""
-
 msgid "Try your operating system’s package manager, or try running: pip install pygobject pycairo"
 msgstr ""
 
@@ -449,6 +455,9 @@ msgid "Undo highlight stroke"
 msgstr ""
 
 msgid "Unexpected action in index \"{}\""
+msgstr ""
+
+msgid "Unexpected missing page to draw for widget \"{}\""
 msgstr ""
 
 msgid "Unknow widget {} to be fullscreened, aborting."
@@ -487,6 +496,9 @@ msgstr ""
 msgid "Zoom"
 msgstr ""
 
+msgid "_About"
+msgstr ""
+
 msgid "_After slide pages"
 msgstr ""
 
@@ -512,6 +524,9 @@ msgid "_Disabled"
 msgstr ""
 
 msgid "_Discard"
+msgstr ""
+
+msgid "_Every second page"
 msgstr ""
 
 msgid "_File"
@@ -566,6 +581,9 @@ msgid "_Permanent"
 msgstr ""
 
 msgid "_Pointer"
+msgstr ""
+
+msgid "_Prefixed labels"
 msgstr ""
 
 msgid "_Presentation"
@@ -626,6 +644,9 @@ msgid "current slide"
 msgstr ""
 
 msgid "duration"
+msgstr ""
+
+msgid "highlighting"
 msgstr ""
 
 msgid "horizontal"

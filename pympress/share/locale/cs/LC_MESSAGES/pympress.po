@@ -796,14 +796,6 @@ msgid "_Quit"
 msgstr "_Ukončit"
 
 #: 
-msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr "Gtk.Application.inhibit se nepodařilo předejít zapnutí spořiče obrazovky, pokus o jeho zakázání."
-
-#: 
-msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr "Nemělo by vyžadovat natvrdo povolit/zakázat spořič obrazovky na Linuxu"
-
-#: 
 msgid "10th next slide"
 msgstr "10. následující snímek"
 
@@ -864,24 +856,8 @@ msgid "9th next slide"
 msgstr "9. následující snímek"
 
 #: 
-msgid "Edit layout"
-msgstr "Upravit rozvržení"
-
-#: 
-msgid "Plain layout, without notes mode"
-msgstr "Jednoduché rozvržení, bez režimu s poznámkami"
-
-#: 
-msgid "Unknown widget \"{}\" to draw"
-msgstr "Zobrazení neznámého widgetu \"{}\""
-
-#: 
 msgid "annotations (hideable)"
 msgstr "komentář (schovatelné)"
-
-#: 
-msgid "box"
-msgstr "políčko"
 
 #: 
 msgid "current slide"
@@ -916,96 +892,12 @@ msgid "widget"
 msgstr "widget"
 
 #: 
-msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr "Rozvržení pro poznámky na druhé obrazovce (bez náhledu aktuálního snímku v poznámkách)"
-
-#: 
-msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr "Rozvržení pro LibreOffice poznámky na samostatných stránkách (s náhledem aktuálního snímku v poznámkách)"
-
-#: 
-msgid "Plain layout, without note slides"
-msgstr "Jednoduché rozvržení, bez snímků s poznámkami"
-
-#: 
-msgid "Overwrite"
-msgstr "Přepsat"
-
-#: 
-msgid "Overwrite changes instead of reloading?"
-msgstr "Přepsat změny místo načtení znova?"
-
-#: 
-msgid "Reload"
-msgstr "Načíst znovu"
-
-#: 
-msgid "Save as..."
-msgstr "Uložit jako..."
-
-#: 
-msgid "Save changes before closing?"
-msgstr "Uložit změny před zavřením?"
-
-#: 
-msgid "Saving changes will overwrite the changed file!"
-msgstr "Uložení změn přepíše změněný soubor!"
-
-#: 
-msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr "Otevřený soubor byl upraven mimo pympress, ale existují neuložené změny."
-
-#: 
-msgid "Unsaved changes"
-msgstr "Neuložené změny"
-
-#: 
-msgid "Unsaved changes will be lost"
-msgstr "Neuložené změny budou ztraceny"
-
-#: 
-msgid "Unsaved changes will be lost."
-msgstr "Neuložené změny budou ztraceny."
-
-#: 
 msgid "_Discard"
 msgstr "_Zrušit"
 
 #: 
-msgid "_Save"
-msgstr "_Uložit"
-
-#: 
-msgid "_Save as"
-msgstr "_Uložit jako"
-
-#: 
 msgid "annotations"
 msgstr "komentář"
-
-#: 
-msgid "Auto"
-msgstr "Auto"
-
-#: 
-msgid "Choose parameters for automatically playing slides"
-msgstr "Nastavení parametrů pro automaticky zobrazované snímky"
-
-#: 
-msgid "Loop"
-msgstr "Smyčka"
-
-#: 
-msgid "Save file"
-msgstr "Uložit soubor"
-
-#: 
-msgid "Save file as"
-msgstr "Uložit soubor jako"
-
-#: 
-msgid "Time per slide (s):"
-msgstr "Doba na jeden snímek (s):"
 
 #: 
 msgid "_Automatic navigation"
@@ -1040,10 +932,6 @@ msgid "Exit highlight on page change"
 msgstr "Opustit zvýraznění na stránce změn"
 
 #: 
-msgid "(none, left, right, top, bottom, after, or odd)."
-msgstr "(žádný, vlevo, vpravo, nahoře, dole, za nebo lichý)."
-
-#: 
 msgid "_Every second page"
 msgstr "_Každou druhou stránku"
 
@@ -1065,13 +953,5 @@ msgstr ""
 
 #: 
 msgid "_About"
-msgstr ""
-
-#: 
-msgid "Highlighting with notes"
-msgstr ""
-
-#: 
-msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 

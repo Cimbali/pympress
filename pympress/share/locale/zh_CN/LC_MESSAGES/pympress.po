@@ -790,14 +790,6 @@ msgid "_Quit"
 msgstr "退出"
 
 #: 
-msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr "Gtk.Application.inhibit 阻止屏保失败，尝试强制关闭"
-
-#: 
-msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr "Linux 上并不需要强制开启/关闭屏保"
-
-#: 
 msgid "10th next slide"
 msgstr "下一张幻灯片"
 
@@ -858,24 +850,8 @@ msgid "9th next slide"
 msgstr "下一张幻灯片"
 
 #: 
-msgid "Edit layout"
-msgstr "编辑布局"
-
-#: 
-msgid "Plain layout, without notes mode"
-msgstr "普通布局，不包含备注模式"
-
-#: 
-msgid "Unknown widget \"{}\" to draw"
-msgstr "无法绘制未知部件 \"{}\""
-
-#: 
 msgid "annotations (hideable)"
 msgstr "注释（可隐藏）"
-
-#: 
-msgid "box"
-msgstr "盒子"
 
 #: 
 msgid "current slide"
@@ -910,96 +886,12 @@ msgid "widget"
 msgstr "部件"
 
 #: 
-msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr "beamer 第二屏备注的布局（备注中没有当前幻灯片预览）"
-
-#: 
-msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr "libreoffice 不同页备注的布局（备注中包含当前幻灯片预览）"
-
-#: 
-msgid "Plain layout, without note slides"
-msgstr "普通布局，不包含备注幻灯片"
-
-#: 
-msgid "Overwrite"
-msgstr "覆写"
-
-#: 
-msgid "Overwrite changes instead of reloading?"
-msgstr "覆写更改而不是重新加载？"
-
-#: 
-msgid "Reload"
-msgstr "重新加载"
-
-#: 
-msgid "Save as..."
-msgstr "另存为..."
-
-#: 
-msgid "Save changes before closing?"
-msgstr "关闭前保留更改？"
-
-#: 
-msgid "Saving changes will overwrite the changed file!"
-msgstr "保存更改将会覆写已变更文件！"
-
-#: 
-msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr "打开的文件已被外部更改，但却有未保存的变更。"
-
-#: 
-msgid "Unsaved changes"
-msgstr "未保存的变更"
-
-#: 
-msgid "Unsaved changes will be lost"
-msgstr "未保存的变更将会丢失"
-
-#: 
-msgid "Unsaved changes will be lost."
-msgstr "未保存的变更将会丢失。"
-
-#: 
 msgid "_Discard"
 msgstr "放弃"
 
 #: 
-msgid "_Save"
-msgstr "保存"
-
-#: 
-msgid "_Save as"
-msgstr "另存为"
-
-#: 
 msgid "annotations"
 msgstr "注释"
-
-#: 
-msgid "Auto"
-msgstr "自动"
-
-#: 
-msgid "Choose parameters for automatically playing slides"
-msgstr "选择定时切换幻灯片参数"
-
-#: 
-msgid "Loop"
-msgstr "循环"
-
-#: 
-msgid "Save file"
-msgstr "保存文件"
-
-#: 
-msgid "Save file as"
-msgstr "另存文件为"
-
-#: 
-msgid "Time per slide (s):"
-msgstr "每张时间（秒）:"
 
 #: 
 msgid "_Automatic navigation"
@@ -1034,10 +926,6 @@ msgid "Exit highlight on page change"
 msgstr "页面变更后退出墨迹模式"
 
 #: 
-msgid "(none, left, right, top, bottom, after, or odd)."
-msgstr "(无, 左, 右, 顶, 底, 之后, 奇数页)。"
-
-#: 
 msgid "_Every second page"
 msgstr "每隔一张"
 
@@ -1060,12 +948,4 @@ msgstr "重做墨迹笔画"
 #: 
 msgid "_About"
 msgstr "关于"
-
-#: 
-msgid "Highlighting with notes"
-msgstr ""
-
-#: 
-msgid "Layout to draw on the current slide with notes displayed"
-msgstr ""
 

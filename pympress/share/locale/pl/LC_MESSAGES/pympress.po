@@ -802,14 +802,6 @@ msgid "_Quit"
 msgstr ""
 
 #: 
-msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr ""
-
-#: 
-msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr ""
-
-#: 
 msgid "10th next slide"
 msgstr ""
 
@@ -870,23 +862,7 @@ msgid "9th next slide"
 msgstr ""
 
 #: 
-msgid "Edit layout"
-msgstr ""
-
-#: 
-msgid "Plain layout, without notes mode"
-msgstr ""
-
-#: 
-msgid "Unknown widget \"{}\" to draw"
-msgstr ""
-
-#: 
 msgid "annotations (hideable)"
-msgstr ""
-
-#: 
-msgid "box"
 msgstr ""
 
 #: 
@@ -922,95 +898,11 @@ msgid "widget"
 msgstr ""
 
 #: 
-msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr ""
-
-#: 
-msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr ""
-
-#: 
-msgid "Plain layout, without note slides"
-msgstr ""
-
-#: 
-msgid "Overwrite"
-msgstr ""
-
-#: 
-msgid "Overwrite changes instead of reloading?"
-msgstr ""
-
-#: 
-msgid "Reload"
-msgstr ""
-
-#: 
-msgid "Save as..."
-msgstr ""
-
-#: 
-msgid "Save changes before closing?"
-msgstr ""
-
-#: 
-msgid "Saving changes will overwrite the changed file!"
-msgstr ""
-
-#: 
-msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr ""
-
-#: 
-msgid "Unsaved changes"
-msgstr ""
-
-#: 
-msgid "Unsaved changes will be lost"
-msgstr ""
-
-#: 
-msgid "Unsaved changes will be lost."
-msgstr ""
-
-#: 
 msgid "_Discard"
 msgstr ""
 
 #: 
-msgid "_Save"
-msgstr ""
-
-#: 
-msgid "_Save as"
-msgstr ""
-
-#: 
 msgid "annotations"
-msgstr ""
-
-#: 
-msgid "Auto"
-msgstr ""
-
-#: 
-msgid "Choose parameters for automatically playing slides"
-msgstr ""
-
-#: 
-msgid "Loop"
-msgstr ""
-
-#: 
-msgid "Save file"
-msgstr ""
-
-#: 
-msgid "Save file as"
-msgstr ""
-
-#: 
-msgid "Time per slide (s):"
 msgstr ""
 
 #: 
@@ -1046,10 +938,6 @@ msgid "Exit highlight on page change"
 msgstr ""
 
 #: 
-msgid "(none, left, right, top, bottom, after, or odd)."
-msgstr ""
-
-#: 
 msgid "_Every second page"
 msgstr ""
 
@@ -1071,13 +959,5 @@ msgstr ""
 
 #: 
 msgid "_About"
-msgstr ""
-
-#: 
-msgid "Highlighting with notes"
-msgstr ""
-
-#: 
-msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 
