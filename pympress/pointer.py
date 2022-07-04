@@ -114,10 +114,13 @@ class Pointer(object):
         Args:
             name (`str`): Name of the pointer to load
         """
-        if name in ['red', 'green', 'blue']:
-            self.pointer = GdkPixbuf.Pixbuf.new_from_file(util.get_icon_path('pointer_' + name + '.png'))
-        else:
+        if name not in ['red', 'green', 'blue']:
             raise ValueError('Wrong color name')
+        path = util.get_icon_path('pointer_' + name + '.png')
+        try:
+            self.pointer = GdkPixbuf.Pixbuf.new_from_file(path)
+        except Exception:
+            logger.exception(_('Failed loading pixbuf for pointer "{}" from: {}'.format(name, path)))
 
 
     def change_pointercolor(self, action, target):
