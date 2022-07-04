@@ -198,6 +198,14 @@ jobs:
           get-content "$env:LOCALAPPDATA\pympress.log"
           echo "::endgroup::"
 
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-without-release
+          path: |
+            dist/*.zip
+            dist/*.msi
+
       - name: Create GitHub Release and upload
         uses: softprops/action-gh-release@v1
         with:
