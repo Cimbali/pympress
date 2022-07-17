@@ -87,7 +87,9 @@
                     <property name="min_width">60</property>
                     <property name="title" translatable="yes">slide</property>
                     <child>
-                      <object class="GtkCellRendererText"/>
+                      <object class="GtkCellRendererText">
+                        <property name="xalign">1</property>
+                      </object>
                       <attributes>
                         <attribute name="text">3</attribute>
                       </attributes>
