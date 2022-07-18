@@ -175,13 +175,17 @@ class TimingReport(builder.Builder):
 
         treemodel = Gtk.TreeStore(str, str, str, str)
 
+        npages = len(self.page_labels)
+        maxlen = len(str(npages))
+
         dfs_info = [(None, infos)]
         while dfs_info:
             first_it, first = dfs_info.pop()
             page = first['page']
             label = self.page_labels[page] if 0 <= page < len(self.page_labels) else 'None'
+            label += '\u2007' * (maxlen - len(str(page)))
 
-            last_col = '{} ({}/{})'.format(label, page, len(self.page_labels))
+            last_col = '{} ({}/{})'.format(label, page, npages)
             row = [first['title'], self.format_time(first['time']), self.format_time(first['duration']), last_col]
             it = treemodel.append(first_it, row)
 
