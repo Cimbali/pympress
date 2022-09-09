@@ -430,9 +430,7 @@ class Scribbler(builder.Builder):
             return
 
         ww, wh = self.scribble_cache.get_width(), self.scribble_cache.get_height()
-
-        monitor = self.c_da.get_display().get_monitor_at_window(self.c_da.get_parent_window()).get_geometry()
-        pen_scale_factor = max(ww / monitor.width, wh / monitor.height)  # or sqrt of product
+        pen_scale_factor = max(ww / 900, wh / 900)  # or sqrt of product
 
         cairo_context = cairo.Context(self.scribble_cache)
         cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
@@ -500,9 +498,7 @@ class Scribbler(builder.Builder):
 
         cairo_context.restore()
 
-        monitor = widget.get_display().get_monitor_at_window(widget.get_parent_window()).get_geometry()
-        pen_scale_factor = max(ww / monitor.width, wh / monitor.height)  # or sqrt of product
-
+        pen_scale_factor = max(ww / 900, wh / 900)  # or sqrt of product
         if self.scribble_drawing:
             cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
             color, width, points = self.scribble_list[-1]
@@ -826,8 +822,7 @@ class Scribbler(builder.Builder):
         scale = wh / icon.get_height()
 
         dw, dh = self.scribble_p_da.get_allocated_width(), self.scribble_p_da.get_allocated_height()
-        monitor = widget.get_display().get_monitor_at_window(widget.get_parent_window()).get_geometry()
-        pen_scale_factor = max(dw / monitor.width, dh / monitor.height)
+        pen_scale_factor = max(dw / 900, dh / 900)  # or sqrt of product
         width *= pen_scale_factor
 
         cairo_context.push_group()
