@@ -429,7 +429,8 @@ class Scribbler(builder.Builder):
             self.next_render = 0
             return
 
-        ww, wh = self.scribble_cache.get_width(), self.scribble_cache.get_height()
+        scale = self.c_da.get_window().get_scale_factor()
+        ww, wh = self.scribble_cache.get_width() / scale, self.scribble_cache.get_height() / scale
         pen_scale_factor = max(ww / 900, wh / 900)  # or sqrt of product
 
         cairo_context = cairo.Context(self.scribble_cache)
@@ -485,18 +486,19 @@ class Scribbler(builder.Builder):
             widget (:class:`~Gtk.DrawingArea`): The widget where to draw the scribbles.
             cairo_context (:class:`~cairo.Context`): The canvas on which to render the drawings
         """
+        scale = widget.get_window().get_scale_factor()
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
         cw, ch = self.scribble_cache.get_width(), self.scribble_cache.get_height()
 
-        cairo_context.push_group()
-
         cairo_context.save()
 
-        cairo_context.scale(ww / cw, wh / ch)
+        cairo_context.scale(ww * scale / cw, wh * scale / ch)
         cairo_context.set_source_surface(self.scribble_cache)
         cairo_context.paint()
 
         cairo_context.restore()
+
+        cairo_context.push_group()
 
         pen_scale_factor = max(ww / 900, wh / 900)  # or sqrt of product
         if self.scribble_drawing:
