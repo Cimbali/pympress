@@ -169,9 +169,13 @@ A few of the fancier functionalities are listed here:
 - **Estimated talk time**: Click the `Time estimation` box and set your planned talk duration. The color will allow you to see at a glance how much time you have left.
 - **Adjust screen centering**: If your slides' form factor doesn't fit the projectors' and you don't want the slide centered in the window, use the "Screen Center" option in the "Presentation" menu.
 - **Resize Current/Next slide**: You can drag the bar between both slides on the Presenter window to adjust their relative sizes to your liking.
-- **Preferences**: Some of your choices are saved in a configuration file, and more options are accessible there. See the [configuration file documentation](docs/options.md) for more details.
 - **Caching**: For efficiency, Pympress caches rendered pages (up to 200 by default). If this is too memory consuming for you, you can change this number in the configuration file.
-- **Configurability**: Layout of presenter window dynamically configurable, with 1 to 16 next slides preview
+- **Configurability**: Your preferences are saved in a configuration file, and many options are accessible there directly. These include:
+    - Customisable key bindings (or shortcuts),
+    - Configurable layout of the presenter window, with 1 to 16 next slides preview
+    - and many more.
+
+  See the [configuration file documentation](docs/options.md) for more details,
 - **Editable PDF annotations**: Annotations can be added, removed, or changed, and the modified PDF files can be saved
 - **Automatic next slide and looping**
 
