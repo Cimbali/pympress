@@ -255,13 +255,13 @@ def hard_set_screensaver(disabled):
                                 winreg.KEY_QUERY_VALUE | winreg.KEY_SET_VALUE) as key:
                 if disabled:
                     value, regtype = winreg.QueryValueEx(key, "ScreenSaveActive")
-                    assert(regtype == winreg.REG_SZ)
+                    assert regtype == winreg.REG_SZ, 'Unexpected RegType when modifying ScreenSaveActive'
                     hard_set_screensaver.dpms_was_enabled = (value == "1")
                     if hard_set_screensaver.dpms_was_enabled:
                         winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "0")
                 elif hard_set_screensaver.dpms_was_enabled:
                     winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "1")
-        except (OSError, PermissionError):
+        except (OSError, PermissionError, AssertionError):
             logger.exception(_("access denied when trying to access screen saver settings in registry!"))
 
     elif IS_POSIX:
