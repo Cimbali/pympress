@@ -1077,8 +1077,8 @@ class Document(object):
             pass
 
         # try case-insensitive match, prefix case-sensitive match, prefix case-insensitive match (unless prefix_unique)
-        full = len(label)
-        for filtering in [lambda l: len(l) == full, lambda l: l.startswith(label), lambda l: not prefix_unique]:
+        filters = [lambda lbl: len(lbl) == len(label), lambda lbl: lbl.startswith(label), lambda lbl: not prefix_unique]
+        for filtering in filters:
             try:
                 found = next(label for label in compatible_labels if filtering(label))
             except StopIteration:
