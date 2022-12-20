@@ -56,7 +56,7 @@ templates_path = ['_template']
 #
 source_suffix = ['.md']
 
-github_doc_root = 'https://cimbali.github.io/pympress/'
+github_doc_root = 'https://pympress.github.io/'
 
 def rewrite_link(url):
     """ Make relative links in README relative to "docs/" or absolute.

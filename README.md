@@ -13,7 +13,7 @@ Pympress is a free software, distributed under the terms of the GPL license (ver
 Pympress was originally created and maintained by [Schnouki](https://github.com/Schnouki), on [his repo](https://github.com/Schnouki/pympress).
 
 Here is what the 2 screen setup looks like, with a big notes slide next to 2 small slides (current and next) on the presenter side:
-![A screenshot with Pympress’ 2 screens](https://cimbali.github.io/pympress/resources/pympress-screenshot.png)
+![A screenshot with Pympress’ 2 screens](https://pympress.github.io/resources/pympress-screenshot.png)
 
 # Installing [![github version badge][github_version]][github_release]
 
@@ -95,16 +95,16 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
   </details>
 
 
-[ubuntu]: https://cimbali.github.io/pympress/os-icons/ubuntu.png
-[debian]: https://cimbali.github.io/pympress/os-icons/debian.png
-[centos]: https://cimbali.github.io/pympress/os-icons/centos.png
-[windows]: https://cimbali.github.io/pympress/os-icons/windows-10.png
-[suse]: https://cimbali.github.io/pympress/os-icons/suse.png
-[linux]: https://cimbali.github.io/pympress/os-icons/linux.png
-[fedora]: https://cimbali.github.io/pympress/os-icons/fedora.png
-[mageia]: https://cimbali.github.io/pympress/os-icons/mageia.png
-[arch_linux]: https://cimbali.github.io/pympress/os-icons/archlinux.png
-[apple]: https://cimbali.github.io/pympress/os-icons/apple.png
+[ubuntu]: https://pympress.github.io/os-icons/ubuntu.png
+[debian]: https://pympress.github.io/os-icons/debian.png
+[centos]: https://pympress.github.io/os-icons/centos.png
+[windows]: https://pympress.github.io/os-icons/windows-10.png
+[suse]: https://pympress.github.io/os-icons/suse.png
+[linux]: https://pympress.github.io/os-icons/linux.png
+[fedora]: https://pympress.github.io/os-icons/fedora.png
+[mageia]: https://pympress.github.io/os-icons/mageia.png
+[arch_linux]: https://pympress.github.io/os-icons/archlinux.png
+[apple]: https://pympress.github.io/os-icons/apple.png
 
 [ubuntu_package]: https://packages.ubuntu.com/focal/pympress
 [debian_package]: https://packages.debian.org/bullseye/pympress
@@ -305,7 +305,7 @@ A [number of contributors](https://github.com/Cimbali/pympress/graphs/contributo
 **Be respectful of everyone and keep this community friendly, welcoming, and harrasment-free.
 Abusive behaviour will not be tolerated, and can be reported by email at me@cimba.li − wrongdoers may be permanently banned.**
 
-Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.org/en/latest/ext/example_google.html), contains rst syntax), and the [docs generated from it are hosted on the github pages of this repo](https://cimbali.github.io/pympress/).
+Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.org/en/latest/ext/example_google.html), contains rst syntax), and the [docs generated from it are hosted on the github pages of this repo](https://pympress.github.io/).
 
 ## Translations
 

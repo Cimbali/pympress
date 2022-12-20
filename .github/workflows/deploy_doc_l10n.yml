@@ -60,11 +60,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
       with:
-        ref: gh-pages
-    - name: Clean
-      run: find . -maxdepth 1 -not -name os-icons -not -name resources -exec echo rm -rf {} +
+        repository: pympress/pympress.github.io
+        token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+        ref: main
     - name: Download
       uses: actions/download-artifact@v1
       with:
@@ -76,4 +76,4 @@ jobs:
         rm pympress-docs.tar.gz
         git add .
         git -c user.email=me@cimba.li -c user.name="${GITHUB_ACTOR}" commit -m "Github Action-built docs update"
-        git push "https://Cimbali:${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" HEAD:gh-pages
+        git push
