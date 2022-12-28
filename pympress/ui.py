@@ -354,8 +354,8 @@ class UI(builder.Builder):
         pane_handles = self.replace_layout(layout, self.p_central, self.placeable_widgets, self.on_pane_event)
         self.pane_handle_pos.update(pane_handles)
 
-        self.p_frames_next = [self.get_object('p_frame_next{}'.format(n)) for n in range(self.next_frames_count)]
-        self.p_das_next = [self.get_object('p_da_next{}'.format(n)) for n in range(self.next_frames_count)]
+        self.p_frames_next = [self.get_object('p_frame_next{}'.format(n)) for n in range(16)]
+        self.p_das_next = [self.get_object('p_da_next{}'.format(n)) for n in range(16)]
         self.reconfigure_next_frames(None, GLib.Variant.new_int64(self.config.getint('presenter', 'next_slide_count')))
 
         slide_type = self.notes_mode.complement()
@@ -379,7 +379,7 @@ class UI(builder.Builder):
 
 
     def reconfigure_next_frames(self, gaction, param):
-        """ Set the number of next frames to preview the the “next slides” panel
+        """ Callback to set the number of next frames to preview the the “next slides” panel
 
         Args:
             gaction (:class:`~Gio.Action`): the action triggering the call
@@ -391,6 +391,18 @@ class UI(builder.Builder):
         if n_frames > 16:
             n_frames = 16
 
+        self.reflow_next_frames(n_frames)
+        self.next_frames_count = n_frames
+        self.app.set_action_state('next-frames', n_frames)
+        self.config.set('presenter', 'next_slide_count', str(n_frames))
+
+
+    def reflow_next_frames(self, n_frames=None):
+        """ Set the number of next frames to preview the the “next slides” panel
+
+        Args:
+            n_frames (`int`): the number of frames
+        """
         for n in range(self.next_frames_count):
             self.grid_next.remove(self.p_frames_next[n])
 
@@ -398,15 +410,22 @@ class UI(builder.Builder):
             self.grid_next.remove_row(n)
             self.grid_next.remove_column(n)
 
-        rows = int(round(math.sqrt(n_frames)))
-        cols = (n_frames + rows - 1) // rows
+        if n_frames is None:
+            n_frames = self.next_frames_count
+
+        ww, wh = self.grid_next.get_allocated_width(), self.grid_next.get_allocated_height()
+        page_ratio = self.doc.page(self.preview_page).get_aspect_ratio(self.notes_mode.complement())
+        grid_ar = (ww / wh) / page_ratio
+
+        # works best when n_frames = rows * cols * grid_ar
+        rows = math.floor(math.sqrt(n_frames / grid_ar))
+        # Check whether ceiling is better than flooring
+        f_cols, c_cols = (n_frames + rows - 1) // rows, (n_frames + rows) // (rows + 1)
+        rows, cols = (rows, f_cols) if min(f_cols, grid_ar * rows) > min(c_cols, grid_ar * (rows + 1)) else \
+                     (rows + 1, c_cols)
 
         for n in range(n_frames):
             self.grid_next.attach(self.p_frames_next[n], n % cols, n // cols, 1, 1)
-
-        self.next_frames_count = n_frames
-        self.app.set_action_state('next-frames', n_frames)
-        self.config.set('presenter', 'next_slide_count', str(n_frames))
 
 
     def setup_screens(self):
@@ -580,6 +599,7 @@ class UI(builder.Builder):
         This is very useful on windows where resizing gets sluggish if we try to redraw while resizing.
         """
         self.resize_panes = False
+        self.reflow_next_frames()
         self.p_da_cur.queue_draw()
         for da in self.p_das_next:
             da.queue_draw()
@@ -1753,6 +1773,8 @@ class UI(builder.Builder):
                 else:
                     size = parent.get_allocated_height()
                 parent.set_position(self.pane_handle_pos[parent] * size)
+
+        GLib.idle_add(self.redraw_panes)
 
         self.annotations.load_annotations(self.doc.page(self.preview_page))
         gaction.change_state(GLib.Variant.new_boolean(self.show_annotations))
