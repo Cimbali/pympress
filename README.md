@@ -68,7 +68,7 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
   Or using the Windows Package Manager (winget) ![winget version badge][winget_version]
 
   ```batch
-  winget install --id Cimbali.pympress
+  winget install pympress
   ```
 
   Or download the latest installer from the [latest Github release][github_release].
