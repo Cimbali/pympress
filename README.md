@@ -65,6 +65,12 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
   choco install pympress
   ```
 
+  Or using the Windows Package Manager (winget) ![winget version badge][winget_version]
+
+  ```batch
+  winget install pympress
+  ```
+
   Or download the latest installer from the [latest Github release][github_release].
 
   <details><summary>Troubleshooting</summary>
@@ -121,6 +127,7 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 [ubuntu_version]: https://img.shields.io/ubuntu/v/pympress?logo=ubuntu
 [debian_version]: https://img.shields.io/debian/v/pympress/testing?logo=debian
 [chocolatey_version]: https://img.shields.io/chocolatey/v/pympress?logo=chocolatey
+[winget_version]: https://img.shields.io/badge/dynamic/xml?color=blue&label=Winget&query=%2F%2Ftr%5B%40id%3D%27winget%27%5D%2Ftd%5B3%5D%2Fspan%2Fa&url=https%3A%2F%2Frepology.org%2Fproject%2Fpympress%2Fversions
 [github_version]: https://img.shields.io/github/v/release/Cimbali/pympress?label=Latest%20GitHub%20release&logo=github
 
 
