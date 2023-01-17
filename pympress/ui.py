@@ -304,7 +304,13 @@ class UI(builder.Builder):
         self.laser.activate_pointermode()
 
         # Setup screens and show all windows
-        self.setup_screens()
+        self.p_win.parse_geometry(self.config.get('presenter', 'geometry'))
+        self.c_win.parse_geometry(self.config.get('content', 'geometry'))
+
+        screen = self.p_win.get_screen()
+        self.setup_screens(screen)
+        screen.connect('monitors-changed', self.setup_screens)
+
         self.c_win.show_all()
         self.p_win.show_all()
 
@@ -428,23 +434,23 @@ class UI(builder.Builder):
             self.grid_next.attach(self.p_frames_next[n], n % cols, n // cols, 1, 1)
 
 
-    def setup_screens(self):
-        """ Sets up the position of the windows.
-        """
-        self.p_win.parse_geometry(self.config.get('presenter', 'geometry'))
-        self.c_win.parse_geometry(self.config.get('content', 'geometry'))
+    def setup_screens(self, screen):
+        """ If multiple monitors, fullscreen windows on monitors according to config.
 
-        c_full = self.app.get_action_state('content-fullscreen')
-        p_full = self.app.get_action_state('presenter-fullscreen')
+        Args:
+            screen (:class:`~Gdk.Screen`):  the screen
+        """
+        c_full = self.config.getboolean('content', 'start_fullscreen')
+        p_full = self.config.getboolean('presenter', 'start_fullscreen')
 
         if not c_full and not p_full:
             # Just restored window sizes, that’s enough
             return
 
-        # If multiple monitors, apply windows to monitors according to config
-        screen = self.p_win.get_screen()
+        display = Gdk.Display.get_default()
+        c_monitor, p_monitor, primary, non_primary = ScreenArea.lookup_monitors(display, self.c_win, self.p_win)
 
-        if screen.get_n_monitors() <= 1:
+        if primary.equal(non_primary):
             logger.warning(_('Not starting content or presenter window full screen ' +
                              'because there is only one monitor'))
 
@@ -452,32 +458,26 @@ class UI(builder.Builder):
 
         else:
             # To start fullscreen, we need to ensure windows are on individual monitors
-            c_monitor = screen.get_monitor_at_point(*self.c_win.get_position())
-            p_monitor = screen.get_monitor_at_point(*self.p_win.get_position())
-            primary = screen.get_primary_monitor()
-            if c_monitor == p_monitor:
-                warning = _('Content and presenter window must not be on the same monitor if you start full screen!')
-                logger.warning(warning)
-
-                if p_monitor == primary:
-                    # move content somewhere else
-                    self.move_window(screen, self.c_win, c_monitor, (primary + 1) % screen.get_n_monitors())
-                else:
-                    # move presenter to primary
-                    self.move_window(screen, self.p_win, p_monitor, primary)
+            self.move_window(self.c_win, c_monitor, non_primary)
+            self.move_window(self.p_win, p_monitor, primary)
 
         if p_full:
             self.p_win.fullscreen()
+        else:
+            self.p_win.unfullscreen()
 
         if c_full:
             self.c_win.fullscreen()
             self.set_screensaver(True)
+        else:
+            self.c_win.unfullscreen()
+            self.set_screensaver(False)
 
         self.app.set_action_state('content-fullscreen', c_full)
         self.app.set_action_state('presenter-fullscreen', p_full)
 
 
-    def move_window(self, screen, win, from_monitor, to_monitor):
+    def move_window(self, win, from_bounds, to_bounds):
         """ Move window from monitor number from_monitor to monitor to_monitor.
         """
         x, y, w, h = win.get_position() + win.get_size()
@@ -488,11 +488,9 @@ class UI(builder.Builder):
         if (win_state & Gdk.WindowState.MAXIMIZED) != 0:
             win.unmaximize()
 
-        to_bounds = screen.get_monitor_geometry(to_monitor)
         to_w = min(w, to_bounds.width)
         to_h = min(h, to_bounds.height)
 
-        from_bounds = screen.get_monitor_geometry(from_monitor)
         # Get fraction of free space that is left or top of window
         x = (max(0, x - from_bounds.x) / (from_bounds.width - w)) if w < from_bounds.width else 0
         y = (max(0, y - from_bounds.y) / (from_bounds.height - h)) if h < from_bounds.height else 0
@@ -1501,9 +1499,7 @@ class UI(builder.Builder):
         window = widget.get_window()
         cur_state = (window.get_state() & Gdk.WindowState.FULLSCREEN) if window is not None else False
 
-        if cur_state == toggle_to:
-            return False
-        elif cur_state:
+        if cur_state:
             widget.unfullscreen()
         else:
             widget.fullscreen()
@@ -1590,17 +1586,14 @@ class UI(builder.Builder):
     def swap_screens(self, *args):
         """ Swap the monitors on which each window is displayed (if there are 2 monitors at least).
         """
-        screen = self.p_win.get_screen()
+        display = Gdk.Display.get_default()
+        c_monitor, p_monitor, primary, non_primary = ScreenArea.lookup_monitors(display, self.c_win, self.p_win)
 
-        # Though Gtk.Window is a Gtk.Widget get_parent_window() actually returns None on self.{c,p}_win
-        p_monitor = screen.get_monitor_at_point(*self.p_win.get_position())
-        c_monitor = screen.get_monitor_at_point(*self.c_win.get_position())
-
-        if screen.get_n_monitors() == 1 or p_monitor == c_monitor:
+        if primary.equal(non_primary) == 1 or p_monitor.equal(c_monitor):
             return
 
-        self.move_window(screen, self.c_win, c_monitor, p_monitor)
-        self.move_window(screen, self.p_win, p_monitor, c_monitor)
+        self.move_window(self.c_win, c_monitor, p_monitor)
+        self.move_window(self.p_win, p_monitor, c_monitor)
 
 
     def switch_blanked(self, gaction, param):
@@ -1801,6 +1794,83 @@ class UI(builder.Builder):
 
         self.config.set('presenter', 'show_bigbuttons', 'on' if self.show_bigbuttons else 'off')
         self.app.set_action_state('big-buttons', self.show_bigbuttons)
+
+
+class ScreenArea(object):
+    def most_intersection(self, candidates):
+        """ Find the rectangle that intersects most with `~rect` in `~candidates` """
+        areas = []
+        for geom in candidates:
+            intersection = geom.intersection(self)
+            if intersection is None:
+                areas.append(-1)  # Not even 0 for a common bound
+            elif intersection.equal(self):
+                return geom
+            else:
+                areas.append(intersection.width * intersection.height)
+        else:
+            return candidates[areas.index(max(areas))]
+
+
+    def least_intersection(self, candidates):
+        """ Find the rectangle that intersects least with `~rect` in `~candidates` """
+        areas = []
+        for geom in candidates:
+            intersection = self.intersection(geom)
+            if intersection is None:
+                return geom
+            else:
+                areas.append(intersection.width * intersection.height)
+        else:
+            return candidates[areas.index(min(areas))]
+
+    def __init__(self, obj):
+        if isinstance(obj, tuple):
+            self.x, self.y, self.width, self.height = obj
+        else:
+            self.x, self.y, self.width, self.height = obj.x, obj.y, obj.width, obj.height
+
+    def __repr__(self):
+        return f'ScreenArea(at {self.x, self.y} size {self.width, self.height})'
+
+    def intersection(self, other):
+        if self.x + self.width < other.x or self.x > other.x + other.width:
+            return None
+        if self.y + self.height < other.y or self.y > other.y + other.height:
+            return None
+
+        x = max(self.x, other.x)
+        w = min(self.x + self.width, other.x + other.width) - x
+        y = max(self.y, other.y)
+        h = min(self.y + self.height, other.y + other.height) - y
+        return ScreenArea((x, y, w, h))
+
+    def equal(self, other):
+        return (self.x, self.y, self.width, self.height) == (other.x, other.y, other.width, other.height)
+
+    def contains(self, other):
+        return self.intersection(other).equal(self)
+
+    def intersects(self, other):
+        return self.intersection(other) is None
+
+    @staticmethod
+    def lookup_monitors(display, *windows):
+        """ Get the info on the monitors """
+        all_geom = [ScreenArea(display.get_monitor(mon).get_geometry()) for mon in range(display.get_n_monitors())]
+        # Remove duplicate monitors (“mirrored”)
+        all_geom = [rect for n, rect in enumerate(all_geom) if not any(rect.equal(other) for other in all_geom[:n])]
+        # Remove monitors whose area is entirely contained in that of another monitor. NB: union() computes intersection
+        all_geom = [rect for n, rect in enumerate(all_geom)
+                    if all(not other.contains(rect) for other in all_geom[:n] + all_geom[n + 1:])]
+
+        pos = []
+        for win in windows:
+            rect = ScreenArea(win.get_position() + win.get_size())
+            pos.append(rect.most_intersection(all_geom))
+
+        prim = ScreenArea(display.get_primary_monitor().get_geometry())
+        return (*pos, prim.most_intersection(all_geom), prim.least_intersection(all_geom))
 
 
 ##
