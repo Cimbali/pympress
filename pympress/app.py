@@ -99,6 +99,7 @@ class Pympress(Gtk.Application):
 
     def __init__(self):
         GLib.set_application_name('pympress')
+        GLib.set_prgname('io.github.pympress')
         Gtk.Application.__init__(self, application_id='io.github.pympress',
                                  flags=Gio.ApplicationFlags.HANDLES_OPEN | Gio.ApplicationFlags.CAN_OVERRIDE_APP_ID)
 
