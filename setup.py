@@ -34,8 +34,7 @@ import subprocess
 from ctypes.util import find_library
 import setuptools
 
-from distutils.cmd import Command
-from distutils.errors import DistutilsOptionError
+from setuptools import Command
 from setuptools.command.build_py import build_py
 
 
@@ -103,7 +102,7 @@ class BuildWithCatalogs(build_py):
         """
         try:
             self.distribution.run_command('compile_catalog')
-        except DistutilsOptionError as err:
+        except Exception as err:
             if err.args == ('no message catalogs found',):
                 pass  # Running from a source tarball − compiling already done
             else:
