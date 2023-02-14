@@ -418,7 +418,7 @@ class UI(builder.Builder):
         grid_ar = (ww / wh) / page_ratio
 
         # works best when n_frames = rows * cols * grid_ar
-        rows = math.floor(math.sqrt(n_frames / grid_ar))
+        rows = max(1, math.floor(math.sqrt(n_frames / grid_ar)))
         # Check whether ceiling is better than flooring
         f_cols, c_cols = (n_frames + rows - 1) // rows, (n_frames + rows) // (rows + 1)
         rows, cols = (rows, f_cols) if min(f_cols, grid_ar * rows) > min(c_cols, grid_ar * (rows + 1)) else \
