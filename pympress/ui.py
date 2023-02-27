@@ -47,7 +47,9 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import GObject, Gtk, Gdk, GLib, GdkPixbuf, Gio
 
 
-from pympress import document, surfacecache, util, pointer, scribble, builder, talk_time, dialog, extras, editable_label
+from pympress import (
+    document, surfacecache, util, pointer, scribble, deck, builder, talk_time, dialog, extras, editable_label
+)
 
 
 class UI(builder.Builder):
@@ -79,7 +81,7 @@ class UI(builder.Builder):
     p_das_next = None
     #: `int` the number of next slides currently on display in the “Next slides” pane, initialized to the maximal number
     next_frames_count = 16
-    #: `list` of :class:`~Gtk.AspectFrame` for the current slide copy in the Presenter window.
+    #: `list` of :class:`~Gtk.AspectFrame` for the current slide copy in the Presenter window.
     p_frame_cur = None
     #: :class:`~Gtk.DrawingArea` for the current slide copy in the Presenter window.
     p_da_cur = None
@@ -134,6 +136,8 @@ class UI(builder.Builder):
 
     #: Class :class:`~pympress.scribble.Scribble` managing drawing by the user on top of the current slide.
     scribbler = None
+    #: Class :class:`~pympress.deck.Overview` displaying a view of all slides
+    deck = None
     #: Class :class:`~pympress.extras.Annotations` managing the display of annotations
     annotations = None
     #: Class :class:`~pympress.extras.Media` managing keeping track of and callbacks on media overlays
@@ -257,6 +261,7 @@ class UI(builder.Builder):
 
         self.zoom = extras.Zoom(self)
         self.scribbler = scribble.Scribbler(self.config, self, self.notes_mode)
+        self.deck = deck.Overview(self.config, self, self.notes_mode)
         self.annotations = extras.Annotations(self)
         self.medias = extras.Media(self, self.config)
         self.laser = pointer.Pointer(self.config, self)
@@ -274,6 +279,7 @@ class UI(builder.Builder):
             name: self.get_object(widget_name) for name, widget_name in self.config.placeable_widgets.items()
         }
         self.placeable_widgets['highlight'] = self.scribbler.scribble_overlay
+        self.placeable_widgets['deck'] = self.deck.deck_viewport
 
         # Initialize windows
         self.make_cwin()
@@ -372,6 +378,7 @@ class UI(builder.Builder):
         self.cache.add_widget(self.p_da_notes, self.notes_mode, prerender_enabled = bool(self.notes_mode))
         self.cache.add_widget(self.scribbler.scribble_p_da, slide_type, prerender_enabled = False)
         self.cache.add_widget(self.scribbler.scribble_p_da, slide_type, zoomed = True)
+        self.cache.add_widget(self.deck.deck0, slide_type, prerender_enabled = False, ignore_max = True)
 
         # set default value
         self.page_number.set_last(self.doc.pages_number())
@@ -616,6 +623,10 @@ class UI(builder.Builder):
             cw = self.p_central.get_allocated_width()
             ch = self.p_central.get_allocated_height()
             self.scribbler.scribble_off_render.set_size_request(cw, ch)
+            self.deck.deck_off_render.set_size_request(cw, ch)
+
+            if self.deck.deck_mode:
+                self.deck.reset_grid()
 
             self.adjust_bottom_bar_font()
 
@@ -785,6 +796,7 @@ class UI(builder.Builder):
             self.talk_time.pause()
             self.talk_time.reset_timer()
             self.page_number.setup_doc_callbacks(self.doc)
+            self.deck.setup_doc_callbacks(self.doc)
 
         self.do_page_change(unpause=False)
 
@@ -1363,6 +1375,8 @@ class UI(builder.Builder):
             return True
         elif self.scribbler.try_cancel():
             return True
+        elif self.deck.try_cancel():
+            return True
         elif self.annotations.try_cancel():
             return True
         elif self.autoplay.stop_looping():
@@ -1667,6 +1681,8 @@ class UI(builder.Builder):
         """
         if self.scribbler.scribbling_mode:
             return 'highlight'
+        elif self.deck.deck_mode:
+            return 'deck'
         elif notes_mode.direction() == 'page number':
             return 'note_pages'
         elif notes_mode:
