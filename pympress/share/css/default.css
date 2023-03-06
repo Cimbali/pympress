@@ -96,8 +96,6 @@
   to { opacity: 0; }
 }
 
-#MenuBar,
-#MenuBar * {
-}
-#MenuBar *:hover {
+.grid-frame > *:hover {
+  border-color: @theme_selected_bg_color;
 }

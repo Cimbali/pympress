@@ -99,6 +99,14 @@ class Overview(builder.Builder):
         })
 
 
+    def on_deck_hover(self, widget, event):
+        """ Track when each deck in the slide is hovered
+        """
+        ctx = widget.get_style_context()
+        ctx.set_state(Gtk.StateFlags.PRELIGHT if event.type == Gdk.EventType.ENTER_NOTIFY else Gtk.StateFlags.NORMAL)
+        widget.queue_draw()
+
+
     def setup_doc_callbacks(self, doc):
         """ Callbacks that need to be setup again at every new document
 
@@ -148,9 +156,12 @@ class Overview(builder.Builder):
             da.connect('draw', self.on_deck_draw)
             da.connect('button-release-event', self.on_deck_click)
             da.connect('touch-event', self.on_deck_click)
+            da.connect('enter-notify-event', self.on_deck_hover)
+            da.connect('leave-notify-event', self.on_deck_hover)
             self.deck_da_list.append(da)
 
             frame = Gtk.AspectFrame()
+            frame.get_style_context().add_class('grid-frame')
             frame.set_shadow_type(Gtk.ShadowType.NONE)
             frame.add(da)
 
@@ -263,6 +274,24 @@ class Overview(builder.Builder):
         cairo_context.scale(1. / scale, 1. / scale)
         cairo_context.set_source_surface(pb, 0, 0)
         cairo_context.paint()
+
+        ctx = widget.get_style_context()
+        if ctx.get_state() != Gtk.StateFlags.PRELIGHT:
+            return
+
+        # Draw a hover border manually
+        color = ctx.get_property('border-color', Gtk.StateFlags.PRELIGHT)
+        width = 2
+        cairo_context.set_source_rgba(*color)
+        cairo_context.set_line_width(width)
+
+        ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
+        cairo_context.move_to(width / 2, width / 2)
+        cairo_context.line_to(width / 2, wh - width / 2)
+        cairo_context.line_to(ww - width / 2, wh - width / 2)
+        cairo_context.line_to(ww - width / 2, width / 2)
+        cairo_context.close_path()
+        cairo_context.stroke()
 
 
     def on_deck_click(self, widget, event):
