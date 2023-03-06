@@ -43,6 +43,10 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
     """
     #: `dict`-tree of presenter layouts for various modes
     layout = {}
+    #: `dict`-tree of presenter layouts that are not configurable
+    static_layout = {
+        'deck-overview': 'deck',
+    }
 
     #: `dict` of strings that are the valid representations of widgets from the presenter window
     #: that can be dynamically rearranged, mapping to their names
@@ -489,7 +493,10 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
     def get_layout(self, layout_name):
         """ Getter for the `~layout_name` layout.
         """
-        return self.layout[layout_name]
+        try:
+            return self.layout[layout_name]
+        except KeyError:
+            return self.static_layout[layout_name]
 
 
     def update_layout_from_widgets(self, layout_name, widget, pane_handle_pos):
@@ -500,4 +507,6 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             widget (:class:`~Gtk.Widget`): the widget that will contain the layout.
             pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative handle position (float in 0..1)
         """
+        if layout_name not in self.static_layout:
+            return
         self.update_layout_tree(layout_name, self.widget_layout_to_tree(widget, pane_handle_pos))
