@@ -420,8 +420,24 @@ class UI(builder.Builder):
             n_frames = self.next_frames_count
 
         ww, wh = self.grid_next.get_allocated_width(), self.grid_next.get_allocated_height()
+        rows, cols = self.compute_frame_grid(ww / wh, n_frames)
+
+        for n in range(n_frames):
+            self.grid_next.attach(self.p_frames_next[n], n % cols, n // cols, 1, 1)
+
+
+    def compute_frame_grid(self, grid_ar, n_frames):
+        """ Determine the arragement of frames in a grid to maximise their size given respective aspect ratios
+
+        Args:
+            grid_ar (`float`): aspect ratio of grid containing the slides
+            n_frames (`int`): the number of frames
+        """
+        if not n_frames:
+            return 0, 0
+
         page_ratio = self.doc.page(self.preview_page).get_aspect_ratio(self.notes_mode.complement())
-        grid_ar = (ww / wh) / page_ratio
+        grid_ar /= page_ratio
 
         # works best when n_frames = rows * cols * grid_ar
         rows = max(1, math.floor(math.sqrt(n_frames / grid_ar)))
@@ -430,8 +446,7 @@ class UI(builder.Builder):
         rows, cols = (rows, f_cols) if min(f_cols, grid_ar * rows) > min(c_cols, grid_ar * (rows + 1)) else \
                      (rows + 1, c_cols)
 
-        for n in range(n_frames):
-            self.grid_next.attach(self.p_frames_next[n], n % cols, n // cols, 1, 1)
+        return rows, cols
 
 
     def screens_changed(self, screen):
