@@ -600,7 +600,7 @@ class UI(builder.Builder):
             self.config.set('presenter', 'geometry', geom)
             cw = self.p_central.get_allocated_width()
             ch = self.p_central.get_allocated_height()
-            self.scribbler.off_render.set_size_request(cw, ch)
+            self.scribbler.scribble_off_render.set_size_request(cw, ch)
 
             self.adjust_bottom_bar_font()
 

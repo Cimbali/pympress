@@ -92,7 +92,7 @@ class Scribbler(builder.Builder):
     scribble_clear = None
 
     #: A :class:`~Gtk.OffscreenWindow` where we render the scribbling interface when it's not shown
-    off_render = None
+    scribble_off_render = None
     #: :class:`~Gtk.Box` in the Presenter window, where we insert scribbling.
     p_central = None
 
@@ -163,7 +163,7 @@ class Scribbler(builder.Builder):
 
         self.load_ui('highlight')
         builder.load_widgets(self)
-        self.get_application().add_window(self.off_render)
+        self.get_application().add_window(self.scribble_off_render)
 
         self.on_draw = builder.get_callback_handler('on_draw')
         self.track_motions = builder.get_callback_handler('track_motions')
@@ -416,7 +416,7 @@ class Scribbler(builder.Builder):
 
 
     def prerender(self):
-        """ Clear scribbles to cached.
+        """ Commit scribbles to cache so they are faster to draw on the slide
         """
         if self.scribble_cache is None:
             try:
@@ -717,7 +717,7 @@ class Scribbler(builder.Builder):
         if self.scribbling_mode:
             return False
 
-        self.off_render.remove(self.scribble_overlay)
+        self.scribble_off_render.remove(self.scribble_overlay)
         self.load_layout('highlight')
 
         self.p_central.queue_draw()
@@ -745,7 +745,7 @@ class Scribbler(builder.Builder):
 
         extras.Cursor.set_cursor(self.scribble_p_da, 'default')
         self.load_layout(None)
-        self.off_render.add(self.scribble_overlay)
+        self.scribble_off_render.add(self.scribble_overlay)
 
         self.get_application().lookup_action('highlight').change_state(GLib.Variant.new_boolean(self.scribbling_mode))
         self.pen_action.set_enabled(self.scribbling_mode)
