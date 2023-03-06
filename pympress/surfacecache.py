@@ -76,6 +76,9 @@ class SurfaceCache(object):
     #: accesses to :attr:`surface_cache` and :attr:`surface_size`
     locks = {}
 
+    #: Set of widgets for which we ignore the max
+    unlimited = set()
+
     #: The current :class:`~pympress.document.Document`.
     doc = None
 
@@ -94,7 +97,7 @@ class SurfaceCache(object):
         self.doc_lock = threading.Lock()
 
 
-    def add_widget(self, widget, wtype, prerender_enabled = True, zoomed = False):
+    def add_widget(self, widget, wtype, prerender_enabled = True, zoomed = False, ignore_max = False):
         """ Add a widget to the list of widgets that have to be managed (for caching and prerendering).
 
         This creates new entries for ``widget_name`` in the needed internal data
@@ -105,6 +108,7 @@ class SurfaceCache(object):
             wtype (`int`):  type of document handled by the widget (see :attr:`surface_type`)
             prerender_enabled (`bool`):  whether this widget is initially in the list of widgets to prerender
             zoomed (`bool`): whether we will cache a zoomed portion of the widget
+            ignore_max (`bool`): whether we will cache an unlimited number of slides
         """
         widget_name = widget.get_name().rstrip('0123456789') + ('_zoomed' if zoomed else '')
         with self.locks.setdefault(widget_name, threading.Lock()):
@@ -114,6 +118,8 @@ class SurfaceCache(object):
             self.surface_factory[widget_name] = functools.partial(self._create_surface, widget)
             if prerender_enabled and not zoomed:
                 self.enable_prerender(widget_name)
+            if ignore_max:
+                self.unlimited.add(widget_name)
 
 
     def swap_document(self, new_doc):
@@ -311,10 +317,11 @@ class SurfaceCache(object):
             pc = self.surface_cache[widget_name]
             if (ww, wh) == self.surface_size[widget_name] and page_nb not in pc:
                 pc[page_nb] = surface
-                pc.move_to_end(page_nb)
 
-            while len(pc) > self.max_pages:
-                pc.popitem(False)
+            if widget_name not in self.unlimited:
+                pc.move_to_end(page_nb)
+                while len(pc) > self.max_pages:
+                    pc.popitem(False)
 
         return GLib.SOURCE_REMOVE
 
