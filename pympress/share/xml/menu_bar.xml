@@ -78,6 +78,10 @@
 			<attribute name="label" translatable="yes">_Highlight</attribute>
 			<attribute name="action">app.highlight</attribute>
 		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Deck overview</attribute>
+			<attribute name="action">app.deck-overview</attribute>
+		</item>
 		<submenu>
 			<attribute name="label" translatable="yes">_Pointer</attribute>
 			<section>

@@ -72,6 +72,10 @@ class Overview(builder.Builder):
 
     #: `tuple` of rows/columns in the grid
     grid_size = (0, 0)
+    #: `bool` whether we show all pages or remove consecutive identically labeled pages, keeping only the last
+    all_pages = False
+    #: `int` How large (at most) to make rows
+    max_row_size = 6
 
     #: The :class:`~Gtk.DrawingArea` in the content window
     c_da = None
@@ -92,7 +96,9 @@ class Overview(builder.Builder):
 
         self.connect_signals(self)
 
-        self.max_row_size = 4
+        self.max_row_size = config.getint('deck-overview', 'max-slides-per-row')
+        # Whether to show all pages or only distinctly labeled pages (useful for latex)
+        self.all_pages = not config.get('deck-overview', 'distinct-labels-only')
 
         self.setup_actions({
             'deck-overview': dict(activate=self.switch_deck_overview, state=False),
@@ -177,7 +183,7 @@ class Overview(builder.Builder):
         """ Set the slides configuration and size in the grid
         """
         # Gather info about slides to display
-        num_pages = len(self.get_last_label_pages()) if self.has_labels() else self.pages_number()
+        num_pages = self.pages_number() if self.all_pages or not self.has_labels() else len(self.get_last_label_pages())
         ratio = self.c_da.get_allocated_width() / self.c_da.get_allocated_height()
 
         ww, wh = self.deck_grid.get_allocated_width(), self.deck_grid.get_allocated_height()
