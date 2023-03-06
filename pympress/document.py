@@ -1051,6 +1051,20 @@ class Document(object):
         return self.doc_page_labels != [str(n + 1) for n in range(self.nb_pages)]
 
 
+    def get_last_label_pages(self):
+        """ Return the last page number for each consecutively distinct page label
+
+        In other words, squash together consecutive same labels
+        """
+        last = None
+        pages = []
+        for page, label in enumerate(self.page_labels):
+            if label != last:
+                pages.append(page)
+            last = label
+        return pages
+
+
     def lookup_label(self, label, prefix_unique=True):
         """ Find a page from its label.
 
