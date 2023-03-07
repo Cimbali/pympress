@@ -1825,8 +1825,17 @@ class UI(builder.Builder):
 
 
 class ScreenArea(object):
+    """ Convenience class to represent monitors or windows in terms of the area (position and size) they use on screen
+    """
     def most_intersection(self, candidates):
-        """ Find the rectangle that intersects most with `~rect` in `~candidates` """
+        """ Find the rectangle that intersects most with `~rect` in `~candidates`
+
+        Args:
+            candidates (iterable of `ScreenArea`s): The monitor areas to check for intersection
+
+        Returns:
+            `ScreenArea`: The best candidate screen area, i.e. that has the largest intersection
+        """
         areas = []
         for geom in candidates:
             intersection = geom.intersection(self)
@@ -1841,7 +1850,14 @@ class ScreenArea(object):
 
 
     def least_intersection(self, candidates):
-        """ Find the rectangle that intersects least with `~rect` in `~candidates` """
+        """ Find the rectangle that intersects least with `~rect` in `~candidates`
+
+        Args:
+            candidates (iterable of `ScreenArea`s): The monitor areas to check for intersection
+
+        Returns:
+            `ScreenArea`: The best candidate screen area, i.e. that has the smallest intersection
+        """
         areas = []
         for geom in candidates:
             intersection = self.intersection(geom)
@@ -1851,6 +1867,7 @@ class ScreenArea(object):
                 areas.append(intersection.width * intersection.height)
         else:
             return candidates[areas.index(min(areas))]
+
 
     def __init__(self, obj, id=None):
         if isinstance(obj, tuple):
@@ -1862,10 +1879,20 @@ class ScreenArea(object):
 
 
     def __repr__(self):
-        return f'ScreenArea(at {self.x, self.y} size {self.width, self.height})'
+        """ Return a complete representation of the object """
+        return 'ScreenArea({}at {} size {})'.format(self.id + ' ' if hasattr(self, 'id') else '',
+                                                    (self.x, self.y), (self.width, self.height))
 
 
     def intersection(self, other):
+        """ Compute the intersection of 2 screen areas
+
+        Args:
+            other (`ScreenArea`): The screen area to compare with
+
+        Returns:
+            `ScreenArea` or `None`: An area representing the intersection, or `None` if there is no intersection
+        """
         if self.x + self.width < other.x or self.x > other.x + other.width:
             return None
         if self.y + self.height < other.y or self.y > other.y + other.height:
@@ -1879,20 +1906,53 @@ class ScreenArea(object):
 
 
     def equal(self, other):
+        """ Check whether 2 areas cover the exact same space
+
+        Args:
+            other (`ScreenArea`): The screen area to compare with
+
+        Returns:
+            `bool`: `True` iff the areas are identical
+        """
         return (self.x, self.y, self.width, self.height) == (other.x, other.y, other.width, other.height)
 
 
     def contains(self, other):
+        """ Check whether this area contains `~other`
+
+        Args:
+            other (`ScreenArea`): The screen area to compare with
+
+        Returns:
+            `bool`: `True` iff the area is contained
+        """
         return self.intersection(other).equal(self)
 
 
     def intersects(self, other):
+        """ Check whether this area intersects `~other`
+
+        Args:
+            other (`ScreenArea`): The screen area to compare with
+
+        Returns:
+            `bool`: `True` iff the areas have an intersection
+        """
         return self.intersection(other) is None
 
 
     @staticmethod
     def lookup_monitors(display, *windows):
-        """ Get the info on the monitors """
+        """ Get the info on the monitors
+
+        Args:
+            display (:class:`~Gdk.Display`):  the current screen
+            *windows (`tuple` of :class:`~Gtk.Window`):  windows for wich to look up the monitor position
+
+        Returns:
+            `tuple` of `ScreenArea`: The monitor areas for each window, followed by
+                                     the best monitor areas for primary and non-primary monitors
+        """
         # Helpful for debugging
         name = [mon.get_manufacturer() + ' ' + mon.get_model() for mon in (
             display.get_monitor(n) for n in range(display.get_n_monitors())
