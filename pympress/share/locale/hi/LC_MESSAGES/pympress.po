@@ -1,0 +1,1067 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: pympress\n"
+"Language: hi\n"
+
+#: 
+msgid "(and optionally seconds)"
+msgstr "(और वैकल्पिक रूप से सेकंड)"
+
+#: 
+msgid "(paused)"
+msgstr "(रोके गए)"
+
+#: 
+msgid "Adjust alignment of slides in projector screen"
+msgstr "प्रोजेक्टर स्क्रीन में स्लाइड के संरेखण को समायोजित करें"
+
+#: 
+msgid "All files"
+msgstr "सभी फाइलें"
+
+#: 
+msgid "Annotations"
+msgstr "एनोटेशन"
+
+#: 
+msgid "Big buttons"
+msgstr "बड़े बटन"
+
+#: 
+msgid "Cairo can not draw gif"
+msgstr "काहिरा जीआईएफ नहीं खींच सकता"
+
+#: 
+msgid "Clock"
+msgstr "घड़ी"
+
+#: 
+msgid "Content and presenter window must not be on the same monitor if you start full screen!"
+msgstr "यदि आप पूर्ण स्क्रीन प्रारंभ करते हैं तो सामग्री और प्रस्तुतकर्ता विंडो एक ही मॉनीटर पर नहीं होनी चाहिए!"
+
+#: 
+msgid "Content blanked"
+msgstr "सामग्री खाली"
+
+#: 
+msgid "Content fullscreen"
+msgstr "सामग्री पूर्णस्क्रीन"
+
+#: 
+msgid "Contributors:"
+msgstr "योगदानकर्ता:"
+
+#: 
+msgid "Could not disable DPMS screen blanking: got status "
+msgstr "DPMS स्क्रीन ब्लैंकिंग को अक्षम नहीं कर सका: स्थिति मिली "
+
+#: 
+msgid "Could not enable DPMS screen blanking: got status "
+msgstr "DPMS स्क्रीन ब्लैंकिंग सक्षम नहीं कर सका: स्थिति मिली "
+
+#: 
+msgid "Could not find the file \"{}\""
+msgstr "फाइल नहीं ढूंढ सका \"{}\""
+
+#: 
+msgid "Could not set screensaver status: got status "
+msgstr "स्क्रीनसेवर स्थिति सेट नहीं कर सका: स्थिति मिली "
+
+#: 
+msgid "Current slide"
+msgstr "करेंट स्लाइड"
+
+#: 
+msgid "ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system."
+msgstr "त्रुटि: Gobject आत्मनिरीक्षण मॉड्यूल गायब है, सुनिश्चित करें कि आपके सिस्टम पर Gtk और pygobject स्थापित हैं।"
+
+#: 
+msgid "Error loading icon for about window"
+msgstr "विंडो के बारे में आइकन लोड करने में त्रुटि"
+
+#: 
+msgid "Error opening the file \"{}\""
+msgstr "फ़ाइल \"{}\" खोलने में त्रुटि"
+
+#: 
+msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
+msgstr "निर्देशों के लिए, https://github.com/Cimbali/pympress/blob/master/README.md#dependencies देखें"
+
+#: 
+msgid "GtkImage gif player"
+msgstr "जीटीकेइमेज जीआईएफ प्लेयर"
+
+#: 
+msgid "Highlight"
+msgstr "प्रमुखता से दिखाना"
+
+#: 
+msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
+msgstr "यदि वर्चुअलएन्व या एनाकोंडा का उपयोग कर रहे हैं, तो आप या तो सिस्टम साइट संकुल को अनुमति दे सकते हैं, या चला सकते हैं: pip install pygobject"
+
+#: 
+msgid "Invalid log level \"{}\", try one of {}"
+msgstr "अमान्य लॉग स्तर \"{}\", {} में से किसी एक को आजमाएं"
+
+#: 
+msgid "Invalid time (mm or mm:ss expected), got \"{}\""
+msgstr "अमान्य समय (मिमी या मिमी: ss अपेक्षित), \"{}\" मिला"
+
+#: 
+msgid "Media support uses {}."
+msgstr "मीडिया समर्थन {} का उपयोग करता है।"
+
+#: 
+msgid "Next slide"
+msgstr "अगली स्लाइड"
+
+#: 
+msgid "No action was defined for this link"
+msgstr "इस लिंक के लिए कोई कार्रवाई परिभाषित नहीं की गई थी"
+
+#: 
+msgid "Not starting content or presenter window full screen because there is only one monitor"
+msgstr "सामग्री या प्रस्तुतकर्ता विंडो पूर्ण स्क्रीन प्रारंभ नहीं करना क्योंकि केवल एक मॉनीटर है"
+
+#: 
+msgid "Notes"
+msgstr "टिप्पणियाँ"
+
+#: 
+msgid "Notes position"
+msgstr "नोट्स की स्थिति"
+
+#: 
+msgid "Open _Recent"
+msgstr "हाल ही वाला खोलें"
+
+#: 
+msgid "Open..."
+msgstr "खुला हुआ..."
+
+#: 
+msgid "Options:"
+msgstr "विकल्प:"
+
+#: 
+msgid "Overrides the detection from the file."
+msgstr "फ़ाइल से पता लगाने को ओवरराइड करता है।"
+
+#: 
+msgid "PDF files"
+msgstr "पीडीएफ फाइलें"
+
+#: 
+msgid "Pause"
+msgstr "रोकना"
+
+#: 
+msgid "Play"
+msgstr "खेलें"
+
+#: 
+msgid "Pointer"
+msgstr "सूचक"
+
+#: 
+msgid "Portable installation"
+msgstr "पोर्टेबल स्थापना"
+
+#: 
+msgid "Presentation timing breakdown"
+msgstr "प्रेजेंटेशन टाइमिंग ब्रेकडाउन"
+
+#: 
+msgid "Presenter fullscreen"
+msgstr "प्रस्तुतकर्ता पूर्णस्क्रीन"
+
+#: 
+msgid "Pympress Content"
+msgstr "पाइम्प्रेस सामग्री"
+
+#: 
+msgid "Pympress Presenter"
+msgstr "पाइम्प्रेस प्रस्तुतकर्ता"
+
+#: 
+msgid "Pympress can not extract attached file"
+msgstr "Pympress संलग्न फाइल को नहीं निकाल सकता"
+
+#: 
+msgid "Pympress can not extract embedded media"
+msgstr "Pympress एम्बेडेड मीडिया को नहीं निकाल सकता"
+
+#: 
+msgid "Pympress can not find file "
+msgstr "Pympress फ़ाइल नहीं ढूँढ सकता "
+
+#: 
+msgid "Pympress can not interpret annotation of type:"
+msgstr "Pympress प्रकार के एनोटेशन की व्याख्या नहीं कर सकता:"
+
+#: 
+msgid "Pympress does not recognize link type \"{}\""
+msgstr "Pympress लिंक प्रकार \"{}\" को नहीं पहचानता है"
+
+#: 
+msgid "Pympress does not recognize link type \"{}\" to \"{}\""
+msgstr "Pympress \"{}\" से \"{}\" लिंक प्रकार को नहीं पहचानता है"
+
+#: 
+msgid "Pympress does not yet support link type \"{}\""
+msgstr "Pympress अभी तक लिंक प्रकार \"{}\" का समर्थन नहीं करता है"
+
+#: 
+msgid "Pympress does not yet support link type \"{}\" to \"{}\""
+msgstr "Pympress अभी तक \"{}\" से \"{}\" लिंक प्रकार का समर्थन नहीं करता है"
+
+#: 
+msgid "Python version {}"
+msgstr "पायथन संस्करण {}"
+
+#: 
+msgid "Resources are loaded from "
+msgstr "संसाधन से लोड किए गए हैं "
+
+#: 
+msgid "Set level of verbosity in log file:"
+msgstr "लॉग फ़ाइल में वर्बोसिटी का स्तर सेट करें:"
+
+#: 
+msgid "Set talk _Time"
+msgstr "टॉक सेट करें _समय"
+
+#: 
+msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
+msgstr "पीडीएफ पेज पर नोट्स की स्थिति निर्धारित करें (कोई नहीं, बाएं, दाएं, ऊपर या नीचे)।"
+
+#: 
+msgid "Slide number"
+msgstr "स्लाइड संख्या"
+
+#: 
+msgid "Some preferences are saved in "
+msgstr "कुछ प्राथमिकताएँ इसमें सहेजी जाती हैं "
+
+#: 
+msgid "Stop"
+msgstr "विराम"
+
+#: 
+msgid "The estimated (intended) talk time in minutes"
+msgstr "अनुमानित (इच्छित) टॉकटाइम मिनटों में"
+
+#: 
+msgid "The log is written to "
+msgstr "log को लिखा जाता है "
+
+#: 
+msgid "This help"
+msgstr "यह मदद"
+
+#: 
+msgid "Time elapsed"
+msgstr "समय बीता"
+
+#: 
+msgid "Time estimation"
+msgstr "समय अनुमान"
+
+#: 
+msgid "Timing breakdown"
+msgstr "टाइमिंग ब्रेकडाउन"
+
+#: 
+msgid "Unexpected action in index \"{}\""
+msgstr "अनुक्रमणिका \"{}\" में अनपेक्षित क्रिया"
+
+#: 
+msgid "Unknow widget {} to be fullscreened, aborting."
+msgstr "अनजान विजेट {} को फुलस्क्रीन किया जाना है, निरस्त किया जा रहा है।"
+
+#: 
+msgid "Unsupported OS: can't enable/disable screensaver"
+msgstr "असमर्थित OS: स्क्रीनसेवर को सक्षम/अक्षम नहीं कर सकता"
+
+#: 
+msgid "Usage: {} [options] <presentation_file>"
+msgstr "उपयोग: {} [विकल्प] <प्रस्तुति_फाइल>"
+
+#: 
+msgid "Video support using {} is disabled."
+msgstr "{} का उपयोग कर वीडियो समर्थन अक्षम है।"
+
+#: 
+msgid "_Align content"
+msgstr "_संरेखित सामग्री"
+
+#: 
+msgid "_Annotations"
+msgstr "_टिप्पणियां"
+
+#: 
+msgid "_Blank screen"
+msgstr "_खाली स्क्रीन"
+
+#: 
+msgid "_Blue"
+msgstr "_नीला"
+
+#: 
+msgid "_Bottom"
+msgstr "_नीचे"
+
+#: 
+msgid "_Disabled"
+msgstr "_अक्षम"
+
+#: 
+msgid "_File"
+msgstr "_फ़ाइल"
+
+#: 
+msgid "_First"
+msgstr "_प्रथम"
+
+#: 
+msgid "_Fullscreen"
+msgstr "_पूर्ण स्क्रीन"
+
+#: 
+msgid "_Go to..."
+msgstr "_के लिए जाओ..."
+
+#: 
+msgid "_Green"
+msgstr "_हरा"
+
+#: 
+msgid "_Help"
+msgstr "_मदद करना"
+
+#: 
+msgid "_Highlight"
+msgstr "_प्रमुखता से दिखाना"
+
+#: 
+msgid "_Jump to label"
+msgstr "_लेबल पर जाएं"
+
+#: 
+msgid "_Last"
+msgstr "_अंतिम"
+
+#: 
+msgid "_Left"
+msgstr "_बाएं"
+
+#: 
+msgid "_Manual"
+msgstr "_नियमावली"
+
+#: 
+msgid "_Navigation"
+msgstr "_मार्गदर्शन"
+
+#: 
+msgid "_Next"
+msgstr "_अगला"
+
+#: 
+msgid "_Notes mode"
+msgstr "_नोट्स मोड"
+
+#: 
+msgid "_Pause timer"
+msgstr "_पॉज़ टाइमर"
+
+#: 
+msgid "_Permanent"
+msgstr "_स्थायी"
+
+#: 
+msgid "_Presentation"
+msgstr "_प्रस्तुति"
+
+#: 
+msgid "_Previous"
+msgstr "_पिछला"
+
+#: 
+msgid "_Red"
+msgstr "_लाल"
+
+#: 
+msgid "_Reset timer"
+msgstr "_रीसेट टाइमर"
+
+#: 
+msgid "_Right"
+msgstr "_सही"
+
+#: 
+msgid "_Shortcuts"
+msgstr "_शॉर्टकट"
+
+#: 
+msgid "_Starting Configuration"
+msgstr "_कॉन्फ़िगरेशन शुरू करना"
+
+#: 
+msgid "_Swap screens"
+msgstr "_स्वैप स्क्रीन"
+
+#: 
+msgid "_Top"
+msgstr "_ऊपर"
+
+#: 
+msgid "_Undo zoom"
+msgstr "_ज़ूम पूर्ववत करें"
+
+#: 
+msgid "_Zoom in"
+msgstr "_ज़ूम इन"
+
+#: 
+msgid "access denied when trying to access screen saver settings in registry!"
+msgstr "रजिस्ट्री में स्क्रीन सेवर सेटिंग्स तक पहुँचने का प्रयास करते समय पहुँच अस्वीकृत!"
+
+#: 
+msgid "column"
+msgstr "कॉलम"
+
+#: 
+msgid "duration"
+msgstr "अवधि"
+
+#: 
+msgid "name"
+msgstr "नाम"
+
+#: 
+msgid "no action defined for this link!"
+msgstr "इस लिंक के लिए कोई क्रिया परिभाषित नहीं है!"
+
+#: 
+msgid "page label"
+msgstr "पेज लेबल"
+
+#: 
+msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
+msgstr "pip तब pygobject को डाउनलोड और संकलित करेगा, जिसके लिए आपको Gtk हेडर (या डेवलपमेंट पैकेज) की आवश्यकता होगी।"
+
+#: 
+msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
+""
+msgstr "pympress एक छोटा PDF रीडर है जिसे Python में PDF रेंडरिंग के लिए Poppler और GUI के लिए GTK का उपयोग करके लिखा गया है।\n"
+""
+
+#: 
+msgid "slide"
+msgstr "फिसल पट्टी"
+
+#: 
+msgid "slide #"
+msgstr "फिसल पट्टी #"
+
+#: 
+msgid "time"
+msgstr "समय"
+
+#: 
+msgid "{}, {}, {}, {}, or {}"
+msgstr "{}, {}, {}, {}, या {}"
+
+#: 
+msgid "Additional features"
+msgstr "अतिरिक्त सुविधाये"
+
+#: 
+msgid "Blank screen"
+msgstr "खाली स्क्रीन"
+
+#: 
+msgid "Cancel goto/jump/highlighting/zooming"
+msgstr "गोटो/जंप/हाइलाइटिंग/ज़ूमिंग रद्द करें"
+
+#: 
+msgid "Close file"
+msgstr "फ़ाइल बंद करें"
+
+#: 
+msgid "First slide"
+msgstr "पहली स्लाइड"
+
+#: 
+msgid "Go back in slide history"
+msgstr "स्लाइड इतिहास में वापस जाएं"
+
+#: 
+msgid "Go forward in slide history"
+msgstr "स्लाइड इतिहास में आगे बढ़ें"
+
+#: 
+msgid "Go to page number"
+msgstr "पेज नंबर पर जाएं"
+
+#: 
+msgid "Jump to page label"
+msgstr "पेज लेबल पर जाएं"
+
+#: 
+msgid "Last slide"
+msgstr "अंतिम स्लाइड"
+
+#: 
+msgid "Manage files"
+msgstr "फ़ाइलें प्रबंधित करें"
+
+#: 
+msgid "Navigating"
+msgstr "नेविगेट"
+
+#: 
+msgid "Next slide with different label"
+msgstr "अलग लेबल के साथ अगली स्लाइड"
+
+#: 
+msgid "Open file"
+msgstr "खुली फाइल"
+
+#: 
+msgid "Play/pause timer"
+msgstr "प्ले / पॉज़ टाइमर"
+
+#: 
+msgid "Presentation"
+msgstr "प्रस्तुति"
+
+#: 
+msgid "Previous slide"
+msgstr "पिछली स्लाइड"
+
+#: 
+msgid "Previous slide with different label"
+msgstr "अलग लेबल वाली पिछली स्लाइड"
+
+#: 
+msgid "Quit"
+msgstr "छोड़ना"
+
+#: 
+msgid "Reset timer"
+msgstr "टाइमर रीसेट करें"
+
+#: 
+msgid "Set estimated talk time"
+msgstr "अनुमानित टॉक टाइम सेट करें"
+
+#: 
+msgid "Swap windows"
+msgstr "विंडोज़ स्वैप करें"
+
+#: 
+msgid "Timers"
+msgstr "टाइमर"
+
+#: 
+msgid "Toggle annotations"
+msgstr "एनोटेशन टॉगल करें"
+
+#: 
+msgid "Toggle fullscreen"
+msgstr "पूर्णस्क्रीन चालू करें"
+
+#: 
+msgid "Toggle highlighting"
+msgstr "हाइलाइटिंग टॉगल करें"
+
+#: 
+msgid "Toggle laserpointer"
+msgstr "लेज़रपोइंटर टॉगल करें"
+
+#: 
+msgid "Toggle notes mode"
+msgstr "नोट मोड टॉगल करें"
+
+#: 
+msgid "Undo highlight stroke"
+msgstr "हाइलाइट स्ट्रोक पूर्ववत करें"
+
+#: 
+msgid "Unzoom"
+msgstr "अनज़ूम"
+
+#: 
+msgid "Validate goto/jump destination"
+msgstr "गोटो/जंप डेस्टिनेशन को वैलिडेट करें"
+
+#: 
+msgid "Windows"
+msgstr "खिड़कियाँ"
+
+#: 
+msgid "Zoom"
+msgstr "ज़ूम"
+
+#: 
+msgid "Unrecognized named destination: "
+msgstr "अज्ञात नामित गंतव्य: "
+
+#: 
+msgid "Unsupported link clicked. "
+msgstr "असमर्थित लिंक क्लिक किया गया। "
+
+#: 
+msgid "Fullscreen Presentation running"
+msgstr "फ़ुलस्क्रीन प्रस्तुति चल रही है"
+
+#: 
+msgid "Caused by "
+msgstr "के कारण "
+
+#: 
+msgid "Building FileWatcher"
+msgstr "बिल्डिंग फाइलवॉचर"
+
+#: 
+msgid "Missing dependency: python \"{}\" package"
+msgstr "लापता निर्भरता: पायथन \"{}\" पैकेज"
+
+#: 
+msgid "Monitoring of changes to reload files automatically is not available"
+msgstr "फ़ाइलों को स्वचालित रूप से पुनः लोड करने में परिवर्तनों की निगरानी उपलब्ध नहीं है"
+
+#: 
+msgid "ERROR: Gobject Introspections and/or pycairo module is missing, make sure Gtk, pygobject and pycairo are installed on your system."
+msgstr "त्रुटि: Gobject आत्मनिरीक्षण और/या pycairo मॉड्यूल गायब है, सुनिश्चित करें कि आपके सिस्टम पर Gtk, pygobject और pycairo स्थापित हैं।"
+
+#: 
+msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject pycairo"
+msgstr "यदि वर्चुअलएन्व या एनाकोंडा का उपयोग कर रहे हैं, तो आप या तो सिस्टम साइट संकुल को अनुमति दे सकते हैं, या चला सकते हैं: pip install pygobject pycairo"
+
+#: 
+msgid "pip will then download and compile pygobject, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "pip तब pygobject को डाउनलोड और संकलित करेगा, जिसके लिए आपको Gtk और cairo हेडर (या विकास पैकेज) की आवश्यकता होगी।"
+
+#: 
+msgid "(none, left, right, top, or bottom)."
+msgstr "(कोई नहीं, बाएँ, दाएँ, ऊपर या नीचे)।"
+
+#: 
+msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
+msgstr "यदि वर्चुअलएन्व या एनाकोंडा का उपयोग कर रहे हैं, तो आप सिस्टम साइट संकुल को अनुमति देने का भी प्रयास कर सकते हैं।"
+
+#: 
+msgid "Set the position of notes on the pdf page"
+msgstr "पीडीएफ पेज पर नोट्स की स्थिति निर्धारित करें"
+
+#: 
+msgid "Try your operating system’s package manager, or try running: pip install pygobject pycairo"
+msgstr "अपने ऑपरेटिंग सिस्टम के पैकेज मैनेजर को आज़माएं, या चलाने का प्रयास करें: pip install pygobject pycairo"
+
+#: 
+msgid "pip will then download and compile pygobject and pycairo, for which you need the Gtk and cairo headers (or development packages)."
+msgstr "पाइप तब pygobject और pycairo को डाउनलोड और संकलित करेगा, जिसके लिए आपको Gtk और cairo हेडर (या विकास पैकेज) की आवश्यकता होगी।"
+
+#: 
+msgid "(none, left, right, top, bottom, or after)."
+msgstr "(कोई नहीं, बाएँ, दाएँ, ऊपर, नीचे या बाद में)।"
+
+#: 
+msgid "_After slide pages"
+msgstr "_स्लाइड पेजों के बाद"
+
+#: 
+msgid "_Bottom half of slide"
+msgstr "_स्लाइड का निचला आधा भाग"
+
+#: 
+msgid "_Left half of slide"
+msgstr "_स्लाइड का बायां आधा"
+
+#: 
+msgid "_Right half of slide"
+msgstr "_स्लाइड का दायां आधा"
+
+#: 
+msgid "_Top half of slide"
+msgstr "_स्लाइड का शीर्ष आधा"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to bool"
+msgstr "कॉन्फ़िगरेशन फ़ाइल से त्रुटि पार्सिंग विकल्प {}। {} \"{}\" से बूल"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to float"
+msgstr "कॉन्फ़िगरेशन फ़ाइल {}.{} \"{}\" से फ्लोट करने के लिए विकल्प पार्स करने में त्रुटि"
+
+#: 
+msgid "Error parsing option from config file {}.{} \"{}\" to int"
+msgstr "कॉन्फ़िगरेशन फ़ाइल {}.{} \"{}\" से int . तक विकल्प पार्स करने में त्रुटि"
+
+#: 
+msgid "Blank/unblank content screen"
+msgstr "खाली/खाली सामग्री स्क्रीन"
+
+#: 
+msgid "Close opened pympress instance"
+msgstr "खुले हुए pympress उदाहरण को बंद करें"
+
+#: 
+msgid "Print version and exit"
+msgstr "प्रिंट संस्करण और बाहर निकलें"
+
+#: 
+msgid "Reset talk timer"
+msgstr "टॉक टाइमर रीसेट करें"
+
+#: 
+msgid "Toggle pause of talk timer"
+msgstr "टॉक टाइमर का टॉगल रोकें"
+
+#: 
+msgid "GdkPixbuf gif player"
+msgstr "GdkPixbuf gif प्लेयर"
+
+#: 
+msgid "Media support loaded: "
+msgstr "मीडिया समर्थन लोड किया गया: "
+
+#: 
+msgid "Media support using {} is disabled."
+msgstr "{} का उपयोग कर मीडिया समर्थन अक्षम है।"
+
+#: 
+msgid "Media support: "
+msgstr "मीडिया का समर्थन: "
+
+#: 
+msgid "Align _content"
+msgstr "संरेखित करें _सामग्री"
+
+#: 
+msgid "Clear and restore per page label"
+msgstr "प्रति पृष्ठ लेबल साफ़ करें और पुनर्स्थापित करें"
+
+#: 
+msgid "Clear and restore per page number"
+msgstr "प्रति पृष्ठ संख्या साफ़ करें और पुनर्स्थापित करें"
+
+#: 
+msgid "Clear on page change"
+msgstr "पृष्ठ परिवर्तन पर साफ़ करें"
+
+#: 
+msgid "Highlight mode"
+msgstr "हाइलाइट मोड"
+
+#: 
+msgid "Never clear (manually only)"
+msgstr "कभी साफ़ न करें (केवल मैन्युअल रूप से)"
+
+#: 
+msgid "Tools below slide"
+msgstr "स्लाइड के नीचे उपकरण"
+
+#: 
+msgid "Tools next to slide"
+msgstr "स्लाइड के बगल में उपकरण"
+
+#: 
+msgid "_Close"
+msgstr "_बंद करना"
+
+#: 
+msgid "_Open"
+msgstr "_खुला हुआ"
+
+#: 
+msgid "_Pointer"
+msgstr "_सूचक"
+
+#: 
+msgid "_Quit"
+msgstr "_छोड़ना"
+
+#: 
+msgid "10th next slide"
+msgstr "10वीं अगली स्लाइड"
+
+#: 
+msgid "11th next slide"
+msgstr "11वीं अगली स्लाइड"
+
+#: 
+msgid "12th next slide"
+msgstr "12वीं अगली स्लाइड"
+
+#: 
+msgid "13th next slide"
+msgstr "13वीं अगली स्लाइड"
+
+#: 
+msgid "14th next slide"
+msgstr "14वीं अगली स्लाइड"
+
+#: 
+msgid "15th next slide"
+msgstr "15वीं अगली स्लाइड"
+
+#: 
+msgid "16th next slide"
+msgstr "16वीं अगली स्लाइड"
+
+#: 
+msgid "2nd next slide"
+msgstr "दूसरी अगली स्लाइड"
+
+#: 
+msgid "3rd next slide"
+msgstr "तीसरी अगली स्लाइड"
+
+#: 
+msgid "4th next slide"
+msgstr "चौथी अगली स्लाइड"
+
+#: 
+msgid "5th next slide"
+msgstr "5वीं अगली स्लाइड"
+
+#: 
+msgid "6th next slide"
+msgstr "छठी अगली स्लाइड"
+
+#: 
+msgid "7th next slide"
+msgstr "सातवीं अगली स्लाइड"
+
+#: 
+msgid "8th next slide"
+msgstr "8वीं अगली स्लाइड"
+
+#: 
+msgid "9th next slide"
+msgstr "9वीं अगली स्लाइड"
+
+#: 
+msgid "annotations (hideable)"
+msgstr "एनोटेशन (छिपाने योग्य)"
+
+#: 
+msgid "current slide"
+msgstr "करेंट स्लाइड"
+
+#: 
+msgid "horizontal"
+msgstr "क्षैतिज"
+
+#: 
+msgid "next slide(s)"
+msgstr "अगली स्लाइड"
+
+#: 
+msgid "next slides count"
+msgstr "अगली स्लाइड्स की गिनती"
+
+#: 
+msgid "orientation"
+msgstr "अभिविन्यास"
+
+#: 
+msgid "resizeable"
+msgstr "आकार बदलने योग्य"
+
+#: 
+msgid "vertical"
+msgstr "खड़ा"
+
+#: 
+msgid "widget"
+msgstr "विजेट"
+
+#: 
+msgid "_Discard"
+msgstr "_खारिज करना"
+
+#: 
+msgid "annotations"
+msgstr "एनोटेशन"
+
+#: 
+msgid "_Automatic navigation"
+msgstr "_स्वचालित नेविगेशन"
+
+#: 
+msgid "Note pages"
+msgstr "नोट पेज"
+
+#: 
+msgid "Plain"
+msgstr "मैदान"
+
+#: 
+msgid "notes"
+msgstr "टिप्पणियाँ"
+
+#: 
+msgid "Highlighting"
+msgstr "पर प्रकाश डाला"
+
+#: 
+msgid "Layout to draw on the current slide"
+msgstr "वर्तमान स्लाइड पर आरेखित करने के लिए लेआउट"
+
+#: 
+msgid "highlighting"
+msgstr "हाइलाइटिंग"
+
+#: 
+msgid "Exit highlight on page change"
+msgstr "पृष्ठ परिवर्तन पर बाहर निकलें हाइलाइट"
+
+#: 
+msgid "_Every second page"
+msgstr "_हर दूसरा पेज"
+
+#: 
+msgid "(none, left, right, top, bottom, after, odd, or prefix)."
+msgstr "(कोई नहीं, बाएँ, दाएँ, ऊपर, नीचे, बाद में, विषम या उपसर्ग)।"
+
+#: 
+msgid "Unexpected missing page to draw for widget \"{}\""
+msgstr "विजेट \"{}\" के लिए आरेखित करने के लिए अनपेक्षित अनुपलब्ध पृष्ठ"
+
+#: 
+msgid "_Prefixed labels"
+msgstr "_प्रीफिक्स्ड लेबल"
+
+#: 
+msgid "Redo highlight stroke"
+msgstr "हाइलाइट स्ट्रोक फिर से करें"
+
+#: 
+msgid "_About"
+msgstr "_के बारे में"
+
+#: 
+msgid "Auto"
+msgstr "ऑटो"
+
+#: 
+msgid "Choose parameters for automatically playing slides"
+msgstr "स्वचालित रूप से स्लाइड चलाने के लिए पैरामीटर चुनें"
+
+#: 
+msgid "Edit layout"
+msgstr "अभिन्यास संपादित करें"
+
+#: 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr "Gtk.Application.inhibit स्क्रीनसेवर को रोकने में विफल रहा, कठिन अक्षम करने का प्रयास कर रहा है"
+
+#: 
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr "दूसरी स्क्रीन पर बीमर नोट्स के लिए लेआउट (नोट्स में कोई वर्तमान स्लाइड पूर्वावलोकन नहीं)"
+
+#: 
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr "अलग-अलग पृष्ठों पर लिब्रेऑफ़िस नोट्स के लिए लेआउट (नोट्स में वर्तमान स्लाइड पूर्वावलोकन के साथ)"
+
+#: 
+msgid "Loop"
+msgstr "फंदा"
+
+#: 
+msgid "Overwrite"
+msgstr "ओवरराइट"
+
+#: 
+msgid "Overwrite changes instead of reloading?"
+msgstr "पुनः लोड करने के बजाय परिवर्तनों को अधिलेखित करें?"
+
+#: 
+msgid "Plain layout, without note slides"
+msgstr "सादा लेआउट, बिना नोट स्लाइड के"
+
+#: 
+msgid "Reload"
+msgstr "पुनः लोड करें"
+
+#: 
+msgid "Save as..."
+msgstr "के रूप रक्षित करें..."
+
+#: 
+msgid "Save changes before closing?"
+msgstr "बंद करने से पहले परिवर्तन सहेजें?"
+
+#: 
+msgid "Save file"
+msgstr "फाइल सुरक्षित करें"
+
+#: 
+msgid "Save file as"
+msgstr "फ़ाइल को इस रूप में सहेजें"
+
+#: 
+msgid "Saving changes will overwrite the changed file!"
+msgstr "परिवर्तन सहेजना बदली हुई फ़ाइल को अधिलेखित कर देगा!"
+
+#: 
+msgid "Should not require hard enable/disable screensaver on Linux"
+msgstr "Linux पर हार्ड इनेबल/डिसेबल स्क्रीनसेवर की आवश्यकता नहीं होनी चाहिए"
+
+#: 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr "खुली फ़ाइल को pympress के बाहर संशोधित किया गया था लेकिन आपने बिना सहेजे परिवर्तन किए हैं।"
+
+#: 
+msgid "Time per slide (s):"
+msgstr "प्रति स्लाइड समय:"
+
+#: 
+msgid "Unknown widget \"{}\" to draw"
+msgstr "आकर्षित करने के लिए अज्ञात विजेट \"{}\""
+
+#: 
+msgid "Unsaved changes"
+msgstr "सहेजे नहीं गए परिवर्तन"
+
+#: 
+msgid "Unsaved changes will be lost"
+msgstr "सहेजे नहीं गए परिवर्तन खो जाएंगे"
+
+#: 
+msgid "Unsaved changes will be lost."
+msgstr "सहेजे नहीं गए परिवर्तन खो जाएंगे।"
+
+#: 
+msgid "_Save"
+msgstr "_बचाना"
+
+#: 
+msgid "_Save as"
+msgstr "_के रूप रक्षित करें"
+
+#: 
+msgid "box"
+msgstr "डिब्बा"
+
+#: 
+msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
+msgstr "पॉइंटर \"{}\" के लिए पिक्सबफ लोड करने में विफल: {}"
+
+#: 
+msgid "Highlighting with notes"
+msgstr "नोट्स के साथ हाइलाइटिंग"
+
+#: 
+msgid "Layout to draw on the current slide with notes displayed"
+msgstr "नोटों के साथ वर्तमान स्लाइड पर आरेखित करने के लिए लेआउट"
+

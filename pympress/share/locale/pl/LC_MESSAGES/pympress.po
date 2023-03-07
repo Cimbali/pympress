@@ -961,3 +961,119 @@ msgstr ""
 msgid "_About"
 msgstr ""
 
+#: 
+msgid "Auto"
+msgstr ""
+
+#: 
+msgid "Choose parameters for automatically playing slides"
+msgstr ""
+
+#: 
+msgid "Edit layout"
+msgstr ""
+
+#: 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr ""
+
+#: 
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr ""
+
+#: 
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr ""
+
+#: 
+msgid "Loop"
+msgstr ""
+
+#: 
+msgid "Overwrite"
+msgstr ""
+
+#: 
+msgid "Overwrite changes instead of reloading?"
+msgstr ""
+
+#: 
+msgid "Plain layout, without note slides"
+msgstr ""
+
+#: 
+msgid "Reload"
+msgstr ""
+
+#: 
+msgid "Save as..."
+msgstr ""
+
+#: 
+msgid "Save changes before closing?"
+msgstr ""
+
+#: 
+msgid "Save file"
+msgstr ""
+
+#: 
+msgid "Save file as"
+msgstr ""
+
+#: 
+msgid "Saving changes will overwrite the changed file!"
+msgstr ""
+
+#: 
+msgid "Should not require hard enable/disable screensaver on Linux"
+msgstr ""
+
+#: 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr ""
+
+#: 
+msgid "Time per slide (s):"
+msgstr ""
+
+#: 
+msgid "Unknown widget \"{}\" to draw"
+msgstr ""
+
+#: 
+msgid "Unsaved changes"
+msgstr ""
+
+#: 
+msgid "Unsaved changes will be lost"
+msgstr ""
+
+#: 
+msgid "Unsaved changes will be lost."
+msgstr ""
+
+#: 
+msgid "_Save"
+msgstr ""
+
+#: 
+msgid "_Save as"
+msgstr ""
+
+#: 
+msgid "box"
+msgstr ""
+
+#: 
+msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
+msgstr ""
+
+#: 
+msgid "Highlighting with notes"
+msgstr ""
+
+#: 
+msgid "Layout to draw on the current slide with notes displayed"
+msgstr ""
+

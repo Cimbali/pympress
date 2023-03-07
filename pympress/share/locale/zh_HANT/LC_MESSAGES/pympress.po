@@ -5,947 +5,991 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
 "Project-Id-Version: pympress\n"
-"Language: cs\n"
+"Language: zh_HANT\n"
 
 #: 
 msgid "(and optionally seconds)"
-msgstr "(a případně sekundy)"
+msgstr ""
 
 #: 
-#, fuzzy
 msgid "(paused)"
-msgstr "(pozastaveno)"
+msgstr "（暂停中）"
 
 #: 
-#, fuzzy
 msgid "Adjust alignment of slides in projector screen"
-msgstr "Upravit zarovnání snímků na obrazovce projektoru"
+msgstr "调整投影依屏幕的对齐"
 
 #: 
 msgid "All files"
-msgstr "Všechny soubory"
+msgstr "所有文件"
 
 #: 
 msgid "Annotations"
-msgstr "Komentář"
+msgstr "注释"
 
 #: 
-#, fuzzy
 msgid "Big buttons"
-msgstr "Velká tlačítka"
+msgstr "大按钮"
 
 #: 
 msgid "Cairo can not draw gif"
-msgstr "Cairo nemůže vykreslit gif"
+msgstr "Cairo 无法绘制 gif"
 
 #: 
 msgid "Clock"
-msgstr "Hodiny"
+msgstr "时钟"
 
 #: 
-#, fuzzy
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "Obsah a okno s prezentací musí být na stejném monitoru pokud zapnete zobrazení na celé obrazovce!"
+msgstr "如果你开启全屏，演讲内容和演讲者窗口不能在同一显示器上！"
 
 #: 
-#, fuzzy
 msgid "Content blanked"
-msgstr "Prázdno"
+msgstr "演讲内容空白化"
 
 #: 
 msgid "Content fullscreen"
-msgstr "Obsah na celou obrazovku"
+msgstr "演讲内容全屏化"
 
 #: 
 msgid "Contributors:"
-msgstr "Přispěvatelé:"
+msgstr "贡献者："
 
 #: 
 msgid "Could not disable DPMS screen blanking: got status "
-msgstr "Nelze vypnout DPMS vyprázdnění obrazovky: stav "
+msgstr ""
 
 #: 
 msgid "Could not enable DPMS screen blanking: got status "
-msgstr "Nelze zapnout DPMS vyprázdnění obrazovky: stav "
+msgstr ""
 
 #: 
-#, fuzzy
 msgid "Could not find the file \"{}\""
-msgstr "Soubor \"{}\" nenalezen"
+msgstr "不能找到文件 \"{}\""
 
 #: 
 msgid "Could not set screensaver status: got status "
-msgstr "Nelze nastavit stav spořiče obrazovky: stav "
+msgstr ""
 
 #: 
 msgid "Current slide"
-msgstr "Aktuální snímek"
+msgstr "当前幻灯片"
 
 #: 
 msgid "ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system."
-msgstr "ERROR: Chybí modul Gobject Introspections, ujistěte se, že Gtk a pygobject jsou nainstalovány."
+msgstr ""
 
 #: 
 msgid "Error loading icon for about window"
-msgstr "Chyba při nahrávání ikony pro okno O programu"
+msgstr ""
 
 #: 
 msgid "Error opening the file \"{}\""
-msgstr "Chyba při otevírání souboru \"{}\""
+msgstr ""
 
 #: 
 msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
-msgstr "Instrukce naleznete na https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
+msgstr ""
 
 #: 
 msgid "GtkImage gif player"
-msgstr "GtkImage přehrávač gifů"
+msgstr ""
 
 #: 
 msgid "Highlight"
-msgstr "Zvýraznit"
+msgstr "高亮"
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
-msgstr "Pokud využíváte virtualenv nebo anaconda můžete buďto využít balíčky distribuce nebo spusťte: pip install pygobject"
+msgstr ""
 
 #: 
 msgid "Invalid log level \"{}\", try one of {}"
-msgstr "Neplatná úroveň logu \"{}\", vyzkoušejte jednu z těchto: {}"
+msgstr ""
 
 #: 
 msgid "Invalid time (mm or mm:ss expected), got \"{}\""
-msgstr "Neplatný čas (vyžadován tvar mm nebo mm:ss), zadáno \"{}\""
+msgstr ""
 
 #: 
 msgid "Media support uses {}."
-msgstr "Podpora médií využívá {}."
+msgstr ""
 
 #: 
 msgid "Next slide"
-msgstr "Další snímek"
+msgstr "下一张幻灯片"
 
 #: 
 msgid "No action was defined for this link"
-msgstr "Pro tento odkaz nebyla definována žádná akce"
+msgstr ""
 
 #: 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
-msgstr "Okno s obsahem nebo prezentací nebylo spuštěno na celou obrazovku, protože je dostupný pouze jeden monitor"
+msgstr "没有全屏显示地启动演讲内容或演讲者窗口，因为只有一个显示器"
 
 #: 
 msgid "Notes"
-msgstr "Poznámky"
+msgstr "笔记"
 
 #: 
 msgid "Notes position"
-msgstr "Pozice poznámek"
+msgstr ""
 
 #: 
 msgid "Open _Recent"
-msgstr "Otevřít _poslední"
+msgstr "打开 _最近"
 
 #: 
 msgid "Open..."
-msgstr "Otevřít..."
+msgstr "打开..."
 
 #: 
 msgid "Options:"
-msgstr "Nastavení:"
+msgstr ""
 
 #: 
 msgid "Overrides the detection from the file."
-msgstr "Přepíše detekci ze souboru."
+msgstr ""
 
 #: 
 msgid "PDF files"
-msgstr "PDF soubory"
+msgstr "PDF 文件"
 
 #: 
 msgid "Pause"
-msgstr "Pauza"
+msgstr "暂停"
 
 #: 
 msgid "Play"
-msgstr "Spustit"
+msgstr "播放"
 
 #: 
 msgid "Pointer"
-msgstr "Ukazovátko"
+msgstr "指针"
 
 #: 
 msgid "Portable installation"
-msgstr "Přenosná instalace"
+msgstr ""
 
 #: 
 msgid "Presentation timing breakdown"
-msgstr "Rozbor načasování prezentace"
+msgstr ""
 
 #: 
 msgid "Presenter fullscreen"
-msgstr "Prezentace na celou obrazovku"
+msgstr "演讲者全屏"
 
 #: 
 msgid "Pympress Content"
-msgstr "Pympress Obsah"
+msgstr "Pympress 演讲内容"
 
 #: 
 msgid "Pympress Presenter"
-msgstr "Pympress Prezentace"
+msgstr "Pympress 演讲者"
 
 #: 
 msgid "Pympress can not extract attached file"
-msgstr "Pympress nemůže extrahovat přiložený soubor"
+msgstr "Pympress 不能提取附件"
 
 #: 
 msgid "Pympress can not extract embedded media"
-msgstr "Pympress nemůže extrahovat vložená multimédia"
+msgstr "Pympress 不能提取内嵌媒体"
 
 #: 
 msgid "Pympress can not find file "
-msgstr "Pympress nenašel soubor "
+msgstr "Pympress 不能找到文件"
 
 #: 
 msgid "Pympress can not interpret annotation of type:"
-msgstr "Pympress nemůže zobrazit komentář typu:"
+msgstr "Pympress 不能解析注释类型"
 
 #: 
 msgid "Pympress does not recognize link type \"{}\""
-msgstr "Pympress nerozpoznal typ odkazu \"{}\""
+msgstr "Pympress 不能识别链接类型 \"{}\""
 
 #: 
 msgid "Pympress does not recognize link type \"{}\" to \"{}\""
-msgstr "Pympress nerozpoznal typ odkazu \"{}\" až \"{}\""
+msgstr "Pympress 不能识别链接类型 \"{}\" 为 \"{}\""
 
 #: 
 msgid "Pympress does not yet support link type \"{}\""
-msgstr "Pympress zatím nepodporuje odkaz typu \"{}\""
+msgstr "Pympress 不能支持链接类型 \"{}\""
 
 #: 
 msgid "Pympress does not yet support link type \"{}\" to \"{}\""
-msgstr "Pympress zatím nepodporuje odkaz typu \"{}\" až \"{}\""
+msgstr "Pympress 不能支持链接类型 \"{}\" 为 \"{}\""
 
 #: 
 msgid "Python version {}"
-msgstr "Python verze {}"
+msgstr ""
 
 #: 
 msgid "Resources are loaded from "
-msgstr "Prostředky jsou nahrány z "
+msgstr "资源装载自"
 
 #: 
 msgid "Set level of verbosity in log file:"
-msgstr "Nastavit úroveň podrobnosti log souboru:"
+msgstr "设定日志文件的冗长程度："
 
 #: 
 msgid "Set talk _Time"
-msgstr "Nastavit _Čas řeči"
+msgstr "设定演讲 _时长"
 
 #: 
 msgid "Set the position of notes on the pdf page (none, left, right, top, or bottom)."
-msgstr "Nastavit polohu poznámek na stránce pdf (žádné, vlevo, vpravo, nahoře nebo dole)."
+msgstr ""
 
 #: 
 msgid "Slide number"
-msgstr "Snímek číslo"
+msgstr "幻灯片编号"
 
 #: 
 msgid "Some preferences are saved in "
-msgstr "Některé předvolby jsou uloženy v "
+msgstr "部分偏好设置保存在"
 
 #: 
 msgid "Stop"
-msgstr "Zastavit"
+msgstr "停止"
 
 #: 
 msgid "The estimated (intended) talk time in minutes"
-msgstr "Odhadovaná (plánovaná) doba prezentace v minutách"
+msgstr "预计演讲时长（分钟）"
 
 #: 
 msgid "The log is written to "
-msgstr "Log je zapsán do "
+msgstr ""
 
 #: 
 msgid "This help"
-msgstr "Tato pomoc"
+msgstr ""
 
 #: 
 msgid "Time elapsed"
-msgstr "Uplynulý čas"
+msgstr "已进行时间"
 
 #: 
 msgid "Time estimation"
-msgstr "Odhad času"
+msgstr "时间估计"
 
 #: 
 msgid "Timing breakdown"
-msgstr "Rozbor načasování"
+msgstr ""
 
 #: 
 msgid "Unexpected action in index \"{}\""
-msgstr "Neočekávaná akce v indexu \"{}\""
+msgstr ""
 
 #: 
 msgid "Unknow widget {} to be fullscreened, aborting."
-msgstr "Neznámý widget {} bude na maximalizován na celou obrazovku, ruším."
+msgstr ""
 
 #: 
 msgid "Unsupported OS: can't enable/disable screensaver"
-msgstr "Nepodporovaný OS: nelze zapnout/vypnout spořič obrazovky"
+msgstr ""
 
 #: 
 msgid "Usage: {} [options] <presentation_file>"
-msgstr "Použití: {} [options] <presentation_file>"
+msgstr ""
 
 #: 
 msgid "Video support using {} is disabled."
-msgstr "Podpora videa přes {} je vypnuta."
+msgstr ""
 
 #: 
 msgid "_Align content"
-msgstr "_Zarovnat obsah"
+msgstr ""
 
 #: 
 msgid "_Annotations"
-msgstr "_Komentář"
+msgstr "_注释"
 
 #: 
 msgid "_Blank screen"
-msgstr "_Prázdné plátno"
+msgstr "_空白屏幕"
 
 #: 
 msgid "_Blue"
-msgstr "_Modré"
+msgstr "_蓝色"
 
 #: 
 msgid "_Bottom"
-msgstr "_Dole"
+msgstr ""
 
 #: 
 msgid "_Disabled"
-msgstr "_Vypnuto"
+msgstr "_失效的"
 
 #: 
 msgid "_File"
-msgstr "_Soubor"
+msgstr "_文件"
 
 #: 
 msgid "_First"
-msgstr "_První"
+msgstr "_第一个"
 
 #: 
 msgid "_Fullscreen"
-msgstr "_Celá obrazovka"
+msgstr "_全屏"
 
 #: 
 msgid "_Go to..."
-msgstr "_Jít na..."
+msgstr "_前往..."
 
 #: 
 msgid "_Green"
-msgstr "_Zelené"
+msgstr "_绿色"
 
 #: 
 msgid "_Help"
-msgstr "_Nápověda"
+msgstr "_帮助"
 
 #: 
 msgid "_Highlight"
-msgstr "_Zvýraznění"
+msgstr "_高亮"
 
 #: 
 msgid "_Jump to label"
-msgstr "_Skočit na štítek"
+msgstr ""
 
 #: 
 msgid "_Last"
-msgstr "_Poslední"
+msgstr "_最后一个"
 
 #: 
 msgid "_Left"
-msgstr "_Vlevo"
+msgstr ""
 
 #: 
 msgid "_Manual"
-msgstr "_Manuál"
+msgstr ""
 
 #: 
 msgid "_Navigation"
-msgstr "_Navigace"
+msgstr "_导航"
 
 #: 
 msgid "_Next"
-msgstr "_Další"
+msgstr "_下一个"
 
 #: 
 msgid "_Notes mode"
-msgstr "_Režim s poznámkami"
+msgstr "_笔记模式"
 
 #: 
 msgid "_Pause timer"
-msgstr "_Pozastavit stopky"
+msgstr "_暂停计时器"
 
 #: 
 msgid "_Permanent"
-msgstr "_Trvalý"
+msgstr ""
 
 #: 
 msgid "_Presentation"
-msgstr "_Prezentace"
+msgstr "_演示"
 
 #: 
 msgid "_Previous"
-msgstr "_Předchozí"
+msgstr "_之前的"
 
 #: 
 msgid "_Red"
-msgstr "_Červené"
+msgstr "_红色"
 
 #: 
 msgid "_Reset timer"
-msgstr "_Resetovat stopky"
+msgstr "_重置计时器"
 
 #: 
 msgid "_Right"
-msgstr "_Vpravo"
+msgstr ""
 
 #: 
 msgid "_Shortcuts"
-msgstr "_Zkratky"
+msgstr ""
 
 #: 
 msgid "_Starting Configuration"
-msgstr "_Počáteční nastavení"
+msgstr "_启动设置"
 
 #: 
 msgid "_Swap screens"
-msgstr "_Prohodit obrazovky"
+msgstr "_交换屏幕"
 
 #: 
 msgid "_Top"
-msgstr "_Nahoře"
+msgstr ""
 
 #: 
 msgid "_Undo zoom"
-msgstr "_Oddálit"
+msgstr "_取消放大"
 
 #: 
 msgid "_Zoom in"
-msgstr "_Přiblížit"
+msgstr "_放大"
 
 #: 
 msgid "access denied when trying to access screen saver settings in registry!"
-msgstr "přístup byl odepřen při pokusu o přístup k nastavení spořiče obrazovky v registru!"
+msgstr ""
 
 #: 
 msgid "column"
-msgstr "sloupec"
+msgstr ""
 
 #: 
 msgid "duration"
-msgstr "doba"
+msgstr ""
 
 #: 
 msgid "name"
-msgstr "název"
+msgstr ""
 
 #: 
 msgid "no action defined for this link!"
-msgstr "žádná akce není definována pro tento odkaz!"
+msgstr "此链接没有定义动作"
 
 #: 
 msgid "page label"
-msgstr "štítek stránky"
+msgstr ""
 
 #: 
 msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
-msgstr "pip stáhne a zkompiluje pygobject, pro který jsou potřeba Gtk hlavičky (nebo vývojový balíček)"
+msgstr ""
 
 #: 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
 ""
-msgstr "pympress je malý prohlížeč PDF napsaný v Pythonu používající Poppler k zobrazení PDF a GTK pro GUI.\n"
+msgstr "pmypress 是用 Python 写的小小 PDF 阅读器，使用 Poppler 渲染 PDF，使用 GTK 制作 GUI。\n"
 ""
 
 #: 
+#, fuzzy
 msgid "slide"
-msgstr "snímek"
+msgstr "下一张幻灯片"
 
 #: 
 msgid "slide #"
-msgstr "snímek #"
+msgstr ""
 
 #: 
 msgid "time"
-msgstr "čas"
+msgstr ""
 
 #: 
 msgid "{}, {}, {}, {}, or {}"
-msgstr "{}, {}, {}, {}, nebo {}"
+msgstr ""
 
 #: 
 msgid "Additional features"
-msgstr "Další možnosti"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Blank screen"
-msgstr "Prázdná obrazovka"
+msgstr "_空白屏幕"
 
 #: 
 msgid "Cancel goto/jump/highlighting/zooming"
-msgstr "Zrušit jít na/skočit na/zvýraznění/přiblížení"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Close file"
-msgstr "Zavřít soubor"
+msgstr "_关闭文件"
 
 #: 
+#, fuzzy
 msgid "First slide"
-msgstr "První snímek"
+msgstr "当前幻灯片"
 
 #: 
 msgid "Go back in slide history"
-msgstr "Jít vzad v historii snímků"
+msgstr ""
 
 #: 
 msgid "Go forward in slide history"
-msgstr "Jít vpřed v historii snímků"
+msgstr ""
 
 #: 
 msgid "Go to page number"
-msgstr "Jít na stránku číslo"
+msgstr ""
 
 #: 
 msgid "Jump to page label"
-msgstr "Skočit na štítek stránky"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Last slide"
-msgstr "Poslední snímek"
+msgstr "下一张幻灯片"
 
 #: 
 msgid "Manage files"
-msgstr "Spravovat soubory"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Navigating"
-msgstr "Navigace"
+msgstr "_导航"
 
 #: 
 msgid "Next slide with different label"
-msgstr "Další snímek s jiným štítkem"
+msgstr ""
 
 #: 
 msgid "Open file"
-msgstr "Otevřít soubor"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Play/pause timer"
-msgstr "Pustit/zastavit časovač"
+msgstr "_暂停计时器"
 
 #: 
+#, fuzzy
 msgid "Presentation"
-msgstr "Prezentace"
+msgstr "_演示"
 
 #: 
+#, fuzzy
 msgid "Previous slide"
-msgstr "Předchozí snímek"
+msgstr "_之前的"
 
 #: 
 msgid "Previous slide with different label"
-msgstr "Předchozí snímek s jiným štítkem"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Quit"
-msgstr "Odejít"
+msgstr "_退出"
 
 #: 
+#, fuzzy
 msgid "Reset timer"
-msgstr "Restartovat časovač"
+msgstr "_重置计时器"
 
 #: 
+#, fuzzy
 msgid "Set estimated talk time"
-msgstr "Nastavit předpokládanou dobu trvání prezentace"
+msgstr "设定演讲 _时长"
 
 #: 
 msgid "Swap windows"
-msgstr "Vyměnit okna"
+msgstr ""
 
 #: 
 msgid "Timers"
-msgstr "Časovače"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Toggle annotations"
-msgstr "Zobrazit komentář"
+msgstr "注释"
 
 #: 
+#, fuzzy
 msgid "Toggle fullscreen"
-msgstr "Celá obrazovka"
+msgstr "演讲内容全屏化"
 
 #: 
 msgid "Toggle highlighting"
-msgstr "Zvýrazňování"
+msgstr ""
 
 #: 
 msgid "Toggle laserpointer"
-msgstr "Přepnout ukazovátko"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Toggle notes mode"
-msgstr "Režim s poznámkami"
+msgstr "_笔记模式"
 
 #: 
 msgid "Undo highlight stroke"
-msgstr "Zrušit obrys zvýraznění"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Unzoom"
-msgstr "Oddálit"
+msgstr "_取消放大"
 
 #: 
 msgid "Validate goto/jump destination"
-msgstr "Potvrdit cíl pro přejití/přeskočení"
+msgstr ""
 
 #: 
 msgid "Windows"
-msgstr "Okna"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Zoom"
-msgstr "Přiblížení"
+msgstr "_放大"
 
 #: 
 msgid "Unrecognized named destination: "
-msgstr "Pojmenovaný cíl nerozeznán: "
+msgstr ""
 
 #: 
 msgid "Unsupported link clicked. "
-msgstr "Kliknuto na nepodporovaný odkaz. "
+msgstr ""
 
 #: 
 msgid "Fullscreen Presentation running"
-msgstr "Běží prezentace na celou obrazovku"
+msgstr ""
 
 #: 
 msgid "Caused by "
-msgstr "Způsobeno "
+msgstr ""
 
 #: 
 msgid "Building FileWatcher"
-msgstr "Vytváření FileWatcher"
+msgstr ""
 
 #: 
 msgid "Missing dependency: python \"{}\" package"
-msgstr "Chybí nutný balíček: python \"{}\" package"
+msgstr ""
 
 #: 
 msgid "Monitoring of changes to reload files automatically is not available"
-msgstr "Sledování změn pro automatickou aktualizaci souborů není dostupné"
+msgstr ""
 
 #: 
 msgid "ERROR: Gobject Introspections and/or pycairo module is missing, make sure Gtk, pygobject and pycairo are installed on your system."
-msgstr "ERROR: chybí Gobject Introspections a/nebo pycairo modul, ujistěte se, že Gtk, pygobject a pycairo jsou instalovány ve vašem systému."
+msgstr ""
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject pycairo"
-msgstr "Při použití virtualenv nebo anaconda prostředí můžete buďto zkusit povolit systémové balíčky, nebo spustit: pip install pygobject pycairo"
+msgstr ""
 
 #: 
 msgid "pip will then download and compile pygobject, for which you need the Gtk and cairo headers (or development packages)."
-msgstr "Program pip poté stáhne a zkompiluje pygobject, pro které potřebujete Gtk a cairo hlavičky (nebo vývojové balíčky)."
+msgstr ""
 
 #: 
 msgid "(none, left, right, top, or bottom)."
-msgstr "(žádný, vlevo, vpravo, nahoře nebo dole)."
+msgstr ""
 
 #: 
 msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
-msgstr "Při použití virtualenv nebo anaconda prostředí můžete také zkusit povolit systémové balíčky."
+msgstr ""
 
 #: 
 msgid "Set the position of notes on the pdf page"
-msgstr "Nastavit pozici poznámek na stránce pdf"
+msgstr ""
 
 #: 
 msgid "Try your operating system’s package manager, or try running: pip install pygobject pycairo"
-msgstr "Zkuste použít správce balíčků Vašeho operačního systému, nebo spustit: pip install pygobject pycairo"
+msgstr ""
 
 #: 
 msgid "pip will then download and compile pygobject and pycairo, for which you need the Gtk and cairo headers (or development packages)."
-msgstr "Program pip poté stáhne a zkompiluje pygobject a pycairo, pro které potřebujete Gtk a cairo hlavičky (nebo vývojové balíčky)"
+msgstr ""
 
 #: 
 msgid "(none, left, right, top, bottom, or after)."
-msgstr "(žádný, vlevo, vpravo, nahoře, dole nebo za)."
+msgstr ""
 
 #: 
 msgid "_After slide pages"
-msgstr "_Za stránkami slidů"
+msgstr ""
 
 #: 
 msgid "_Bottom half of slide"
-msgstr "_Dolní část slidu"
+msgstr ""
 
 #: 
 msgid "_Left half of slide"
-msgstr "_Levá polovina slidu"
+msgstr ""
 
 #: 
 msgid "_Right half of slide"
-msgstr "_Pravá polovina slidu"
+msgstr ""
 
 #: 
 msgid "_Top half of slide"
-msgstr "_Horní polovina slidu"
+msgstr ""
 
 #: 
 msgid "Error parsing option from config file {}.{} \"{}\" to bool"
-msgstr "Chyba čtení z konfiguračního souboru {}.{} \"{}\" do booleanu"
+msgstr ""
 
 #: 
 msgid "Error parsing option from config file {}.{} \"{}\" to float"
-msgstr "Chyba čtení z konfiguračního souboru {}.{} \"{}\" do desetiných čísel"
+msgstr ""
 
 #: 
 msgid "Error parsing option from config file {}.{} \"{}\" to int"
-msgstr "Chyba čtení z konfiguračního souboru {}.{} \"{}\" do celých čísel"
+msgstr ""
 
 #: 
 msgid "Blank/unblank content screen"
-msgstr "Prázdný/neprázdný obsah obrazovky"
+msgstr ""
 
 #: 
 msgid "Close opened pympress instance"
-msgstr "Zavřít otevřenou pympress instanci"
+msgstr ""
 
 #: 
 msgid "Print version and exit"
-msgstr "Vytisknout verzi a zavřít"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Reset talk timer"
-msgstr "Resetovat časovače řeči"
+msgstr "_重置计时器"
 
 #: 
 msgid "Toggle pause of talk timer"
-msgstr "Přepnutí pauzy časovače řeči"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "GdkPixbuf gif player"
-msgstr "GdkPixbuf přehrávač gifů"
+msgstr "GtkImage gif 播放器"
 
 #: 
 msgid "Media support loaded: "
-msgstr "Podpora médií načtena: "
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Media support using {} is disabled."
-msgstr "Podpora médií pomocí {} je zakázána."
+msgstr "视频支持已被关闭"
 
 #: 
 msgid "Media support: "
-msgstr "Podpora médií: "
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Align _content"
-msgstr "Zarovnat _obsah"
+msgstr "_对齐内容"
 
 #: 
 msgid "Clear and restore per page label"
-msgstr "Vyčistit a obnovit podle popisku stránky"
+msgstr ""
 
 #: 
 msgid "Clear and restore per page number"
-msgstr "Vyčistit a obnovit podle čísla stránky"
+msgstr ""
 
 #: 
 msgid "Clear on page change"
-msgstr "Vyčistit při změně stránky"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Highlight mode"
-msgstr "Zvýrazňovací režim"
+msgstr "高亮"
 
 #: 
 msgid "Never clear (manually only)"
-msgstr "Nikdy nečistit (pouze manuálně)"
+msgstr ""
 
 #: 
 msgid "Tools below slide"
-msgstr "Nástroje pod slidem"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "Tools next to slide"
-msgstr "Nástroje vedle slidu"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "_Close"
-msgstr "_Zavřít"
+msgstr "_关闭文件"
 
 #: 
 msgid "_Open"
-msgstr "_Otevřít"
+msgstr "_打开"
 
 #: 
+#, fuzzy
 msgid "_Pointer"
-msgstr "_Ukazovátko"
+msgstr "指针"
 
 #: 
 msgid "_Quit"
-msgstr "_Ukončit"
+msgstr "_退出"
 
 #: 
+#, fuzzy
 msgid "10th next slide"
-msgstr "10. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "11th next slide"
-msgstr "11. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "12th next slide"
-msgstr "12. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "13th next slide"
-msgstr "13. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "14th next slide"
-msgstr "14. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "15th next slide"
-msgstr "15. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "16th next slide"
-msgstr "16. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "2nd next slide"
-msgstr "2. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "3rd next slide"
-msgstr "3. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "4th next slide"
-msgstr "4. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "5th next slide"
-msgstr "5. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "6th next slide"
-msgstr "6. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "7th next slide"
-msgstr "7. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "8th next slide"
-msgstr "8. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "9th next slide"
-msgstr "9. následující snímek"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "annotations (hideable)"
-msgstr "komentář (schovatelné)"
+msgstr "注释"
 
 #: 
+#, fuzzy
 msgid "current slide"
-msgstr "aktuální snímek"
+msgstr "当前幻灯片"
 
 #: 
 msgid "horizontal"
-msgstr "horizontální"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "next slide(s)"
-msgstr "následující snímek(ky)"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "next slides count"
-msgstr "počet následujících snímků"
+msgstr "下一张幻灯片"
 
 #: 
+#, fuzzy
 msgid "orientation"
-msgstr "orientace"
+msgstr "_演示"
 
 #: 
 msgid "resizeable"
-msgstr "upravitelná velikost"
+msgstr ""
 
 #: 
 msgid "vertical"
-msgstr "vertikální"
+msgstr ""
 
 #: 
 msgid "widget"
-msgstr "widget"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "_Discard"
-msgstr "_Zrušit"
+msgstr "_失效的"
 
 #: 
+#, fuzzy
 msgid "annotations"
-msgstr "komentář"
+msgstr "注释"
 
 #: 
+#, fuzzy
 msgid "_Automatic navigation"
-msgstr "_Automatická navigace"
+msgstr "_启动设置"
 
 #: 
+#, fuzzy
 msgid "Note pages"
-msgstr "Stránky s poznámkami"
+msgstr "笔记"
 
 #: 
 msgid "Plain"
-msgstr "Jednoduchý"
+msgstr ""
 
 #: 
+#, fuzzy
 msgid "notes"
-msgstr "poznámky"
+msgstr "笔记"
 
 #: 
 msgid "Highlighting"
-msgstr "Zvýrazňování"
+msgstr ""
 
 #: 
 msgid "Layout to draw on the current slide"
-msgstr "Rozvržení pro kreslení na aktuální snímek"
+msgstr ""
 
 #: 
 msgid "highlighting"
-msgstr "zvýrazňování"
+msgstr ""
 
 #: 
 msgid "Exit highlight on page change"
-msgstr "Opustit zvýraznění na stránce změn"
+msgstr ""
 
 #: 
 msgid "_Every second page"
-msgstr "_Každou druhou stránku"
+msgstr ""
 
 #: 
 msgid "(none, left, right, top, bottom, after, odd, or prefix)."
-msgstr "(žádný, vlevo, vpravo, nahoře, dole, za, lichý nebo předpona)."
+msgstr ""
 
 #: 
 msgid "Unexpected missing page to draw for widget \"{}\""
-msgstr "Neočekávaně chybí stránka pro zobrazení widgetem \"{}\""
+msgstr ""
 
 #: 
 msgid "_Prefixed labels"
-msgstr "_Štítky s předponou"
+msgstr ""
 
 #: 
 msgid "Redo highlight stroke"

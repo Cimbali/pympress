@@ -927,11 +927,11 @@ msgstr "Hervorheben beim Seitenwechsel beenden"
 
 #: 
 msgid "_Every second page"
-msgstr ""
+msgstr "jede zweite Seite"
 
 #: 
 msgid "(none, left, right, top, bottom, after, odd, or prefix)."
-msgstr ""
+msgstr "(keins, links, rechts, oben, unten, nach, ungerade, oder präfix)."
 
 #: 
 msgid "Unexpected missing page to draw for widget \"{}\""
@@ -947,5 +947,121 @@ msgstr ""
 
 #: 
 msgid "_About"
+msgstr "Über"
+
+#: 
+msgid "Auto"
+msgstr ""
+
+#: 
+msgid "Choose parameters for automatically playing slides"
+msgstr "Wähle Parameter für das automatische Abspielen der Folien"
+
+#: 
+msgid "Edit layout"
+msgstr "Layout bearbeiten"
+
+#: 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr ""
+
+#: 
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr "Layout der Beamer Notizen auf dem zweiten Monitor (aktuelle Folienvorschau wird nicht in den Notizen gezeigt)"
+
+#: 
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr ""
+
+#: 
+msgid "Loop"
+msgstr "Schleife"
+
+#: 
+msgid "Overwrite"
+msgstr "Überschreiben"
+
+#: 
+msgid "Overwrite changes instead of reloading?"
+msgstr "Änderungen überschreiben anstatt neuzuladen?"
+
+#: 
+msgid "Plain layout, without note slides"
+msgstr "einfaches Layout, ohne Folie für Notizen"
+
+#: 
+msgid "Reload"
+msgstr "Neuladen"
+
+#: 
+msgid "Save as..."
+msgstr "Speichern als..."
+
+#: 
+msgid "Save changes before closing?"
+msgstr "Änderungen speichern vor dem Schließen?"
+
+#: 
+msgid "Save file"
+msgstr "Datei speichern"
+
+#: 
+msgid "Save file as"
+msgstr "Datei speichern als"
+
+#: 
+msgid "Saving changes will overwrite the changed file!"
+msgstr "Speichern der Änderungen wird die Datei überschreiben!"
+
+#: 
+msgid "Should not require hard enable/disable screensaver on Linux"
+msgstr ""
+
+#: 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr "Die geöffnete Datei wurde nicht in pympress verändert, aber du hast ungesicherte Änderungen."
+
+#: 
+msgid "Time per slide (s):"
+msgstr "Zeit je Folie (s):"
+
+#: 
+msgid "Unknown widget \"{}\" to draw"
+msgstr ""
+
+#: 
+msgid "Unsaved changes"
+msgstr "Ungesicherte Änderungen"
+
+#: 
+msgid "Unsaved changes will be lost"
+msgstr "Ungesicherte Änderungen gehen verloren"
+
+#: 
+msgid "Unsaved changes will be lost."
+msgstr "Ungesicherte Änderungen gehen verloren."
+
+#: 
+msgid "_Save"
+msgstr "Speichern"
+
+#: 
+msgid "_Save as"
+msgstr "Speicher unter"
+
+#: 
+msgid "box"
+msgstr ""
+
+#: 
+msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
+msgstr ""
+
+#: 
+msgid "Highlighting with notes"
+msgstr ""
+
+#: 
+msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 

@@ -948,5 +948,121 @@ msgstr "Rehacer trazo de resalta"
 
 #: 
 msgid "_About"
-msgstr ""
+msgstr "Acerca de"
+
+#: 
+msgid "Auto"
+msgstr "Auto"
+
+#: 
+msgid "Choose parameters for automatically playing slides"
+msgstr "Escoge los parámetros para reproducir las diapositivas de manera automática"
+
+#: 
+msgid "Edit layout"
+msgstr "Editar diseño"
+
+#: 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr "Gtk.Application.inhibit falló al impedir el salvapantallas, intentando deshabilitarlo de forma forzada"
+
+#: 
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr "Disposición de las notas del proyector en la segunda pantalla (no hay vista previa de la diapositiva actual en las notas)"
+
+#: 
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr "Disposición de las notas de Libreoffice en páginas separadas (con la vista previa de la diapositiva actual en las notas)"
+
+#: 
+msgid "Loop"
+msgstr "Ciclo"
+
+#: 
+msgid "Overwrite"
+msgstr "Sobreescribir"
+
+#: 
+msgid "Overwrite changes instead of reloading?"
+msgstr "¿Sobreescribir en lugar de recargar?"
+
+#: 
+msgid "Plain layout, without note slides"
+msgstr "Diseño sencillo, sin notas de diapositiva"
+
+#: 
+msgid "Reload"
+msgstr "Recargar"
+
+#: 
+msgid "Save as..."
+msgstr "Guardar como..."
+
+#: 
+msgid "Save changes before closing?"
+msgstr "¿Guardar antes de cerrar?"
+
+#: 
+msgid "Save file"
+msgstr "Guardar Archivo"
+
+#: 
+msgid "Save file as"
+msgstr "Guardar Archivo como"
+
+#: 
+msgid "Saving changes will overwrite the changed file!"
+msgstr "¡Al guardar los cambios se sobreescribirá el archivo!"
+
+#: 
+msgid "Should not require hard enable/disable screensaver on Linux"
+msgstr "No debería ser necesario forzar activar/desactivar el salvapantallas en Linux"
+
+#: 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr "El archivo fue abierto fuera de pympress pero ha hecho cambios sin guardar"
+
+#: 
+msgid "Time per slide (s):"
+msgstr "Tiempo por diapositiva(s):"
+
+#: 
+msgid "Unknown widget \"{}\" to draw"
+msgstr "Widget desconocido \"{}\" para dibujar"
+
+#: 
+msgid "Unsaved changes"
+msgstr "Cambios sin guardar"
+
+#: 
+msgid "Unsaved changes will be lost"
+msgstr "Se perderán los cambios sin guardar"
+
+#: 
+msgid "Unsaved changes will be lost."
+msgstr "Los cambios sin guardar se perderán."
+
+#: 
+msgid "_Save"
+msgstr "Guardar"
+
+#: 
+msgid "_Save as"
+msgstr "Guardar como"
+
+#: 
+msgid "box"
+msgstr "caja"
+
+#: 
+msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
+msgstr "Fallo al cargar el pixbuf para el puntero \"{}\" de: {}"
+
+#: 
+msgid "Highlighting with notes"
+msgstr "Resaltar con notas"
+
+#: 
+msgid "Layout to draw on the current slide with notes displayed"
+msgstr "Diseño para dibujar en la diapositiva actual con las notas mostradas"
 

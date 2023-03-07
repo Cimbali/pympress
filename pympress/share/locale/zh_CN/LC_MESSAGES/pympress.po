@@ -269,7 +269,7 @@ msgstr "已进行"
 
 #: 
 msgid "Time estimation"
-msgstr "预估"
+msgstr "倒计"
 
 #: 
 msgid "Timing breakdown"
@@ -948,4 +948,120 @@ msgstr "重做墨迹笔画"
 #: 
 msgid "_About"
 msgstr "关于"
+
+#: 
+msgid "Auto"
+msgstr "自动"
+
+#: 
+msgid "Choose parameters for automatically playing slides"
+msgstr "选择定时切换幻灯片参数"
+
+#: 
+msgid "Edit layout"
+msgstr "编辑布局"
+
+#: 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr "Gtk.Application.inhibit 阻止屏保失败，尝试强制关闭"
+
+#: 
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr "beamer 第二屏备注的布局（备注中没有当前幻灯片预览）"
+
+#: 
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr "libreoffice 不同页备注的布局（备注中包含当前幻灯片预览）"
+
+#: 
+msgid "Loop"
+msgstr "循环"
+
+#: 
+msgid "Overwrite"
+msgstr "覆写"
+
+#: 
+msgid "Overwrite changes instead of reloading?"
+msgstr "覆写更改而不是重新加载？"
+
+#: 
+msgid "Plain layout, without note slides"
+msgstr "普通布局，不包含笔记幻灯片"
+
+#: 
+msgid "Reload"
+msgstr "重新加载"
+
+#: 
+msgid "Save as..."
+msgstr "另存为..."
+
+#: 
+msgid "Save changes before closing?"
+msgstr "关闭之前保存更改？"
+
+#: 
+msgid "Save file"
+msgstr "保存文件"
+
+#: 
+msgid "Save file as"
+msgstr "另存文件为"
+
+#: 
+msgid "Saving changes will overwrite the changed file!"
+msgstr "保存更改将会覆写已经更改的文件！"
+
+#: 
+msgid "Should not require hard enable/disable screensaver on Linux"
+msgstr "Linux 上并不需要强制开启/关闭屏保"
+
+#: 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr "打开的文件已被外部更改，但却有未保存的变更。"
+
+#: 
+msgid "Time per slide (s):"
+msgstr "每张时间（秒）:"
+
+#: 
+msgid "Unknown widget \"{}\" to draw"
+msgstr "无法绘制未知部件 \"{}\""
+
+#: 
+msgid "Unsaved changes"
+msgstr "未保存的变更"
+
+#: 
+msgid "Unsaved changes will be lost"
+msgstr "未保存的变更将会丢失"
+
+#: 
+msgid "Unsaved changes will be lost."
+msgstr "未保存的变更将会丢失。"
+
+#: 
+msgid "_Save"
+msgstr "保存"
+
+#: 
+msgid "_Save as"
+msgstr "另存为"
+
+#: 
+msgid "box"
+msgstr "盒子"
+
+#: 
+msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
+msgstr ""
+
+#: 
+msgid "Highlighting with notes"
+msgstr ""
+
+#: 
+msgid "Layout to draw on the current slide with notes displayed"
+msgstr ""
 

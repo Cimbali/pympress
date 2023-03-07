@@ -12,7 +12,6 @@ msgid "(and optionally seconds)"
 msgstr "(et secondes, optionellement)"
 
 #: 
-#, fuzzy
 msgid "(paused)"
 msgstr "(en pause)"
 
@@ -69,7 +68,6 @@ msgid "Could not enable DPMS screen blanking: got status "
 msgstr "Attention: Impossible d'activer l'extinction d'écran DPMS: "
 
 #: 
-#, fuzzy
 msgid "Could not find the file \"{}\""
 msgstr "Impossible d'ouvrir le fichier \"{}\""
 
@@ -91,7 +89,7 @@ msgstr "Erreur de chargement des icônes"
 
 #: 
 msgid "Error opening the file \"{}\""
-msgstr "Impossible d'ouvrir le fichier \"{}\""
+msgstr "Erreur en ouvrant le fichier \"{}\""
 
 #: 
 msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
@@ -953,5 +951,121 @@ msgstr "Refaire trait de surligneur"
 
 #: 
 msgid "_About"
+msgstr "À propos"
+
+#: 
+msgid "Auto"
+msgstr "Auto"
+
+#: 
+msgid "Choose parameters for automatically playing slides"
+msgstr "Choisir les paramètres pour la lecture automatique des slides"
+
+#: 
+msgid "Edit layout"
+msgstr "Modifier l'agencement"
+
+#: 
+msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
+msgstr ""
+
+#: 
+msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
+msgstr ""
+
+#: 
+msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
+msgstr ""
+
+#: 
+msgid "Loop"
+msgstr "Boucler"
+
+#: 
+msgid "Overwrite"
+msgstr "Ecraser"
+
+#: 
+msgid "Overwrite changes instead of reloading?"
+msgstr ""
+
+#: 
+msgid "Plain layout, without note slides"
+msgstr ""
+
+#: 
+msgid "Reload"
+msgstr "Recharger"
+
+#: 
+msgid "Save as..."
+msgstr "Enregistrer sous ..."
+
+#: 
+msgid "Save changes before closing?"
+msgstr "Enregistrer les changements avant de fermer?"
+
+#: 
+msgid "Save file"
+msgstr "Enregister fichier"
+
+#: 
+msgid "Save file as"
+msgstr "Enregistrer fichier sous"
+
+#: 
+msgid "Saving changes will overwrite the changed file!"
+msgstr "Sauvegarder les changements écrasera le fichier!"
+
+#: 
+msgid "Should not require hard enable/disable screensaver on Linux"
+msgstr ""
+
+#: 
+msgid "The open file was modified outside of pympress but you have made unsaved changes."
+msgstr ""
+
+#: 
+msgid "Time per slide (s):"
+msgstr "Temps par slide (s):"
+
+#: 
+msgid "Unknown widget \"{}\" to draw"
+msgstr "Gadget a afficher \"{}\" inconnu"
+
+#: 
+msgid "Unsaved changes"
+msgstr ""
+
+#: 
+msgid "Unsaved changes will be lost"
+msgstr ""
+
+#: 
+msgid "Unsaved changes will be lost."
+msgstr ""
+
+#: 
+msgid "_Save"
+msgstr ""
+
+#: 
+msgid "_Save as"
+msgstr ""
+
+#: 
+msgid "box"
+msgstr ""
+
+#: 
+msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
+msgstr ""
+
+#: 
+msgid "Highlighting with notes"
+msgstr ""
+
+#: 
+msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 

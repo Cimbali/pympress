@@ -76,7 +76,7 @@ while [ $# -gt 0 ]; do
         contributors $avail_lang
     elif test "$1" = "contributors"; then
         getpass
-        avail_lang=`languages`
+        avail_lang=`languages ${MIN_LANG_COMPLETE:-5} | cut -f1`
         contributors $avail_lang
     else
         echo "Unrecognised command $1 use one of: upload, languages, download, contributors"
