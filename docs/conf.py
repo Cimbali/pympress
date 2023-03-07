@@ -62,12 +62,19 @@ def rewrite_link(url):
     """ Make relative links in README relative to "docs/" or absolute.
     """
     split_url = urlsplit(url)
-    if split_url.netloc or not split_url.path:
+    if split_url.netloc:
+        # Absolute link
         return url
     elif split_url.path.startswith('docs/'):
         return urlunsplit(split_url._replace(path = split_url.path[5:]))
-    else:
+    elif split_url.path:
         return urljoin(github_doc_root, url)
+    elif split_url.fragment and not split_url.query and not split_url.scheme:
+        # anchor links are fragment-only and work differently in (recent) myst-parser vs. github
+        # myst-parser strips the spaces, whereas github creates anchors with trailing -
+        return '#' + split_url.fragment.strip('-')
+    else:
+        return url
 
 
 def setup(app):
@@ -77,13 +84,15 @@ def setup(app):
     # Until relative links are allowed from the toctree, see https://github.com/sphinx-doc/sphinx/issues/701
     find_links = re.compile(r'\[([^\[\]]+)\]\(([^()]+)\)')
 
-    here = pathlib.Path(__file__).parent
-    with open(here.parent.joinpath('README.md')) as fin, open(here.joinpath('README.md'), 'w') as fout:
+    here = pathlib.Path(app.srcdir)
+    with open(here.parent / 'README.md') as fin, open(here / 'README.md', 'w') as fout:
         for line in fin:
             print(find_links.sub(lambda m: '[{}]({})'.format(m[1], rewrite_link(m[2])), line), end='', file=fout)
 
-    app.connect('build-finished', lambda app, config: pathlib.Path(app.srcdir).joinpath('README.md').unlink())
+    app.connect('build-finished', lambda app, config: (here / 'README.md').unlink())
 
+
+myst_heading_anchors = 3
 
 # The encoding of source files.
 #
