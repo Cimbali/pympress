@@ -52,6 +52,10 @@ jobs:
   srpm:
     name: Source RPM
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.name.outputs.tag }}
+      file: ${{ steps.name.outputs.file }}
+
     steps:
     - uses: actions/checkout@v3
 
@@ -66,7 +70,7 @@ jobs:
       run: |
         python3 setup.py compile_catalog
 
-    - name: Build binaries
+    - name: Build source rpm
       env:
         BUILD_DIR: build/rpm
       run: |
@@ -81,25 +85,27 @@ jobs:
         [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
         echo tag=$tag | tee -a $GITHUB_OUTPUT
 
+        echo file=`find srpm/ -name '*.src.rpm' -printf '%P\n' -quit` | tee -a $GITHUB_OUTPUT
+
     - name: Create GitHub Release and upload
       uses: softprops/action-gh-release@v1
       with:
         draft: true
         tag_name: ${{ steps.name.outputs.tag }}
         fail_on_unmatched_files: true
-        files: srpm/*.src.rpm
+        files: srpm/${{ steps.name.outputs.file }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
 
     - name: Check built RPM with rpmlint
-      run: rpmlint srpm/*.src.rpm
+      run: rpmlint srpm/${{ steps.name.outputs.file }}
       continue-on-error: true
 
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
       with:
         name: source-rpm
-        path: srpm/*.src.rpm
+        path: srpm/${{ steps.name.outputs.file }}
 
 
   rpmbuild:
@@ -124,15 +130,15 @@ jobs:
 
     - name: Install dependencies
       # NB. querying requires on a source rpm should give us build requires
-      run: ${{ matrix.install }} `rpm -qR "${{ needs.pypi.outputs.srpm_name }}"`
+      run: ${{ matrix.install }} rpm-build `rpm -qR "${{ needs.srpm.outputs.file }}"`
 
     - name: Build binary from source spm
       id: build
       env:
-        srpm: ${{ needs.pypi.outputs.srpm_name }}
+        srpm: ${{ needs.srpm.outputs.file }}
       run: |
         rpm -q --qf "dest=`rpm --eval %{_rpmfilename}`\n" "$srpm" | tee -a $GITHUB_OUTPUT
-        rpmbuild -D "_rpmdir ${PWD}" -ra "$srpm"`
+        rpmbuild -D "_rpmdir ${PWD}" -ra "$srpm"
 
 
   windows-build:
