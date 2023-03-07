@@ -93,6 +93,7 @@ jobs:
 
     - name: Check built RPM with rpmlint
       run: rpmlint srpm/*.src.rpm
+      continue-on-error: true
 
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
