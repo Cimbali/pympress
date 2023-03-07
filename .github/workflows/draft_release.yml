@@ -130,7 +130,7 @@ jobs:
 
     - name: Install dependencies
       # NB. querying requires on a source rpm should give us build requires
-      run: ${{ matrix.install }} rpm-build `rpm -qR "${{ needs.srpm.outputs.file }}"`
+      run: ${{ matrix.install }} rpm-build `rpm -qR "${{ needs.srpm.outputs.file }}" | awk '{print $1}'`
 
     - name: Build binary from source spm
       id: build
