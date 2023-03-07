@@ -13,7 +13,8 @@ on:
       skip_pypi:
         description: 'skip uploading to pypi'
         required: false
-        default: no
+        type: boolean
+        default: false
 
 jobs:
   pypi:
@@ -31,15 +32,15 @@ jobs:
         ref=${{ github.ref }}
         [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
         if echo ${tag#v} | grep -qxE '[0-9]+(\.[0-9]+)*' ; then release=final; else release=prerelease; fi
-        echo ::set-output name=tag::${tag#v}
-        echo ::set-output name=release::$release
+        echo tag=${tag#v} | tee -a $GITHUB_OUTPUT
+        echo release=$release | tee -a $GITHUB_OUTPUT
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         ref: v${{ steps.name.outputs.tag }}
 
     - name: Set up Python
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v4
       with:
         python-version: '3.x'
 
@@ -57,19 +58,22 @@ jobs:
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      if: ${{ github.event_name == 'release' || github.event.inputs.skip_pypi == 'no' }}
+      if: ${{ github.event_name == 'release' || ! github.event.inputs.skip_pypi }}
       run: |
         twine upload dist/*
 
     - name: Get info from pypi
       id: info
+      env:
+        tag: ${{ needs.pypi.outputs.tag }}
       run: |
-        jq_script=`printf '.releases."%s"[]? | select(.python_version == "source")' ${{ steps.name.outputs.tag }}`
+        # Get releases from pypi, exiting with non-zero if expected version not found
+        jq_script=`printf '.releases."%s"[]? | select(.python_version == "source")' $tag`
         while ! curl -s https://pypi.org/pypi/pympress/json | jq -r -e "$jq_script" > lastsource.json ; do
           sleep 60  # be patient with pypi
         done
-        echo ::set-output name=url::`jq -r .url lastsource.json`
-        echo ::set-output name=sha256::`jq -r .digests.sha256 lastsource.json`
+        echo url=`jq -r .url lastsource.json` | tee -a $GITHUB_OUTPUT
+        echo sha256=`jq -r .digests.sha256 lastsource.json` | tee -a $GITHUB_OUTPUT
 
     - name: Run a check on the generated file
       run: |
@@ -88,13 +92,20 @@ jobs:
 
       - name: Update info
         run: |
+          prev_pkgver=`awk -F= '$1 == "pkgver" {print $2}' | tr -d "[()\"']"`
+          if [[ "$prev_pkgver" = "${{ needs.pypi.outputs.tag }}" ]]; then
+            prev_pkgrel=`awk -F= '$1 == "pkgrel" {print $2}' | tr -d "[()\"']"`
+          else
+            prev_pkrel=0
+          fi
+
           while read param value; do
             sed -i -r "s,^(\\s*$param ?=[('\" ]*)[A-Za-z0-9\${\}:/._-]+([ '\")]*)$,\1$value\2," aur-repo/.SRCINFO aur-repo/PKGBUILD
           done <<EOF
-          source ${{ needs.pypi.outputs.url }}
-          sha256sums ${{ needs.pypi.outputs.tag }}
-          pkgver ${{ needs.pypi.outputs.tag }}
-          pkgrel 2
+            source ${{ needs.pypi.outputs.url }}
+            sha256sums ${{ needs.pypi.outputs.sha256 }}
+            pkgver ${{ needs.pypi.outputs.tag }}
+            pkgrel $(( prev_pkgrel + 1 ))
           EOF
 
       - name: Push the changes
@@ -108,8 +119,10 @@ jobs:
         env:
           AUR_PRIVATE_KEY: ${{ secrets.AUR_PRIVATE_KEY }}
 
+
   copr:
     name: Download source RPM from release and upload to COPR and OpenBuildService
+    needs: rpm-common
     runs-on: ubuntu-latest
 
     steps:
@@ -118,28 +131,32 @@ jobs:
         sudo apt-get update -q
         sudo apt-get install -qy osc cpio rpm2cpio python3-m2crypto
 
-    - name: Download from GitHub Release
+    - name: Get SRPM URL from GitHub Release
+      id: srpm
+      env:
+        tag: ${{ needs.pypi.outputs.tag }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
       run: |
-        ref=${{ github.ref }}
-        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
-
-        curl -s -u "Cimbali:$GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" -o release.json "https://api.github.com/repos/Cimbali/pympress/releases/tags/$tag"
+        curl -s -u "Cimbali:$GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" -o release.json "https://api.github.com/repos/Cimbali/pympress/releases/tags/v$tag"
         jq -r '[.assets[] | select(.name | endswith(".src.rpm"))][0]' release.json | tee srpm.json | jq 'del(.uploader)'
 
-        curl -L "`jq -r .browser_download_url srpm.json`" -o "`jq -r .name srpm.json`"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+        echo name="`jq -r .name srpm.json`" | tee -a $GITHUB_OUTPUT
+        echo url="`jq -r .browser_download_url srpm.json`" | tee -a $GITHUB_OUTPUT
+
+    - name: Download from GitHub Release
+      run: |
+        curl -L "${{ steps.srpm.outputs.url }}" -o "${{ steps.srpm.outputs.name }}"
 
     - name: Upload to COPR
       continue-on-error: true
       run: |
         trap 'rm -f ./copr-config' EXIT && echo "$COPR_TOKEN_CONFIG" > ./copr-config
 
-
         python3 -m pip install copr-cli
-        copr-cli --config ./copr-config build --nowait cimbali/pympress python3-pympress-*.src.rpm
+        copr-cli --config ./copr-config build --nowait cimbali/pympress "$srpm_name"
       env:
         COPR_TOKEN_CONFIG: ${{ secrets.COPR_TOKEN_CONFIG }}
+        srpm_name: ${{ steps.srpm.outputs.srpm_name }}
 
     - name: Upload to OpenBuildService
       continue-on-error: true
@@ -150,11 +167,13 @@ jobs:
         cd osc/
         osc -c ../osc-config rm pympress-*.tar.gz
 
-        rpm2cpio ../python3-pympress-*.src.rpm | cpio -idmv
-        osc -c ../osc-config add pympress-*.tar.gz
+        rpm2cpio "../$srpm_name" | cpio -idmv
+        osc -c ../osc-config add "`rpm -q --qf '%{SOURCE}' "../$srpm_name"`"
         osc -c ../osc-config ci -m "Update to ${{ needs.pypi.outputs.tag }}"
       env:
         OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
+        srpm_name: ${{ steps.srpm.outputs.srpm_name }}
+
 
   brew:
     name: Request new pypi package be pulled into Homebrew
