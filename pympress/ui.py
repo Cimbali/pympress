@@ -447,13 +447,20 @@ class UI(builder.Builder):
         grid_ar /= page_ratio
 
         # works best when n_frames = rows * cols * grid_ar
-        rows = max(1, math.floor(math.sqrt(n_frames / grid_ar)))
-        # Check whether ceiling is better than flooring
-        f_cols, c_cols = (n_frames + rows - 1) // rows, (n_frames + rows) // (rows + 1)
-        rows, cols = (rows, f_cols) if min(f_cols, grid_ar * rows) > min(c_cols, grid_ar * (rows + 1)) else \
-                     (rows + 1, c_cols)
+        rows = math.sqrt(n_frames / grid_ar)
 
-        return rows, cols
+        # If rows < 1 always ceil
+        if rows < 1:
+            return 1, n_frames
+
+        # Check which of ceiling or flooring rows is better
+        rows = math.floor(rows)
+        f_cols, c_cols = (n_frames + rows - 1) // rows, (n_frames + rows) // (rows + 1)
+
+        if min(f_cols, grid_ar * rows) > min(c_cols, grid_ar * (rows + 1)):
+            return rows, f_cols
+        else:
+            return rows + 1, c_cols
 
 
     def screens_changed(self, screen):
