@@ -27,7 +27,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 import gi
-import cairo
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GLib
 
@@ -232,22 +231,6 @@ class Overview(builder.Builder):
             GLib.idle_add(self.prerender, da)
 
         self.deck_grid.show_all()
-
-
-    def reset_deck_cache(self):
-        """ Clear the cached slides.
-        """
-        window = self.c_da.get_window()
-
-        if window is None:
-            return ValueError('Cannot initialize deck cache without drawing area window')
-
-        scale = window.get_scale_factor()
-        ww, wh = self.c_da.get_allocated_width() * scale, self.c_da.get_allocated_height() * scale
-        try:
-            self.deck_cache = window.create_similar_image_surface(cairo.Format.ARGB32, ww, wh, scale)
-        except ValueError:
-            logger.exception('Error creating highlight cache')
 
 
     def prerender(self, da):
