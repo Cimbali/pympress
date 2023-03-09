@@ -404,14 +404,26 @@ class Scribbler(builder.Builder):
         window = self.c_da.get_window()
 
         if window is None:
-            return ValueError('Cannot initialize scribble acche without drawing area window')
+            return ValueError('Cannot initialize scribble cache without drawing area window')
 
         scale = window.get_scale_factor()
         ww, wh = self.c_da.get_allocated_width() * scale, self.c_da.get_allocated_height() * scale
         try:
             self.scribble_cache = window.create_similar_image_surface(cairo.Format.ARGB32, ww, wh, scale)
-        except ValueError:
-            logger.exception('Error creating highlight cache')
+        except ValueError as e:
+            if e.args == ('invalid enum value: 5',):
+                # Just try again as this error seems to always happen at the first call but not later on
+                # This is the gi introspection of cairo not accepting the value Format.RGB30 (???)
+                try:
+                    self.scribble_cache = window.create_similar_image_surface(cairo.Format.ARGB32, ww, wh, scale)
+                except ValueError:
+                    return
+            else:
+                logger.exception('Error creating highlight cache')
+        except cairo.Error:
+            logger.warning('Failed creating an ARGB32 surface sized {}x{} scale {} for highlight cache'
+                           .format(ww, wh, scale), exc_info=True)
+            return
         self.next_render = 0
 
 

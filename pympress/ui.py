@@ -1288,7 +1288,18 @@ class UI(builder.Builder):
                 return
 
             # Cache miss: render the page, and save it to the cache
-            pb = window.create_similar_image_surface(cairo.Format.RGB24, ww * scale, wh * scale, scale)
+            try:
+                pb = window.create_similar_image_surface(cairo.Format.RGB24, ww * scale, wh * scale, scale)
+            except cairo.Error:
+                logger.warning('Failed creating an RGB24 surface sized {}x{} scale {} for widget {}'
+                               .format(ww * scale, wh * scale, scale, name), exc_info=True)
+                if widget is self.c_da:
+                    cairo_context.save()
+                    cairo_context.set_source_rgb(0, 0, 0)
+                    cairo_context.fill()
+                    cairo_context.paint()
+                    cairo_context.restore()
+                return
 
             cairo_prerender = cairo.Context(pb)
             cairo_prerender.transform(zoom_matrix)

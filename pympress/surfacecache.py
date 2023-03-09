@@ -254,7 +254,13 @@ class SurfaceCache(object):
         """
         window = widget.get_window()
         scale = window.get_scale_factor()
-        return window.create_similar_image_surface(fmt, width * scale, height * scale, scale)
+        try:
+            return window.create_similar_image_surface(fmt, width * scale, height * scale, scale)
+        except cairo.Error:
+            logger.warning('Failed creating a {} cache surface sized {}x{} scale {} for widget {}'
+                           .format(fmt, width * scale, height * scale, scale, widget.get_name()), exc_info=True)
+            # Warn here but handle error at the call site
+            raise
 
 
     def prerender(self, page_nb):
@@ -305,6 +311,8 @@ class SurfaceCache(object):
             surface = self.surface_factory[widget_name](cairo.Format.RGB24, ww, wh)
         except AttributeError:
             logger.warning('Widget {} was not mapped when rendering'.format(widget_name), exc_info = True)
+            return GLib.SOURCE_REMOVE
+        except cairo.Error:
             return GLib.SOURCE_REMOVE
 
         context = cairo.Context(surface)
