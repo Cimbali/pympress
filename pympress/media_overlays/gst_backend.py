@@ -75,7 +75,7 @@ class GstOverlay(base.VideoOverlay):
         return self.playbin.get_state(0).state == Gst.State.PLAYING
 
 
-    def set_file(self, filepath):
+    def _set_file(self, filepath):
         """ Sets the media file to be played by the widget.
 
         Args:

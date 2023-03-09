@@ -59,7 +59,7 @@ class GifOverlay(base.VideoOverlay):
         self.movie_zone.connect('configure-event', self.set_transform)
 
 
-    def set_file(self, filepath):
+    def _set_file(self, filepath):
         """ Sets the media file to be played by the widget.
 
         Args:

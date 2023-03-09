@@ -95,7 +95,7 @@ class VideoOverlay(builder.Builder):
         self.action_map = action_map
         self.media_overlay.insert_action_group('media', self.action_map)
         self.media_type, _ = Gio.content_type_guess(media.filename.as_uri())
-        self.set_file(media.filename)
+        self._set_file(media.filename)
 
         self.autoplay = media.autoplay
         self.repeat = media.repeat
@@ -212,7 +212,7 @@ class VideoOverlay(builder.Builder):
         raise NotImplementedError
 
 
-    def set_file(self, filepath):
+    def _set_file(self, filepath):
         """ Sets the media file to be played by the widget.
 
         Args:

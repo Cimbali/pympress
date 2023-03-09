@@ -112,7 +112,7 @@ class VlcOverlay(base.VideoOverlay):
         return self.player.is_playing()
 
 
-    def set_file(self, filepath):
+    def _set_file(self, filepath):
         """ Sets the media file to be played by the widget.
 
         Args:
