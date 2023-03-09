@@ -28,8 +28,7 @@ logger = logging.getLogger(__name__)
 
 import gi
 gi.require_version('Gtk', '3.0')
-gi.require_version('Gst', '1.0')
-from gi.repository import GLib, Gst, Gio
+from gi.repository import GLib, Gst
 
 
 from pympress.media_overlays import base
@@ -43,8 +42,6 @@ class GstOverlay(base.VideoOverlay):
 
     #: A :class:`~Gst.Playbin` to be play videos
     playbin = None
-    #: The mime type of the media file
-    media_type = ''
 
     def __init__(self, *args, **kwargs):
         # Create GStreamer playbin
@@ -84,7 +81,6 @@ class GstOverlay(base.VideoOverlay):
         Args:
             filepath (`pathlib.Path`): The path to the media file path
         """
-        self.media_type, _ = Gio.content_type_guess(filepath.as_uri())
         self.playbin.set_property('uri', filepath.as_uri())
         self.playbin.set_state(Gst.State.READY)
 

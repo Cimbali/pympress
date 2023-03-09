@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import GLib
+from gi.repository import GLib, Gio
 
 from pympress import builder
 
@@ -64,6 +64,8 @@ class VideoOverlay(builder.Builder):
     autoplay = False
     #: `bool` that tracks whether we should play after we finished playing
     repeat = False
+    #: `str` representing the mime type of the media file
+    media_type = ''
 
     #: `bool` that tracks whether the user is dragging the position
     dragging_position = False
@@ -92,6 +94,7 @@ class VideoOverlay(builder.Builder):
         # medias, here the actions are scoped to the current widget
         self.action_map = action_map
         self.media_overlay.insert_action_group('media', self.action_map)
+        self.media_type, _ = Gio.content_type_guess(media.filename.as_uri())
         self.set_file(media.filename)
 
         self.autoplay = media.autoplay
