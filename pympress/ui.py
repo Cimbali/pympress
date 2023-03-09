@@ -1964,7 +1964,8 @@ class ScreenArea(object):
         Returns:
             `bool`: `True` iff the area is contained
         """
-        return self.intersection(other).equal(self)
+        intersection = self.intersection(other)
+        return intersection is not None and intersection.equal(self)
 
 
     def intersects(self, other):
