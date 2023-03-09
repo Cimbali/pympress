@@ -97,7 +97,11 @@ class VideoOverlay(builder.Builder):
         # medias, here the actions are scoped to the current widget
         self.action_map = action_map
         self.media_overlay.insert_action_group('media', self.action_map)
-        self.media_type, _ = Gio.content_type_guess(media.filename.as_uri())
+        if media.type:
+            self.media_type = media.type
+        else:
+            content_type, _ = Gio.content_type_guess(media.filename.as_uri())
+            self.media_type = Gio.content_type_get_mime_type(content_type)
         self._set_file(media.filename)
 
         self.autoplay = media.autoplay
