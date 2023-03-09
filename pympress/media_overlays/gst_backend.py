@@ -42,6 +42,8 @@ class GstOverlay(base.VideoOverlay):
 
     #: A :class:`~Gst.Playbin` to be play videos
     playbin = None
+    #: A :class:`~Gst.Base.Sink` to display video content
+    sink = None
 
     def __init__(self, *args, **kwargs):
         # Create GStreamer playbin

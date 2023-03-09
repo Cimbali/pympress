@@ -40,6 +40,9 @@ from pympress import builder
 class VideoOverlay(builder.Builder):
     """ Simple Video widget.
 
+    All do_X() functions are meant to be called from the main thread, through e.g. :function:`~GLib.idle_add`,
+    for thread-safety in the handling of video backends.
+
     Args:
         container (:class:`~Gtk.Overlay`): The container with the slide, at the top of which we add the movie area
         page_type (:class:`~pympress.document.PdfPage`): the part of the page to display
