@@ -75,7 +75,8 @@ class VlcOverlay(base.VideoOverlay):
 
         super(VlcOverlay, self).__init__(*args, **kwargs)
         # Simple black background painting to avoid glitching outside of video area
-        self.movie_zone.connect('draw', self.paint_backdrop)
+        if not self.media_type.startswith('audio'):
+            self.movie_zone.connect('draw', self.paint_backdrop)
 
         event_manager = self.player.event_manager()
         event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.handle_end))
@@ -111,7 +112,7 @@ class VlcOverlay(base.VideoOverlay):
         return self.player.is_playing()
 
 
-    def set_file(self, filepath):
+    def _set_file(self, filepath):
         """ Sets the media file to be played by the widget.
 
         Args:

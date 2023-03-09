@@ -32,13 +32,16 @@ logger = logging.getLogger(__name__)
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import GLib
+from gi.repository import GLib, Gio
 
 from pympress import builder
 
 
 class VideoOverlay(builder.Builder):
     """ Simple Video widget.
+
+    All do_X() functions are meant to be called from the main thread, through e.g. :function:`~GLib.idle_add`,
+    for thread-safety in the handling of video backends.
 
     Args:
         container (:class:`~Gtk.Overlay`): The container with the slide, at the top of which we add the movie area
@@ -64,6 +67,8 @@ class VideoOverlay(builder.Builder):
     autoplay = False
     #: `bool` that tracks whether we should play after we finished playing
     repeat = False
+    #: `str` representing the mime type of the media file
+    media_type = ''
 
     #: `bool` that tracks whether the user is dragging the position
     dragging_position = False
@@ -92,7 +97,8 @@ class VideoOverlay(builder.Builder):
         # medias, here the actions are scoped to the current widget
         self.action_map = action_map
         self.media_overlay.insert_action_group('media', self.action_map)
-        self.set_file(media.filename)
+        self.media_type, _ = Gio.content_type_guess(media.filename.as_uri())
+        self._set_file(media.filename)
 
         self.autoplay = media.autoplay
         self.repeat = media.repeat
@@ -209,7 +215,7 @@ class VideoOverlay(builder.Builder):
         raise NotImplementedError
 
 
-    def set_file(self, filepath):
+    def _set_file(self, filepath):
         """ Sets the media file to be played by the widget.
 
         Args:

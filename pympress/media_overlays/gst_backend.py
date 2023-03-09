@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 
 import gi
 gi.require_version('Gtk', '3.0')
-gi.require_version('Gst', '1.0')
 from gi.repository import GLib, Gst
 
 
@@ -43,6 +42,8 @@ class GstOverlay(base.VideoOverlay):
 
     #: A :class:`~Gst.Playbin` to be play videos
     playbin = None
+    #: A :class:`~Gst.Base.Sink` to display video content
+    sink = None
 
     def __init__(self, *args, **kwargs):
         # Create GStreamer playbin
@@ -76,7 +77,7 @@ class GstOverlay(base.VideoOverlay):
         return self.playbin.get_state(0).state == Gst.State.PLAYING
 
 
-    def set_file(self, filepath):
+    def _set_file(self, filepath):
         """ Sets the media file to be played by the widget.
 
         Args:
@@ -101,7 +102,8 @@ class GstOverlay(base.VideoOverlay):
         """
         GLib.idle_add(self.do_update_duration)
         GLib.timeout_add(200, self.do_update_time)
-        self.sink.props.widget.show()
+        if not self.media_type.startswith('audio'):
+            self.sink.props.widget.show()
 
 
     def do_update_duration(self, *args):
