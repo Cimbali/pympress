@@ -13,7 +13,9 @@ jobs:
         python-version: [3.7, 3.8, 3.9, '3.10', '3.11']
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout PR merge commit
+      uses: actions/checkout@v3
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -24,8 +26,8 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install flake8 flake8-docstrings
 
-    - name: Fetch pull request
-      run: git fetch origin ${GITHUB_REF%/merge}/head
+    - name: Fetch pull request target branch
+      run: git fetch origin ${{ github.base_ref }}
 
     - name: Lint with standard ignores on modified files
       shell: bash
