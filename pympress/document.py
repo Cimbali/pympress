@@ -243,7 +243,7 @@ class Link(object):
 
 #: A class that holds all the properties for media files
 Media = collections.namedtuple('Media', ['relative_margins', 'filename', 'autoplay', 'repeat', 'poster',
-                                         'show_controls', 'content_type'], defaults=[False, False, False, False, ''])
+                                         'show_controls', 'type'], defaults=[False, False, False, False, ''])
 
 
 class Page(object):
@@ -500,7 +500,7 @@ class Page(object):
             relative_margins.y1 = rect.y1 / self.ph        # bottom
             relative_margins.y2 = 1.0 - rect.y2 / self.ph  # top
 
-            media_options = {'content_type': media.get_mime_type()}
+            media_options = {'type': media.get_mime_type()}
             try:
                 media_options['autoplay'] = media.get_auto_play()
                 media_options['show_controls'] = media.get_show_controls()
