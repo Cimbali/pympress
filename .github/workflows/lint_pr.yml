@@ -38,7 +38,7 @@ jobs:
       shell: bash
       # Reduced list of ignores, applied on the changed lines only
       run: |
-        git diff -z --name-only FETCH_HEAD -- '**.py' | xargs -r0 flake8 --ignore=D107,D200,D210,D413,E251,E302,E303,W504 > errors
+        git diff -z --name-only FETCH_HEAD -- '**.py' | xargs -r0 flake8 --exit-zero --ignore=D107,D200,D210,D413,E251,E302,E303,W504 > errors
         git diff FETCH_HEAD -U0 -- '**.py' | sed -rn -e '/^\+\+\+ /{s,^\+\+\+ ./,,;h}' -e '/^@@ /{G;s/^@@ -[0-9,]+ \+([0-9,]+) @@.*\n(.*)/\2,\1/p}' | (
            while IFS=, read file start lines; do for (( l = start ; l < $start + ${lines:-1}; ++l )); do echo "^$file:$l:"; done; done
         ) > changed_lines
