@@ -114,7 +114,7 @@ class GstOverlay(base.VideoOverlay):
 
 
     def do_update_time(self):
-        """ Start playing the media file.
+        """ Update the current position in the progress bar.
 
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
