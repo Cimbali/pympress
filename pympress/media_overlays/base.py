@@ -69,6 +69,8 @@ class VideoOverlay(builder.Builder):
     repeat = False
     #: `str` representing the mime type of the media file
     media_type = ''
+    #: `float` giving the initial starting position for playback
+    start_pos = 0.
 
     #: `bool` that tracks whether the user is dragging the position
     dragging_position = False
@@ -102,6 +104,7 @@ class VideoOverlay(builder.Builder):
         else:
             content_type, _ = Gio.content_type_guess(media.filename.as_uri())
             self.media_type = Gio.content_type_get_mime_type(content_type)
+        self.start_pos = media.start_pos
         self._set_file(media.filename)
 
         self.autoplay = media.autoplay
@@ -170,7 +173,7 @@ class VideoOverlay(builder.Builder):
         if not self.repeat:
             self.action_map.lookup_action('stop').activate()
         else:
-            self.action_map.lookup_action('set_time').activate(GLib.Variant.new_double(0))
+            self.action_map.lookup_action('set_time').activate(GLib.Variant.new_double(self.start_pos))
 
 
     def update_margins_for_page(self, page_type):

@@ -64,7 +64,7 @@ class GstOverlay(base.VideoOverlay):
         bus.enable_sync_message_emission()
         bus.connect('message::eos', lambda *args: GLib.idle_add(self.handle_end))
         bus.connect('message::error', lambda _, msg: logger.error('{} {}'.format(*msg.parse_error())))
-        bus.connect('message::async-done', self.on_play)
+        bus.connect('message::state-changed', self.on_state_changed)
         bus.connect('message::duration-changed', lambda *args: GLib.idle_add(self.do_update_duration))
 
 
@@ -97,11 +97,31 @@ class GstOverlay(base.VideoOverlay):
         return False
 
 
-    def on_play(self, *args):
-        """ Start the scroll bar updating process.
+    def on_state_changed(self, bus, msg):
+        """ Callback triggered by playbin state changes.
+
+        Args:
+            bus (`Gst.Bus`): the bus that we are connected to
+            msg (`Gst.Message`): the "state-changed" message
         """
+        if msg.src != self.playbin:
+            # ignore the playbin's children
+            return
+        old, new, pending = msg.parse_state_changed()
+        if old == Gst.State.READY and new == Gst.State.PAUSED:
+            # the playbin goes from READY (= stopped) to PLAYING (via PAUSED)
+            self.on_initial_play()
+
+
+    def on_initial_play(self):
+        """ Set starting position, start scrollbar updates, unhide overlay. """
+        # set starting position, if needed
+        if self.start_pos:
+            self.do_set_time(self.start_pos)
+        # ensure the scroll bar is updated
         GLib.idle_add(self.do_update_duration)
         GLib.timeout_add(200, self.do_update_time)
+        # ensure the overlay is visible (if needed)
         if not self.media_type.startswith('audio'):
             self.sink.props.widget.show()
 
@@ -117,11 +137,12 @@ class GstOverlay(base.VideoOverlay):
         """ Update the current position in the progress bar.
 
         Returns:
-            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
+            `bool`: `True` iff this function should be run again (:func:`~GLib.timeout_add` convention)
         """
         changed, time_ns = self.playbin.query_position(Gst.Format.TIME)
         self.update_progress(time_ns / 1e9)
-        return True
+        run_again = (self.playbin.get_state(0).state in (Gst.State.PLAYING, Gst.State.PAUSED))
+        return run_again
 
 
     def do_play(self):
