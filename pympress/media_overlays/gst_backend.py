@@ -32,6 +32,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gst
 
 
+from pympress import util
 from pympress.media_overlays import base
 
 
@@ -94,7 +95,15 @@ class GstOverlay(base.VideoOverlay):
         Args:
             value (`bool`): `True` iff this player should be muted
         """
-        self.playbin.set_property('mute', value)
+        flags = self.playbin.get_property('flags')
+        # Fall back to the documented value if introspection fails,
+        # see https://gstreamer.freedesktop.org/documentation/playback/playsink.html?gi-language=python#GstPlayFlags
+        audio_flag = util.introspect_flag_value(type(flags), 'audio', 0x02)
+        if value:
+            flags = flags & ~audio_flag
+        else:
+            flags = flags | audio_flag
+        self.playbin.set_property('flags', flags)
         return False
 
 

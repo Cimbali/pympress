@@ -232,6 +232,29 @@ def fileopen(f):
         subprocess.call(['xdg-open', str(f)])
 
 
+def introspect_flag_value(flags_class, nick, fallback):
+    """ Get the value of a flag from its class, given a value’s name (or nick)
+
+    Introspection technique (in particular __flags_values__ dict) inspired from pygtkcompat.
+    This is needed because there typelib shipped with libgstplayback.
+
+    Args:
+        flags_class (a `~type` inheriting from :class:`~Gobject.GFlags`): the flags class to introspect
+        nick (`str`): a name or nick of the flag value that should be returned
+        fallback (`int`): the documented flag value, if lookup fails
+    """
+    try:
+        flag_values = flags_class.__flags_values__
+    except AttributeError:
+        return fallback
+
+    for value, flag in flag_values.items():
+        if nick in flag.value_nicks or nick in flag.value_names:
+            return value
+    else:
+        return fallback
+
+
 def hard_set_screensaver(disabled):
     """ Enable or disable the screensaver.
 
