@@ -209,6 +209,14 @@
             </child>
 
             <child>
+              <object class="GtkShortcutsShortcut" id="shortcut_deck_overview_label">
+                <property name="visible">1</property>
+                <property name="accelerator">d</property>
+                <property name="title" translatable="yes">Show deck overview</property>
+              </object>
+            </child>
+
+            <child>
               <object class="GtkShortcutsShortcut" id="shortcut_cancel_input">
                 <property name="visible">1</property>
                 <property name="accelerator">Escape</property>
