@@ -1065,3 +1065,7 @@ msgstr "नोट्स के साथ हाइलाइटिंग"
 msgid "Layout to draw on the current slide with notes displayed"
 msgstr "नोटों के साथ वर्तमान स्लाइड पर आरेखित करने के लिए लेआउट"
 
+#: 
+msgid "_Deck overview"
+msgstr ""
+

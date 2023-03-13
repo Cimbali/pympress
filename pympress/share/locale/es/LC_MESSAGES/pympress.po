@@ -1066,3 +1066,7 @@ msgstr "Resaltar con notas"
 msgid "Layout to draw on the current slide with notes displayed"
 msgstr "Diseño para dibujar en la diapositiva actual con las notas mostradas"
 
+#: 
+msgid "_Deck overview"
+msgstr ""
+

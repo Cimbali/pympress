@@ -1077,3 +1077,7 @@ msgstr ""
 msgid "Layout to draw on the current slide with notes displayed"
 msgstr ""
 
+#: 
+msgid "_Deck overview"
+msgstr ""
+
