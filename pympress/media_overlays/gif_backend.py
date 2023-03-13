@@ -112,7 +112,7 @@ class GifOverlay(base.VideoOverlay):
     def do_set_time(self, t):
         """ Set the player at time t.
 
-        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+        Should run on the main thread to ensure we avoid reentrency problems.
 
         Args:
             t (`int`): the timestamp, in ms

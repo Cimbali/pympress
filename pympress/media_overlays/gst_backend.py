@@ -27,6 +27,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import gi
+gi.require_version('Gst', '1.0')
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gst
 
@@ -159,7 +160,7 @@ class GstOverlay(base.VideoOverlay):
     def do_play_pause(self):
         """ Toggle pause mode of the media.
 
-        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+        Should run on the main thread to ensure we avoid reentrency problems.
 
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
@@ -182,7 +183,7 @@ class GstOverlay(base.VideoOverlay):
     def do_set_time(self, t):
         """ Set the player at time t.
 
-        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+        Should run on the main thread to ensure we avoid reentrency problems.
 
         Args:
             t (`float`): the timestamp, in s

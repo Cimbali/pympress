@@ -23,8 +23,8 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 #
 """
-:mod:`pympress.media_overlays.base` -- widget to play videos with a backend like VLC
-------------------------------------------------------------------------------------
+:mod:`pympress.media_overlays.base` -- base widget to play videos with an unspecified backend
+---------------------------------------------------------------------------------------------
 """
 
 import logging
@@ -264,7 +264,7 @@ class VideoOverlay(builder.Builder):
     def do_play(self):
         """ Start playing the media file.
 
-        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+        Should run on the main thread to ensure we avoid reentrency problems.
 
         Returns:
             `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)
@@ -275,7 +275,7 @@ class VideoOverlay(builder.Builder):
     def do_play_pause(self):
         """ Toggle pause mode of the media.
 
-        Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
+        Should run on the main thread to ensure we avoid reentrency problems.
 
         Returns:
             `bool`: `True` iff this function should be run again (:meth:`~GLib.idle_add` convention)

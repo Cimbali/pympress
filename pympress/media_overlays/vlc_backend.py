@@ -123,11 +123,13 @@ class VlcOverlay(base.VideoOverlay):
 
     def handle_end(self):
         """ End of the stream reached: restart if looping, otherwise hide overlay
+
+        Overrided because vlc plugin needs to be told to start on stream end, not to seek
         """
-        self.action_map.lookup_action('stop').activate()
         if self.repeat:
-            self.action_map.lookup_action('set_time').activate(GLib.Variant.new_double(0))
             self.action_map.lookup_action('play').activate()
+        else:
+            self.action_map.lookup_action('stop').activate()
 
 
     def mute(self, value):
@@ -148,7 +150,16 @@ class VlcOverlay(base.VideoOverlay):
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
+        play_from_state = self.player.get_state()
+        if play_from_state == vlc.State.Ended:
+            self.player.stop()
+            play_from_state = vlc.State.Stopped
+
         self.player.play()
+
+        if play_from_state in {vlc.State.NothingSpecial, vlc.State.Stopped}:
+            self.do_set_time(self.start_pos)
+
         self.movie_zone.queue_draw()
         return False
 
