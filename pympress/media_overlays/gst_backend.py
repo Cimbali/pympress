@@ -95,10 +95,12 @@ class GstOverlay(base.VideoOverlay):
         """
         # mute by disabling/enabling audio output
         flags = self.playbin.get_property('flags')
+        flag_values = {f.value_nicks[0]: value
+                       for value, f in flags.__class__.__flags_values__.items()}
         if value:
-            flags = flags & ~0x02
+            flags = flags & ~flag_values['audio']
         else:
-            flags = flags | 0x02
+            flags = flags | flag_values['audio']
         self.playbin.set_property('flags', flags)
         return False
 
