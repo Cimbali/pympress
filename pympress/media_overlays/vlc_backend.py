@@ -82,8 +82,7 @@ class VlcOverlay(base.VideoOverlay):
         event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.handle_end))
         event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged,
                                    lambda e: self.update_range(self.player.get_length() / 1000. or 1.))
-        event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged,
-                                   lambda e: self.update_progress(self.player.get_time() / 1000. or 1.))
+        event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged, self.time_changed)
 
 
     def handle_embed(self, mapped_widget):
@@ -124,7 +123,7 @@ class VlcOverlay(base.VideoOverlay):
     def handle_end(self):
         """ End of the stream reached: restart if looping, otherwise hide overlay
 
-        Overrided because vlc plugin needs to be told to start on stream end, not to seek
+        Overrided because, to implement looping, vlc plugin needs to be told to start on stream end, not to seek
         """
         if self.repeat:
             self.action_map.lookup_action('play').activate()
@@ -151,7 +150,7 @@ class VlcOverlay(base.VideoOverlay):
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
         play_from_state = self.player.get_state()
-        if play_from_state == vlc.State.Ended:
+        if play_from_state in {vlc.State.Ended, vlc.State.Playing}:
             self.player.stop()
             play_from_state = vlc.State.Stopped
 
@@ -203,18 +202,33 @@ class VlcOverlay(base.VideoOverlay):
         self.player.stop()
 
 
-    def do_set_time(self, t):
-        """ Set the player at time t.
+    def time_changed(self, event):
+        """ Handle time passing
+
+        Args:
+            event (:class:`~vlc.Event`): The event that triggered the handler
+        """
+        time = self.player.get_time() / 1000. or 1.
+        if self.last_timestamp <= self.end_pos <= time:
+            self.handle_end()
+        self.last_timestamp = time
+        self.update_progress(time)
+
+
+    def do_set_time(self, time):
+        """ Set the player at time `~time`.
 
         Should run on the main thread to ensure we avoid vlc plugins' reentrency problems.
 
         Args:
-            t (`float`): the timestamp, in s
+            `~time` (`float`): the timestamp, in s
 
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
-        self.player.set_time(int(round(t * 1000.)))
+        # Update last_timestamp first, as seeking should bypass auto stop after duration
+        self.last_timestamp = time
+        self.player.set_time(int(round(time * 1000.)))
         return False
 
 

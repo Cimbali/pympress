@@ -71,6 +71,10 @@ class VideoOverlay(builder.Builder):
     media_type = ''
     #: `float` giving the initial starting position for playback
     start_pos = 0.
+    #: `float` giving the end position for playback, if any
+    end_pos = None
+    #: `float` representing the last know timestamp at which the progress bar updated
+    last_timestamp = 0.
 
     #: `bool` that tracks whether the user is dragging the position
     dragging_position = False
@@ -105,6 +109,7 @@ class VideoOverlay(builder.Builder):
             content_type, _ = Gio.content_type_guess(media.filename.as_uri())
             self.media_type = Gio.content_type_get_mime_type(content_type)
         self.start_pos = media.start_pos
+        self.end_pos = float('inf') if media.duration == 0 else media.start_pos + media.duration
         self._set_file(media.filename)
 
         self.autoplay = media.autoplay

@@ -47,6 +47,9 @@ class GstOverlay(base.VideoOverlay):
     #: A :class:`~Gst.Base.Sink` to display video content
     sink = None
 
+    #: `int` number of milliseconds between updates
+    update_freq = 200
+
     def __init__(self, *args, **kwargs):
         # Create GStreamer playbin
         self.playbin = Gst.ElementFactory.make('playbin', None)
@@ -130,7 +133,7 @@ class GstOverlay(base.VideoOverlay):
             self.do_set_time(self.start_pos)
         # ensure the scroll bar is updated
         GLib.idle_add(self.do_update_duration)
-        GLib.timeout_add(200, self.do_update_time)
+        GLib.timeout_add(self.update_freq, self.do_update_time)
         # ensure the overlay is visible (if needed)
         if not self.media_type.startswith('audio'):
             self.sink.props.widget.show()
@@ -150,9 +153,12 @@ class GstOverlay(base.VideoOverlay):
             `bool`: `True` iff this function should be run again (:func:`~GLib.timeout_add` convention)
         """
         changed, time_ns = self.playbin.query_position(Gst.Format.TIME)
-        self.update_progress(time_ns / 1e9)
-        run_again = (self.playbin.get_state(0).state in (Gst.State.PLAYING, Gst.State.PAUSED))
-        return run_again
+        time = time_ns / 1e9
+        self.update_progress(time)
+        if self.last_timestamp <= self.end_pos <= time:
+            self.handle_end()
+        self.last_timestamp = time
+        return self.playbin.get_state(0).state in {Gst.State.PLAYING, Gst.State.PAUSED}
 
 
     def do_play(self):
@@ -189,18 +195,19 @@ class GstOverlay(base.VideoOverlay):
         return False
 
 
-    def do_set_time(self, t):
-        """ Set the player at time t.
+    def do_set_time(self, time):
+        """ Set the player at time `~time`.
 
         Should run on the main thread to ensure we avoid reentrency problems.
 
         Args:
-            t (`float`): the timestamp, in s
+            time (`float`): the timestamp, in s
 
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
-        self.playbin.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH, t * Gst.SECOND)
+        self.last_timestamp = time
+        self.playbin.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH, time * Gst.SECOND)
         return False
 
 

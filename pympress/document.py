@@ -243,8 +243,8 @@ class Link(object):
 
 #: A class that holds all the properties for media files
 Media = collections.namedtuple('Media', ['relative_margins', 'filename', 'autoplay', 'repeat', 'poster',
-                                         'show_controls', 'type', 'start_pos'],
-                               defaults=[False, False, False, False, '', 0.])
+                                         'show_controls', 'type', 'start_pos', 'duration'],
+                               defaults=[False, False, False, False, '', 0., 0.])
 
 
 class Page(object):
@@ -325,6 +325,7 @@ class Page(object):
                 try:
                     movie_options['repeat'] = movie.get_play_mode() == Poppler.MoviePlayMode.REPEAT
                     movie_options['start_pos'] = movie.get_start() / 1e9
+                    movie_options['duration'] = movie.get_duration() / 1e9
                     # NB: autoplay not part of Poppler’s MovieActivationParameters struct
                 except AttributeError:
                     pass  # Missing functions in pre-21.04 Poppler versions
