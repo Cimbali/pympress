@@ -102,8 +102,8 @@ class GstOverlay(base.VideoOverlay):
         """ Callback triggered by playbin state changes.
 
         Args:
-            bus (`Gst.Bus`): the bus that we are connected to
-            msg (`Gst.Message`): the "state-changed" message
+            bus (:class:`~Gst.Bus`): the bus that we are connected to
+            msg (:class:`~Gst.Message`): the "state-changed" message
         """
         if msg.src != self.playbin:
             # ignore the playbin's children

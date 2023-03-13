@@ -234,7 +234,9 @@ intersphinx_mapping = {
     'GdkX11': ('https://lazka.github.io/pgi-docs/GdkX11-3.0', None),
     'python': ('https://docs.python.org/{}.{}'.format(*sys.version_info[:2]), None),
     'cairo': ('https://www.cairographics.org/documentation/pycairo/3', None),
-    'vlc': load_epydoc_as_intersphinx_v2('https://www.olivieraubert.net/vlc/python-ctypes/doc/')
+    'vlc': load_epydoc_as_intersphinx_v2('https://www.olivieraubert.net/vlc/python-ctypes/doc/'),
+    # No mapping on https://gstreamer.freedesktop.org/documentation/gstreamer/
+    'Gst': ('https://lazka.github.io/pgi-docs/Gst-1.0', None),
 }
 
 # -- Options for HTML output ----------------------------------------------
