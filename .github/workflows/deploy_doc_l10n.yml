@@ -40,8 +40,8 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update -q
-        sudo apt-get install -qy jq gobject-introspection libgirepository-1.0-1 gir1.2-gtk-3.0 gir1.2-glib-2.0 gir1.2-gstreamer-1.0 gir1.2-poppler-0.18 python3-pip python3-setuptools python3-wheel libgirepository1.0-dev
-        pip install pygobject pycairo .[build_sphinx]
+        sudo apt-get install -qy jq gobject-introspection libgirepository-1.0-1 gir1.2-gtk-3.0 gir1.2-glib-2.0 gir1.2-gstreamer-1.0 gir1.2-poppler-0.18 python3-pip python3-setuptools python3-wheel libgirepository1.0-dev vlc
+        pip install pygobject pycairo .[build_sphinx] .[vlc_video]
     - name: Build
       env:
         poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
