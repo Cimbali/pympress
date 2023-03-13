@@ -94,7 +94,13 @@ class GstOverlay(base.VideoOverlay):
         Args:
             value (`bool`): `True` iff this player should be muted
         """
-        self.playbin.set_property('mute', value)
+        # mute by disabling/enabling audio output
+        flags = self.playbin.get_property('flags')
+        if value:
+            flags = flags & ~0x02
+        else:
+            flags = flags | 0x02
+        self.playbin.set_property('flags', flags)
         return False
 
 
