@@ -10,11 +10,14 @@ on:
       tag:
         description: 'Release tag for which to build'
         required: true
-      skip_pypi:
-        description: 'skip uploading to pypi'
+      pypi_upload:
+        description: 'upload to pypi'
         required: false
-        type: boolean
-        default: false
+        type: choice
+        options:
+        - upload
+        - skip
+        default: 'upload'
 
 jobs:
   pypi:
@@ -58,14 +61,14 @@ jobs:
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      if: ${{ github.event_name == 'release' || ! github.event.inputs.skip_pypi }}
+      if: ${{ github.event_name == 'release' || github.event.inputs.pypi_upload == 'upload' }}
       run: |
         twine upload dist/*
 
     - name: Get info from pypi
       id: info
       env:
-        tag: ${{ needs.pypi.outputs.tag }}
+        tag: ${{ steps.name.outputs.tag }}
       run: |
         # Get releases from pypi, exiting with non-zero if expected version not found
         jq_script=`printf '.releases."%s"[]? | select(.python_version == "source")' $tag`
@@ -92,7 +95,7 @@ jobs:
 
       - name: Update info
         run: |
-          prev_pkgver=`awk -F= '$1 == "pkgver" {print $2}' | tr -d "[()\"']"`
+          prev_pkgver=`awk -F= '$1 == "pkgver" {print $2}' aur-repo/PKGBUILD | tr -d "[()\"']"`
           if [[ "$prev_pkgver" = "${{ needs.pypi.outputs.tag }}" ]]; then
             prev_pkgrel=`awk -F= '$1 == "pkgrel" {print $2}' | tr -d "[()\"']"`
           else
@@ -122,7 +125,7 @@ jobs:
 
   copr:
     name: Download source RPM from release and upload to COPR and OpenBuildService
-    needs: rpm-common
+    needs: pypi
     runs-on: ubuntu-latest
 
     steps:
@@ -143,6 +146,10 @@ jobs:
         echo name="`jq -r .name srpm.json`" | tee -a $GITHUB_OUTPUT
         echo url="`jq -r .browser_download_url srpm.json`" | tee -a $GITHUB_OUTPUT
 
+    - name: Extract changes from release
+      run: |
+        jq -r .body release.json | sed '/\(New Contributors\|Full Changelog\)/,/^\s*$/d' | fold -sw 65 | sed -n '/^[-*] /,/^\s*$/{/^[-*] /!s/^/  /;p}' | sed 's/\s*$//' | tee changes
+
     - name: Download from GitHub Release
       run: |
         curl -L "${{ steps.srpm.outputs.url }}" -o "${{ steps.srpm.outputs.name }}"
@@ -156,7 +163,7 @@ jobs:
         copr-cli --config ./copr-config build --nowait cimbali/pympress "$srpm_name"
       env:
         COPR_TOKEN_CONFIG: ${{ secrets.COPR_TOKEN_CONFIG }}
-        srpm_name: ${{ steps.srpm.outputs.srpm_name }}
+        srpm_name: ${{ steps.srpm.outputs.name }}
 
     - name: Upload to OpenBuildService
       continue-on-error: true
@@ -169,10 +176,12 @@ jobs:
 
         rpm2cpio "../$srpm_name" | cpio -idmv
         osc -c ../osc-config add "`rpm -q --qf '%{SOURCE}' "../$srpm_name"`"
+        osc -c ../osc-config vc -F ../changes
+        sed -i "2s/$/ - ${{ needs.pypi.outputs.tag }}/" python3-pympress.changes
         osc -c ../osc-config ci -m "Update to ${{ needs.pypi.outputs.tag }}"
       env:
         OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
-        srpm_name: ${{ steps.srpm.outputs.srpm_name }}
+        srpm_name: ${{ steps.srpm.outputs.name }}
 
 
   brew:
