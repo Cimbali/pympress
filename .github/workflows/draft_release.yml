@@ -52,9 +52,7 @@ jobs:
     - name: Test starting pympress and quitting from the command line
       if: always()
       run: |
-        pympress &
         pympress --quit
-        wait %1
 
     - name: Check the log has been created from the previous step
       if: always()

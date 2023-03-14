@@ -2004,9 +2004,8 @@ class ScreenArea(object):
                                      the best monitor areas for primary and non-primary monitors
         """
         # Helpful for debugging
-        name = [mon.get_manufacturer() + ' ' + mon.get_model() for mon in (
-            display.get_monitor(n) for n in range(display.get_n_monitors())
-        )]
+        name = ['{} {}'.format(mon.get_manufacturer() or 'Unknown manufacturer', mon.get_model() or 'Unknown model')
+                for mon in (display.get_monitor(n) for n in range(display.get_n_monitors()))]
 
         all_geom = [ScreenArea(display.get_monitor(n).get_geometry(), name[n]) for n in range(display.get_n_monitors())]
         # Remove duplicate monitors (“mirrored”)
