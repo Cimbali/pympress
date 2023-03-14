@@ -318,16 +318,18 @@ Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.o
 
 ## Translations
 
+![Chinese (simplified)](https://img.shields.io/poeditor/progress/301055/zh-Hans?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%A8%F0%9F%87%B3%20Chinese%20%28simplified%29)
+![Chinese (traditional)](https://img.shields.io/poeditor/progress/301055/zh-Hant?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%A8%F0%9F%87%B3%20Chinese%20%28traditional%29)
 ![Czech](https://img.shields.io/poeditor/progress/301055/cs?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%A8%F0%9F%87%BF%20Czech)
+![Hindi](https://img.shields.io/poeditor/progress/301055/hi?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%AE%F0%9F%87%B3%20Hindi)
+![Italian](https://img.shields.io/poeditor/progress/301055/it?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%AE%F0%9F%87%B9%20Italian)
+![Japanese](https://img.shields.io/poeditor/progress/301055/ja?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%AF%F0%9F%87%B5%20Japanese)
+![Polish](https://img.shields.io/poeditor/progress/301055/pl?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%B5%F0%9F%87%B1%20Polish)
+![Portuguese (BR)](https://img.shields.io/poeditor/progress/301055/pt-br?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%A7%F0%9F%87%B7%20Portuguese%20%28BR%29)
 ![French](https://img.shields.io/poeditor/progress/301055/fr?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%AB%F0%9F%87%B7%20French)
 ![German](https://img.shields.io/poeditor/progress/301055/de?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%A9%F0%9F%87%AA%20German)
-![Polish](https://img.shields.io/poeditor/progress/301055/pl?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%B5%F0%9F%87%B1%20Polish)
 ![Spanish](https://img.shields.io/poeditor/progress/301055/es?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%AA%F0%9F%87%B8%20Spanish)
-![Italian](https://img.shields.io/poeditor/progress/301055/it?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%AE%F0%9F%87%B9%20Italian)
-<!--
-![Portuguese (Brazil)](https://img.shields.io/poeditor/progress/301055/pt-br?token=7a666b44c0985d16a7b59748f488275c&label=%20%F0%9F%87%A7%F0%9F%87%B7%20Portuguese%20%28Brazil%29)
-![Japanese](https://img.shields.io/poeditor/progress/301055/ja?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%AF%F0%9F%87%B5%20Japanese)
--->
+<!--　https://poeditor.com/docs/languages -->
 
 If you want to add or contribute to a translation, check [pympress’ page on POEditor](https://poeditor.com/join/project/nKfRxeN8pS) and add your efforts to make pympress available in your own language to those of
 [@Vulpeculus](https://github.com/Vulpeculus),
@@ -365,7 +367,7 @@ Tejas,
 Timo Zhang,
 Tkoyama010,
 Toton95,
-Watanabe,
+[@atsuyaw](https://github.com/atsuyaw),
 and <!-- last translator --> Cimbali.
 
 ## Packages
