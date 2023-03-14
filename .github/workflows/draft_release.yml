@@ -44,9 +44,35 @@ jobs:
         brew install pympress --only-dependencies
         brew install pympress --build-from-source --HEAD
 
-    - name: Test
+    - name: Test help output
+      if: always()
+      run: |
+        pympress --help
+
+    - name: Test starting pympress and quitting from the command line
+      if: always()
+      run: |
+        pympress &
+        pympress --quit
+        wait %1
+
+    - name: Check the log has been created from the previous step
+      if: always()
+      run: |
+        head ~/Library/Logs/pympress.log
+
+    - name: Run the brew test
+      if: always()
       run: |
         brew test pympress
+
+    - name: Debug the brew test
+      if: failure()
+      run: |
+        # NB. don’t use --debug which is interactive
+        brew test --keep-tmp --verbose pympress | tee test.log
+        tempdir=`sed -n '/Temporary files retained at/{n;p}' test.log`
+        tree -a $tempdir
 
 
   srpm:
