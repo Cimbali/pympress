@@ -160,7 +160,7 @@ A few of the fancier functionalities are listed here:
   ```latex
   \addtobeamertemplate{note page}{}{\thispdfpagelabel{notes:\insertframenumber}}
   ```
-- **Media support**: supports playing video, audio, and gif files embedded in (or linked from) the PDF file.
+- **Media support**: supports playing video, audio, and gif files embedded in (or linked from) the PDF file, with optional start/end times and looping.
 - **Highlight mode**: Allows one to draw freehand on the slide currently on screen.
 - **Go To Slide**: To jump to a selected slide without flashing through the whole presentation on the projector, press `G` or click the "current  slide" box.
   Using `J` or clicking the slide label will allow you to navigate slide labels instead of page numbers, useful e.g. for multi-page slides from beamer `\pause`.
@@ -168,11 +168,17 @@ A few of the fancier functionalities are listed here:
   A spin box will appear, and you will be able to navigate through your slides in the presenter window only by scrolling your mouse, with the `Home`/`Up`/`Down`/`End` keys,
   with the + and - buttons of the spin box, or simply by typing in the number of the slide. Press `Enter` to validate going to the new slide or `Esc` to cancel.
 
+- **Deck Overview**: Pressing `D` will open an overview of your whole slide deck, and any slide can be opened from can simply clicking it.
 - **Software pointer**: Clicking on the slide (in either window) while holding `ctrl` down will display a software laser pointer on the slide. Or press `L` to permanently switch on the laser pointer.
 - **Talk time breakdown**: The `Presentation > Timing Breakdown` menu item displays a breakdown of how much time was spent on each slide, with a hierarchical breakdown per chapters/sections/etc. if available in the PDF.
 - **Automatic file reloading**: If the file is modified, pympress will reload it (and preserve the current slide, current time, etc.)
 - **Big button mode**: Add big buttons (duh) for touch displays.
 - **Swap screens**: If Pympress mixed up which screen is the projector and which is not, press `S`
+- **Automatic full screen**: pympress will automatically put the content window fullscreen on your non-primay screen when:
+  - connecting a second screen,
+  - extending your desktop to a second screen that was mirroring your main screen,
+  - when starting pympress on a two-screen display.
+  To disable this behaviour, untick “Content fullscreen” under the “Starting configuration” menu.
 - **Estimated talk time**: Click the `Time estimation` box and set your planned talk duration. The color will allow you to see at a glance how much time you have left.
 - **Adjust screen centering**: If your slides' form factor doesn't fit the projectors' and you don't want the slide centered in the window, use the "Screen Center" option in the "Presentation" menu.
 - **Resize Current/Next slide**: You can drag the bar between both slides on the Presenter window to adjust their relative sizes to your liking.
