@@ -236,7 +236,7 @@ def introspect_flag_value(flags_class, nick, fallback):
     """ Get the value of a flag from its class, given a value’s name (or nick)
 
     Introspection technique (in particular __flags_values__ dict) inspired from pygtkcompat.
-    This is needed because there typelib shipped with libgstplayback.
+    This is needed because there is no typelib for libgstplayback.
 
     Args:
         flags_class (a `~type` inheriting from :class:`~Gobject.GFlags`): the flags class to introspect
