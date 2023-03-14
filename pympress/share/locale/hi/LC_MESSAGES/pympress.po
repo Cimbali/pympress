@@ -1069,3 +1069,7 @@ msgstr "नोटों के साथ वर्तमान स्लाइ�
 msgid "_Deck overview"
 msgstr ""
 
+#: 
+msgid "Show deck overview"
+msgstr ""
+

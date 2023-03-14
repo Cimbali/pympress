@@ -1069,3 +1069,7 @@ msgstr ""
 msgid "_Deck overview"
 msgstr ""
 
+#: 
+msgid "Show deck overview"
+msgstr ""
+

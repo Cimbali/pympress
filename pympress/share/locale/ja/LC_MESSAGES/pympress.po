@@ -17,7 +17,7 @@ msgstr "（停止中）"
 
 #: 
 msgid "Adjust alignment of slides in projector screen"
-msgstr ""
+msgstr "投影スクリーン上でスライドの位置を調整"
 
 #: 
 msgid "All files"
@@ -29,7 +29,7 @@ msgstr "注釈"
 
 #: 
 msgid "Big buttons"
-msgstr ""
+msgstr "大きなボタン"
 
 #: 
 msgid "Cairo can not draw gif"
@@ -41,7 +41,7 @@ msgstr "時刻"
 
 #: 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr ""
+msgstr "フルスクリーン表示を開始する前にコンテンツと発表者ウィンドウを同一のモニタに移動する必要があります。"
 
 #: 
 msgid "Content blanked"
@@ -121,7 +121,7 @@ msgstr "次のスライド"
 
 #: 
 msgid "No action was defined for this link"
-msgstr ""
+msgstr "このリンクには動作が定義されていません"
 
 #: 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
@@ -133,7 +133,7 @@ msgstr "ノート"
 
 #: 
 msgid "Notes position"
-msgstr ""
+msgstr "ノートの位置"
 
 #: 
 msgid "Open _Recent"
@@ -169,7 +169,7 @@ msgstr "ポインター"
 
 #: 
 msgid "Portable installation"
-msgstr ""
+msgstr "ポータブル版のインストール"
 
 #: 
 msgid "Presentation timing breakdown"
@@ -261,7 +261,7 @@ msgstr "ログを␣に書き出しました"
 
 #: 
 msgid "This help"
-msgstr ""
+msgstr "このヘルプ"
 
 #: 
 msgid "Time elapsed"
@@ -277,31 +277,31 @@ msgstr ""
 
 #: 
 msgid "Unexpected action in index \"{}\""
-msgstr ""
+msgstr "参照\"{}\"の予期しない操作"
 
 #: 
 msgid "Unknow widget {} to be fullscreened, aborting."
-msgstr ""
+msgstr "不明なウィジェット{}がフルスクリーン表示されようとしました。中止します。"
 
 #: 
 msgid "Unsupported OS: can't enable/disable screensaver"
-msgstr ""
+msgstr "サポートされていないOS: スクリーンセーバーを有効/無効にできません"
 
 #: 
 msgid "Usage: {} [options] <presentation_file>"
-msgstr ""
+msgstr "使い方: {} [options] <presentation_file>"
 
 #: 
 msgid "Video support using {} is disabled."
-msgstr ""
+msgstr "{}を使ったビデオサポートは無効化されています。"
 
 #: 
 msgid "_Align content"
-msgstr ""
+msgstr "コンテンツを整列"
 
 #: 
 msgid "_Annotations"
-msgstr ""
+msgstr "注釈"
 
 #: 
 msgid "_Blank screen"
@@ -313,7 +313,7 @@ msgstr "_青"
 
 #: 
 msgid "_Bottom"
-msgstr ""
+msgstr "下"
 
 #: 
 msgid "_Disabled"
@@ -417,7 +417,7 @@ msgstr ""
 
 #: 
 msgid "_Top"
-msgstr ""
+msgstr "上"
 
 #: 
 msgid "_Undo zoom"
@@ -429,7 +429,7 @@ msgstr "_拡大"
 
 #: 
 msgid "access denied when trying to access screen saver settings in registry!"
-msgstr ""
+msgstr "レジストリのスクリーン セーバー設定へのアクセスが拒否されました"
 
 #: 
 msgid "column"
@@ -437,7 +437,7 @@ msgstr ""
 
 #: 
 msgid "duration"
-msgstr ""
+msgstr "時間"
 
 #: 
 msgid "name"
@@ -445,7 +445,7 @@ msgstr "名前"
 
 #: 
 msgid "no action defined for this link!"
-msgstr ""
+msgstr "このリンクには動作が定義されていません"
 
 #: 
 msgid "page label"
@@ -478,7 +478,7 @@ msgstr "{}，{}，{}，{}，または{}"
 
 #: 
 msgid "Additional features"
-msgstr ""
+msgstr "追加機能"
 
 #: 
 msgid "Blank screen"
@@ -498,11 +498,11 @@ msgstr "最初のスライド"
 
 #: 
 msgid "Go back in slide history"
-msgstr ""
+msgstr "スライド履歴で一つ前に戻る"
 
 #: 
 msgid "Go forward in slide history"
-msgstr ""
+msgstr "スライド履歴で一つ進む"
 
 #: 
 msgid "Go to page number"
@@ -570,19 +570,19 @@ msgstr "タイマー"
 
 #: 
 msgid "Toggle annotations"
-msgstr ""
+msgstr "注釈の切り替え"
 
 #: 
 msgid "Toggle fullscreen"
-msgstr ""
+msgstr "フルスクリーンの切り替え"
 
 #: 
 msgid "Toggle highlighting"
-msgstr ""
+msgstr "ハイライトの切り替え"
 
 #: 
 msgid "Toggle laserpointer"
-msgstr ""
+msgstr "レーザーポインターの切り替え"
 
 #: 
 msgid "Toggle notes mode"
@@ -874,7 +874,7 @@ msgstr "方向"
 
 #: 
 msgid "resizeable"
-msgstr ""
+msgstr "サイズ変更可"
 
 #: 
 msgid "vertical"
@@ -1050,7 +1050,7 @@ msgstr "_名前を付けて保存"
 
 #: 
 msgid "box"
-msgstr ""
+msgstr "ボックス"
 
 #: 
 msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
@@ -1058,7 +1058,7 @@ msgstr ""
 
 #: 
 msgid "Highlighting with notes"
-msgstr ""
+msgstr "ノートをハイライト"
 
 #: 
 msgid "Layout to draw on the current slide with notes displayed"
@@ -1066,5 +1066,9 @@ msgstr ""
 
 #: 
 msgid "_Deck overview"
-msgstr ""
+msgstr "デッキの概要"
+
+#: 
+msgid "Show deck overview"
+msgstr "デッキの概要を見る"
 

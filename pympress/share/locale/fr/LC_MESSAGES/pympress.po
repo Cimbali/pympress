@@ -919,7 +919,7 @@ msgstr "Surlignage"
 
 #: 
 msgid "Layout to draw on the current slide"
-msgstr "Mise en page pour dessiner sur la diapo"
+msgstr "Mise en page pour dessiner sur la diapo actuelle"
 
 #: 
 msgid "highlighting"
@@ -967,15 +967,15 @@ msgstr "Modifier l'agencement"
 
 #: 
 msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr ""
+msgstr "Impossible de désactiver l’économiseur d’écran avec Gtk.Application.inhibit, tentative de forcer la désactivation"
 
 #: 
 msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr ""
+msgstr "Mise en page pour diapos de notes beamer sur la même page (sans aperçu de la diapo actuelle dans les notes)"
 
 #: 
 msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr ""
+msgstr "Mise en page pour diapos de notes libreoffice sur des pages distincites (avec aperçu de la diapo actuelle dans les notes)"
 
 #: 
 msgid "Loop"
@@ -987,11 +987,11 @@ msgstr "Ecraser"
 
 #: 
 msgid "Overwrite changes instead of reloading?"
-msgstr ""
+msgstr "Écraser les modifications au lieu de recharger?"
 
 #: 
 msgid "Plain layout, without note slides"
-msgstr ""
+msgstr "Mise en page simple, sans diapo de notes"
 
 #: 
 msgid "Reload"
@@ -1019,11 +1019,11 @@ msgstr "Sauvegarder les changements écrasera le fichier!"
 
 #: 
 msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr ""
+msgstr "La désactivation/réactivation forcée de l’économiseur d’écran ne devrait pas être nécessaire sur Linux"
 
 #: 
 msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr ""
+msgstr "Le fichier a été modifié en-dehors de pympress mais vous avez fait des modifications non sauvegardées"
 
 #: 
 msgid "Time per slide (s):"
@@ -1035,41 +1035,45 @@ msgstr "Gadget a afficher \"{}\" inconnu"
 
 #: 
 msgid "Unsaved changes"
-msgstr ""
+msgstr "Modifications non sauvegardées"
 
 #: 
 msgid "Unsaved changes will be lost"
-msgstr ""
+msgstr "Les modifications non sauvegardées seront perdues"
 
 #: 
 msgid "Unsaved changes will be lost."
-msgstr ""
+msgstr "Les modifications non sauvegardées seront perdues."
 
 #: 
 msgid "_Save"
-msgstr ""
+msgstr "_Sauvegarder"
 
 #: 
 msgid "_Save as"
-msgstr ""
+msgstr "_Sauvegarder sous"
 
 #: 
 msgid "box"
-msgstr ""
+msgstr "cadre"
 
 #: 
 msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
-msgstr ""
+msgstr "Échec du chargement du pixbuf pour le pointeur \"{}\" depuis: {}"
 
 #: 
 msgid "Highlighting with notes"
-msgstr ""
+msgstr "Mode surligneur avec diapo de notes"
 
 #: 
 msgid "Layout to draw on the current slide with notes displayed"
-msgstr ""
+msgstr "Mise en page pour dessiner sur la diapo actuelle avec affichage de la diapo de notes"
 
 #: 
 msgid "_Deck overview"
-msgstr ""
+msgstr "Vue d’ensemble"
+
+#: 
+msgid "Show deck overview"
+msgstr "Afficher la vue d’ensemble"
 

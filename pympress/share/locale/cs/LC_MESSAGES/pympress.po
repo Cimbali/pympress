@@ -949,11 +949,11 @@ msgstr "_Štítky s předponou"
 
 #: 
 msgid "Redo highlight stroke"
-msgstr ""
+msgstr "Vrátit zvýrazněný text"
 
 #: 
 msgid "_About"
-msgstr ""
+msgstr "_O"
 
 #: 
 msgid "Auto"
@@ -961,11 +961,11 @@ msgstr ""
 
 #: 
 msgid "Choose parameters for automatically playing slides"
-msgstr ""
+msgstr "Zvolit parametry pro automatické přehrání "
 
 #: 
 msgid "Edit layout"
-msgstr ""
+msgstr "Upravit rozložení"
 
 #: 
 msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
@@ -977,47 +977,47 @@ msgstr ""
 
 #: 
 msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr ""
+msgstr "Rozložení pro libreoffice poznámky na samostatných stranách (s momentálním náhledem snímků v poznámkách)"
 
 #: 
 msgid "Loop"
-msgstr ""
+msgstr "Cyklus"
 
 #: 
 msgid "Overwrite"
-msgstr ""
+msgstr "Přepsat"
 
 #: 
 msgid "Overwrite changes instead of reloading?"
-msgstr ""
+msgstr "Přepsat změny místo načtení?"
 
 #: 
 msgid "Plain layout, without note slides"
-msgstr ""
+msgstr "Prázdný návrch, bez poznámek"
 
 #: 
 msgid "Reload"
-msgstr ""
+msgstr "Znovu načíst"
 
 #: 
 msgid "Save as..."
-msgstr ""
+msgstr "Uložit jako..."
 
 #: 
 msgid "Save changes before closing?"
-msgstr ""
+msgstr "Uložit změny před zavřením?"
 
 #: 
 msgid "Save file"
-msgstr ""
+msgstr "Uložit soubor"
 
 #: 
 msgid "Save file as"
-msgstr ""
+msgstr "Uložit soubor jako"
 
 #: 
 msgid "Saving changes will overwrite the changed file!"
-msgstr ""
+msgstr "Uložení změn přepíše soubor!"
 
 #: 
 msgid "Should not require hard enable/disable screensaver on Linux"
@@ -1025,47 +1025,47 @@ msgstr ""
 
 #: 
 msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr ""
+msgstr "Otevřený soubor byl upraven bez pympress, ale nebyly provedeny neuložené změny"
 
 #: 
 msgid "Time per slide (s):"
-msgstr ""
+msgstr "Čas na snímek (s):"
 
 #: 
 msgid "Unknown widget \"{}\" to draw"
-msgstr ""
+msgstr "Neznámý widget \"{}\" k vykreslení"
 
 #: 
 msgid "Unsaved changes"
-msgstr ""
+msgstr "Neuložené změny"
 
 #: 
 msgid "Unsaved changes will be lost"
-msgstr ""
+msgstr "Neuložené změny budou ztraceny"
 
 #: 
 msgid "Unsaved changes will be lost."
-msgstr ""
+msgstr "Neuložené změny"
 
 #: 
 msgid "_Save"
-msgstr ""
+msgstr "_Uložit"
 
 #: 
 msgid "_Save as"
-msgstr ""
+msgstr "_Uložit jako"
 
 #: 
 msgid "box"
-msgstr ""
+msgstr "box"
 
 #: 
 msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
-msgstr ""
+msgstr "Chyb při načítání pixbuf pro pointer \"{}\" z: {}"
 
 #: 
 msgid "Highlighting with notes"
-msgstr ""
+msgstr "Zvýraznění s poznámkami"
 
 #: 
 msgid "Layout to draw on the current slide with notes displayed"
@@ -1073,5 +1073,9 @@ msgstr ""
 
 #: 
 msgid "_Deck overview"
+msgstr ""
+
+#: 
+msgid "Show deck overview"
 msgstr ""
 

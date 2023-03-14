@@ -935,15 +935,15 @@ msgstr "(keins, links, rechts, oben, unten, nach, ungerade, oder präfix)."
 
 #: 
 msgid "Unexpected missing page to draw for widget \"{}\""
-msgstr ""
+msgstr "Unerwartet fehlende Seite zum Zeichnen mit dem Widget \"{}\""
 
 #: 
 msgid "_Prefixed labels"
-msgstr ""
+msgstr "Beschriftungen mit _Präfix"
 
 #: 
 msgid "Redo highlight stroke"
-msgstr ""
+msgstr "Hervorhebung wiederholen"
 
 #: 
 msgid "_About"
@@ -951,7 +951,7 @@ msgstr "Über"
 
 #: 
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #: 
 msgid "Choose parameters for automatically playing slides"
@@ -963,7 +963,7 @@ msgstr "Layout bearbeiten"
 
 #: 
 msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr ""
+msgstr "Gtk.Application.inhibit konnte Bildschirmschoner nicht verhindern, probiere hartes Deaktivieren"
 
 #: 
 msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
@@ -971,7 +971,7 @@ msgstr "Layout der Beamer Notizen auf dem zweiten Monitor (aktuelle Folienvorsch
 
 #: 
 msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr ""
+msgstr "Layout für LibreOffice-Notizen auf separaten Seiten (mit Vorschau der aktuellen Folie in den Notizen)"
 
 #: 
 msgid "Loop"
@@ -1015,7 +1015,7 @@ msgstr "Speichern der Änderungen wird die Datei überschreiben!"
 
 #: 
 msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr ""
+msgstr "Das harte aktivieren/deaktivieren des Bildschirmschoners sollte unter Linux nicht notwendig sein"
 
 #: 
 msgid "The open file was modified outside of pympress but you have made unsaved changes."
@@ -1027,7 +1027,7 @@ msgstr "Zeit je Folie (s):"
 
 #: 
 msgid "Unknown widget \"{}\" to draw"
-msgstr ""
+msgstr "Unbekanntes Widget \"{}\" zum Zeichnen"
 
 #: 
 msgid "Unsaved changes"
@@ -1051,21 +1051,25 @@ msgstr "Speicher unter"
 
 #: 
 msgid "box"
-msgstr ""
+msgstr "Box"
 
 #: 
 msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
-msgstr ""
+msgstr "Konnte Pixbuf für Zeiger \"{}\" nicht laden aus: {}"
 
 #: 
 msgid "Highlighting with notes"
-msgstr ""
+msgstr "Hervorhebung mit Notizen"
 
 #: 
 msgid "Layout to draw on the current slide with notes displayed"
-msgstr ""
+msgstr "Layout zum Zeichnen auf der aktuellen Folie mit gleichzeitiger Anzeige der Notizen"
 
 #: 
 msgid "_Deck overview"
-msgstr ""
+msgstr "_Deck-Übersicht"
+
+#: 
+msgid "Show deck overview"
+msgstr "Deck-Übersicht anzeigen"
 

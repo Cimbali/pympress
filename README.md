@@ -331,27 +331,23 @@ Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.o
 ![Italian](https://img.shields.io/poeditor/progress/301055/it?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%AE%F0%9F%87%B9%20Italian)
 ![Japanese](https://img.shields.io/poeditor/progress/301055/ja?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%AF%F0%9F%87%B5%20Japanese)
 ![Polish](https://img.shields.io/poeditor/progress/301055/pl?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%B5%F0%9F%87%B1%20Polish)
-![Portuguese (BR)](https://img.shields.io/poeditor/progress/301055/pt-br?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%A7%F0%9F%87%B7%20Portuguese%20%28BR%29)
 ![French](https://img.shields.io/poeditor/progress/301055/fr?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%AB%F0%9F%87%B7%20French)
 ![German](https://img.shields.io/poeditor/progress/301055/de?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%A9%F0%9F%87%AA%20German)
 ![Spanish](https://img.shields.io/poeditor/progress/301055/es?token=7a666b44c0985d16a7b59748f488275c&label=%F0%9F%87%AA%F0%9F%87%B8%20Spanish)
 <!--　https://poeditor.com/docs/languages -->
 
-If you want to add or contribute to a translation, check [pympress’ page on POEditor](https://poeditor.com/join/project/nKfRxeN8pS) and add your efforts to make pympress available in your own language to those of
-[@Vulpeculus](https://github.com/Vulpeculus),
-[@polaksta](https://github.com/polaksta),
-[@susobaco](https://github.com/susobaco),
-[@Morfit](https://github.com/Morfit),
+We thank the many contributors of translations: <!-- translator list -->
 Agnieszka,
+atsuyaw,
 Cherrywoods,
 Dongwang,
 Estel-f,
 Fabio Pagnotta,
 Ferdinand Fichtner,
 Frederik. blome,
-[FriedrichFröbel](https://github.com/FriedrichFroebel),
+FriedrichFröbel,
 He. yifan. xs,
-[Jaroslav Svoboda](https://github.com/multiflexi),
+Jaroslav Svoboda,
 Jeertmans,
 Karen Zhang,
 Kristýna,
@@ -361,20 +357,28 @@ Lorenzo. pacchiardi,
 Luis Sibaja,
 Marcin Dohnalik,
 marquitul,
-MrIbuprofeno,
+Morfit,
 Mzn,
 Nico,
 Ogawa,
 Paul,
 Pierre BERTHOU,
+polaksta,
 Saulpierotti,
+Shebangmed,
+susobaco,
 Tapia,
 Tejas,
 Timo Zhang,
 Tkoyama010,
 Toton95,
-[@atsuyaw](https://github.com/atsuyaw),
+Vojta Netrh,
+Vulpeculus,
 and <!-- last translator --> Cimbali.
+
+If you also want to add or contribute to a translation, check [pympress’ page on POEditor](https://poeditor.com/join/project/nKfRxeN8pS).
+Note that old strings are kept and tagged `removed`, to give context and keep continuity between translations of succcessive versions.
+This means `removed` strings are unused and do not need translating.
 
 ## Packages
 

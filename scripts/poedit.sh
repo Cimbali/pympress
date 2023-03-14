@@ -8,24 +8,45 @@ upload() {
     curl -sX POST https://api.poeditor.com/v2/projects/upload \
           -F api_token="$poeditor_api_token" \
           -F id="301055" -F updating="terms" -F file=@"$pot" \
-          -F tags="{\"obsolete\":\"removed\"}" \
-          | jq -r '.response.message'
+          -F tags="{\"obsolete\":\"removed\"}" |
+        jq -r '.response.message'
 }
 
 languages() {
     curl -sX POST https://api.poeditor.com/v2/languages/list \
           -F api_token="$poeditor_api_token" \
-          -F id="301055" | jq -r "select(.response.code == \"200\") | .result.languages[] | select(.percentage > $1) | \"\(.code)\t\(.percentage)%\""
+          -F id="301055" |
+        jq -r "select(.response.code == \"200\") | .result.languages[] | select(.percentage > $1) | \"\(.code)\t\(.percentage)%\""
 }
 
 contributors() {
+    contributors=`mktemp contributors.XXXXXX`
+    trap 'rm -f $contributors' EXIT
+
+    # Github-only contributors
+    cat >$contributors <<EOF
+Vulpeculus
+polaksta
+susobaco
+Morfit
+Jaroslav Svoboda
+FriedrichFroebel
+EOF
+
+    # Fetch poeditor contributors
     curl -sX POST https://api.poeditor.com/v2/contributors/list \
-          -F api_token="$poeditor_api_token" \
-          -F id="301055" | jq --arg lang "$*" -r 'select(.response.code == "200") | .result.contributors[] | select(IN(.permissions[].languages[]; $lang | split(" ")[])) | .name' |
-        while read name; do
-            # hold "name,", hold & delete any line matching name, at the last translator insert the hold space
-            sed -e "1{h;s/.*/${name},/;x}" -e "/\<${name}\>/{h;d}" -e '/<!-- last translator -->/{x;G}' -i README.md
-        done
+          -F api_token="$poeditor_api_token" -F id="301055" |
+        jq --arg lang "$*" -r 'select(.response.code == "200") | .result.contributors[] |
+                               select(IN(.permissions[].languages[]; $lang | split(" ")[])) | .name' \
+        >> $contributors
+
+    # Rename contributors on request and/or for de-duplication
+    sed 's/^FriedrichFroebel$/FriedrichFröbel/;s/^Watanabe$/atsuyaw/' $contributors |
+        sed 's/$/,/' | sort -uo $contributors
+
+    # Udate README from generated list
+    sed -ni -e '1,/<!-- translator list -->/p;/<!-- last translator -->/,$p' \
+        -e '/<!-- translator list -->/r '$contributors README.md
 }
 
 download() {
@@ -59,6 +80,7 @@ if [ $# -eq 0 ]; then
     echo
     echo "MIN_LANG_COMPLETE can be set to override minimum percentage of completion. Requires curl and jq."
 fi
+
 
 while [ $# -gt 0 ]; do
     if test "$1" = "upload"; then
