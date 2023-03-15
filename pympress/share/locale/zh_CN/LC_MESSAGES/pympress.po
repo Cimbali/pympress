@@ -1055,21 +1055,21 @@ msgstr "盒子"
 
 #: 
 msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
-msgstr ""
+msgstr "从: {}加载激光笔\"{}\"的像素缓存失败"
 
 #: 
 msgid "Highlighting with notes"
-msgstr ""
+msgstr "带有备注的墨迹模式"
 
 #: 
 msgid "Layout to draw on the current slide with notes displayed"
-msgstr ""
+msgstr "显示备注时当前幻灯片的绘制布局"
 
 #: 
 msgid "_Deck overview"
-msgstr ""
+msgstr "幻灯片浏览视图"
 
 #: 
 msgid "Show deck overview"
-msgstr ""
+msgstr "显示幻灯片浏览视图"
 
