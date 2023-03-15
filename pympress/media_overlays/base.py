@@ -40,7 +40,7 @@ from pympress import builder
 class VideoOverlay(builder.Builder):
     """ Simple Video widget.
 
-    All do_X() functions are meant to be called from the main thread, through e.g. :function:`~GLib.idle_add`,
+    All do_X() functions are meant to be called from the main thread, through e.g. :func:`~GLib.idle_add`,
     for thread-safety in the handling of video backends.
 
     Args:
