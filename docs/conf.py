@@ -26,6 +26,7 @@ import importlib
 
 from urllib.parse import urlsplit, urljoin
 from urllib.request import url2pathname
+from docutils.nodes import section as SectionNode, image as ImageNode
 
 # -- General configuration ------------------------------------------------
 
@@ -38,6 +39,13 @@ needs_sphinx = '1.3'  # for sphinx.ext.napoleon
 # ones.
 extensions = [
     'myst_parser',
+]
+
+# Whether to include code documentation. Override on the command line with –Dskip_api_doc=1
+skip_api_doc = False
+
+# Extends extensions, if we document the API
+code_doc_extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
@@ -47,20 +55,66 @@ extensions = [
     'sphinx.ext.doctest',
 ]
 
+# Whether to skip install instructions for included packages
+packaged_docs = False
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_template']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-#
 source_suffix = ['.md']
 
 github_doc_root = 'https://pympress.github.io/'
 
+
+def doc_transform(app, doctree, docname):
+    """ Modify the doctree before generating docs """
+    # Remove images completely from man pages, alt texts are not useful
+    if app.builder.name == 'man':
+        for node in list(doctree.findall(ImageNode)):
+            node.parent.remove(node)
+
+    # Remove the genindex/modindex section if not relevant
+    if app.builder.name == 'man' or app.config.skip_api_doc:
+        for node in list(doctree.findall(SectionNode)):
+            if 'indices-and-tables' in node['ids']:
+                node.parent.remove(node)
+
+    # Remove install instructions for docs that are part of a package
+    if app.config.packaged_docs:
+        for node in list(doctree.findall(SectionNode)):
+            if {'installing', 'dependencies', 'packages'} & set(node['ids']):
+                node.parent.remove(node)
+
+
+def doc_remove(app, env, docnames):
+    """ Remove API page from list of source files, if we do not build API docs """
+    if app.config.skip_api_doc:
+        env.found_docs.remove('pympress')
+        docnames.remove('pympress')
+
+
+def add_extensions(app, config):
+    """ Delayed configuration of extensions to allow enabling or skipping API documentation from the command line """
+    config.html_context['document_api'] = not config.skip_api_doc
+    if not config.skip_api_doc:
+        for ext in code_doc_extensions:
+            app.setup_extension(ext)
+
+
 def setup(app):
-    """ Function called by sphinx to setup this documentation.
-    """
-    pass
+    """ Function called by sphinx to setup this documentation """
+    # Only use default=False because it is hard to pass falsey things on CLI (i.e. -D...=0 works but not -D...=False)
+    app.add_config_value('packaged_docs', False, 'env')
+    app.add_config_value('skip_api_doc', False, 'env')
+
+    app.connect('env-before-read-docs', doc_remove)
+    app.connect('doctree-resolved', doc_transform)
+    app.connect('config-inited', add_extensions)
+
+    # When skipping API docs, we get WARNING: toctree contains reference to nonexisting document 'pympress'
+    # This could be avoided by modifying the file on 'source-read' events, but not very clean approach
 
 
 myst_heading_anchors = 3
@@ -75,8 +129,8 @@ master_doc = 'index'
 # General information about the project. Make sure we find the right module info.
 pkg_meta = importlib.import_module('pympress.__init__')
 project = 'pympress'
-copyright = '2009-2011, Thomas Jost; 2015-2022 Cimbali'  # noqa: A001 -- sphinx-required name, like all the others
-author = 'Thomas Jost, Cimbali'
+copyright = '2009-2011, Thomas Jost; 2015-2023 Cimbali'  # noqa: A001 -- sphinx-required name, like all the others
+author = 'Cimbali'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -417,12 +471,12 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'pympress', u'pympress documentation', [u'Thomas Jost, Cimbali'], 1)
+    ('index', 'pympress', u'pympress documentation', [u'Cimbali'], 1)
 ]
 
 # If true, show URL addresses after external links.
 #
-# man_show_urls = False
+man_show_urls = True
 
 
 # -- Options for Texinfo output -------------------------------------------

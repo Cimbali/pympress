@@ -12,7 +12,9 @@
 {% endblock %}
 {% block menu %}
 	{{ super() }}
+	{% if document_api %}
 	<hr style="border: 0; height: 0; border-top: 1px solid rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.3); width:80%; margin: 10px auto;" />
 	<a href="{{ pathto("genindex") }}">Index</a>
 	<a href="{{ pathto("py-modindex") }}">Module index</a>
+	{% endif %}
 {% endblock %}
