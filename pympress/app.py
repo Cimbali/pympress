@@ -27,6 +27,8 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import os
+import sys
 import signal
 import platform
 
@@ -140,6 +142,11 @@ class Pympress(Gtk.Application):
             Gdk.set_allowed_backends('x11,*')
 
         logger.info(self.version_string)
+
+        # If there is no display, we can’t get further than this.
+        if os.getenv('PYMPRESS_HEADLESS_TEST', ''):
+            sys.exit(0)
+
         Gtk.Application.do_startup(self)
 
 
