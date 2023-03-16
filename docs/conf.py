@@ -21,11 +21,10 @@ import sys
 import pathlib
 sys.path.insert(0, pathlib.Path(__file__).resolve().parents[1])
 
-import re
 import subprocess
 import importlib
 
-from urllib.parse import urlsplit, urlunsplit, urljoin
+from urllib.parse import urlsplit, urljoin
 from urllib.request import url2pathname
 
 # -- General configuration ------------------------------------------------
@@ -58,38 +57,10 @@ source_suffix = ['.md']
 
 github_doc_root = 'https://pympress.github.io/'
 
-def rewrite_link(url):
-    """ Make relative links in README relative to "docs/" or absolute.
-    """
-    split_url = urlsplit(url)
-    if split_url.netloc:
-        # Absolute link
-        return url
-    elif split_url.path.startswith('docs/'):
-        return urlunsplit(split_url._replace(path = split_url.path[5:]))
-    elif split_url.path:
-        return urljoin(github_doc_root, url)
-    elif split_url.fragment and not split_url.query and not split_url.scheme:
-        # anchor links are fragment-only and work differently in (recent) myst-parser vs. github
-        # myst-parser strips the spaces, whereas github creates anchors with trailing -
-        return '#' + split_url.fragment.strip('-')
-    else:
-        return url
-
-
 def setup(app):
     """ Function called by sphinx to setup this documentation.
     """
-    # get the README.md as a source, but we need to move it here and adjust the relative links into docs/
-    # Until relative links are allowed from the toctree, see https://github.com/sphinx-doc/sphinx/issues/701
-    find_links = re.compile(r'\[([^\[\]]+)\]\(([^()]+)\)')
-
-    here = pathlib.Path(app.srcdir)
-    with open(here.parent / 'README.md') as fin, open(here / 'README.md', 'w') as fout:
-        for line in fin:
-            print(find_links.sub(lambda m: '[{}]({})'.format(m[1], rewrite_link(m[2])), line), end='', file=fout)
-
-    app.connect('build-finished', lambda app, config: (here / 'README.md').unlink())
+    pass
 
 
 myst_heading_anchors = 3
@@ -101,7 +72,7 @@ myst_heading_anchors = 3
 # The master toctree document.
 master_doc = 'index'
 
-# General information about the project. Make sure we find the right omdule info.
+# General information about the project. Make sure we find the right module info.
 pkg_meta = importlib.import_module('pympress.__init__')
 project = 'pympress'
 copyright = '2009-2011, Thomas Jost; 2015-2022 Cimbali'  # noqa: A001 -- sphinx-required name, like all the others
@@ -210,7 +181,7 @@ def load_epydoc_as_intersphinx_v2(mappings):
                 for name, uri in (line.strip().split() for line in epy.text.split('\n') if line.strip()):
                     role = guess_epydoc_role(name, uri)
                     objects_inv.append('{name} py:{role} 1 {uri} -'.format(name = name, role = role, uri = uri))
-        except:
+        except Exception:
             # We likely don’t have internet during this build, and early loading of epydoc fails
             print('WARNING: Failed to load epydoc mapping from', url, file=sys.stderr)
             # NB. this will cause failure later on if intersphinx tries to load an epydoc url.

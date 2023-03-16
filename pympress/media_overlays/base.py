@@ -106,7 +106,7 @@ class VideoOverlay(builder.Builder):
         if media.type:
             self.media_type = media.type
         else:
-            content_type, _ = Gio.content_type_guess(media.filename.as_uri())
+            content_type, uncertain = Gio.content_type_guess(media.filename.as_uri())
             self.media_type = Gio.content_type_get_mime_type(content_type)
         self.start_pos = media.start_pos
         self.end_pos = float('inf') if media.duration == 0 else media.start_pos + media.duration

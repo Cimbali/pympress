@@ -291,7 +291,7 @@ brew install --only-dependencies pympress
 ```
 
 ### On windows
-The [binary installer for windows](#installing) comes with pympress and all its dependencies packaged.
+The [binary installer for windows](#installing-) comes with pympress and all its dependencies packaged.
 
 Alternately, in order to install from pypi or from source on windows, there are two ways to get the dependencies:
 
