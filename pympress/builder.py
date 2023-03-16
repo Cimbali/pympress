@@ -135,12 +135,12 @@ class Builder(Gtk.Builder):
         return target
 
 
-    def signal_connector(self, builder, object, signal_name, handler_name, connect_object, flags, *user_data):
+    def signal_connector(self, builder, obj, signal_name, handler_name, connect_object, flags, *user_data):
         """ Callback for signal connection. Implements the `~Gtk.BuilderConnectFunc` function interface.
 
         Args:
             builder (:class:`~pympress.builder.Builder`): The builder, unused
-            object (:class:`~GObject.Object`): The object (usually a wiget) that has a signal to be connected
+            obj (:class:`~GObject.Object`): The object (usually a wiget) that has a signal to be connected
             signal_name (`str`): The name of the signal
             handler_name (`str`): The name of the function to be connected to the signal
             connect_object (:class:`~GObject.Object`): unused
@@ -149,11 +149,11 @@ class Builder(Gtk.Builder):
         """
         try:
             handler = self.get_callback_handler(handler_name)
-            object.connect(signal_name, handler, *user_data)
+            obj.connect(signal_name, handler, *user_data)
 
         except Exception:
             logger.critical('Impossible to connect signal {} from object {} to handler {}'
-                            .format(signal_name, object, handler_name), exc_info = True)
+                            .format(signal_name, obj, handler_name), exc_info = True)
 
 
     def connect_signals(self, base_target):

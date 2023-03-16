@@ -923,16 +923,16 @@ class UI(builder.Builder):
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_position(Gtk.WindowPosition.CENTER)
 
-        filter = Gtk.FileFilter()
-        filter.set_name(_('PDF files'))
-        filter.add_mime_type('application/pdf')
-        filter.add_pattern('*.pdf')
-        dialog.add_filter(filter)
+        file_filter = Gtk.FileFilter()
+        file_filter.set_name(_('PDF files'))
+        file_filter.add_mime_type('application/pdf')
+        file_filter.add_pattern('*.pdf')
+        dialog.add_filter(file_filter)
 
-        filter = Gtk.FileFilter()
-        filter.set_name(_('All files'))
-        filter.add_pattern('*')
-        dialog.add_filter(filter)
+        file_filter = Gtk.FileFilter()
+        file_filter.set_name(_('All files'))
+        file_filter.add_pattern('*')
+        dialog.add_filter(file_filter)
 
         response = dialog.run()
 
@@ -952,16 +952,16 @@ class UI(builder.Builder):
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_position(Gtk.WindowPosition.CENTER)
 
-        filter = Gtk.FileFilter()
-        filter.set_name(_('PDF files'))
-        filter.add_mime_type('application/pdf')
-        filter.add_pattern('*.pdf')
-        dialog.add_filter(filter)
+        file_filter = Gtk.FileFilter()
+        file_filter.set_name(_('PDF files'))
+        file_filter.add_mime_type('application/pdf')
+        file_filter.add_pattern('*.pdf')
+        dialog.add_filter(file_filter)
 
-        filter = Gtk.FileFilter()
-        filter.set_name(_('All files'))
-        filter.add_pattern('*')
-        dialog.add_filter(filter)
+        file_filter = Gtk.FileFilter()
+        file_filter.set_name(_('All files'))
+        file_filter.add_pattern('*')
+        dialog.add_filter(file_filter)
 
         response = dialog.run()
 
@@ -1305,7 +1305,7 @@ class UI(builder.Builder):
             cairo_prerender.transform(zoom_matrix)
             page.render_cairo(cairo_prerender, ww, wh, wtype)
 
-            self.cache.set(name, nb, pb)
+            self.cache.put(name, nb, pb)
 
             cairo_context.set_source_surface(pb, 0, 0)
             cairo_context.paint()
@@ -1918,13 +1918,13 @@ class ScreenArea(object):
             return candidates[areas.index(min(areas))]
 
 
-    def __init__(self, obj, id=None):
+    def __init__(self, obj, id_=None):
         if isinstance(obj, tuple):
             self.x, self.y, self.width, self.height = obj
         else:
             self.x, self.y, self.width, self.height = obj.x, obj.y, obj.width, obj.height
-        if id is not None:
-            self.id = id
+        if id_ is not None:
+            self.id = id_
 
 
     def __repr__(self):

@@ -223,7 +223,7 @@ class SurfaceCache(object):
                 return None
 
 
-    def set(self, widget_name, page_nb, val):
+    def put(self, widget_name, page_nb, val):
         """ Store a rendered page in the cache.
 
         Args:
