@@ -166,6 +166,7 @@ jobs:
         srpm_name: ${{ steps.srpm.outputs.name }}
 
     - name: Upload to OpenBuildService
+      if: false  # Outdated
       continue-on-error: true
       run: |
         trap 'rm -f ./osc-config' EXIT && echo "$OPENBUILDSERVICE_TOKEN_SECRET" > ./osc-config
