@@ -67,7 +67,7 @@ try:
     # python <3.6 does not have this
     ModuleNotFoundError
 except NameError:
-    ModuleNotFoundError = ImportError
+    ModuleNotFoundError = ImportError  # noqa: A001 -- not shadowing ModuleNotFoundError if it doesn’t exist
 
 
 # Load python bindings for gobject introspections, aka pygobject, aka gi, and pycairo.

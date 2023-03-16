@@ -104,7 +104,7 @@ master_doc = 'index'
 # General information about the project. Make sure we find the right omdule info.
 pkg_meta = importlib.import_module('pympress.__init__')
 project = 'pympress'
-copyright = '2009-2011, Thomas Jost; 2015-2022 Cimbali'
+copyright = '2009-2011, Thomas Jost; 2015-2022 Cimbali'  # noqa: A001 -- sphinx-required name, like all the others
 author = 'Thomas Jost, Cimbali'
 
 # The version info for the project you're documenting, acts as replacement for

@@ -117,7 +117,7 @@ class Pympress(Gtk.Application):
             self.add_main_option(opt, *self.options[opt], *self.option_descriptions.get(opt, ['', None]))
 
 
-    def quit(self, *args):
+    def quit(self, *args):  # noqa: A003 -- we need to override app.quit()
         """ Quit and ignore other arguments e.g. sent by signals.
         """
         if self.gui is not None and self.gui.unsaved_changes():
