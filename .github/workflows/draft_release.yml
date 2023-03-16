@@ -1,4 +1,4 @@
-name: 'Draft release: build binaries etc.'
+name: 'Draft release: build binaries and run tests'
 
 on:
   # On new tags, build binaries and srpm, run a full brew test, and create a draft release automatically.
@@ -12,8 +12,42 @@ on:
 
 
 jobs:
+  checks:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.name.outputs.tag }}
+      release_id: ${{ steps.release.outputs.release_id }}
+
+    steps:
+    - name: Make tag name
+      id: name
+      run: |
+        ref=${{ github.ref }}
+        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
+        echo tag=${tag#v} | tee -a $GITHUB_OUTPUT
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        path: pympress
+
+    - name: Check tag matches python package version
+      run: >
+        env PYTHONPATH=pympress python3 -c "import importlib;
+        assert importlib.import_module('pympress.__init__').__version__ == '${{ steps.name.outputs.tag }}'"
+
+    - name: Create draft GitHub Release
+      id: release
+      uses: softprops/action-gh-release@v1
+      with:
+        draft: true
+        tag_name: v${{ steps.name.outputs.tag }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+
   macos:
     name: Install and run test on mac
+    needs: checks
     runs-on: macos-latest
     steps:
     - name: Configure brew repo
@@ -71,10 +105,10 @@ jobs:
 
   srpm:
     name: Source RPM
+    needs: checks
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.name.outputs.tag }}
-      file: ${{ steps.name.outputs.file }}
+      file: ${{ steps.srpm.outputs.file }}
 
     steps:
     - uses: actions/checkout@v3
@@ -91,28 +125,21 @@ jobs:
         python3 setup.py compile_catalog
 
     - name: Build source rpm
+      id: srpm
       env:
         BUILD_DIR: build/rpm
       run: |
         mkdir srpm
         pysrpm --dest-dir=srpm/ --source-only .
-
-    - name: Make tag name
-      id: name
-      run: |
-        ref=${{ github.ref }}
-        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
-        echo tag=$tag | tee -a $GITHUB_OUTPUT
-
         echo file=`find srpm/ -name '*.src.rpm' -printf '%P\n' -quit` | tee -a $GITHUB_OUTPUT
 
-    - name: Create GitHub Release and upload
+    - name: Upload to GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         draft: true
-        tag_name: ${{ steps.name.outputs.tag }}
+        tag_name: v${{ needs.checks.outputs.tag }}
         fail_on_unmatched_files: true
-        files: srpm/${{ steps.name.outputs.file }}
+        files: srpm/${{ steps.srpm.outputs.file }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
 
@@ -131,15 +158,7 @@ jobs:
     name: Build binary RPMs for Source RPM
     needs: srpm
     runs-on: ubuntu-latest
-    container: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: "fedora:latest"
-            install: dnf install -y
-          - os: opensuse/tumbleweed
-            install: zypper install -y
+    container: fedora:latest
 
     steps:
     - name: Download from GitHub
@@ -150,7 +169,7 @@ jobs:
 
     - name: Install dependencies
       # NB. querying requires on a source rpm should give us build requires
-      run: ${{ matrix.install }} rpm-build `rpm -qR "${{ needs.srpm.outputs.file }}" | awk '$1 !~ /^rpmlib(.*)/ {print $1}'`
+      run: dnf install -y rpm-build `rpm -qR "${{ needs.srpm.outputs.file }}" | awk '$1 !~ /^rpmlib(.*)/ {print $1}'`
 
     - name: Build binary from source spm
       id: build
@@ -163,6 +182,7 @@ jobs:
 
   windows-build:
     name: Windows Binaries
+    needs: checks
     runs-on: windows-latest
     defaults:
       run:
@@ -216,14 +236,10 @@ jobs:
       - name: Build binary
         run: python3 setup.py --freeze build_exe
 
-      - name: Make file and tag names
+      - name: Make file basename
         id: name
         run: |
-          ref=${{ github.ref }}
-          [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
-
-          echo file=pympress-$tag-${{ matrix.arch }} | tee -a $GITHUB_OUTPUT
-          echo tag=$tag | tee -a $GITHUB_OUTPUT
+          echo file=pympress-${{ needs.checks.outputs.tag }}-${{ matrix.arch }} | tee -a $GITHUB_OUTPUT
 
       - name: Build installer
         run: python3 setup.py --freeze bdist_msi --target-name ${{ steps.name.outputs.file }}.msi --skip-build
@@ -271,11 +287,11 @@ jobs:
             dist/*.zip
             dist/*.msi
 
-      - name: Create GitHub Release and upload
+      - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          tag_name: ${{ steps.name.outputs.tag }}
+          tag_name: v${{ needs.checks.outputs.tag }}
           fail_on_unmatched_files: true
           files: |
             dist/*.zip
