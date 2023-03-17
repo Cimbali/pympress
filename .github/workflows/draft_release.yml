@@ -6,10 +6,6 @@ on:
   # We often mess up the automatic build. Allow to correct manually (optionally with different build numbers)
   workflow_dispatch:
     inputs:
-      build:
-        description: 'build number'
-        required: false
-        default: 1
       tag:
         description: 'Release tag for which to build'
         required: true
@@ -99,8 +95,7 @@ jobs:
         BUILD_DIR: build/rpm
       run: |
         mkdir srpm
-        build=${{ github.event.inputs.build }}
-        pysrpm --dest-dir=srpm/ --source-only --release ${build:-1} .
+        pysrpm --dest-dir=srpm/ --source-only .
 
     - name: Make tag name
       id: name
