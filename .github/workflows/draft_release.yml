@@ -32,7 +32,7 @@ jobs:
         git rebase origin/master gh/master && git branch -f master HEAD || git rebase --abort
         # Now use master and update remote so we can use the bump-formula-pr
         git checkout master
-        cd
+        git log -1 --decorate
 
     - name: Run the audit
       continue-on-error: true
