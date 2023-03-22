@@ -2019,7 +2019,12 @@ class ScreenArea(object):
             rect = ScreenArea(win.get_position() + win.get_size())
             pos.append(rect.most_intersection(all_geom))
 
-        prim = ScreenArea(display.get_primary_monitor().get_geometry())
+        prim_monitor = display.get_primary_monitor()
+        if prim_monitor is None:
+            prim = all_geom[0]
+        else:
+            prim = ScreenArea(prim_monitor.get_geometry())
+
         return (*pos, prim.most_intersection(all_geom), prim.least_intersection(all_geom))
 
 
