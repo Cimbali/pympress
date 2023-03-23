@@ -65,7 +65,7 @@ def get_pympress_meta():
     if getattr(sys, 'frozen', False):
         return info
 
-    git_dir = importlib_resources.files('pympress').joinpath('..', '.git')
+    git_dir = importlib_resources.path('pympress', '').joinpath('..', '.git').resolve()
     if not git_dir.exists():
         return info
 
@@ -102,9 +102,9 @@ def __get_resource_path(*path_parts):
     """
     if getattr(sys, 'frozen', False):
         root = pathlib.Path(sys.executable).parent
+        return root.joinpath(*path_parts)
     else:
-        root = importlib_resources.files('pympress')
-    return root.joinpath(*path_parts)
+        return importlib_resources.path('.'.join(('pympress', *path_parts[:-1])), path_parts[-1])
 
 
 def get_locale_dir():
