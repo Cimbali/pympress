@@ -243,6 +243,7 @@ class Pympress(Gtk.Application):
 
         self.config.save_config()
         Gtk.Application.do_shutdown(self)
+        util.close_opened_resources()
 
 
     def set_log_level(self, action, param):

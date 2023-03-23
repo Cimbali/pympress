@@ -27,6 +27,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import contextlib
 import subprocess
 import importlib
 import os
@@ -40,6 +41,7 @@ if not getattr(sys, 'frozen', False):
     except ImportError:
         import importlib_resources
 
+
 IS_POSIX = os.name == 'posix'
 IS_MAC_OS = sys.platform == 'darwin'
 IS_WINDOWS = os.name == 'nt'
@@ -51,6 +53,9 @@ if IS_WINDOWS:
     except ImportError:
         import _winreg as winreg
 
+
+#: A :class:`~contextlib.ExitStack` containing all entered importlib context managers for used resources
+_opened_resources = contextlib.ExitStack()
 
 
 def get_pympress_meta():
@@ -104,7 +109,13 @@ def __get_resource_path(*path_parts):
         root = pathlib.Path(sys.executable).parent
         return root.joinpath(*path_parts)
     else:
-        return importlib_resources.path('.'.join(('pympress', *path_parts[:-1])), path_parts[-1])
+        resource = importlib_resources.path('.'.join(('pympress', *path_parts[:-1])), path_parts[-1])
+        return _opened_resources.enter_context(resource)
+
+
+def close_opened_resources():
+    """ Close all importlib context managers for resources that we needed over the program lifetime. """
+    _opened_resources.close()
 
 
 def get_locale_dir():
@@ -196,7 +207,7 @@ def list_icons():
     Returns:
         `list` of `str`: The paths to the icons in the pixmaps directory
     """
-    return list(map(str, __get_resource_path('share', 'pixmaps').glob('pympress-*.png')))
+    return [get_icon_path('pympress-{}.png'.format(size)) for size in (16, 22, 24, 32, 48, 64)]
 
 
 def get_log_path():
