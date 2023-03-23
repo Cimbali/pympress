@@ -314,7 +314,11 @@ class UI(builder.Builder):
         self.c_win.parse_geometry(self.config.get('content', 'geometry'))
 
         screen = self.p_win.get_screen()
-        self.setup_screens(screen, 'at startup')
+        if type(screen).__name__ != 'GdkWaylandScreen':
+            self.setup_screens(screen, 'at startup')
+        else:
+            self.app.lookup_action('swap-screens').set_enabled(False)
+
         screen.connect('monitors-changed', self.screens_changed)
 
         self.c_win.show_all()
@@ -324,6 +328,9 @@ class UI(builder.Builder):
         self.c_da.queue_draw()
         self.redraw_panes()
         self.do_page_change(unpause=False)
+
+        if type(screen).__name__ == 'GdkWaylandScreen':
+            GLib.timeout_add(100, self.setup_screens, screen, 'delayed startup')
 
 
     def load_icons(self):
@@ -481,21 +488,25 @@ class UI(builder.Builder):
             event_name (`str`):  a description of what caused the screen setup event, for debugging
         """
         display = Gdk.Display.get_default()
-        c_monitor, p_monitor, primary, non_primary = ScreenArea.lookup_monitors(display, self.c_win, self.p_win)
+        try:
+            c_monitor, p_monitor, primary, non_primary = util.Monitor.lookup_monitors(display, self.c_win, self.p_win)
+        except util.NoMonitorPositions:
+            return
 
         # Noisy, but just for debug level
         logger.debug('Detecting monitor layout ' + event_name + ': ' + ', '.join([
-            'Content window is at monitor ' + c_monitor.id,
-            'Presenter window is at monitor ' + p_monitor.id,
-            'Primary monitor is (or overlapped with) ' + primary.id,
+            'Content window is at monitor ' + c_monitor.name,
+            'Presenter window is at monitor ' + p_monitor.name,
+            'Primary monitor is (or overlapped with) ' + primary.name,
             'No non-primary monitor available' if primary.equal(non_primary)
-            else 'A non-primary monitor is (or overlapped with) ' + non_primary.id
+            else 'A non-primary monitor is (or overlapped with) ' + non_primary.name
         ]))
 
         c_full = self.config.getboolean('content', 'start_fullscreen')
         p_full = self.config.getboolean('presenter', 'start_fullscreen')
+        wayland = type(display).__name__ == 'GdkWaylandDisplay'
 
-        if not c_full and not p_full:
+        if not c_full and not p_full or c_monitor is None or p_monitor is None:
             return
 
         if primary.equal(non_primary):
@@ -508,21 +519,33 @@ class UI(builder.Builder):
             # To start fullscreen, we need to ensure windows are on individual monitors
             if not c_monitor.equal(p_monitor):
                 pass
+            elif wayland:
+                # On Wayland, we can’t move windows, and they happen to be on the same monitor.
+                # So if we are to fullscreen one, just do it on another monitor
+                if c_full:
+                    c_monitor = p_monitor.least_intersection([primary, non_primary])
+                elif p_full:
+                    p_monitor = c_monitor.least_intersection([primary, non_primary])
             elif c_monitor.equal(primary):
                 self.move_window(self.c_win, c_monitor, non_primary)
+                c_monitor = non_primary
             else:  # not p_monitor.equal(primary)
                 self.move_window(self.p_win, p_monitor, primary)
+                p_monitor = primary
 
         if p_full:
-            self.p_win.fullscreen()
-        else:
+            self.p_win.fullscreen_on_monitor(self.p_win.get_screen(), p_monitor.monitor_number)
+        elif not wayland:
             self.p_win.unfullscreen()
 
         if c_full:
-            self.c_win.fullscreen()
+            self.c_win.fullscreen_on_monitor(self.c_win.get_screen(), c_monitor.monitor_number)
             self.set_screensaver(True)
         else:
-            self.c_win.unfullscreen()
+            # Let Wayland do its own un-fullscreening as we can’t move the windows afterwards and messing with it
+            # results in a non-fullscreen window that is out of bounds of the remaining monitors.
+            if not wayland:
+                self.c_win.unfullscreen()
             self.set_screensaver(False)
 
         self.app.set_action_state('content-fullscreen', c_full)
@@ -1661,7 +1684,10 @@ class UI(builder.Builder):
         """ Swap the monitors on which each window is displayed (if there are 2 monitors at least).
         """
         display = Gdk.Display.get_default()
-        c_monitor, p_monitor, primary, non_primary = ScreenArea.lookup_monitors(display, self.c_win, self.p_win)
+        try:
+            c_monitor, p_monitor, primary, non_primary = util.Monitor.lookup_monitors(display, self.c_win, self.p_win)
+        except util.NoMonitorPositions:
+            return
 
         if primary.equal(non_primary) == 1 or p_monitor.equal(c_monitor):
             return
@@ -1871,161 +1897,6 @@ class UI(builder.Builder):
 
         self.config.set('presenter', 'show_bigbuttons', 'on' if self.show_bigbuttons else 'off')
         self.app.set_action_state('big-buttons', self.show_bigbuttons)
-
-
-class ScreenArea(object):
-    """ Convenience class to represent monitors or windows in terms of the area (position and size) they use on screen
-    """
-    def most_intersection(self, candidates):
-        """ Find the rectangle that intersects most with `~rect` in `~candidates`
-
-        Args:
-            candidates (iterable of `ScreenArea`s): The monitor areas to check for intersection
-
-        Returns:
-            `ScreenArea`: The best candidate screen area, i.e. that has the largest intersection
-        """
-        areas = []
-        for geom in candidates:
-            intersection = geom.intersection(self)
-            if intersection is None:
-                areas.append(-1)  # Not even 0 for a common bound
-            elif intersection.equal(self):
-                return geom
-            else:
-                areas.append(intersection.width * intersection.height)
-        else:
-            return candidates[areas.index(max(areas))]
-
-
-    def least_intersection(self, candidates):
-        """ Find the rectangle that intersects least with `~rect` in `~candidates`
-
-        Args:
-            candidates (iterable of `ScreenArea`s): The monitor areas to check for intersection
-
-        Returns:
-            `ScreenArea`: The best candidate screen area, i.e. that has the smallest intersection
-        """
-        areas = []
-        for geom in candidates:
-            intersection = self.intersection(geom)
-            if intersection is None:
-                return geom
-            else:
-                areas.append(intersection.width * intersection.height)
-        else:
-            return candidates[areas.index(min(areas))]
-
-
-    def __init__(self, obj, id_=None):
-        if isinstance(obj, tuple):
-            self.x, self.y, self.width, self.height = obj
-        else:
-            self.x, self.y, self.width, self.height = obj.x, obj.y, obj.width, obj.height
-        if id_ is not None:
-            self.id = id_
-
-
-    def __repr__(self):
-        """ Return a complete representation of the object """
-        return 'ScreenArea({}at {} size {})'.format(self.id + ' ' if hasattr(self, 'id') else '',
-                                                    (self.x, self.y), (self.width, self.height))
-
-
-    def intersection(self, other):
-        """ Compute the intersection of 2 screen areas
-
-        Args:
-            other (`ScreenArea`): The screen area to compare with
-
-        Returns:
-            `ScreenArea` or `None`: An area representing the intersection, or `None` if there is no intersection
-        """
-        if self.x + self.width < other.x or self.x > other.x + other.width:
-            return None
-        if self.y + self.height < other.y or self.y > other.y + other.height:
-            return None
-
-        x = max(self.x, other.x)
-        w = min(self.x + self.width, other.x + other.width) - x
-        y = max(self.y, other.y)
-        h = min(self.y + self.height, other.y + other.height) - y
-        return ScreenArea((x, y, w, h))
-
-
-    def equal(self, other):
-        """ Check whether 2 areas cover the exact same space
-
-        Args:
-            other (`ScreenArea`): The screen area to compare with
-
-        Returns:
-            `bool`: `True` iff the areas are identical
-        """
-        return (self.x, self.y, self.width, self.height) == (other.x, other.y, other.width, other.height)
-
-
-    def contains(self, other):
-        """ Check whether this area contains `~other`
-
-        Args:
-            other (`ScreenArea`): The screen area to compare with
-
-        Returns:
-            `bool`: `True` iff the area is contained
-        """
-        intersection = self.intersection(other)
-        return intersection is not None and intersection.equal(self)
-
-
-    def intersects(self, other):
-        """ Check whether this area intersects `~other`
-
-        Args:
-            other (`ScreenArea`): The screen area to compare with
-
-        Returns:
-            `bool`: `True` iff the areas have an intersection
-        """
-        return self.intersection(other) is None
-
-
-    @staticmethod
-    def lookup_monitors(display, *windows):
-        """ Get the info on the monitors
-
-        Args:
-            display (:class:`~Gdk.Display`):  the current screen
-            *windows (`tuple` of :class:`~Gtk.Window`):  windows for wich to look up the monitor position
-
-        Returns:
-            `tuple` of `ScreenArea`: The monitor areas for each window, followed by
-                                     the best monitor areas for primary and non-primary monitors
-        """
-        # Helpful for debugging
-        name = ['{} {}'.format(mon.get_manufacturer() or 'Unknown manufacturer', mon.get_model() or 'Unknown model')
-                for mon in (display.get_monitor(n) for n in range(display.get_n_monitors()))]
-
-        all_geom = [ScreenArea(display.get_monitor(n).get_geometry(), name[n]) for n in range(display.get_n_monitors())]
-        # Remove duplicate monitors (“mirrored”)
-        all_geom = [rect for n, rect in enumerate(all_geom) if not any(rect.equal(other) for other in all_geom[:n])]
-        # Remove monitors whose area is entirely contained in that of another monitor. NB: union() computes intersection
-        all_geom = [rect for n, rect in enumerate(all_geom)
-                    if all(not other.contains(rect) for other in all_geom[:n] + all_geom[n + 1:])]
-
-        pos = []
-        for win in windows:
-            rect = ScreenArea(win.get_position() + win.get_size())
-            pos.append(rect.most_intersection(all_geom))
-
-        prim_monitor = display.get_primary_monitor()
-        if prim_monitor is None:
-            prim = all_geom[0]
-        else:
-            prim = ScreenArea(prim_monitor.get_geometry())
-
-        return (*pos, prim.most_intersection(all_geom), prim.least_intersection(all_geom))
 
 
 ##

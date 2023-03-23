@@ -310,6 +310,196 @@ hard_set_screensaver.dpms_was_enabled = None
 #: A :class:`~subprocess.Popen` object to track the child caffeinate process
 hard_set_screensaver.caffeinate_process = None
 
+
+class NoMonitorPositions(Exception):
+    """ The Exception we raise when there is no way of figuring out the monitor position of windows """
+    pass
+
+
+class ScreenArea(object):
+    """ Convenience class to represent monitors or windows in terms of the area (position and size) they use on screen
+    """
+    def most_intersection(self, candidates):
+        """ Find the rectangle that intersects most with `~rect` in `~candidates`
+
+        Args:
+            candidates (iterable of `ScreenArea`s): The monitor areas to check for intersection
+
+        Returns:
+            `ScreenArea`: The best candidate screen area, i.e. that has the largest intersection
+        """
+        areas = []
+        for geom in candidates:
+            intersection = geom.intersection(self)
+            if intersection is None:
+                areas.append(-1)  # Not even 0 for a common bound
+            elif intersection.equal(self):
+                return geom
+            else:
+                areas.append(intersection.width * intersection.height)
+        else:
+            return candidates[areas.index(max(areas))]
+
+
+    def least_intersection(self, candidates):
+        """ Find the rectangle that intersects least with `~rect` in `~candidates`
+
+        Args:
+            candidates (iterable of `ScreenArea`s): The monitor areas to check for intersection
+
+        Returns:
+            `ScreenArea`: The best candidate screen area, i.e. that has the smallest intersection
+        """
+        areas = []
+        for geom in candidates:
+            intersection = self.intersection(geom)
+            if intersection is None:
+                return geom
+            else:
+                areas.append(intersection.width * intersection.height)
+        else:
+            return candidates[areas.index(min(areas))]
+
+
+    def __init__(self, obj):
+        if isinstance(obj, tuple):
+            self.x, self.y, self.width, self.height = obj
+        else:
+            self.x, self.y, self.width, self.height = obj.x, obj.y, obj.width, obj.height
+
+
+    def __repr__(self):
+        """ Return a complete representation of the object """
+        return 'ScreenArea(at {} size {})'.format((self.x, self.y), (self.width, self.height))
+
+
+    def intersection(self, other):
+        """ Compute the intersection of 2 screen areas
+
+        Args:
+            other (`ScreenArea`): The screen area to compare with
+
+        Returns:
+            `ScreenArea` or `None`: An area representing the intersection, or `None` if there is no intersection
+        """
+        if self.x + self.width < other.x or self.x > other.x + other.width:
+            return None
+        if self.y + self.height < other.y or self.y > other.y + other.height:
+            return None
+
+        x = max(self.x, other.x)
+        w = min(self.x + self.width, other.x + other.width) - x
+        y = max(self.y, other.y)
+        h = min(self.y + self.height, other.y + other.height) - y
+        return ScreenArea((x, y, w, h))
+
+
+    def equal(self, other):
+        """ Check whether 2 areas cover the exact same space
+
+        Args:
+            other (`ScreenArea`): The screen area to compare with
+
+        Returns:
+            `bool`: `True` iff the areas are identical
+        """
+        return (self.x, self.y, self.width, self.height) == (other.x, other.y, other.width, other.height)
+
+
+    def contains(self, other):
+        """ Check whether this area contains `~other`
+
+        Args:
+            other (`ScreenArea`): The screen area to compare with
+
+        Returns:
+            `bool`: `True` iff the area is contained
+        """
+        intersection = self.intersection(other)
+        return intersection is not None and intersection.equal(self)
+
+
+    def intersects(self, other):
+        """ Check whether this area intersects `~other`
+
+        Args:
+            other (`ScreenArea`): The screen area to compare with
+
+        Returns:
+            `bool`: `True` iff the areas have an intersection
+        """
+        return self.intersection(other) is None
+
+
+class Monitor(ScreenArea):
+    """ A specialised `~ScreenArea` representing a monitor, with an descriptive string and a monitor number """
+    #: A `str` to represent a user-friendly name for the monitor
+    name = ''
+
+    #: An `int` that identifies the monitor in :class:`~Gdk.Display`
+    monitor_number = -1
+
+    def __init__(self, obj, id_=None, num=None):
+        super(Monitor, self).__init__(obj)
+        self.name = id_
+        self.monitor_number = num
+
+
+    def __repr__(self):
+        """ Return a complete representation of the object """
+        return 'Monitor({} at {} size {})'.format(self.name, (self.x, self.y), (self.width, self.height))
+
+
+    @staticmethod
+    def lookup_monitors(display, *windows):
+        """ Get the info on the monitors
+
+        Args:
+            display (:class:`~Gdk.Display`):  the current screen
+            *windows (`tuple` of :class:`~Gtk.Window`):  windows for wich to look up the monitor position
+
+        Returns:
+            `tuple` of `Monitor`: The monitors for each window, followed by the best monitors for presenter and content
+        """
+        # Helpful for debugging
+        monitors = [display.get_monitor(n) for n in range(display.get_n_monitors())]
+        mon_names = ['{} {}'.format(mon.get_manufacturer() or 'Unknown manufacturer',
+                                    mon.get_model() or 'Unknown model') for mon in monitors]
+
+        all_geom = [Monitor(mon.get_geometry(), name, n) for n, (mon, name) in enumerate(zip(monitors, mon_names))]
+
+        # Remove duplicate monitors (“mirrored”)
+        all_geom = [rect for n, rect in enumerate(all_geom) if not any(rect.equal(other) for other in all_geom[:n])]
+        # Remove monitors whose area is entirely contained in that of another monitor. NB: union() computes intersection
+        all_geom = [rect for n, rect in enumerate(all_geom)
+                    if all(not other.contains(rect) for other in all_geom[:n] + all_geom[n + 1:])]
+
+        # We have a global positioning system
+        if any(win.get_position() != (0, 0) for win in windows):
+            pos = [ScreenArea(win.get_position() + win.get_size()).most_intersection(all_geom) for win in windows]
+        # We have access to Gdk Windows
+        elif all(win.get_window() is not None for win in windows):
+            pos = [ScreenArea(mon.get_geometry()).most_intersection(all_geom) for mon in (
+                display.get_monitor_at_window(win.get_window()) for win in windows
+            )]
+        else:
+            raise NoMonitorPositions()
+
+        # Figure out which monitor is best for presenter view: embedded panel on laptops, primary, or just first in list
+        prim_area = all_geom[0]
+        for mon in monitors:
+            if mon.get_model() is None:
+                continue
+            model = mon.get_model().upper()
+            if any(model.startswith(embedded) for embedded in {'LVDS', 'IDP', 'EDP', 'LCD', 'DSI'}):
+                prim_area = ScreenArea(mon.get_geometry())
+                break
+            elif mon.is_primary():
+                # NB. there may be 0 primaries. Don’t break as we prefer to identify an embedded screen.
+                prim_area = ScreenArea(mon.get_geometry())
+
+        return (*pos, prim_area.most_intersection(all_geom), prim_area.least_intersection(all_geom))
+
 ##
 # Local Variables:
 # mode: python
