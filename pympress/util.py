@@ -34,12 +34,12 @@ import os
 import sys
 import pathlib
 
-if not getattr(sys, 'frozen', False):
-    # doesn’t play too well with cx_Freeze
-    try:
-        import importlib.resources as importlib_resources
-    except ImportError:
-        import importlib_resources
+try:
+    # Introduced in 3.7
+    import importlib.resources as importlib_resources
+except ImportError:
+    # Backport dependency
+    import importlib_resources
 
 
 IS_POSIX = os.name == 'posix'
@@ -67,10 +67,10 @@ def get_pympress_meta():
     module = importlib.import_module('pympress.__init__')
     info = {'version': module.__version__, 'contributors': module.__author__}
 
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, 'frozen', False) or not getattr(module, '__file__', None):
         return info
 
-    git_dir = importlib_resources.path('pympress', '').joinpath('..', '.git').resolve()
+    git_dir = pathlib.Path(module.__file__).parents[1] / '.git'
     if not git_dir.exists():
         return info
 
@@ -94,9 +94,7 @@ def get_pympress_meta():
 
 
 def __get_resource_path(*path_parts):
-    """ Return the resource path based on whether its frozen or not.
-
-    Paths parts given should be relative to the pympress package dir.
+    """ Return the path to a resource, ensuring it was made available as a file for the duration of the program.
 
     Args:
         name (`tuple` of `str`): The directories and filename that constitute the path
@@ -105,12 +103,13 @@ def __get_resource_path(*path_parts):
     Returns:
         :class:`~pathlib.Path`: The path to the resource
     """
-    if getattr(sys, 'frozen', False):
-        root = pathlib.Path(sys.executable).parent
-        return root.joinpath(*path_parts)
-    else:
+    try:
+        # Introduced in 3.9
+        resource = importlib_resources.asfile(importlib_resources.files('pympress').joinpath(*path_parts))
+    except AttributeError:
+        # Deprecated in 3.11
         resource = importlib_resources.path('.'.join(('pympress', *path_parts[:-1])), path_parts[-1])
-        return _opened_resources.enter_context(resource)
+    return _opened_resources.enter_context(resource)
 
 
 def close_opened_resources():
