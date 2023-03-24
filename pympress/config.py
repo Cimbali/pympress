@@ -26,6 +26,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import os
 import pathlib
 import json
 import configparser
@@ -130,6 +131,11 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         # populate values first from the default config file, then from the proper one
         config.read(util.get_default_config())
         config.load_window_layouts()
+
+        # modify defaults
+        if 'I3SOCK' in os.environ:
+            logger.info('Detected i3 window manager, disabled content window starting fullscreen by default')
+            config.set('content', 'start_fullscreen', 'off')
 
         all_commands = dict(config.items('shortcuts')).keys()
 
