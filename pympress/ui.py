@@ -638,6 +638,8 @@ class UI(builder.Builder):
         elif widget is self.p_da_cur:
             self.medias.resize('presenter')
 
+        widget.queue_draw()
+
 
     def on_configure_win(self, widget, event):
         """ Manage "configure" events for both window widgets.
@@ -647,9 +649,12 @@ class UI(builder.Builder):
             event (:class:`~Gdk.Event`):  the GTK event, which contains the new dimensions of the widget
         """
         geom = '{}x{}{:+}{:+}'.format(*widget.get_size(), *widget.get_position())
+        win_state = widget.get_window().get_state() if widget.get_window() is not None else 0
+        win_state &= Gdk.WindowState.FULLSCREEN | Gdk.WindowState.MAXIMIZED
 
         if widget is self.p_win:
-            self.config.set('presenter', 'geometry', geom)
+            if win_state == 0:
+                self.config.set('presenter', 'geometry', geom)
             cw = self.p_central.get_allocated_width()
             ch = self.p_central.get_allocated_height()
             self.scribbler.scribble_off_render.set_size_request(cw, ch)
@@ -660,7 +665,7 @@ class UI(builder.Builder):
 
             self.adjust_bottom_bar_font()
 
-        elif widget is self.c_win:
+        elif widget is self.c_win and win_state == 0:
             self.config.set('content', 'geometry', geom)
 
 
