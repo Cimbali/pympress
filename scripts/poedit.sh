@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd `git rev-parse --show-toplevel || readlink -f "$0" | xargs dirname | xargs dirname`
+cd "`git rev-parse --show-toplevel 2>/dev/null || readlink -zf "$0" | xargs -0 dirname -z | xargs -0 dirname`"
 pot=pympress/share/locale/pympress.pot
 
 upload() {
@@ -42,7 +42,7 @@ EOF
 
     # Rename contributors on request and/or for de-duplication
     sed 's/^FriedrichFroebel$/FriedrichFröbel/;s/^Watanabe$/atsuyaw/' $contributors |
-        sed 's/$/,/' | sort -uo $contributors
+        sed 's/$/,/' | sort -fuo $contributors
 
     # Udate README from generated list
     sed -ni -e '1,/<!-- translator list -->/p;/<!-- last translator -->/,$p' \
@@ -51,7 +51,7 @@ EOF
 
 download() {
     lang=$1
-    printf "Updating %s:\n" "$lang"
+    printf "Updating %s...\n" "$lang"
     # Normalize separator to _ and capitalised locale
     norm=`echo "$lang" | sed -E 's/-(\w+)$/_\U\1\E/;s/^zh_HANS$/zh_CN/'`
 

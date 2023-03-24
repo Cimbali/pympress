@@ -36,6 +36,25 @@ jobs:
         env PYTHONPATH=pympress python3 -c "import importlib;
         assert importlib.import_module('pympress.__init__').__version__ == '${{ steps.name.outputs.tag }}'"
 
+    - name: Install dependencies
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -qy gettext
+
+    - name: Check latest translations are included
+      run: |
+        ./pympress/scripts/poedit.sh download
+        git -C pympress status --porcelain $i18n_files | tee status
+
+        if [ -s status ]; then
+          echo "Unversioned translation updates:"
+          git diff -- $i18n_files
+          exit 1
+        fi
+      env:
+        poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
+        i18n_files: README.md pympress/share/locale/pympress.pot pympress/share/locale/*/LC_MESSAGES/pympress.po
+
     - name: Create draft GitHub Release
       id: release
       uses: softprops/action-gh-release@v1
