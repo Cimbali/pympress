@@ -55,6 +55,17 @@ jobs:
         poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
         i18n_files: README.md pympress/share/locale/pympress.pot pympress/share/locale/*/LC_MESSAGES/pympress.po
 
+    - name: Create a tarball of the release since we can not rely on getting it from the github release
+      env:
+        basename: pympress-${{ steps.name.outputs.tag }}
+      run: tar czf $basename.tar.gz --exclude-vcs --exclude=.github --transform="s/^pympress/$basename/" pympress/
+
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: tarball
+        path: pympress-${{ steps.name.outputs.tag }}.tar.gz
+
     - name: Create draft GitHub Release
       id: release
       uses: softprops/action-gh-release@v1
@@ -198,6 +209,97 @@ jobs:
         rpm -q --qf "dest=`rpm --eval %{_rpmfilename}`\n" "$srpm" | tee -a $GITHUB_OUTPUT
         rpmbuild -D "_rpmdir ${PWD}" -ra "$srpm"
 
+
+  suse-rpmbuild:
+    name: Build Suse RPM end-to-end from spec to binary install
+    needs: checks
+    runs-on: ubuntu-latest
+    container: opensuse/tumbleweed
+
+    steps:
+    - name: Install most basic dependencies
+      run: zypper install -y rpm-build rpmlint osc
+
+    - name: Download tarball
+      uses: actions/download-artifact@v3
+      with:
+        name: tarball
+        path: .
+
+    - name: Get the spec file from OpenBuildService
+      run: |
+        trap 'rm -f ./osc-config' EXIT && echo "$OPENBUILDSERVICE_TOKEN_SECRET" > ./osc-config
+
+        osc --config ./osc-config co -o osc home:cimbali python-pympress
+
+        sed -r '
+          s/^(Version: *)[0-9.]+$/\1${{ needs.checks.outputs.tag }}/
+          s/^(Source0: *pympress-)[0-9.]+(\.tar\.gz)/\1${{ needs.checks.outputs.tag }}\2/
+        ' osc/pympress.spec > pympress.spec
+      env:
+        OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
+
+    - name: rpmlint specfile
+      continue-on-error: true
+      run: rpmlint pympress.spec
+
+    - name: Make a source rpm
+      id: srpm
+      run: |
+        filename=`rpm -q --qf "%{name}-%{version}-%{release}.src.rpm" --specfile pympress.spec`
+        echo "filename=$filename" | tee -a $GITHUB_OUTPUT
+
+        rpmbuild -D "_sourcedir $PWD" -D "_srcrpmdir $PWD" -bs pympress.spec
+
+        [ -f "$filename" ]  # Check it’s the expected file name
+
+    - name: rpmlint source rpm
+      continue-on-error: true
+      run: rpmlint ${{ steps.srpm.outputs.filename }}
+
+    - name: Install build dependencies
+      # NB. querying requires on a source rpm should give us build requires
+      run: zypper install -y `rpm -qR "${{ steps.srpm.outputs.filename }}"`
+
+    - name: Build binary from source spm
+      id: build
+      run: |
+        filename=`rpm -q --qf "%{arch}/%{name}-%{version}-%{release}.%{arch}.rpm" "$srpm"`
+        echo "filename=$filename" | tee -a $GITHUB_OUTPUT
+
+        rpmbuild -D "_rpmdir ${PWD}" -ra "$srpm"
+      env:
+        srpm: ${{ steps.srpm.outputs.filename }}
+
+    - name: rpmlint rpm
+      continue-on-error: true
+      run: rpmlint ${{ steps.build.outputs.filename }}
+
+    - name: Install with runtime dependencies
+      run: zypper install -y --allow-unsigned-rpm ${{ steps.build.outputs.filename }}
+
+    - name: Run
+      run: env PYMPRESS_HEADLESS_TEST=1 pympress --quit
+
+    - name: Show log
+      run: head ${XDG_CACHE_HOME:-$HOME/.cache}/pympress.log
+
+    - name: Push changes to OpenBuildService
+      run: |
+        trap 'rm -f ./osc-config' EXIT && echo "$OPENBUILDSERVICE_TOKEN_SECRET" > ./osc-config
+
+        cd osc/
+        osc="osc --config ../osc-config"
+
+        $osc rm `sed -n 's/^Source0: *//p' pympress.spec`
+        cp ../pympress-${{ needs.checks.outputs.tag }}.tar.gz ./
+        $osc add pympress-${{ needs.checks.outputs.tag }}.tar.gz
+
+        cp ../pympress.spec ./
+
+        $osc ci -m "Update build to v${{ needs.checks.outputs.tag }}"
+      env:
+        OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
 
   windows-build:
     name: Windows Binaries

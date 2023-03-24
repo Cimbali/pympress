@@ -1,4 +1,4 @@
-name: 'Publish package: upload to pypi, brew, and copr'
+name: 'Publish package: upload to pypi, brew, obs, and copr'
 
 on:
   # When the draft release is converted to a public release, send out the binaries etc. to all the platforms
@@ -93,30 +93,37 @@ jobs:
       - name: Clone repo
         run: git clone https://github.com/Cimbali/pympress-pkgbuild aur-repo
 
-      - name: Update info
+      - name: Get info
+        id: info
         run: |
           prev_pkgver=`awk -F= '$1 == "pkgver" {print $2}' aur-repo/PKGBUILD | tr -d "[()\"']"`
           if [[ "$prev_pkgver" = "${{ needs.pypi.outputs.tag }}" ]]; then
-            prev_pkgrel=`awk -F= '$1 == "pkgrel" {print $2}' | tr -d "[()\"']"`
+            prev_pkgrel=`awk -F= '$1 == "pkgrel" {print $2}' aur-repo/PKGBUILD | tr -d "[()\"']"`
           else
             prev_pkrel=0
           fi
 
+          printf '%s\n' "prev_pkver=$prev_pkver" "prev_pkrel=$prev_pkrel" | tee -a $GITHUB_OUTPUT
+
+      - name: Update info
+        id: info
+        run: |
           while read param value; do
             sed -i -r "s,^(\\s*$param ?=[('\" ]*)[A-Za-z0-9\${\}:/._-]+([ '\")]*)$,\1$value\2," aur-repo/.SRCINFO aur-repo/PKGBUILD
           done <<EOF
             source ${{ needs.pypi.outputs.url }}
             sha256sums ${{ needs.pypi.outputs.sha256 }}
             pkgver ${{ needs.pypi.outputs.tag }}
-            pkgrel $(( prev_pkgrel + 1 ))
+            pkgrel $(( ${{ steps.info.outputs.prev_pkgrel }} + 1 ))
           EOF
 
       - name: Push the changes
+        if: ${{ steps.info.outputs.prev_pkgrel }} != ${{ needs.pypi.outputs.tag }}
         run: |
           trap 'rm -f ./ssh-key' EXIT && echo "$AUR_PRIVATE_KEY" > ./ssh-key && chmod 0600 ./ssh-key
           ssh='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ../ssh-key'
 
-          git -C aur-repo -c user.name=Cimbali -c user.email="me@cimba.li" commit -am "Update to ${{ needs.pypi.outputs.tag }}"
+          git -C aur-repo -c user.name=Cimbali -c user.email="me@cimba.li" commit -am "Update to v${{ needs.pypi.outputs.tag }}"
           git -C aur-repo -c core.sshCommand="$ssh" push git@github.com:Cimbali/pympress-pkgbuild.git "master:master"
 
         env:
@@ -134,25 +141,48 @@ jobs:
         sudo apt-get update -q
         sudo apt-get install -qy osc cpio rpm2cpio python3-m2crypto
 
-    - name: Get SRPM URL from GitHub Release
+    - name: Extract changes from release
+      env:
+        tag: ${{ needs.pypi.outputs.tag }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+      run: |
+        curl -s -u "Cimbali:$GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" -H "Accept: application/vnd.github+json" \
+          "https://api.github.com/repos/Cimbali/pympress/releases" -o - |
+          jq ".[] | select(.tag_name == \"v$tag\") | del(.author, .assets[].uploader)" | tee release.json
+
+        jq -r .body release.json | sed '/\(New Contributors\|Full Changelog\)/,/^\s*$/d' | fold -sw 65 |
+          sed -n '/^[-*] /,/^\s*$/{/^[-*] /!s/^/  /;p}' | sed 's/\s*$//' | tee changes
+
+    - name: Upload to OpenBuildService
+      continue-on-error: true
+      run: |
+        trap 'rm -f ./osc-config' EXIT && echo "$OPENBUILDSERVICE_TOKEN_SECRET" > ./osc-config
+        osc="osc --config $GITHUB_WORKSPACE/osc-config"
+
+        $osc co -o osc home:cimbali python-pympress
+        cd osc/
+
+        if sed -n 2p pympress.changes | grep ' - ${{ needs.pypi.outputs.tag }}$'; then
+          echo "Version already in changelog ; skipping request"
+        else
+          $osc vc -F ../changes
+          sed -i "2s/Cimba Li <me@cimba.li>/me@cimba.li/;2s/$/ - ${{ needs.pypi.outputs.tag }}/" pympress.changes
+          $osc ci -m "Release ${{ needs.pypi.outputs.tag }}"
+
+          $osc sr -m "Version ${{ needs.pypi.outputs.tag }}" 'X11:Utilities' pympress
+        fi
+      env:
+        OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
+
+    - name: Get SRPM URL from GitHub Release and download
       id: srpm
       env:
         tag: ${{ needs.pypi.outputs.tag }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
       run: |
-        curl -s -u "Cimbali:$GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" -o release.json "https://api.github.com/repos/Cimbali/pympress/releases/tags/v$tag"
-        jq -r '[.assets[] | select(.name | endswith(".src.rpm"))][0]' release.json | tee srpm.json | jq 'del(.uploader)'
+        jq -r '[.assets[] | select(.name | endswith(".src.rpm"))][0]' release.json | tee srpm.json
 
-        echo name="`jq -r .name srpm.json`" | tee -a $GITHUB_OUTPUT
-        echo url="`jq -r .browser_download_url srpm.json`" | tee -a $GITHUB_OUTPUT
-
-    - name: Extract changes from release
-      run: |
-        jq -r .body release.json | sed '/\(New Contributors\|Full Changelog\)/,/^\s*$/d' | fold -sw 65 | sed -n '/^[-*] /,/^\s*$/{/^[-*] /!s/^/  /;p}' | sed 's/\s*$//' | tee changes
-
-    - name: Download from GitHub Release
-      run: |
-        curl -L "${{ steps.srpm.outputs.url }}" -o "${{ steps.srpm.outputs.name }}"
+        curl -L "`jq -r .browser_download_url srpm.json`" -o "python3-pympress-${{ needs.pypi.outputs.tag }}-1.src.rpm"
 
     - name: Upload to COPR
       continue-on-error: true
@@ -160,29 +190,9 @@ jobs:
         trap 'rm -f ./copr-config' EXIT && echo "$COPR_TOKEN_CONFIG" > ./copr-config
 
         python3 -m pip install copr-cli
-        copr-cli --config ./copr-config build --nowait cimbali/pympress "$srpm_name"
+        copr-cli --config ./copr-config build --nowait cimbali/pympress "python3-pympress-${{ needs.pypi.outputs.tag }}-1.src.rpm"
       env:
         COPR_TOKEN_CONFIG: ${{ secrets.COPR_TOKEN_CONFIG }}
-        srpm_name: ${{ steps.srpm.outputs.name }}
-
-    - name: Upload to OpenBuildService
-      if: false  # Outdated
-      continue-on-error: true
-      run: |
-        trap 'rm -f ./osc-config' EXIT && echo "$OPENBUILDSERVICE_TOKEN_SECRET" > ./osc-config
-        osc -c ./osc-config co -o osc home:cimbali python-pympress
-
-        cd osc/
-        osc -c ../osc-config rm pympress-*.tar.gz
-
-        rpm2cpio "../$srpm_name" | cpio -idmv
-        osc -c ../osc-config add "`rpm -q --qf '%{SOURCE}' "../$srpm_name"`"
-        osc -c ../osc-config vc -F ../changes
-        sed -i "2s/$/ - ${{ needs.pypi.outputs.tag }}/" python3-pympress.changes
-        osc -c ../osc-config ci -m "Update to ${{ needs.pypi.outputs.tag }}"
-      env:
-        OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
-        srpm_name: ${{ steps.srpm.outputs.name }}
 
 
   brew:
