@@ -317,6 +317,9 @@ class NoMonitorPositions(Exception):
 
 class ScreenArea(object):
     """ Convenience class to represent monitors or windows in terms of the area (position and size) they use on screen
+
+    This is similar to :class:`~Gdk.Monitor`, but necessary as we want to handle “mirrored” monitors as if they were a
+    single monitor, and only use “extended” monitors as target for content window position and/or fullscreening.
     """
     def most_intersection(self, candidates):
         """ Find the rectangle that intersects most with `~rect` in `~candidates`

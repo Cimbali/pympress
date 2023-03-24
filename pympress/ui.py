@@ -559,7 +559,7 @@ class UI(builder.Builder):
         win_state = win.get_window().get_state() if win.get_window() is not None else 0
 
         logger.debug('Moving {} window from screen {} to screen {}'.format(
-            'Content' if win is self.c_win else 'Presenter', from_bounds.id, to_bounds.id
+            'Content' if win is self.c_win else 'Presenter', from_bounds.name, to_bounds.name
         ))
 
         if (win_state & Gdk.WindowState.FULLSCREEN) != 0:
