@@ -103,10 +103,9 @@ jobs:
             prev_pkrel=0
           fi
 
-          printf '%s\n' "prev_pkver=$prev_pkver" "prev_pkrel=$prev_pkrel" | tee -a $GITHUB_OUTPUT
+          printf '%s\n' "prev_pkgver=$prev_pkgver" "prev_pkgrel=$prev_pkgrel" | tee -a $GITHUB_OUTPUT
 
       - name: Update info
-        id: info
         run: |
           while read param value; do
             sed -i -r "s,^(\\s*$param ?=[('\" ]*)[A-Za-z0-9\${\}:/._-]+([ '\")]*)$,\1$value\2," aur-repo/.SRCINFO aur-repo/PKGBUILD
@@ -118,7 +117,7 @@ jobs:
           EOF
 
       - name: Push the changes
-        if: ${{ steps.info.outputs.prev_pkgrel }} != ${{ needs.pypi.outputs.tag }}
+        if: ${{ steps.info.outputs.prev_pkgver }} != ${{ needs.pypi.outputs.tag }}
         run: |
           trap 'rm -f ./ssh-key' EXIT && echo "$AUR_PRIVATE_KEY" > ./ssh-key && chmod 0600 ./ssh-key
           ssh='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ../ssh-key'
@@ -139,7 +138,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update -q
-        sudo apt-get install -qy osc cpio rpm2cpio python3-m2crypto
+        sudo apt-get install -qy osc cpio rpm2cpio pandoc python3-m2crypto
 
     - name: Extract changes from release
       env:
@@ -150,8 +149,8 @@ jobs:
           "https://api.github.com/repos/Cimbali/pympress/releases" -o - |
           jq ".[] | select(.tag_name == \"v$tag\") | del(.author, .assets[].uploader)" | tee release.json
 
-        jq -r .body release.json | sed '/\(New Contributors\|Full Changelog\)/,/^\s*$/d' | fold -sw 65 |
-          sed -n '/^[-*] /,/^\s*$/{/^[-*] /!s/^/  /;p}' | sed 's/\s*$//' | tee changes
+        jq -r .body release.json | sed '/\(New Contributors\|Full Changelog\)/,/^\s*$/d;s/^- /  &/;1i- Update to v${{ needs.pypi.outputs.tag }}' |
+          pandoc --from=markdown --to=markdown --columns=67 | sed -r 's/^(\s+)-/\1*/;s/\#/#/g' | tee changes
 
     - name: Upload to OpenBuildService
       continue-on-error: true
@@ -162,14 +161,14 @@ jobs:
         $osc co -o osc home:cimbali python-pympress
         cd osc/
 
-        if sed -n 2p pympress.changes | grep ' - ${{ needs.pypi.outputs.tag }}$'; then
+        if grep -qxF '- Update to v${{ needs.pypi.outputs.tag }}' pympress.changes; then
           echo "Version already in changelog ; skipping request"
         else
           $osc vc -F ../changes
-          sed -i "2s/Cimba Li <me@cimba.li>/me@cimba.li/;2s/$/ - ${{ needs.pypi.outputs.tag }}/" pympress.changes
+          sed -i "2s/Cimba Li <me@cimba.li>/me@cimba.li/" pympress.changes
           $osc ci -m "Release ${{ needs.pypi.outputs.tag }}"
 
-          $osc sr -m "Version ${{ needs.pypi.outputs.tag }}" 'X11:Utilities' pympress
+          $osc sr --yes -m "Version ${{ needs.pypi.outputs.tag }}" 'X11:Utilities' pympress
         fi
       env:
         OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
