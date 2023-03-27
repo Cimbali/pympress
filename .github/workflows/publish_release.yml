@@ -71,7 +71,7 @@ jobs:
         tag: ${{ steps.name.outputs.tag }}
       run: |
         # Get releases from pypi, exiting with non-zero if expected version not found
-        jq_script=`printf '.releases."%s"[]? | select(.python_version == "source")' $tag`
+        jq_script=".releases.\"${tag}\"[]? | select(.python_version == \"source\")"
         while ! curl -s https://pypi.org/pypi/pympress/json | jq -r -e "$jq_script" > lastsource.json ; do
           sleep 60  # be patient with pypi
         done
@@ -88,7 +88,6 @@ jobs:
   aur:
     name: Publish to AUR
     runs-on: ubuntu-latest
-    needs: pypi
     steps:
       - name: Clone repo
         run: git clone https://github.com/Cimbali/pympress-pkgbuild aur-repo
@@ -96,33 +95,40 @@ jobs:
       - name: Get info
         id: info
         run: |
+          [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
+          tag=${tag#v}
+
           prev_pkgver=`awk -F= '$1 == "pkgver" {print $2}' aur-repo/PKGBUILD | tr -d "[()\"']"`
-          if [[ "$prev_pkgver" = "${{ needs.pypi.outputs.tag }}" ]]; then
+          if [[ "$prev_pkgver" = "$tag" ]]; then
             prev_pkgrel=`awk -F= '$1 == "pkgrel" {print $2}' aur-repo/PKGBUILD | tr -d "[()\"']"`
           else
             prev_pkrel=0
           fi
 
-          printf '%s\n' "prev_pkgver=$prev_pkgver" "prev_pkgrel=$prev_pkgrel" | tee -a $GITHUB_OUTPUT
+          url="https://github.com/Cimbali/pympress/releases/download/v${tag}/pympress-${tag}.tar.gz"
+          sha256=`curl -sL "$url" | sha256sum | awk '{ print $1 }'`
+
+          printf '%s\n' "tag=$tag" "url=$url" "sha256=$sha256" "prev_pkgver=$prev_pkgver" "prev_pkgrel=$prev_pkgrel" |
+            tee -a $GITHUB_OUTPUT
 
       - name: Update info
         run: |
           while read param value; do
             sed -i -r "s,^(\\s*$param ?=[('\" ]*)[A-Za-z0-9\${\}:/._-]+([ '\")]*)$,\1$value\2," aur-repo/.SRCINFO aur-repo/PKGBUILD
           done <<EOF
-            source ${{ needs.pypi.outputs.url }}
-            sha256sums ${{ needs.pypi.outputs.sha256 }}
-            pkgver ${{ needs.pypi.outputs.tag }}
+            source ${{ steps.info.outputs.url }}
+            sha256sums ${{ steps.info.outputs.sha256 }}
+            pkgver ${{ steps.info.outputs.tag }}
             pkgrel $(( ${{ steps.info.outputs.prev_pkgrel }} + 1 ))
           EOF
 
       - name: Push the changes
-        if: ${{ steps.info.outputs.prev_pkgver }} != ${{ needs.pypi.outputs.tag }}
+        if: ${{ steps.info.outputs.prev_pkgver }} != ${{ steps.info.outputs.tag }}
         run: |
           trap 'rm -f ./ssh-key' EXIT && echo "$AUR_PRIVATE_KEY" > ./ssh-key && chmod 0600 ./ssh-key
           ssh='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ../ssh-key'
 
-          git -C aur-repo -c user.name=Cimbali -c user.email="me@cimba.li" commit -am "Update to v${{ needs.pypi.outputs.tag }}"
+          git -C aur-repo -c user.name=Cimbali -c user.email="me@cimba.li" commit -am "Update to v${{ steps.info.outputs.tag }}"
           git -C aur-repo -c core.sshCommand="$ssh" push git@github.com:Cimbali/pympress-pkgbuild.git "master:master"
 
         env:
@@ -131,7 +137,6 @@ jobs:
 
   copr:
     name: Download source RPM from release and upload to COPR and OpenBuildService
-    needs: pypi
     runs-on: ubuntu-latest
 
     steps:
@@ -139,17 +144,31 @@ jobs:
       run: |
         sudo apt-get update -q
         sudo apt-get install -qy osc cpio rpm2cpio pandoc python3-m2crypto
+        python3 -m pip install copr-cli
+
+    - name: Get info
+      id: info
+      run: |
+        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
+        tag=${tag#v}
+
+        url="https://github.com/Cimbali/pympress/releases/download/v${tag}/pympress-${tag}.tar.gz"
+        sha256=`curl -sL "$url" | sha256sum | awk '{ print $1 }'`
+
+        printf '%s\n' "tag=$tag" "url=$url" "sha256=$sha256" | tee -a $GITHUB_OUTPUT
 
     - name: Extract changes from release
+      shell:
+        bash
       env:
-        tag: ${{ needs.pypi.outputs.tag }}
+        tag: ${{ steps.info.outputs.tag }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
       run: |
         curl -s -u "Cimbali:$GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" -H "Accept: application/vnd.github+json" \
           "https://api.github.com/repos/Cimbali/pympress/releases" -o - |
           jq ".[] | select(.tag_name == \"v$tag\") | del(.author, .assets[].uploader)" | tee release.json
 
-        jq -r .body release.json | sed '/\(New Contributors\|Full Changelog\)/,/^\s*$/d;s/^- /  &/;1i- Update to v${{ needs.pypi.outputs.tag }}' |
+        jq -r .body release.json | sed '/\(New Contributors\|Full Changelog\)/,/^\s*$/d;s/^- /  &/;1i- Update to v${{ steps.info.outputs.tag }}' |
           pandoc --from=markdown --to=markdown --columns=67 | sed -r 's/^(\s+)-/\1*/;s/\#/#/g' | tee changes
 
     - name: Upload to OpenBuildService
@@ -161,35 +180,30 @@ jobs:
         $osc co -o osc home:cimbali python-pympress
         cd osc/
 
-        if grep -qxF '- Update to v${{ needs.pypi.outputs.tag }}' pympress.changes; then
+        if grep -qxF '- Update to v${{ steps.info.outputs.tag }}' pympress.changes; then
           echo "Version already in changelog ; skipping request"
         else
           $osc vc -F ../changes
           sed -i "2s/Cimba Li <me@cimba.li>/me@cimba.li/" pympress.changes
-          $osc ci -m "Release ${{ needs.pypi.outputs.tag }}"
+          $osc ci -m "Release ${{ steps.info.outputs.tag }}"
 
-          $osc sr --yes -m "Version ${{ needs.pypi.outputs.tag }}" 'X11:Utilities' pympress
+          $osc sr --yes -m "Version ${{ steps.info.outputs.tag }}" 'X11:Utilities' pympress
         fi
       env:
         OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
 
     - name: Get SRPM URL from GitHub Release and download
-      id: srpm
       env:
-        tag: ${{ needs.pypi.outputs.tag }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+        tag: ${{ steps.info.outputs.tag }}
       run: |
-        jq -r '[.assets[] | select(.name | endswith(".src.rpm"))][0]' release.json | tee srpm.json
-
-        curl -L "`jq -r .browser_download_url srpm.json`" -o "python3-pympress-${{ needs.pypi.outputs.tag }}-1.src.rpm"
+        url="https://github.com/Cimbali/pympress/releases/download/v${tag}/python3-pympress-${tag}-1.src.rpm"
+        curl -L "$url" -o "python3-pympress-${tag}-1.src.rpm"
 
     - name: Upload to COPR
       continue-on-error: true
       run: |
         trap 'rm -f ./copr-config' EXIT && echo "$COPR_TOKEN_CONFIG" > ./copr-config
-
-        python3 -m pip install copr-cli
-        copr-cli --config ./copr-config build --nowait cimbali/pympress "python3-pympress-${{ needs.pypi.outputs.tag }}-1.src.rpm"
+        copr-cli --config ./copr-config build --nowait cimbali/pympress "python3-pympress-${{ steps.info.outputs.tag }}-1.src.rpm"
       env:
         COPR_TOKEN_CONFIG: ${{ secrets.COPR_TOKEN_CONFIG }}
 

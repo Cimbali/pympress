@@ -72,6 +72,7 @@ jobs:
       with:
         draft: true
         tag_name: v${{ steps.name.outputs.tag }}
+        files: pympress-${{ steps.name.outputs.tag }}.tar.gz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
 
