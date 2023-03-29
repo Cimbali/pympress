@@ -76,20 +76,19 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         Returns:
             :class:`~pathlib.Path`: The path to the config file to use
         """
-        portable_config = util.get_portable_config()
-        if portable_config.exists():
-            return portable_config
+        try:
+            return util.get_portable_config()
+        except FileNotFoundError:
+            user_config = util.get_user_config()
 
-        user_config = util.get_user_config()
+            # migrate old configuration files from previously-used erroneous locations
+            if search_legacy_locations and (util.IS_POSIX or util.IS_MAC_OS) and not user_config.exists():
+                for legacy_location in ['~/.pympress', '~/.config/pympress']:
+                    legacy_location = pathlib.Path(legacy_location).expanduser()
+                    if legacy_location.exists():
+                        legacy_location.rename(user_config)
 
-        # migrate old configuration files from previously-used erroneous locations
-        if search_legacy_locations and (util.IS_POSIX or util.IS_MAC_OS) and not user_config.exists():
-            for legacy_location in ['~/.pympress', '~/.config/pympress']:
-                legacy_location = pathlib.Path(legacy_location).expanduser()
-                if legacy_location.exists():
-                    legacy_location.rename(user_config)
-
-        return user_config
+            return user_config
 
 
     @staticmethod
@@ -121,7 +120,10 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         Returns:
             `bool`: `True` iff we are using the portable (i.e. in install dir) location
         """
-        return util.get_portable_config().exists()
+        try:
+            return util.get_portable_config().exists()
+        except FileNotFoundError:
+            return False
 
 
     def __init__(config):
