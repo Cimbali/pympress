@@ -103,13 +103,15 @@ def __get_resource_path(*path_parts):
     Returns:
         :class:`~pathlib.Path`: The path to the resource
     """
+    module = '.'.join(('pympress', *path_parts[:-1]))
+    resource = path_parts[-1]
     try:
         # Introduced in 3.9
-        resource = importlib_resources.asfile(importlib_resources.files('pympress').joinpath(*path_parts))
+        resource_path = importlib_resources.files(module).joinpath(resource)
     except AttributeError:
-        # Deprecated in 3.11
-        resource = importlib_resources.path('.'.join(('pympress', *path_parts[:-1])), path_parts[-1])
-    return _opened_resources.enter_context(resource)
+        # Deprecated in 3.11, but required for 3.8
+        resource_path = importlib_resources.path(module, resource)
+    return _opened_resources.enter_context(resource_path)
 
 
 def close_opened_resources():
