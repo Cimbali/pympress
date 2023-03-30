@@ -34,10 +34,10 @@ import os
 import sys
 import pathlib
 
-try:
-    # Introduced in 3.7
+if sys.version_info >= (3, 9):
+    # Using parts introduced in 3.9
     import importlib.resources as importlib_resources
-except ImportError:
+else:
     # Backport dependency
     import importlib_resources
 
@@ -103,13 +103,9 @@ def __get_resource_path(*path_parts):
     Returns:
         :class:`~pathlib.Path`: The path to the resource
     """
-    try:
-        # Introduced in 3.9
-        resource = importlib_resources.asfile(importlib_resources.files('pympress').joinpath(*path_parts))
-    except AttributeError:
-        # Deprecated in 3.11
-        resource = importlib_resources.path('.'.join(('pympress', *path_parts[:-1])), path_parts[-1])
-    return _opened_resources.enter_context(resource)
+    # Introduced in 3.9
+    resource = importlib_resources.files('pympress').joinpath(*path_parts)
+    return _opened_resources.enter_context(importlib_resources.as_file(resource))
 
 
 def close_opened_resources():
