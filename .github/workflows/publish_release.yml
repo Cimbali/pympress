@@ -95,6 +95,7 @@ jobs:
       - name: Get info
         id: info
         run: |
+          ref=${{ github.ref }}
           [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
           tag=${tag#v}
 
@@ -149,6 +150,7 @@ jobs:
     - name: Get info
       id: info
       run: |
+        ref=${{ github.ref }}
         [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
         tag=${tag#v}
 
@@ -180,7 +182,7 @@ jobs:
         $osc co -o osc home:cimbali python-pympress
         cd osc/
 
-        if grep -qxF '- Update to v${{ steps.info.outputs.tag }}' pympress.changes; then
+        if grep -qxFe '- Update to v${{ steps.info.outputs.tag }}' pympress.changes; then
           echo "Version already in changelog ; skipping request"
         else
           $osc vc -F ../changes
@@ -240,7 +242,6 @@ jobs:
 
     - name: Make a brew PR from pypi’s metadata
       if: ${{ needs.pypi.outputs.release == 'final' }}
-      continue-on-error: true
       run: |
         brew bump-formula-pr --strict --no-browse --url="${{needs.pypi.outputs.url}}" --sha256="${{needs.pypi.outputs.sha256}}" pympress
       env:
