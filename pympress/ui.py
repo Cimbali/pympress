@@ -747,7 +747,6 @@ class UI(builder.Builder):
         about.set_comments(_('pympress is a little PDF reader written in Python ' +
                              'using Poppler for PDF rendering and GTK for the GUI.\n') +
                            _('Some preferences are saved in ') + str(self.config.path_to_config()) + '\n' +
-                           _('Resources are loaded from ') + str(util.get_locale_dir().parent) + '\n' +
                            _('The log is written to ') + str(util.get_log_path()) + '\n\n' +
                            _('Media support uses {}.').format(self.medias.backend_version) + '\n' +
                            _('Python version {}').format(sys.version))

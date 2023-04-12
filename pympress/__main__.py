@@ -28,7 +28,6 @@ import logging
 import os
 import sys
 import locale
-import gettext
 
 from pympress import util
 
@@ -60,7 +59,7 @@ except locale.Error as err:
     logger.exception('Failed loading locale: {}'.format(err))
     print('Failed loading locale: {}'.format(err), file=sys.stderr)
 
-gettext.install('pympress', util.get_locale_dir())
+util.get_translation('pympress').install()
 
 
 try:

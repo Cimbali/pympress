@@ -76,9 +76,8 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         Returns:
             :class:`~pathlib.Path`: The path to the config file to use
         """
-        portable_config = util.get_portable_config()
-        if portable_config.exists():
-            return portable_config
+        if Config.using_portable_config():
+            return util.get_portable_config()
 
         user_config = util.get_user_config()
 
@@ -106,6 +105,8 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
         portable_config = util.get_portable_config()
+        if portable_config is None:
+            return
         if Config.using_portable_config():
             portable_config.unlink()
         else:
@@ -121,7 +122,8 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         Returns:
             `bool`: `True` iff we are using the portable (i.e. in install dir) location
         """
-        return util.get_portable_config().exists()
+        portable_config = util.get_portable_config()
+        return portable_config is not None and portable_config.exists()
 
 
     def __init__(config):
@@ -170,12 +172,13 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
         c_full = self.getboolean('content', 'start_fullscreen')
         blank = self.getboolean('content', 'start_blanked')
         portable = self.using_portable_config()
+        can_port = util.get_portable_config() is not None
 
         builder.setup_actions({
             'start-content-fullscreen':   dict(activate=self.toggle_start, state=c_full),
             'start-presenter-fullscreen': dict(activate=self.toggle_start, state=p_full),
             'start-blanked':              dict(activate=self.toggle_start, state=blank),
-            'portable-config':            dict(activate=self.toggle_portable_config, state=portable),
+            'portable-config':            dict(activate=self.toggle_portable_config, state=portable, enabled=can_port),
         })
 
 

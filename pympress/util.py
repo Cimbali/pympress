@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 import contextlib
 import subprocess
 import importlib
+import gettext
 import os
 import sys
 import pathlib
@@ -113,22 +114,48 @@ def close_opened_resources():
     _opened_resources.close()
 
 
-def get_locale_dir():
-    """ Returns the path to the locale directory.
+def get_translation(domain):
+    """ Returns a gettext translation object.
+
+    This re-implements gettext’s translation() and find() to allow using a python 3.9 Traversable as localedir
 
     Returns:
-        :class:`~pathlib.Path`: The path to the locale directory
+        :class:`~gettext.NullTranslations`: A gettext translation object with the strings for the domain loaded
     """
-    return __get_resource_path('share', 'locale')
+    localedir = importlib_resources.files('pympress').joinpath('share', 'locale')
+
+    for envar in ('LANGUAGE', 'LC_ALL', 'LC_MESSAGES', 'LANG'):
+        enval = os.environ.get(envar)
+        if enval:
+            break
+    else:
+        return gettext.NullTranslations()
+
+    # now normalize and expand the languages
+    for lang in enval.split(':'):
+        for nelang in gettext._expand_lang(lang):
+            file = localedir.joinpath(nelang, 'LC_MESSAGES', domain + '.mo')
+            if file.is_file():
+                break
+    else:
+        return gettext.NullTranslations()
+
+    with file.open() as fp:
+        return gettext.GNUTranslations(fp)
 
 
 def get_portable_config():
     """ Returns the path to the configuration file for a portable install (i.e. in the install root).
 
+    May return None if the install root is not a real directory (e.g. in a zip file).
+
     Returns:
-        :class:`~pathlib.Path`: The path to the portable configuration file.
+        :class:`~pathlib.Path` or `None`: The path to the portable configuration file.
     """
-    return __get_resource_path('pympress.conf')
+    try:
+        return __get_resource_path('pympress.conf')
+    except FileNotFoundError:
+        return None
 
 
 def get_default_config():
