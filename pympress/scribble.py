@@ -189,7 +189,7 @@ class Scribbler(builder.Builder):
         # Load color and active pen preferences. Pen 0 is the eraser.
         self.color_width = [(Gdk.RGBA(0, 0, 0, 0), 150)] + list(zip(
             [self.parse_color(config.get('highlight', 'color_{}'.format(pen))) for pen in range(1, 10)],
-            [config.getint('highlight', 'width_{}'.format(pen)) for pen in range(1, 10)],
+            [config.getfloat('highlight', 'width_{}'.format(pen)) for pen in range(1, 10)],
         ))
 
         self.scribble_preset_buttons = [
@@ -318,6 +318,13 @@ class Scribbler(builder.Builder):
             `bool`: whether the event was consumed
         """
         pos = self.get_slide_point(widget, event)
+        try:
+            print(event.time - self.last_time)
+        except AttributeError:
+            pass
+        finally:
+            self.last_time = event.time
+
         if self.scribble_drawing:
             self.scribble_list[-1][-1].append(pos)
             self.scribble_redo_list.clear()
@@ -554,7 +561,7 @@ class Scribbler(builder.Builder):
             event (:class:`~Gdk.Event`):  the GTK event triggering this update.
             value (`int`): the width of the scribbles to be drawn
         """
-        self.scribble_width = max(5, min(90, int(value)))
+        self.scribble_width = max(1, min(100, 10 ** value if value < 1 else 10 + (value - 1) * 90))
         self.update_active_color_width()
 
 
@@ -796,7 +803,8 @@ class Scribbler(builder.Builder):
 
         # Presenter-side setup
         self.scribble_color_selector.set_rgba(self.scribble_color)
-        self.scribble_width_selector.set_value(self.scribble_width)
+        self.scribble_width_selector.set_value(math.log10(self.scribble_width) if self.scribble_width < 10
+                                               else 1 + (self.scribble_width - 10) / 90)
         self.scribble_color_selector.set_sensitive(target != 'eraser')
         self.scribble_width_selector.set_sensitive(target != 'eraser')
 
@@ -834,7 +842,7 @@ class Scribbler(builder.Builder):
         """
         button_number = int(widget.get_name().split('_')[-1])
         color, width = self.color_width[button_number]
-        icon, mask = self.marker_surfaces[int((width - 1) / 30)]
+        icon, mask = self.marker_surfaces[int(width >= 2) + int(width >= 40)]
 
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
         scale = wh / icon.get_height()
