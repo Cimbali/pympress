@@ -46,7 +46,8 @@ class Scribbler(builder.Builder):
     """
     #: Whether we are displaying the interface to scribble on screen and the overlays containing said scribbles
     scribbling_mode = False
-    #: `list` of scribbles to be drawn, as tuples of color :class:`~Gdk.RGBA`, width `int`, and a `list` of points.
+    #: `list` of scribbles to be drawn, as tuples of color :class:`~Gdk.RGBA`, width `int`, a `list` of points,
+    #: and a `list` of pressure values.
     scribble_list = []
     #: `list` of undone scribbles to possibly redo
     scribble_redo_list = []
@@ -294,15 +295,22 @@ class Scribbler(builder.Builder):
         if len(points) <= 2:
             return curves
 
-        c1 = points[1]
-        for c2, pt in zip(points[2:-1:2], points[3:-1:2]):
-            half_c2pt = (pt[0] - c2[0]) / 2, (pt[1] - c2[1]) / 2
+        # quick conversion from points to bezier curves, where we pass through every odd-indexed point
+        # and use every even-indexed point for control points
+        orig, ctrl = points[:2]
+        prev_ctrl = (orig[0] + ctrl[0]) / 2, (orig[1] + ctrl[1]) / 2
 
-            curves.append((*c1, c2[0] + half_c2pt[0], c2[1] + half_c2pt[1], *pt))
-            c1 = (pt[0] + half_c2pt[0], pt[1] + half_c2pt[1])
+        for ctrl, dest in zip(points[2:-1:2], points[3:-1:2]):
+            half_ctrldest = (dest[0] - ctrl[0]) / 2, (dest[1] - ctrl[1]) / 2
+
+            curves.append((*orig, *prev_ctrl, ctrl[0] + half_ctrldest[0], ctrl[1] + half_ctrldest[1], *dest))
+
+            # Next point maintain stroke “inertia” so it doesn’t break around points
+            orig = dest
+            prev_ctrl = (dest[0] + half_ctrldest[0], dest[1] + half_ctrldest[1])
 
         if len(points) % 2 == 0:
-            curves.append((*c1, *points[-2], *points[-1]))
+            curves.append((*orig, *prev_ctrl, *points[-2], *points[-1]))
 
         return curves
 
@@ -317,16 +325,12 @@ class Scribbler(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
-        pos = self.get_slide_point(widget, event)
-        try:
-            print(event.time - self.last_time)
-        except AttributeError:
-            pass
-        finally:
-            self.last_time = event.time
+        pos = self.get_slide_point(widget, event) + ()
 
         if self.scribble_drawing:
-            self.scribble_list[-1][-1].append(pos)
+            self.scribble_list[-1][-2].append(pos)
+            pressure = event.get_axis(Gdk.AxisUse.PRESSURE)
+            self.scribble_list[-1][-1].append(1. if pressure is None else pressure)
             self.scribble_redo_list.clear()
 
             self.adjust_buttons()
@@ -387,7 +391,7 @@ class Scribbler(builder.Builder):
                 self.toggle_erase_source = 'modifier'
                 self.load_preset(target=0)
 
-            self.scribble_list.append((self.scribble_color, self.scribble_width, []))
+            self.scribble_list.append((self.scribble_color, self.scribble_width, [], []))
             self.scribble_drawing = True
 
             return self.track_scribble(widget, event)
@@ -453,19 +457,26 @@ class Scribbler(builder.Builder):
         pen_scale_factor = max(ww / 900, wh / 900)  # or sqrt of product
 
         cairo_context = cairo.Context(self.scribble_cache)
-        cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
 
         draw = slice(self.next_render, -1 if self.scribble_drawing else None)
 
-        for color, width, points in self.scribble_list[draw]:
-            self.render_scribble(cairo_context, color, width * pen_scale_factor, [(x * ww, y * wh) for x, y in points])
+        # Draw every stroke on a separate surface, then merge them all into the scribble cache
+        for color, width, points, pressure in self.scribble_list[draw]:
+            cairo_context.push_group()
+
+            cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
+            self.render_scribble(cairo_context, color, width * pen_scale_factor, [(x * ww, y * wh) for x, y in points],
+                                 pressure)
+
+            cairo_context.pop_group_to_source()
+            cairo_context.paint()
 
         del cairo_context
 
-        self.next_render = len(self.scribble_list) + (draw.stop if draw.stop else 0)
+        self.next_render = draw.indices(len(self.scribble_list))[1]
 
 
-    def render_scribble(self, cairo_context, color, width, points):
+    def render_scribble(self, cairo_context, color, width, points, pressures):
         """ Draw a single scribble, i.e. a bezier curve, on the cairo context
 
         Args:
@@ -473,29 +484,28 @@ class Scribbler(builder.Builder):
             color (:class:`~Gdk.RGBA`): The color of the scribble
             width (`float`): The width of the curve
             points (`list`): The control points of the curve, scaled to the surface.
-
-        Returns:
-            :class:`~cairo.Path`: A copy of the path that was drawn
+            pressures (`list`): The relative line width at each point as `float` values in 0..1
         """
         if not points:
             return
 
         # alpha == 0 -> Eraser mode
-        cairo_context.set_operator(cairo.OPERATOR_OVER if color.alpha else cairo.OPERATOR_CLEAR)
+        cairo_context.set_operator(cairo.OPERATOR_SOURCE if color.alpha else cairo.OPERATOR_CLEAR)
         cairo_context.set_source_rgba(*color)
-        cairo_context.set_line_width(width)
 
-        cairo_context.move_to(*points[0])
+        curves = self.points_to_curves(points)
+        curve_widths = [sum(p) / 3 for p in zip(pressures[0::2], pressures[1::2], pressures[2::2])]
+        for curve, relwidth in zip(curves, curve_widths):
+            cairo_context.move_to(*curve[:2])
+            cairo_context.set_line_width(width * relwidth)
+            cairo_context.curve_to(*curve[2:])
+            cairo_context.stroke()
 
-        for curve in self.points_to_curves(points):
-            cairo_context.curve_to(*curve)
-
-        path = cairo_context.copy_path()
-
+        # Draw from last uneven-indexed point to last point
+        cairo_context.move_to(*points[-2 if len(points) % 2 and len(points) > 1 else -1])
+        cairo_context.set_line_width(width * curve_widths[-1] if curve_widths else pressures[-1])
         cairo_context.line_to(*points[-1])
         cairo_context.stroke()
-
-        return path
 
 
     def draw_scribble(self, widget, cairo_context):
@@ -522,8 +532,9 @@ class Scribbler(builder.Builder):
         pen_scale_factor = max(ww / 900, wh / 900)  # or sqrt of product
         if self.scribble_drawing:
             cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
-            color, width, points = self.scribble_list[-1]
-            self.render_scribble(cairo_context, color, width * pen_scale_factor, [(x * ww, y * wh) for x, y in points])
+            color, width, points, pressure = self.scribble_list[-1]
+            self.render_scribble(cairo_context, color, width * pen_scale_factor, [(x * ww, y * wh) for x, y in points],
+                                 pressure)
 
         cairo_context.pop_group_to_source()
         cairo_context.paint()
