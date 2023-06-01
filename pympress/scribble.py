@@ -735,6 +735,9 @@ class Scribbler(builder.Builder):
         self.p_central.queue_draw()
         self.scribble_overlay.queue_draw()
 
+        # Get frequent events for smooth drawing
+        self.p_central.get_window().set_event_compression(False)
+
         self.scribbling_mode = True
         self.get_application().lookup_action('highlight').change_state(GLib.Variant.new_boolean(self.scribbling_mode))
         self.pen_action.set_enabled(self.scribbling_mode)
@@ -758,6 +761,7 @@ class Scribbler(builder.Builder):
         extras.Cursor.set_cursor(self.scribble_p_da, 'default')
         self.load_layout(None)
         self.scribble_off_render.add(self.scribble_overlay)
+        self.p_central.get_window().set_event_compression(True)
 
         self.get_application().lookup_action('highlight').change_state(GLib.Variant.new_boolean(self.scribbling_mode))
         self.pen_action.set_enabled(self.scribbling_mode)
