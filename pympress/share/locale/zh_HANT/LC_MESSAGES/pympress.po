@@ -13,35 +13,35 @@ msgstr ""
 
 #: 
 msgid "(paused)"
-msgstr "（暂停中）"
+msgstr "（已暫停）"
 
 #: 
 msgid "Adjust alignment of slides in projector screen"
-msgstr "调整投影依屏幕的对齐"
+msgstr "調整投影幕中投影片的位置"
 
 #: 
 msgid "All files"
-msgstr "所有文件"
+msgstr "所有檔案"
 
 #: 
 msgid "Annotations"
-msgstr "注释"
+msgstr "註解"
 
 #: 
 msgid "Big buttons"
-msgstr "大按钮"
+msgstr "大按鈕"
 
 #: 
 msgid "Cairo can not draw gif"
-msgstr "Cairo 无法绘制 gif"
+msgstr "Cairo 無法繪製 gif"
 
 #: 
 msgid "Clock"
-msgstr "时钟"
+msgstr "時鐘"
 
 #: 
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "如果你开启全屏，演讲内容和演讲者窗口不能在同一显示器上！"
+msgstr "如果你使用全螢幕，演講内容和演講者視窗不能在同一個螢幕上！"
 
 #: 
 msgid "Content blanked"
@@ -49,11 +49,11 @@ msgstr "演讲内容空白化"
 
 #: 
 msgid "Content fullscreen"
-msgstr "演讲内容全屏化"
+msgstr "以全螢幕顯示演講內容"
 
 #: 
 msgid "Contributors:"
-msgstr "贡献者："
+msgstr "貢獻者："
 
 #: 
 msgid "Could not disable DPMS screen blanking: got status "
@@ -65,7 +65,7 @@ msgstr ""
 
 #: 
 msgid "Could not find the file \"{}\""
-msgstr "不能找到文件 \"{}\""
+msgstr "找不到檔案 \"{}\""
 
 #: 
 msgid "Could not set screensaver status: got status "
@@ -73,19 +73,19 @@ msgstr ""
 
 #: 
 msgid "Current slide"
-msgstr "当前幻灯片"
+msgstr "目前投影片"
 
 #: 
 msgid "ERROR: Gobject Introspections module is missing, make sure Gtk and pygobject are installed on your system."
-msgstr ""
+msgstr "錯誤：找不到 Gobject Introspections 模組，請確認 Gtk 與 pygobject 已安裝在您的系統中。"
 
 #: 
 msgid "Error loading icon for about window"
-msgstr ""
+msgstr "載入關於視窗的圖示時發生錯誤"
 
 #: 
 msgid "Error opening the file \"{}\""
-msgstr ""
+msgstr "開啟檔案時發生錯誤 \"{}\""
 
 #: 
 msgid "For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
@@ -93,7 +93,7 @@ msgstr ""
 
 #: 
 msgid "GtkImage gif player"
-msgstr ""
+msgstr "GtkImage gif 播放器"
 
 #: 
 msgid "Highlight"
@@ -101,7 +101,7 @@ msgstr "高亮"
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject"
-msgstr ""
+msgstr "如果使用 virtualenv 或 anaconda，您可以允許使用系統中的軟體包，或是執行：pip install pygobject"
 
 #: 
 msgid "Invalid log level \"{}\", try one of {}"
@@ -117,35 +117,35 @@ msgstr ""
 
 #: 
 msgid "Next slide"
-msgstr "下一张幻灯片"
+msgstr "下一張投影片"
 
 #: 
 msgid "No action was defined for this link"
-msgstr ""
+msgstr "此連結尚未定義動作"
 
 #: 
 msgid "Not starting content or presenter window full screen because there is only one monitor"
-msgstr "没有全屏显示地启动演讲内容或演讲者窗口，因为只有一个显示器"
+msgstr "只有一個螢幕，因此不使用全螢幕啟動演講內容或演講者視窗。"
 
 #: 
 msgid "Notes"
-msgstr "笔记"
+msgstr "備忘稿"
 
 #: 
 msgid "Notes position"
-msgstr ""
+msgstr "備忘稿位置"
 
 #: 
 msgid "Open _Recent"
-msgstr "打开 _最近"
+msgstr "開啓 _最近"
 
 #: 
 msgid "Open..."
-msgstr "打开..."
+msgstr "開啓..."
 
 #: 
 msgid "Options:"
-msgstr ""
+msgstr "選項："
 
 #: 
 msgid "Overrides the detection from the file."
@@ -153,11 +153,11 @@ msgstr ""
 
 #: 
 msgid "PDF files"
-msgstr "PDF 文件"
+msgstr "PDF 檔案"
 
 #: 
 msgid "Pause"
-msgstr "暂停"
+msgstr "暫停"
 
 #: 
 msgid "Play"
@@ -165,11 +165,11 @@ msgstr "播放"
 
 #: 
 msgid "Pointer"
-msgstr "指针"
+msgstr "指標"
 
 #: 
 msgid "Portable installation"
-msgstr ""
+msgstr "可攜式安裝"
 
 #: 
 msgid "Presentation timing breakdown"
@@ -221,7 +221,7 @@ msgstr "Pympress 不能支持链接类型 \"{}\" 为 \"{}\""
 
 #: 
 msgid "Python version {}"
-msgstr ""
+msgstr "Python 版本 {}"
 
 #: 
 msgid "Resources are loaded from "
@@ -429,7 +429,7 @@ msgstr "_放大"
 
 #: 
 msgid "access denied when trying to access screen saver settings in registry!"
-msgstr ""
+msgstr "在嘗試存取螢幕保護程式設定的登錄檔時存取被拒！"
 
 #: 
 msgid "column"
@@ -453,7 +453,7 @@ msgstr ""
 
 #: 
 msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
-msgstr ""
+msgstr "pip 接下來會下載並編譯 pygobject，您會需要 Gtk 標頭檔 (或開發軟體包) 才能完成編譯。"
 
 #: 
 msgid "pympress is a little PDF reader written in Python using Poppler for PDF rendering and GTK for the GUI.\n"
@@ -480,7 +480,7 @@ msgstr ""
 
 #: 
 msgid "Additional features"
-msgstr ""
+msgstr "額外功能"
 
 #: 
 #, fuzzy
@@ -503,11 +503,11 @@ msgstr "当前幻灯片"
 
 #: 
 msgid "Go back in slide history"
-msgstr ""
+msgstr "在投影片歷史中往前"
 
 #: 
 msgid "Go forward in slide history"
-msgstr ""
+msgstr "在投影片歷史中往後"
 
 #: 
 msgid "Go to page number"
@@ -537,7 +537,7 @@ msgstr ""
 
 #: 
 msgid "Open file"
-msgstr ""
+msgstr "開啓檔案"
 
 #: 
 #, fuzzy
@@ -579,7 +579,7 @@ msgstr ""
 
 #: 
 msgid "Timers"
-msgstr ""
+msgstr "計時器"
 
 #: 
 #, fuzzy
@@ -660,7 +660,7 @@ msgstr ""
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject pycairo"
-msgstr ""
+msgstr "如果使用 virtualenv 或 anaconda，您可以允許使用系統中的軟體包，或是執行：pip install pygobject pycairo"
 
 #: 
 msgid "pip will then download and compile pygobject, for which you need the Gtk and cairo headers (or development packages)."
@@ -672,7 +672,7 @@ msgstr ""
 
 #: 
 msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
-msgstr ""
+msgstr "如果使用 virtualenv 或 anaconda，您可以允許使用系統中的軟體包。"
 
 #: 
 msgid "Set the position of notes on the pdf page"
