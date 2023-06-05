@@ -452,17 +452,10 @@ class Scribbler(builder.Builder):
 
         draw = slice(self.next_render, -1 if self.scribble_drawing else None)
 
-        # Draw every stroke on a separate surface, then merge them all into the scribble cache
         for color, width, points, pressure in self.scribble_list[draw]:
-            cairo_context.push_group()
-
             cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
             self.render_scribble(cairo_context, color, width * pen_scale_factor, [(x * ww, y * wh) for x, y in points],
                                  pressure)
-
-            cairo_context.pop_group_to_source()
-            cairo_context.paint()
-
         del cairo_context
 
         self.next_render = draw.indices(len(self.scribble_list))[1]
@@ -480,6 +473,11 @@ class Scribbler(builder.Builder):
         """
         if not points:
             return
+
+        # Draw every stroke on a separate surface, then merge them all into the scribble cache
+        # Erasers do not have their own group as they are meant to interfere with strokes below
+        if color.alpha:
+            cairo_context.push_group()
 
         # alpha == 0 -> Eraser mode
         cairo_context.set_operator(cairo.OPERATOR_SOURCE if color.alpha else cairo.OPERATOR_CLEAR)
@@ -499,6 +497,10 @@ class Scribbler(builder.Builder):
         cairo_context.line_to(*points[-1])
         cairo_context.stroke()
 
+        if color.alpha:
+            cairo_context.pop_group_to_source()
+            cairo_context.paint()
+
 
     def draw_scribble(self, widget, cairo_context):
         """ Perform the drawings by user.
@@ -511,6 +513,8 @@ class Scribbler(builder.Builder):
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
         cw, ch = self.scribble_cache.get_width(), self.scribble_cache.get_height()
 
+        cairo_context.push_group()
+
         cairo_context.save()
 
         cairo_context.scale(ww * scale / cw, wh * scale / ch)
@@ -518,8 +522,6 @@ class Scribbler(builder.Builder):
         cairo_context.paint()
 
         cairo_context.restore()
-
-        cairo_context.push_group()
 
         pen_scale_factor = max(ww / 900, wh / 900)  # or sqrt of product
         if self.scribble_drawing:
