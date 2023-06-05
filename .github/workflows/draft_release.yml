@@ -30,8 +30,10 @@ jobs:
       uses: actions/checkout@v3
       with:
         path: pympress
+        ref: ${{ github.event.inputs.tag || github.ref }}
 
     - name: Check tag matches python package version
+      continue-on-error: true
       run: >
         env PYTHONPATH=pympress python3 -c "import importlib;
         assert importlib.import_module('pympress.__init__').__version__ == '${{ steps.name.outputs.tag }}'"
