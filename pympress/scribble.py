@@ -188,7 +188,7 @@ class Scribbler(builder.Builder):
         self.eraser_surface = cairo.ImageSurface.create_from_png(str(util.get_icon_path('eraser.png')))
 
         # Load color and active pen preferences. Pen 0 is the eraser.
-        self.color_width = [(Gdk.RGBA(0, 0, 0, 0), 150)] + list(zip(
+        self.color_width = [(Gdk.RGBA(0, 0, 0, 0), config.getfloat('highlight', 'width_eraser'))] + list(zip(
             [self.parse_color(config.get('highlight', 'color_{}'.format(pen))) for pen in range(1, 10)],
             [config.getfloat('highlight', 'width_{}'.format(pen)) for pen in range(1, 10)],
         ))
@@ -573,14 +573,13 @@ class Scribbler(builder.Builder):
     def update_active_color_width(self):
         """ Update modifications to the active scribble color and width, on the pen button and config object
         """
-        if not self.active_preset:
-            return
-
         self.color_width[self.active_preset] = self.scribble_color, self.scribble_width
-        self.scribble_preset_buttons[self.active_preset].queue_draw()
+        if self.active_preset:
+            self.scribble_preset_buttons[self.active_preset].queue_draw()
 
-        pen = self.active_preset
-        self.config.set('highlight', 'color_{}'.format(pen), self.scribble_color.to_string())
+        pen = self.active_preset if self.active_preset else 'eraser'
+        if self.active_preset:
+            self.config.set('highlight', 'color_{}'.format(pen), self.scribble_color.to_string())
         self.config.set('highlight', 'width_{}'.format(pen), str(self.scribble_width))
 
 
@@ -811,7 +810,6 @@ class Scribbler(builder.Builder):
         self.scribble_width_selector.set_value(math.log10(self.scribble_width) if self.scribble_width < 10
                                                else 1 + (self.scribble_width - 10) / 90)
         self.scribble_color_selector.set_sensitive(target != 'eraser')
-        self.scribble_width_selector.set_sensitive(target != 'eraser')
 
         # Re-draw the eraser
         self.scribble_p_da.queue_draw()
