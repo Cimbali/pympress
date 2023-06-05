@@ -495,7 +495,7 @@ class Scribbler(builder.Builder):
 
         # Draw from last uneven-indexed point to last point
         cairo_context.move_to(*points[-2 if len(points) % 2 and len(points) > 1 else -1])
-        cairo_context.set_line_width(width * curve_widths[-1] if curve_widths else pressures[-1])
+        cairo_context.set_line_width(width * (curve_widths[-1] if curve_widths else pressures[-1]))
         cairo_context.line_to(*points[-1])
         cairo_context.stroke()
 
