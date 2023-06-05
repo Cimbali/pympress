@@ -295,22 +295,13 @@ class Scribbler(builder.Builder):
         if len(points) <= 2:
             return curves
 
-        # quick conversion from points to bezier curves, where we pass through every odd-indexed point
-        # and use every even-indexed point for control points
-        orig, ctrl = points[:2]
-        prev_ctrl = (orig[0] + ctrl[0]) / 2, (orig[1] + ctrl[1]) / 2
-
-        for ctrl, dest in zip(points[2:-1:2], points[3:-1:2]):
-            half_ctrldest = (dest[0] - ctrl[0]) / 2, (dest[1] - ctrl[1]) / 2
-
-            curves.append((*orig, *prev_ctrl, ctrl[0] + half_ctrldest[0], ctrl[1] + half_ctrldest[1], *dest))
-
-            # Next point maintain stroke “inertia” so it doesn’t break around points
-            orig = dest
-            prev_ctrl = (dest[0] + half_ctrldest[0], dest[1] + half_ctrldest[1])
-
-        if len(points) % 2 == 0:
-            curves.append((*orig, *prev_ctrl, *points[-2], *points[-1]))
+        for (ax, ay), (bx, by), (cx, cy), (dx, dy) in zip(
+                [points[0], *points[:-2]], points[:-1], points[1:], [*points[2:], points[-1]]
+        ):
+            curves.append((bx, by,
+                           bx + (cx - ax) / 4, by + (cy - ay) / 4,
+                           cx + (bx - dx) / 4, cy + (by - dy) / 4,
+                           cx, cy))
 
         return curves
 
@@ -494,7 +485,7 @@ class Scribbler(builder.Builder):
         cairo_context.set_source_rgba(*color)
 
         curves = self.points_to_curves(points)
-        curve_widths = [sum(p) / 3 for p in zip(pressures[0::2], pressures[1::2], pressures[2::2])]
+        curve_widths = [(a + b) / 2 for a, b in zip(pressures[:-1], pressures[1:])]
         for curve, relwidth in zip(curves, curve_widths):
             cairo_context.move_to(*curve[:2])
             cairo_context.set_line_width(width * relwidth)
