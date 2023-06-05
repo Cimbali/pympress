@@ -376,8 +376,9 @@ class Scribbler(builder.Builder):
             return False
 
         if event.get_event_type() == Gdk.EventType.BUTTON_PRESS:
-            if any(mod & event.get_state() == mod for mod in self.toggle_erase_modifiers) and self.active_preset \
-                    and self.toggle_erase_source is None:
+            eraser_button = event.get_source_device().get_source() == Gdk.InputSource.ERASER
+            eraser_modifier = any(mod & event.get_state() == mod for mod in self.toggle_erase_modifiers)
+            if (eraser_button or eraser_modifier) and self.active_preset and self.toggle_erase_source is None:
                 self.previous_preset = self.active_preset
                 self.toggle_erase_source = 'modifier'
                 self.load_preset(target=0)
