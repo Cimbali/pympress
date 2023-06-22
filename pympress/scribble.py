@@ -407,7 +407,8 @@ class Scribbler(builder.Builder):
         window = self.c_da.get_window()
 
         if window is None:
-            return ValueError('Cannot initialize scribble cache without drawing area window')
+            logger.error('Cannot initialize scribble cache without drawing area window')
+            return
 
         scale = window.get_scale_factor()
         ww, wh = self.c_da.get_allocated_width() * scale, self.c_da.get_allocated_height() * scale
@@ -420,25 +421,23 @@ class Scribbler(builder.Builder):
                 try:
                     self.scribble_cache = window.create_similar_image_surface(cairo.Format.ARGB32, ww, wh, scale)
                 except ValueError:
-                    return
+                    logger.exception('Error creating highlight cache')
+                else:
+                    self.next_render = 0
             else:
                 logger.exception('Error creating highlight cache')
         except cairo.Error:
             logger.warning('Failed creating an ARGB32 surface sized {}x{} scale {} for highlight cache'
                            .format(ww, wh, scale), exc_info=True)
-            return
-        self.next_render = 0
+        else:
+            self.next_render = 0
 
 
     def prerender(self):
         """ Commit scribbles to cache so they are faster to draw on the slide
         """
         if self.scribble_cache is None:
-            try:
-                self.reset_scribble_cache()
-            except ValueError as e:
-                logger.info(e)
-                return
+            self.reset_scribble_cache()
 
         if self.scribble_cache is None:
             self.next_render = 0
@@ -449,11 +448,11 @@ class Scribbler(builder.Builder):
         pen_scale_factor = max(ww / 900, wh / 900)  # or sqrt of product
 
         cairo_context = cairo.Context(self.scribble_cache)
+        cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
 
         draw = slice(self.next_render, -1 if self.scribble_drawing else None)
 
         for color, width, points, pressure in self.scribble_list[draw]:
-            cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
             self.render_scribble(cairo_context, color, width * pen_scale_factor, [(x * ww, y * wh) for x, y in points],
                                  pressure)
         del cairo_context
@@ -478,9 +477,10 @@ class Scribbler(builder.Builder):
         # Erasers do not have their own group as they are meant to interfere with strokes below
         if color.alpha:
             cairo_context.push_group()
-
-        # alpha == 0 -> Eraser mode
-        cairo_context.set_operator(cairo.OPERATOR_SOURCE if color.alpha else cairo.OPERATOR_CLEAR)
+            cairo_context.set_operator(cairo.OPERATOR_SOURCE)
+        else:
+            # alpha == 0 -> Eraser mode
+            cairo_context.set_operator(cairo.OPERATOR_CLEAR)
         cairo_context.set_source_rgba(*color)
 
         curves = self.points_to_curves(points)
@@ -772,7 +772,9 @@ class Scribbler(builder.Builder):
         extras.Cursor.set_cursor(self.scribble_p_da, 'default')
         self.load_layout(None)
         self.scribble_off_render.add(self.scribble_overlay)
-        self.p_central.get_window().set_event_compression(True)
+        window = self.p_central.get_window()
+        if window:
+            window.set_event_compression(True)
 
         self.get_application().lookup_action('highlight').change_state(GLib.Variant.new_boolean(self.scribbling_mode))
         self.pen_action.set_enabled(self.scribbling_mode)
