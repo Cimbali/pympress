@@ -101,7 +101,7 @@ class TimingReport(builder.Builder):
         Returns:
             `str`: The formatted time, with 2+ digits for minutes and 2 digits for seconds.
         """
-        return '{:02}:{:02}'.format(*divmod(int(secs), 60))
+        return '{:02.0f}:{:02.0f}'.format(*divmod(secs, 60))
 
 
     def set_document_metadata(self, doc_structure, page_labels):
