@@ -12,7 +12,6 @@ msgid "(and optionally seconds)"
 msgstr "(e opzionalmente secondi)"
 
 #: 
-#, fuzzy
 msgid "(paused)"
 msgstr "(in pausa)"
 
@@ -45,7 +44,7 @@ msgstr "Orologio"
 #: 
 #, fuzzy
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "La finestra di presentazione e di controllo non possono essere sullo stesso schermo in modalità a schermo intero"
+msgstr "La finestra di presentazione e di controllo non possono essere sullo stesso schermo in modalità a schermo intero!"
 
 #: 
 #, fuzzy
@@ -57,6 +56,7 @@ msgid "Content fullscreen"
 msgstr "Contenuti a schermo intero"
 
 #: 
+#, fuzzy
 msgid "Contributors:"
 msgstr "Contributori:"
 
@@ -219,7 +219,7 @@ msgstr "Pympress non riconosce il tipo di collegamento \"{}\" a \"{}\""
 
 #: 
 msgid "Pympress does not yet support link type \"{}\""
-msgstr "Pympress non supporta ancora il tipo di collegamento \"{}\"."
+msgstr "Pympress non supporta ancora il tipo di collegamento \"{}\""
 
 #: 
 msgid "Pympress does not yet support link type \"{}\" to \"{}\""
@@ -295,7 +295,7 @@ msgstr "Sistema operativo non supportato: non è possibile attivare/disattivare 
 
 #: 
 msgid "Usage: {} [options] <presentation_file>"
-msgstr "Uso: {} [opzioni] <presentazione_file>"
+msgstr "Uso: {} [options] <presentation_file>"
 
 #: 
 msgid "Video support using {} is disabled."
@@ -737,15 +737,15 @@ msgstr "GdkPixbuf gif riproduttore"
 
 #: 
 msgid "Media support loaded: "
-msgstr "Supporto dei media caricato"
+msgstr "Supporto dei media caricato: "
 
 #: 
 msgid "Media support using {} is disabled."
-msgstr "Supporto dei media è disabilitato"
+msgstr "Supporto dei media che utilizzano {} è disabilitato."
 
 #: 
 msgid "Media support: "
-msgstr "Supporto media"
+msgstr "Supporto media: "
 
 #: 
 msgid "Align _content"
@@ -792,68 +792,69 @@ msgid "_Pointer"
 msgstr "Puntatore"
 
 #: 
+#, fuzzy
 msgid "_Quit"
-msgstr ""
+msgstr "_Esci"
 
 #: 
 msgid "10th next slide"
-msgstr ""
+msgstr "10° diapositiva successiva"
 
 #: 
 msgid "11th next slide"
-msgstr ""
+msgstr "11° diapositiva successiva"
 
 #: 
 msgid "12th next slide"
-msgstr ""
+msgstr "12° diapositiva successiva"
 
 #: 
 msgid "13th next slide"
-msgstr ""
+msgstr "13° diapositiva successiva"
 
 #: 
 msgid "14th next slide"
-msgstr ""
+msgstr "14° diapositiva successiva"
 
 #: 
 msgid "15th next slide"
-msgstr ""
+msgstr "15° diapositiva successiva"
 
 #: 
 msgid "16th next slide"
-msgstr ""
+msgstr "16° diapositiva successiva"
 
 #: 
 msgid "2nd next slide"
-msgstr ""
+msgstr "2a diapositiva successiva"
 
 #: 
 msgid "3rd next slide"
-msgstr ""
+msgstr "3a diapositiva successiva"
 
 #: 
 msgid "4th next slide"
-msgstr ""
+msgstr "4° diapositiva successiva"
 
 #: 
 msgid "5th next slide"
-msgstr ""
+msgstr "5° diapositiva successiva"
 
 #: 
 msgid "6th next slide"
-msgstr ""
+msgstr "6° diapositiva successiva"
 
 #: 
 msgid "7th next slide"
-msgstr ""
+msgstr "7° diapositiva successiva"
 
 #: 
 msgid "8th next slide"
-msgstr ""
+msgstr "8° diapositiva successiva"
 
 #: 
 msgid "9th next slide"
-msgstr ""
+msgstr "9a diapositiva successiva"
 
 #: 
 msgid "annotations (hideable)"
@@ -873,7 +874,7 @@ msgstr "prossima slide(s)"
 
 #: 
 msgid "next slides count"
-msgstr ""
+msgstr "contano le diapositive successive"
 
 #: 
 msgid "orientation"
@@ -893,189 +894,190 @@ msgstr "widget"
 
 #: 
 msgid "_Discard"
-msgstr ""
+msgstr "_Scarta"
 
 #: 
 msgid "annotations"
-msgstr ""
+msgstr "annotazioni"
 
 #: 
 msgid "_Automatic navigation"
-msgstr ""
+msgstr "_Navigazione automatica"
 
 #: 
 msgid "Note pages"
-msgstr ""
+msgstr "Pagine di note"
 
 #: 
 msgid "Plain"
-msgstr ""
+msgstr "Pianura"
 
 #: 
 msgid "notes"
-msgstr ""
+msgstr "Appunti"
 
 #: 
 msgid "Highlighting"
-msgstr ""
+msgstr "Evidenziazione"
 
 #: 
 msgid "Layout to draw on the current slide"
-msgstr ""
+msgstr "Layout per disegnare sulla diapositiva corrente"
 
 #: 
+#, fuzzy
 msgid "highlighting"
-msgstr ""
+msgstr "evidenziando"
 
 #: 
 msgid "Exit highlight on page change"
-msgstr ""
+msgstr "Uscita evidenziata al cambio di pagina"
 
 #: 
 msgid "_Every second page"
-msgstr ""
+msgstr "_Ogni seconda pagina"
 
 #: 
 msgid "(none, left, right, top, bottom, after, odd, or prefix)."
-msgstr ""
+msgstr "(nessuno, sinistra, destra, alto, basso, dopo, dispari o prefisso)."
 
 #: 
 msgid "Unexpected missing page to draw for widget \"{}\""
-msgstr ""
+msgstr "Pagina mancante imprevista da disegnare per il widget \"{}\""
 
 #: 
 msgid "_Prefixed labels"
-msgstr ""
+msgstr "_Etichette prefissate"
 
 #: 
 msgid "Redo highlight stroke"
-msgstr ""
+msgstr "Ripristina il tratto di evidenziazione"
 
 #: 
 msgid "_About"
-msgstr ""
+msgstr "_Di"
 
 #: 
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #: 
 msgid "Choose parameters for automatically playing slides"
-msgstr ""
+msgstr "Scegli i parametri per la riproduzione automatica delle diapositive"
 
 #: 
 msgid "Edit layout"
-msgstr ""
+msgstr "Modifica disposizione"
 
 #: 
 msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr ""
+msgstr "Gtk.Application.inhibit non è riuscito a impedire lo screensaver, provando a disabilitarlo"
 
 #: 
 msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr ""
+msgstr "Layout per le note del videoproiettore sul secondo schermo (nessuna anteprima della diapositiva corrente nelle note)"
 
 #: 
 msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr ""
+msgstr "Layout per le note di LibreOffice su pagine separate (con l'anteprima della diapositiva corrente nelle note)"
 
 #: 
 msgid "Loop"
-msgstr ""
+msgstr "Ciclo continuo"
 
 #: 
 msgid "Overwrite"
-msgstr ""
+msgstr "Sovrascrivi"
 
 #: 
 msgid "Overwrite changes instead of reloading?"
-msgstr ""
+msgstr "Sovrascrivere le modifiche invece di ricaricare?"
 
 #: 
 msgid "Plain layout, without note slides"
-msgstr ""
+msgstr "Layout semplice, senza diapositive delle note"
 
 #: 
 msgid "Reload"
-msgstr ""
+msgstr "Ricaricare"
 
 #: 
 msgid "Save as..."
-msgstr ""
+msgstr "Salva come..."
 
 #: 
 msgid "Save changes before closing?"
-msgstr ""
+msgstr "Salvare le modifiche prima di chiudere?"
 
 #: 
 msgid "Save file"
-msgstr ""
+msgstr "Salvare il file"
 
 #: 
 msgid "Save file as"
-msgstr ""
+msgstr "Salva file con nome"
 
 #: 
 msgid "Saving changes will overwrite the changed file!"
-msgstr ""
+msgstr "Il salvataggio delle modifiche sovrascriverà il file modificato!"
 
 #: 
 msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr ""
+msgstr "Non dovrebbe richiedere l'abilitazione/disabilitazione del salvaschermo su Linux"
 
 #: 
 msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr ""
+msgstr "Il file aperto è stato modificato al di fuori di pympress ma hai apportato modifiche non salvate."
 
 #: 
 msgid "Time per slide (s):"
-msgstr ""
+msgstr "Tempo per diapositiva (s):"
 
 #: 
 msgid "Unknown widget \"{}\" to draw"
-msgstr ""
+msgstr "Widget sconosciuto \"{}\" da disegnare"
 
 #: 
 msgid "Unsaved changes"
-msgstr ""
+msgstr "Modifiche non salvate"
 
 #: 
 msgid "Unsaved changes will be lost"
-msgstr ""
+msgstr "Le modifiche non salvate andranno perse"
 
 #: 
 msgid "Unsaved changes will be lost."
-msgstr ""
+msgstr "Le modifiche non salvate andranno perse."
 
 #: 
 msgid "_Save"
-msgstr ""
+msgstr "_Salva"
 
 #: 
 msgid "_Save as"
-msgstr ""
+msgstr "_Salva come"
 
 #: 
 msgid "box"
-msgstr ""
+msgstr "scatola"
 
 #: 
 msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
-msgstr ""
+msgstr "Impossibile caricare pixbuf per il puntatore \"{}\" da: {}"
 
 #: 
 msgid "Highlighting with notes"
-msgstr ""
+msgstr "Evidenziazione con note"
 
 #: 
 msgid "Layout to draw on the current slide with notes displayed"
-msgstr ""
+msgstr "Layout per disegnare sulla diapositiva corrente con le note visualizzate"
 
 #: 
 msgid "_Deck overview"
-msgstr ""
+msgstr "_Panoramica del mazzo"
 
 #: 
 msgid "Show deck overview"
-msgstr ""
+msgstr "Mostra la panoramica del mazzo"
 

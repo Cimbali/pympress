@@ -179,7 +179,7 @@ msgstr "Intalacja przenośna"
 
 #: 
 msgid "Presentation timing breakdown"
-msgstr ""
+msgstr "Podział czasu prezentacji"
 
 #: 
 msgid "Presenter fullscreen"
@@ -279,7 +279,7 @@ msgstr "Przewidziany czas"
 
 #: 
 msgid "Timing breakdown"
-msgstr ""
+msgstr "Podział czasowy"
 
 #: 
 #, fuzzy
@@ -655,19 +655,19 @@ msgstr "BŁĄD: Brak Introspekcji Gobject i/lub modułu pycairo, upewnij się, �
 
 #: 
 msgid "If using a virtualenv or anaconda, you can either allow system site packages, or run: pip install pygobject pycairo"
-msgstr ""
+msgstr "Jeśli używasz virtualenv lub anaconda, możesz zezwolić na pakiety witryny systemowej lub uruchomić: pip install pygobject pycairo"
 
 #: 
 msgid "pip will then download and compile pygobject, for which you need the Gtk and cairo headers (or development packages)."
-msgstr ""
+msgstr "pip pobierze, a następnie skompiluje pygobject, dla którego potrzebne są nagłówki Gtk oraz cairo (lub pakiety programistyczne)."
 
 #: 
 msgid "(none, left, right, top, or bottom)."
-msgstr ""
+msgstr "(brak, lewa, prawa, góra lub dół)."
 
 #: 
 msgid "If using a virtualenv or anaconda, you can also try allowing system site packages."
-msgstr ""
+msgstr "Jeśli używasz virtualenv lub anaconda, możesz także spróbować zezwolić na pakiety witryny systemowej."
 
 #: 
 msgid "Set the position of notes on the pdf page"
@@ -675,291 +675,291 @@ msgstr "Ustaw pozycję notatek na stronie pdf"
 
 #: 
 msgid "Try your operating system’s package manager, or try running: pip install pygobject pycairo"
-msgstr ""
+msgstr " spróbuj uruchomić menedżera pakietów swojego systemu operacyjnego lub spróbuj uruchomić: pip install pygobject pycairo"
 
 #: 
 msgid "pip will then download and compile pygobject and pycairo, for which you need the Gtk and cairo headers (or development packages)."
-msgstr ""
+msgstr "pip pobierze, a następnie skompiluje pygobject oraz pycairo, dla których potrzebujesz nagłówków Gtk i cairo (lub pakietów programistycznych)."
 
 #: 
 msgid "(none, left, right, top, bottom, or after)."
-msgstr ""
+msgstr "(brak, lewy, prawy, górny, dolny lub po)."
 
 #: 
 msgid "_After slide pages"
-msgstr ""
+msgstr "_Po stronach slajdów"
 
 #: 
 msgid "_Bottom half of slide"
-msgstr ""
+msgstr "_Dolna połowa slajdu"
 
 #: 
 msgid "_Left half of slide"
-msgstr ""
+msgstr "_Lewa połowa slajdu"
 
 #: 
 msgid "_Right half of slide"
-msgstr ""
+msgstr "_Prawa połowa slajdu"
 
 #: 
 msgid "_Top half of slide"
-msgstr ""
+msgstr "_Górna połowa slajdu"
 
 #: 
 msgid "Error parsing option from config file {}.{} \"{}\" to bool"
-msgstr ""
+msgstr "Błąd podczas przetwarzania opcji z pliku konfiguracyjnego {}.{} \"{}\" na bool"
 
 #: 
 msgid "Error parsing option from config file {}.{} \"{}\" to float"
-msgstr ""
+msgstr "Błąd podczas przetwarzania opcji z pliku konfiguracyjnego {}.{} \"{}\" na float"
 
 #: 
 msgid "Error parsing option from config file {}.{} \"{}\" to int"
-msgstr ""
+msgstr "Błąd podczas przetwarzania opcji z pliku konfiguracyjnego {}.{} \"{}\" na int"
 
 #: 
 msgid "Blank/unblank content screen"
-msgstr ""
+msgstr "Pusty/niepusty ekran zawartości"
 
 #: 
 msgid "Close opened pympress instance"
-msgstr ""
+msgstr "Zamknij otwartą instancję pympress"
 
 #: 
 msgid "Print version and exit"
-msgstr ""
+msgstr "Wyświetl wersję i wyjdź"
 
 #: 
 msgid "Reset talk timer"
-msgstr ""
+msgstr "Zresetuj licznik czasu przemowy"
 
 #: 
 msgid "Toggle pause of talk timer"
-msgstr ""
+msgstr "Przełącz pauzę licznika czasu przemowy"
 
 #: 
 msgid "GdkPixbuf gif player"
-msgstr ""
+msgstr "Odtwarzacz gifów GdkPixbuf"
 
 #: 
 msgid "Media support loaded: "
-msgstr ""
+msgstr "Załadowano obsługę multimediów: "
 
 #: 
 msgid "Media support using {} is disabled."
-msgstr ""
+msgstr "Obsługa multimediów za pomocą {} jest wyłączona."
 
 #: 
 msgid "Media support: "
-msgstr ""
+msgstr "Wsparcie mediów: "
 
 #: 
 msgid "Align _content"
-msgstr ""
+msgstr "Wyrównaj _zawartość"
 
 #: 
 msgid "Clear and restore per page label"
-msgstr ""
+msgstr "Wyczyść i przywróć na etykietę strony"
 
 #: 
 msgid "Clear and restore per page number"
-msgstr ""
+msgstr "Wyczyść i przywróć na numer strony"
 
 #: 
 msgid "Clear on page change"
-msgstr ""
+msgstr "Wyczyść przy zmianie strony"
 
 #: 
 msgid "Highlight mode"
-msgstr ""
+msgstr "Tryb zakreślania"
 
 #: 
 msgid "Never clear (manually only)"
-msgstr ""
+msgstr "Nigdy nie czyść (tylko ręcznie)"
 
 #: 
 msgid "Tools below slide"
-msgstr ""
+msgstr "Narzędzia poniżej slajdu"
 
 #: 
 msgid "Tools next to slide"
-msgstr ""
+msgstr "Narzędzia obok slajdu"
 
 #: 
 msgid "_Close"
-msgstr ""
+msgstr "_Zamknij"
 
 #: 
 msgid "_Open"
-msgstr ""
+msgstr "_Otwórz"
 
 #: 
 msgid "_Pointer"
-msgstr ""
+msgstr "_Wskaźnik"
 
 #: 
 msgid "_Quit"
-msgstr ""
+msgstr "_Zrezygnuj"
 
 #: 
 msgid "10th next slide"
-msgstr ""
+msgstr "10 następny slajd"
 
 #: 
 msgid "11th next slide"
-msgstr ""
+msgstr "11 następny slajd"
 
 #: 
 msgid "12th next slide"
-msgstr ""
+msgstr "12 następny slajd"
 
 #: 
 msgid "13th next slide"
-msgstr ""
+msgstr "13 następny slajd"
 
 #: 
 msgid "14th next slide"
-msgstr ""
+msgstr "14 następny slajd"
 
 #: 
 msgid "15th next slide"
-msgstr ""
+msgstr "15 następny slajd"
 
 #: 
 msgid "16th next slide"
-msgstr ""
+msgstr "16 następny slajd"
 
 #: 
 msgid "2nd next slide"
-msgstr ""
+msgstr "2 następny slajd"
 
 #: 
 msgid "3rd next slide"
-msgstr ""
+msgstr "3 następny slajd"
 
 #: 
 msgid "4th next slide"
-msgstr ""
+msgstr "4 następny slajd"
 
 #: 
 msgid "5th next slide"
-msgstr ""
+msgstr "5 następny slajd"
 
 #: 
 msgid "6th next slide"
-msgstr ""
+msgstr "6 następny slajd"
 
 #: 
 msgid "7th next slide"
-msgstr ""
+msgstr "7 następny slajd"
 
 #: 
 msgid "8th next slide"
-msgstr ""
+msgstr "8 następny slajd"
 
 #: 
 msgid "9th next slide"
-msgstr ""
+msgstr "9 następny slajd"
 
 #: 
 msgid "annotations (hideable)"
-msgstr ""
+msgstr "adnotacje (ukrywane)"
 
 #: 
 msgid "current slide"
-msgstr ""
+msgstr "bieżący slajd"
 
 #: 
 msgid "horizontal"
-msgstr ""
+msgstr "poziomy"
 
 #: 
 msgid "next slide(s)"
-msgstr ""
+msgstr "następny slajd(y)"
 
 #: 
 msgid "next slides count"
-msgstr ""
+msgstr "liczba następnych slajdów"
 
 #: 
 msgid "orientation"
-msgstr ""
+msgstr "orientacja"
 
 #: 
 msgid "resizeable"
-msgstr ""
+msgstr "zmienny"
 
 #: 
 msgid "vertical"
-msgstr ""
+msgstr "pionowy"
 
 #: 
 msgid "widget"
-msgstr ""
+msgstr "widżet"
 
 #: 
 msgid "_Discard"
-msgstr ""
+msgstr "_Wyrzuć"
 
 #: 
 msgid "annotations"
-msgstr ""
+msgstr "adnotacje"
 
 #: 
 msgid "_Automatic navigation"
-msgstr ""
+msgstr "_Automatyczna nawigacja"
 
 #: 
 msgid "Note pages"
-msgstr ""
+msgstr "Strony notatek"
 
 #: 
 msgid "Plain"
-msgstr ""
+msgstr "Zwykły"
 
 #: 
 msgid "notes"
-msgstr ""
+msgstr "notatki"
 
 #: 
 msgid "Highlighting"
-msgstr ""
+msgstr "Zakreślanie"
 
 #: 
 msgid "Layout to draw on the current slide"
-msgstr ""
+msgstr "Układ do rysowania na bieżącym slajdzie"
 
 #: 
 msgid "highlighting"
-msgstr ""
+msgstr "zakreslanie"
 
 #: 
 msgid "Exit highlight on page change"
-msgstr ""
+msgstr "Wyjdź z zakreslania przy zmianie strony"
 
 #: 
 msgid "_Every second page"
-msgstr ""
+msgstr "_Co druga strona"
 
 #: 
 msgid "(none, left, right, top, bottom, after, odd, or prefix)."
-msgstr ""
+msgstr "(brak, lewy, prawy, górny, dolny, po, nieparzysty lub przedrostek)."
 
 #: 
 msgid "Unexpected missing page to draw for widget \"{}\""
-msgstr ""
+msgstr "Nieoczekiwany brak strony do narysowania dla widżetu \"{}\""
 
 #: 
 msgid "_Prefixed labels"
-msgstr ""
+msgstr "_Etykiety z prefiksem"
 
 #: 
 msgid "Redo highlight stroke"
-msgstr ""
+msgstr "Ponów obrys zakreślania"
 
 #: 
 msgid "_About"
-msgstr ""
+msgstr "_O"
 
 #: 
 msgid "Auto"
@@ -967,27 +967,27 @@ msgstr ""
 
 #: 
 msgid "Choose parameters for automatically playing slides"
-msgstr ""
+msgstr "Wybierz parametry automatycznego odtwarzania slajdów"
 
 #: 
 msgid "Edit layout"
-msgstr ""
+msgstr "Edytuj układ"
 
 #: 
 msgid "Gtk.Application.inhibit failed preventing screensaver, trying hard disabling"
-msgstr ""
+msgstr "Gtk.Application.inhibit nie udało się zapobiec wygaszaniu ekranu, próbując twardego wyłączenia"
 
 #: 
 msgid "Layout for beamer notes on second screen (no current slide preview in notes)"
-msgstr ""
+msgstr "Układ notatek rzutnika na drugim ekranie (brak bieżącego podglądu slajdu w notatkach)"
 
 #: 
 msgid "Layout for libreoffice notes on separate pages (with current slide preview in notes)"
-msgstr ""
+msgstr "Układ notatek libreoffice na osobnych stronach (z aktualnym podglądem slajdów w notatkach)"
 
 #: 
 msgid "Loop"
-msgstr ""
+msgstr "Pętla"
 
 #: 
 msgid "Overwrite"
@@ -995,93 +995,93 @@ msgstr ""
 
 #: 
 msgid "Overwrite changes instead of reloading?"
-msgstr ""
+msgstr "Zastąpić zmiany zamiast ponownego ładowania?"
 
 #: 
 msgid "Plain layout, without note slides"
-msgstr ""
+msgstr "Zwykły układ, bez slajdów z notatkami"
 
 #: 
 msgid "Reload"
-msgstr ""
+msgstr "Przeładuj"
 
 #: 
 msgid "Save as..."
-msgstr ""
+msgstr "Zapisz jako..."
 
 #: 
 msgid "Save changes before closing?"
-msgstr ""
+msgstr "Zapisać zmiany przed zamknięciem?"
 
 #: 
 msgid "Save file"
-msgstr ""
+msgstr "Zapisz plik"
 
 #: 
 msgid "Save file as"
-msgstr ""
+msgstr "Zapisz plik jako"
 
 #: 
 msgid "Saving changes will overwrite the changed file!"
-msgstr ""
+msgstr "Zapisanie zmian spowoduje nadpisanie zmienionego pliku!"
 
 #: 
 msgid "Should not require hard enable/disable screensaver on Linux"
-msgstr ""
+msgstr "Nie powinno wymagać twardego włączania/wyłączania wygaszacza ekranu w systemie Linux"
 
 #: 
 msgid "The open file was modified outside of pympress but you have made unsaved changes."
-msgstr ""
+msgstr "Otwarty plik został zmodyfikowany poza pympress, ale dokonałeś niezapisanych zmian."
 
 #: 
 msgid "Time per slide (s):"
-msgstr ""
+msgstr "Czas na slajd (y):"
 
 #: 
 msgid "Unknown widget \"{}\" to draw"
-msgstr ""
+msgstr "Nieznany widżet \"{}\" do narysowania"
 
 #: 
 msgid "Unsaved changes"
-msgstr ""
+msgstr "Niezapisane zmiany"
 
 #: 
 msgid "Unsaved changes will be lost"
-msgstr ""
+msgstr "Niezapisane zmiany zostaną utracone"
 
 #: 
 msgid "Unsaved changes will be lost."
-msgstr ""
+msgstr "Niezapisane zmiany zostaną utracone."
 
 #: 
 msgid "_Save"
-msgstr ""
+msgstr "_Zapisz"
 
 #: 
 msgid "_Save as"
-msgstr ""
+msgstr "_Zapisz jako"
 
 #: 
 msgid "box"
-msgstr ""
+msgstr "pudełko"
 
 #: 
 msgid "Failed loading pixbuf for pointer \"{}\" from: {}"
-msgstr ""
+msgstr "Nie udało się załadować pixbuf dla wskaźnika \"{}\" z: {}"
 
 #: 
 msgid "Highlighting with notes"
-msgstr ""
+msgstr "Zakreślanie z notatkami"
 
 #: 
 msgid "Layout to draw on the current slide with notes displayed"
-msgstr ""
+msgstr "Układ do rysowania na bieżącym slajdzie z wyświetlonymi notatkami"
 
 #: 
 msgid "_Deck overview"
-msgstr ""
+msgstr "_Przegląd talii"
 
 #: 
 msgid "Show deck overview"
-msgstr ""
+msgstr "Pokaż przegląd talii"
 
