@@ -796,7 +796,7 @@ class Scribbler(builder.Builder):
         Returns:
             `bool`: whether the preset was loaded
         """
-        if type(target) == int:
+        if isinstance(target, int):
             self.active_preset = target
         else:
             self.active_preset = int(target.get_string()) if target.get_string() != 'eraser' else 0

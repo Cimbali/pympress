@@ -708,9 +708,9 @@ class UI(builder.Builder):
             widget (:class:`~Gtk.Widget`):  the widget in which the event occurred (ignored)
             evt (:class:`~Gdk.Event`):  the event that occurred
         """
-        if type(evt) == Gdk.EventButton and evt.type == Gdk.EventType.BUTTON_RELEASE:
+        if isinstance(evt, Gdk.EventButton) and evt.type == Gdk.EventType.BUTTON_RELEASE:
             self.redraw_panes()
-        elif type(evt) == GObject.GParamSpec and evt.name == "position":
+        elif isinstance(evt, GObject.GParamSpec) and evt.name == "position":
             self.resize_panes = True
             if self.redraw_timeout:
                 GLib.Source.remove(self.redraw_timeout)
