@@ -12,12 +12,10 @@ msgid "(and optionally seconds)"
 msgstr "(oraz opcjonalnie w sekundach)"
 
 #: 
-#, fuzzy
 msgid "(paused)"
 msgstr "(wstrzymany)"
 
 #: 
-#, fuzzy
 msgid "Adjust alignment of slides in projector screen"
 msgstr "Wyreguluj wyrównanie slajdów na ekranie rzutnika"
 
@@ -30,7 +28,6 @@ msgid "Annotations"
 msgstr "Adnotacje"
 
 #: 
-#, fuzzy
 msgid "Big buttons"
 msgstr "Duże przyciski"
 
@@ -43,12 +40,10 @@ msgid "Clock"
 msgstr "Zegar"
 
 #: 
-#, fuzzy
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
 msgstr "Okno treści oraz okno prezentera nie mogą znajdować się na tym samym monitorze, gdy uruchomisz tryb pełnego ekranu!"
 
 #: 
-#, fuzzy
 msgid "Content blanked"
 msgstr "Puste okno treści"
 
@@ -69,7 +64,6 @@ msgid "Could not enable DPMS screen blanking: got status "
 msgstr "nie można włączyć wygaszania ekranu DPMS: otrzymany status "
 
 #: 
-#, fuzzy
 msgid "Could not find the file \"{}\""
 msgstr "Nie mogę znaleźć pliku \"{}\""
 
@@ -459,7 +453,6 @@ msgid "page label"
 msgstr "etykieta strony"
 
 #: 
-#, fuzzy
 msgid "pip will then download and compile pygobject, for which you need the Gtk headers (or development package)."
 msgstr "pip ściągnie i skompiluje pyobject, do którego wymagane są nagłówki Gtk (albo pakiet developerski)"
 
@@ -590,9 +583,8 @@ msgid "Toggle highlighting"
 msgstr "Przełącz zakreślanie"
 
 #: 
-#, fuzzy
 msgid "Toggle laserpointer"
-msgstr "Włącz/wyłącz wskaźnik laserowy"
+msgstr "Przełącz wskaźnik laserowy"
 
 #: 
 msgid "Toggle notes mode"
@@ -635,17 +627,14 @@ msgid "Caused by "
 msgstr "Spowodowane przez "
 
 #: 
-#, fuzzy
 msgid "Building FileWatcher"
 msgstr "Budowanie obserwatora plików (FileWatcher)"
 
 #: 
-#, fuzzy
 msgid "Missing dependency: python \"{}\" package"
 msgstr "Brakuje zależności: python \"{}\" package"
 
 #: 
-#, fuzzy
 msgid "Monitoring of changes to reload files automatically is not available"
 msgstr "Niedostępne monitorowanie zmian w celu automatycznego przeładowania plików"
 
@@ -963,7 +952,7 @@ msgstr "_O"
 
 #: 
 msgid "Auto"
-msgstr ""
+msgstr "Automatyczny"
 
 #: 
 msgid "Choose parameters for automatically playing slides"
@@ -991,7 +980,7 @@ msgstr "Pętla"
 
 #: 
 msgid "Overwrite"
-msgstr ""
+msgstr "Nadpisz"
 
 #: 
 msgid "Overwrite changes instead of reloading?"
