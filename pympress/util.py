@@ -132,15 +132,14 @@ def get_translation(domain):
         return gettext.NullTranslations()
 
     # now normalize and expand the languages
-    for lang in enval.split(':'):
-        for nelang in gettext._expand_lang(lang):
-            file = localedir.joinpath(nelang, 'LC_MESSAGES', domain + '.mo')
-            if file.is_file():
-                break
+    for lang in (lang for nelang in enval.split(':') for lang in gettext._expand_lang(nelang)):
+        file = localedir.joinpath(lang, 'LC_MESSAGES', domain + '.mo')
+        if file.is_file():
+            break
     else:
         return gettext.NullTranslations()
 
-    with file.open() as fp:
+    with file.open(mode='rb') as fp:
         return gettext.GNUTranslations(fp)
 
 
