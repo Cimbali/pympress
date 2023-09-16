@@ -1,6 +1,8 @@
 *.pyc
 build/
 dist/
+# ignore virtual env environments
+env/
 
 pympress.egg-info/
 
