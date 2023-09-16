@@ -50,6 +50,7 @@
                   <object class="GtkTreeViewColumn" id="name_renderer">
                     <property name="title" translatable="yes">name</property>
                     <property name="expand">True</property>
+                    <property name="resizable">True</property>
                     <child>
                       <object class="GtkCellRendererText"/>
                       <attributes>
@@ -61,6 +62,7 @@
                 <child>
                   <object class="GtkTreeViewColumn" id="time_renderer">
                     <property name="min_width">60</property>
+                    <property name="resizable">True</property>
                     <property name="title" translatable="yes">time</property>
                     <child>
                       <object class="GtkCellRendererText"/>
@@ -73,6 +75,7 @@
                 <child>
                   <object class="GtkTreeViewColumn" id="duration_renderer">
                     <property name="min_width">60</property>
+                    <property name="resizable">True</property>
                     <property name="title" translatable="yes">duration</property>
                     <child>
                       <object class="GtkCellRendererText"/>
@@ -85,6 +88,7 @@
                 <child>
                   <object class="GtkTreeViewColumn" id="page_renderer">
                     <property name="min_width">60</property>
+                    <property name="resizable">True</property>
                     <property name="title" translatable="yes">slide</property>
                     <child>
                       <object class="GtkCellRendererText">
