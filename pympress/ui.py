@@ -99,6 +99,8 @@ class UI(builder.Builder):
     #: Current choice of mode to toggle notes
     chosen_notes_mode = document.PdfPage.RIGHT
 
+    #: Whether to be in compact mode or not
+    compact_mode = True
     #: Whether to display annotations or not
     show_annotations = True
     #: Whether to display big buttons or not
@@ -204,6 +206,7 @@ class UI(builder.Builder):
         self.show_annotations = self.config.getboolean('presenter', 'show_annotations')
         self.chosen_notes_mode = document.PdfPage[self.config.get('notes position', 'horizontal').upper()]
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
+        self.compact_mode = self.config.getboolean('presenter', 'compact_mode')
 
         # Surface cache
         self.cache = surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
@@ -233,6 +236,7 @@ class UI(builder.Builder):
             'notes-pos':             dict(activate=self.change_notes_pos, parameter_type=str,
                                           state=self.chosen_notes_mode.name.lower()),
             'annotations':           dict(activate=self.switch_annotations, state=self.show_annotations),
+            'compact-mode':           dict(activate=self.switch_compact_mode, state=self.compact_mode),
             'validate-input':        dict(activate=self.validate_current_input),
             'cancel-input':          dict(activate=self.cancel_current_input),
             'align-content':         dict(activate=self.adjust_frame_position),
@@ -1850,6 +1854,36 @@ class UI(builder.Builder):
         return True
 
 
+    def switch_compact_mode(self, gaction, target):
+        """ Toggle compact mode.
+
+        Returns:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            target (:class:`~GLib.Variant`): the parameter as a variant, or None
+
+        Returns:
+            `bool`: whether the mode has been toggled.
+        """
+        self.compact_mode = not self.compact_mode
+
+        self.config.set('presenter', 'compact_mode', 'on' if self.compact_mode else 'off')
+
+        if self.compact_mode:
+            parent = self.p_frame_annot.get_parent()
+            if issubclass(type(parent), Gtk.Paned):
+                if parent.get_orientation() == Gtk.Orientation.HORIZONTAL:
+                    size = parent.get_allocated_width()
+                else:
+                    size = parent.get_allocated_height()
+                parent.set_position(self.pane_handle_pos[parent] * size)
+
+        GLib.idle_add(self.redraw_panes)
+
+        self.annotations.load_annotations(self.doc.page(self.preview_page))
+        gaction.change_state(GLib.Variant.new_boolean(self.show_annotations))
+
+        return True
+    
     def switch_annotations(self, gaction, target):
         """ Switch the display to show annotations or to hide them.
 

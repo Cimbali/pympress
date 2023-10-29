@@ -67,6 +67,10 @@
 			<attribute name="action">app.align-content</attribute>
 		</item>
 		<item>
+			<attribute name="label" translatable="yes">_Compact mode</attribute>
+			<attribute name="action">app.compact-mode</attribute>
+		</item>
+		<item>
 			<attribute name="label" translatable="yes">_Annotations</attribute>
 			<attribute name="action">app.annotations</attribute>
 		</item>
