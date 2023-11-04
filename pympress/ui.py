@@ -100,7 +100,7 @@ class UI(builder.Builder):
     chosen_notes_mode = document.PdfPage.RIGHT
 
     #: Whether to be in compact mode or not
-    compact_mode = True
+    compact_mode = False
     #: Whether to display annotations or not
     show_annotations = True
     #: Whether to display big buttons or not
@@ -208,7 +208,6 @@ class UI(builder.Builder):
         self.show_annotations = self.config.getboolean('presenter', 'show_annotations')
         self.chosen_notes_mode = document.PdfPage[self.config.get('notes position', 'horizontal').upper()]
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
-        self.compact_mode = self.config.getboolean('presenter', 'compact_mode')
 
         # Surface cache
         self.cache = surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
@@ -1880,18 +1879,18 @@ class UI(builder.Builder):
         for handle in self.pane_handle_pos:
             handle.set_wide_handle(not self.compact_mode)
 
-        self.switch_compact_margins()
+        self.adjust_margins()
         self.adjust_bottom_bar_font()
 
         self.p_win.set_show_menubar(not self.compact_mode)
 
         GLib.idle_add(self.redraw_panes)
-
+    
         gaction.change_state(GLib.Variant.new_boolean(self.compact_mode))
 
         return True
     
-    def switch_compact_margins(self):
+    def adjust_margins(self):
         queue: list[Gtk.Container] = [self.p_central]
         while len(queue) != 0:
             children = queue.pop().get_children()
