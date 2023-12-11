@@ -349,6 +349,12 @@ jobs:
             mingw-w64-${{ matrix.arch }}-python3-babel
             mingw-w64-${{ matrix.arch }}-python3-watchdog
 
+      - name: Install ghostscript "base 35" fonts
+        shell: msys2 {0}
+        run: >
+          curl -L https://sourceforge.net/projects/gs-fonts/files/latest/download
+          | tar xzf - -C /${{ matrix.msystem }}/share/
+
       - name: Install python-only dependencies
         run: |
           python3 -m pip install --disable-pip-version-check --upgrade pip
