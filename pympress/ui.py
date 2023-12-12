@@ -1874,7 +1874,7 @@ class UI(builder.Builder):
 
         for frame_next in self.p_frames_next:
             frame_next.get_label_widget().set_visible(not self.compact_mode)
-        
+
         self.p_frame_cur.get_label_widget().set_visible(not self.compact_mode)
         self.p_frame_annot.get_label_widget().set_visible(not self.compact_mode)
         self.p_frame_notes.get_label_widget().set_visible(not self.compact_mode)
@@ -1888,11 +1888,11 @@ class UI(builder.Builder):
         self.p_win.set_show_menubar(not self.compact_mode)
 
         GLib.idle_add(self.redraw_panes)
-    
+
         gaction.change_state(GLib.Variant.new_boolean(self.compact_mode))
 
         return True
-    
+
     def adjust_margins(self):
         queue: list[Gtk.Container] = [self.p_central]
         while len(queue) != 0:
@@ -1921,7 +1921,7 @@ class UI(builder.Builder):
                 if issubclass(type(child), Gtk.Container):
                     queue.append(child)
 
-    
+
     def switch_annotations(self, gaction, target):
         """ Switch the display to show annotations or to hide them.
 
