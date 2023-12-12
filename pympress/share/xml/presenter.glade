@@ -838,6 +838,7 @@
                                 <property name="can-focus">True</property>
                                 <property name="hexpand">True</property>
                                 <property name="vexpand">True</property>
+                                <property name="hscrollbar-policy">external</property>
                                 <property name="shadow-type">in</property>
                                 <child>
                                   <object class="GtkTreeView" id="annotations_treeview">
@@ -845,15 +846,11 @@
                                     <property name="can-focus">True</property>
                                     <property name="hexpand">True</property>
                                     <property name="vexpand">True</property>
-                                    <property name="resize-mode">immediate</property>
                                     <property name="model">annotations_liststore</property>
                                     <property name="headers-visible">False</property>
                                     <property name="headers-clickable">False</property>
-                                    <property name="reorderable">True</property>
-                                    <property name="rules-hint">True</property>
                                     <property name="search-column">0</property>
                                     <property name="show-expanders">False</property>
-                                    <property name="enable-tree-lines">True</property>
                                     <child internal-child="selection">
                                       <object class="GtkTreeSelection" id="annotations_selection"/>
                                     </child>
@@ -880,7 +877,7 @@
                                 </child>
                               </object>
                               <packing>
-                                <property name="expand">False</property>
+                                <property name="expand">True</property>
                                 <property name="fill">True</property>
                                 <property name="pack-type">end</property>
                                 <property name="position">1</property>

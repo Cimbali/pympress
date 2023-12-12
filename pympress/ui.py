@@ -693,6 +693,8 @@ class UI(builder.Builder):
             self.p_da_notes.queue_draw()
         if self.redraw_timeout:
             self.redraw_timeout = 0
+        if self.show_annotations:
+            self.annotations.rewrap_annotations()
 
         self.config.update_layout_from_widgets(self.layout_name(self.notes_mode), self.p_central.get_children()[0],
                                                self.pane_handle_pos)
@@ -1873,6 +1875,7 @@ class UI(builder.Builder):
                 else:
                     size = parent.get_allocated_height()
                 parent.set_position(self.pane_handle_pos[parent] * size)
+            self.annotations.rewrap_annotations()
 
         GLib.idle_add(self.redraw_panes)
 
