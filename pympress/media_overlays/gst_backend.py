@@ -220,4 +220,9 @@ class GstOverlay(base.VideoOverlay):
         """
         Gst.init(gst_opts)
 
+        if Gst.ElementFactory.make('gtksink', None) is None:
+            logger.warning('Can not create a gtksink. Check the gtk plugin for GStreamer is installed.')
+            logger.warning('See https://github.com/Cimbali/pympress/issues/240')
+            raise ValueError('Can not create a gtksink.')
+
         return Gst.version_string()
