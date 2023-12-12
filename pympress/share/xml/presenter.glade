@@ -865,6 +865,7 @@
                                         <child>
                                           <object class="GtkCellRendererText" id="annotation_renderer">
                                             <property name="editable">True</property>
+                                            <property name="wrap-mode">word</property>
                                             <signal name="edited" handler="annotations.editing_validated" swapped="no"/>
                                             <signal name="editing-canceled" handler="annotations.editing_finished" swapped="no"/>
                                             <signal name="editing-started" handler="annotations.editing_started" swapped="no"/>
