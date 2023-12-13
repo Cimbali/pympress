@@ -480,7 +480,7 @@ class Monitor(ScreenArea):
 
         Args:
             display (:class:`~Gdk.Display`):  the current screen
-            *windows (`tuple` of :class:`~Gtk.Window`):  windows for wich to look up the monitor position
+            *windows (`tuple` of :class:`~Gtk.Window`):  windows for which to look up the monitor position
 
         Returns:
             `tuple` of `Monitor`: The monitors for each window, followed by the best monitors for presenter and content
