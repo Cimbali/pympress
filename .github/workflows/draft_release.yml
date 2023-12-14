@@ -83,6 +83,12 @@ jobs:
     needs: checks
     runs-on: macos-latest
     steps:
+    - name: Update brew
+      continue-on-error: true
+      run: |
+        brew update
+        brew upgrade
+
     - name: Configure brew repo
       continue-on-error: true
       run: |
@@ -102,9 +108,12 @@ jobs:
       run: |
         brew audit --strict pympress
 
-    - name: Install latest
+    - name: Install dependencies
       run: |
         brew install pympress --only-dependencies
+
+    - name: Install latest
+      run: |
         brew install pympress --build-from-source --HEAD
 
     - name: Test help output
