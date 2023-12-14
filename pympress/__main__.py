@@ -53,6 +53,10 @@ if util.IS_WINDOWS:
         lang, enc = locale.getdefaultlocale()
         os.environ['LANG'] = lang
 
+    # Before any initialisation or imports
+    util.make_windows_dpi_aware()
+
+
 try:
     loaded_locale = locale.setlocale(locale.LC_ALL, '')
 except locale.Error as err:
