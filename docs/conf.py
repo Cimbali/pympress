@@ -41,22 +41,24 @@ extensions = [
     'myst_parser',
 ]
 
-# Whether to include code documentation. Override on the command line with –Dskip_api_doc=1
-skip_api_doc = False
+# -- TAGS -- to select what gets included in generated docs from the cli.
+# Defaults to whatever is useful for the docs of an installed package.
 
-# Extends extensions, if we document the API
-code_doc_extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.coverage',
-    'sphinx.ext.doctest',
-]
+# Whether to document the code - off by default
+if tags.has('api_doc'):
+    extensions.extend([
+        'sphinx.ext.autodoc',
+        'sphinx.ext.todo',
+        'sphinx.ext.viewcode',
+        'sphinx.ext.napoleon',
+        'sphinx.ext.intersphinx',
+        'sphinx.ext.coverage',
+        'sphinx.ext.doctest',
+    ])
 
-# Whether to skip install instructions for included packages
-packaged_docs = False
+# Whether to include install instructions for included packages - off by default
+if tags.has('install_instructions'):
+    pass
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_template']
@@ -76,13 +78,13 @@ def doc_transform(app, doctree, docname):
             node.parent.remove(node)
 
     # Remove the genindex/modindex section if not relevant
-    if app.builder.name == 'man' or app.config.skip_api_doc:
+    if app.builder.name == 'man' or not tags.has('api_doc'):
         for node in list(doctree.findall(SectionNode)):
             if 'indices-and-tables' in node['ids']:
                 node.parent.remove(node)
 
     # Remove install instructions for docs that are part of a package
-    if app.config.packaged_docs:
+    if not tags.has('install_instructions'):
         for node in list(doctree.findall(SectionNode)):
             if {'installing', 'dependencies', 'packages'} & set(node['ids']):
                 node.parent.remove(node)
@@ -90,17 +92,9 @@ def doc_transform(app, doctree, docname):
 
 def doc_remove(app, env, docnames):
     """ Remove API page from list of source files, if we do not build API docs """
-    if app.config.skip_api_doc:
+    if not tags.has('api_doc'):
         env.found_docs.remove('pympress')
         docnames.remove('pympress')
-
-
-def add_extensions(app, config):
-    """ Delayed configuration of extensions to allow enabling or skipping API documentation from the command line """
-    config.html_context['document_api'] = not config.skip_api_doc
-    if not config.skip_api_doc:
-        for ext in code_doc_extensions:
-            app.setup_extension(ext)
 
 
 def setup(app):
@@ -111,7 +105,6 @@ def setup(app):
 
     app.connect('env-before-read-docs', doc_remove)
     app.connect('doctree-resolved', doc_transform)
-    app.connect('config-inited', add_extensions)
 
     # When skipping API docs, we get WARNING: toctree contains reference to nonexisting document 'pympress'
     # This could be avoided by modifying the file on 'source-read' events, but not very clean approach
@@ -270,12 +263,21 @@ intersphinx_mapping = {
     'Pango': ('https://lazka.github.io/pgi-docs/Pango-1.0', None),
     'GLib': ('https://lazka.github.io/pgi-docs/GLib-2.0', None),
     'GdkX11': ('https://lazka.github.io/pgi-docs/GdkX11-3.0', None),
+    'Gio': ('https://lazka.github.io/pgi-docs/Gio-2.0', None),
     'python': ('https://docs.python.org/{}.{}'.format(*sys.version_info[:2]), None),
     'cairo': ('https://www.cairographics.org/documentation/pycairo/3', None),
     **load_epydoc_as_intersphinx_v2({'vlc': 'https://www.olivieraubert.net/vlc/python-ctypes/doc/'}),
     # No mapping on https://gstreamer.freedesktop.org/documentation/gstreamer/
     'Gst': ('https://lazka.github.io/pgi-docs/Gst-1.0', None),
 }
+
+intersphinx_disabled_reftypes = []
+
+# Don’t sort alphabetically, use order of appearance in code
+autodoc_member_order = 'bysource'
+
+# Don’t put type hints in function signature but put it in the description
+autodoc_typehints = 'description'
 
 # -- Options for HTML output ----------------------------------------------
 
