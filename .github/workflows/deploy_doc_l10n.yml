@@ -3,7 +3,7 @@ name: Update docs and translatable strings
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   strings:
