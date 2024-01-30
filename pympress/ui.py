@@ -99,6 +99,8 @@ class UI(builder.Builder):
     #: Current choice of mode to toggle notes
     chosen_notes_mode = document.PdfPage.RIGHT
 
+    #: Whether to be in compact mode or not
+    compact_mode = False
     #: Whether to display annotations or not
     show_annotations = True
     #: Whether to display big buttons or not
@@ -201,6 +203,8 @@ class UI(builder.Builder):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
+        self.margin_buffer = dict()
+
         self.show_annotations = self.config.getboolean('presenter', 'show_annotations')
         self.chosen_notes_mode = document.PdfPage[self.config.get('notes position', 'horizontal').upper()]
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
@@ -233,6 +237,7 @@ class UI(builder.Builder):
             'notes-pos':             dict(activate=self.change_notes_pos, parameter_type=str,
                                           state=self.chosen_notes_mode.name.lower()),
             'annotations':           dict(activate=self.switch_annotations, state=self.show_annotations),
+            'compact-mode':           dict(activate=self.switch_compact_mode, state=self.compact_mode),
             'validate-input':        dict(activate=self.validate_current_input),
             'cancel-input':          dict(activate=self.cancel_current_input),
             'align-content':         dict(activate=self.adjust_frame_position),
@@ -673,7 +678,7 @@ class UI(builder.Builder):
         """ Scale baseline font size of bottom bar, clipped to 6px..13px. Fonts are then scaled by CSS em indications.
         """
         ww, wh = self.p_win.get_size()
-        font_size = max(6, min(13, ww / 120 if self.show_bigbuttons else ww / 75))
+        font_size = max(6, min(9 if self.compact_mode else 13, ww / 120 if self.show_bigbuttons else ww / 75))
         self.css_provider.load_from_data('#bottom {{ font-size: {:.1f}px; }}'.format(font_size).encode())
 
 
@@ -1852,6 +1857,70 @@ class UI(builder.Builder):
         return True
 
 
+    def switch_compact_mode(self, gaction, target):
+        """ Toggle compact mode.
+
+        Returns:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            target (:class:`~GLib.Variant`): the parameter as a variant, or None
+
+        Returns:
+            `bool`: whether the mode has been toggled.
+        """
+        self.compact_mode = not self.compact_mode
+
+        self.config.set('presenter', 'compact_mode', 'on' if self.compact_mode else 'off')
+
+        for frame_next in self.p_frames_next:
+            frame_next.get_label_widget().set_visible(not self.compact_mode)
+        
+        self.p_frame_cur.get_label_widget().set_visible(not self.compact_mode)
+        self.p_frame_annot.get_label_widget().set_visible(not self.compact_mode)
+        self.p_frame_notes.get_label_widget().set_visible(not self.compact_mode)
+
+        for handle in self.pane_handle_pos:
+            handle.set_wide_handle(not self.compact_mode)
+
+        self.adjust_margins()
+        self.adjust_bottom_bar_font()
+
+        self.p_win.set_show_menubar(not self.compact_mode)
+
+        GLib.idle_add(self.redraw_panes)
+    
+        gaction.change_state(GLib.Variant.new_boolean(self.compact_mode))
+
+        return True
+    
+    def adjust_margins(self):
+        queue: list[Gtk.Container] = [self.p_central]
+        while len(queue) != 0:
+            children = queue.pop().get_children()
+            for child in children:
+                id = child.get_name()
+                if self.compact_mode:
+                    saved_margin = (
+                        child.get_margin_top(),
+                        child.get_margin_bottom(),
+                        child.get_margin_start(),
+                        child.get_margin_end(),
+                    )
+                    self.margin_buffer[id] = saved_margin
+                    margin = (0,0,0,0)
+                else:
+                    margin = self.margin_buffer.get(id)
+
+                if margin is not None:
+                    (t,b,s,e) = margin
+                    child.set_margin_top(t)
+                    child.set_margin_bottom(b)
+                    child.set_margin_start(s)
+                    child.set_margin_end(e)
+
+                if issubclass(type(child), Gtk.Container):
+                    queue.append(child)
+
+    
     def switch_annotations(self, gaction, target):
         """ Switch the display to show annotations or to hide them.
 
