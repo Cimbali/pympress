@@ -167,8 +167,8 @@ class PdfPage(enum.IntEnum):
         Args:
             x (`float`): x coordinate on the page, on a scale 0..1
             y (`float`): y coordinate on the page, on a scale 0..1
-            x2 (`float`): second x coordinate on the page, from the other side, on a scale 0..1
-            y2 (`float`): second y coordinate on the page, from the other side, on a scale 0..1
+            x2 (`float`): optional second x coordinate on the page, on a scale 0..1
+            y2 (`float`): optional second y coordinate on the page, on a scale 0..1
         """
         if val == PdfPage.RIGHT:
             screen = (x * 2 - 1, y)
@@ -184,7 +184,7 @@ class PdfPage(enum.IntEnum):
         if x2 is None or y2 is None:
             return screen
         else:
-            return screen + val.complement().to_screen(x2, y2)
+            return screen + val.to_screen(x2, y2)
 
 
 class Link(object):
@@ -242,7 +242,7 @@ class Link(object):
 
 
 #: A class that holds all the properties for media files
-Media = collections.namedtuple('Media', ['relative_margins', 'filename', 'autoplay', 'repeat', 'poster',
+Media = collections.namedtuple('Media', ['x1', 'y1', 'x2', 'y2', 'filename', 'autoplay', 'repeat', 'poster',
                                          'show_controls', 'type', 'start_pos', 'duration'],
                                defaults=[False, False, False, False, '', 0., 0.])
 
@@ -315,11 +315,12 @@ class Page(object):
                     logger.error(_("Pympress can not find file ") + movie.get_filename())
                     continue
 
-                relative_margins = Poppler.Rectangle()
-                relative_margins.x1 = annotation.area.x1 / self.pw        # left
-                relative_margins.x2 = 1.0 - annotation.area.x2 / self.pw  # right
-                relative_margins.y1 = annotation.area.y1 / self.ph        # bottom
-                relative_margins.y2 = 1.0 - annotation.area.y2 / self.ph  # top
+                media_rect = (
+                    annotation.area.x1 / self.pw,      # left
+                    1 - annotation.area.y2 / self.ph,  # top
+                    annotation.area.x2 / self.pw,      # right
+                    1 - annotation.area.y1 / self.ph,  # bottom
+                )
 
                 movie_options = {'show_controls': movie.show_controls(), 'poster': movie.need_poster()}
                 try:
@@ -330,7 +331,7 @@ class Page(object):
                 except AttributeError:
                     pass  # Missing functions in pre-21.04 Poppler versions
 
-                media = Media(relative_margins, filepath, **movie_options)
+                media = Media(*media_rect, filepath, **movie_options)
                 self.medias.append(media)
                 action = Link.build_closure(self.parent.play_media, hash(media))
 
@@ -497,11 +498,12 @@ class Page(object):
                     logger.error(_("Pympress can not find file ") + media.get_filename())
                     return None
 
-            relative_margins = Poppler.Rectangle()
-            relative_margins.x1 = rect.x1 / self.pw        # left
-            relative_margins.x2 = 1.0 - rect.x2 / self.pw  # right
-            relative_margins.y1 = rect.y1 / self.ph        # bottom
-            relative_margins.y2 = 1.0 - rect.y2 / self.ph  # top
+            media_rect = (
+                rect.x1 / self.pw,      # left
+                1 - rect.y2 / self.ph,  # top
+                rect.x2 / self.pw,      # right
+                1 - rect.y1 / self.ph,  # bottom
+            )
 
             media_options = {'type': media.get_mime_type()}
             try:
@@ -511,7 +513,7 @@ class Page(object):
                 # NB: no poster in Poppler’s MediaParameters
             except AttributeError:
                 pass
-            media = Media(relative_margins, filename, **media_options)
+            media = Media(*media_rect, filename, **media_options)
             self.medias.append(media)
             return Link.build_closure(self.parent.play_media, hash(media))
 

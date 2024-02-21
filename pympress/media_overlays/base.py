@@ -34,7 +34,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gio
 
-from pympress import builder
+from pympress import document, builder
 
 
 class VideoOverlay(builder.Builder):
@@ -59,10 +59,10 @@ class VideoOverlay(builder.Builder):
     progress = None
     #: :class:`~Gtk.DrawingArea` where the media is rendered.
     movie_zone = None
-    #: `tuple` containing the left/top/right/bottom space around the drawing area in the PDF page
-    relative_page_margins = None
-    #: `tuple` containing the left/top/right/bottom space around the drawing area in the visible slide
-    relative_margins = None
+    #: `tuple` containing the left/top/right/bottom coordinates of the drawing area in the PDF page
+    relative_rect = None
+    #: `tuple` containing the left/top/right/bottom coordinates of the drawing area in the visible slide
+    rect = None
     #: `bool` that tracks whether we should play automatically
     autoplay = False
     #: `bool` that tracks whether we should play after we finished playing
@@ -92,7 +92,7 @@ class VideoOverlay(builder.Builder):
         super(VideoOverlay, self).__init__()
 
         self.parent = container
-        self.relative_page_margins = tuple(getattr(media.relative_margins, v) for v in ('x1', 'y2', 'x2', 'y1'))
+        self.relative_rect = (media.x1, media.y1, media.x2, media.y2)
         self.update_margins_for_page(page_type)
 
         self.load_ui('media_overlay')
@@ -187,7 +187,21 @@ class VideoOverlay(builder.Builder):
         Arguments:
             page_type (:class:`~pympress.document.PdfPage`): the part of the page to display
         """
-        self.relative_margins = page_type.to_screen(*self.relative_page_margins)
+        left, top, right, bot = page_type.to_screen(*self.relative_rect)
+
+        # Some configurations generate incorrect media positions. Assume no one intentionally puts media on notes pages.
+        if page_type == document.PdfPage.RIGHT and -1 <= left < right <= 0:
+            left, right = left + 1, right + 1
+            logger.warning('Shifting media from LEFT notes page to RIGHT content page')
+
+        if page_type == document.PdfPage.TOP and 1 <= top < bot <= 2:
+            top, bot = top - 1, bot - 1
+            logger.warning('Shifting media from BOTTOM notes page to TOP content page')
+
+        self.rect = left, top, right, bot
+        if min(self.rect) < 0 or max(self.rect) > 1:
+            logger.warning('Negative margin(s) clipped to 0 (might alter the aspect ratio?): ' +
+                           'LTRB = {}'.format(self.rect))
 
 
     def resize(self):
@@ -197,10 +211,11 @@ class VideoOverlay(builder.Builder):
             return
 
         pw, ph = self.parent.get_allocated_width(), self.parent.get_allocated_height()
-        self.media_overlay.props.margin_left   = pw * max(self.relative_margins[0], 0)
-        self.media_overlay.props.margin_right  = pw * max(self.relative_margins[2], 0)
-        self.media_overlay.props.margin_bottom = ph * max(self.relative_margins[3], 0)
-        self.media_overlay.props.margin_top    = ph * max(self.relative_margins[1], 0)
+        left, top, right, bot = self.rect
+        self.media_overlay.props.margin_left   = pw * max(left, 0)
+        self.media_overlay.props.margin_right  = pw * min(1 - right, 1)
+        self.media_overlay.props.margin_bottom = ph * min(1 - bot, 1)
+        self.media_overlay.props.margin_top    = ph * max(top, 0)
 
 
     def is_shown(self):
@@ -239,9 +254,9 @@ class VideoOverlay(builder.Builder):
     def show(self):
         """ Bring the widget to the top of the overlays if necessary.
         """
-        if min(self.relative_margins) < 0:
+        if min(self.rect) < 0 or max(self.rect) > 1:
             logger.warning('Negative margin(s) clipped to 0 (might alter the aspect ratio?): ' +
-                           'LTRB = {}'.format(self.relative_margins))
+                           'LTRB = {}'.format(self.rect))
 
         if not self.media_overlay.get_parent():
             self.parent.add_overlay(self.media_overlay)
