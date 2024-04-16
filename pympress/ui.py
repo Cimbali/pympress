@@ -261,7 +261,7 @@ class UI(builder.Builder):
 
         self.zoom = extras.Zoom(self)
         self.scribbler = scribble.Scribbler(self.config, self, self.notes_mode)
-        self.deck = deck.Overview(self.config, self, self.notes_mode)
+        self.deck = deck.Overview(self.config, self)
         self.annotations = extras.Annotations(self)
         self.medias = extras.Media(self, self.config)
         self.laser = pointer.Pointer(self.config, self)
@@ -1836,6 +1836,7 @@ class UI(builder.Builder):
         self.cache.set_widget_type('p_da_cur_zoomed', page_type)
         self.cache.set_widget_type('scribble_p_da', page_type)
         self.cache.set_widget_type('p_da_notes', self.notes_mode)
+        self.cache.set_widget_type('deck', page_type)
 
         if self.notes_mode:
             self.cache.enable_prerender('p_da_notes')

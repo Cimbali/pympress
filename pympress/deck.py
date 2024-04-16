@@ -39,7 +39,6 @@ class Overview(builder.Builder):
     Args:
         config (:class:`~pympress.config.Config`): A config object containing preferences
         builder (:class:`~pympress.builder.Builder`): A builder from which to load widgets
-        notes_mode (`bool`): The current notes mode, i.e. whether we display the notes on second slide
     """
     #: Whether we are displaying the deck overview on screen
     deck_mode = False
@@ -79,7 +78,7 @@ class Overview(builder.Builder):
     #: The :class:`~Gtk.DrawingArea` in the content window
     c_da = None
 
-    def __init__(self, config, builder, notes_mode):
+    def __init__(self, config, builder):
         super(Overview, self).__init__()
 
         self.cache = builder.cache
@@ -141,7 +140,7 @@ class Overview(builder.Builder):
     def create_drawing_areas(self):
         """ Build DrawingArea and AspectFrame elements to display later on
         """
-        pages = self.get_last_label_pages() if self.has_labels() else range(self.pages_number())
+        pages = self.get_last_label_pages() if not self.all_pages and self.has_labels() else range(self.pages_number())
         self.grid_size = (len(pages), 1)
 
         # Always keep the first drawing area as it is used to provide surfaces in the cache
