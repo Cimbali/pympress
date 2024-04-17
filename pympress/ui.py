@@ -34,6 +34,7 @@ Both windows are managed by the :class:`~pympress.ui.UI` class.
 import logging
 logger = logging.getLogger(__name__)
 
+import collections
 import pathlib
 import math
 import sys
@@ -101,6 +102,8 @@ class UI(builder.Builder):
 
     #: Whether to be in compact mode or not
     compact_mode = False
+    #: Whether to hide or show the menu
+    hide_menu = False
     #: Whether to display annotations or not
     show_annotations = True
     #: Whether to display big buttons or not
@@ -126,6 +129,8 @@ class UI(builder.Builder):
     placeable_widgets = {}
     #: Map of :class:`~Gtk.Paned` to the relative position (`float` between 0 and 1) of its handle
     pane_handle_pos = {}
+    #: Map of :class:`~Gtk.Widget` to the tuple of margins (4 `float`s)
+    widget_margins = {}
 
     #: :class:`~pympress.config.Config` to remember preferences
     config = None
@@ -203,11 +208,11 @@ class UI(builder.Builder):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-        self.margin_buffer = dict()
-
         self.show_annotations = self.config.getboolean('presenter', 'show_annotations')
         self.chosen_notes_mode = document.PdfPage[self.config.get('notes position', 'horizontal').upper()]
         self.show_bigbuttons = self.config.getboolean('presenter', 'show_bigbuttons')
+        self.compact_mode = self.config.getboolean('presenter', 'compact_mode')
+        self.hide_menu = self.config.getboolean('presenter', 'hide_menu')
 
         # Surface cache
         self.cache = surfacecache.SurfaceCache(self.doc, self.config.getint('cache', 'maxpages'))
@@ -237,7 +242,8 @@ class UI(builder.Builder):
             'notes-pos':             dict(activate=self.change_notes_pos, parameter_type=str,
                                           state=self.chosen_notes_mode.name.lower()),
             'annotations':           dict(activate=self.switch_annotations, state=self.show_annotations),
-            'compact-mode':           dict(activate=self.switch_compact_mode, state=self.compact_mode),
+            'compact-mode':          dict(activate=self.switch_compact_mode, state=self.compact_mode),
+            'hide-menu':             dict(activate=self.switch_menu, state=self.hide_menu),
             'validate-input':        dict(activate=self.validate_current_input),
             'cancel-input':          dict(activate=self.cancel_current_input),
             'align-content':         dict(activate=self.adjust_frame_position),
@@ -312,6 +318,9 @@ class UI(builder.Builder):
         self.laser_button.set_visible(self.show_bigbuttons)
         self.highlight_button.set_visible(self.show_bigbuttons)
         self.p_frame_annot.set_visible(self.show_annotations)
+        self.p_win.set_show_menubar(not self.hide_menu)
+        self.adjust_margins()
+        self.adjust_bottom_bar_font()
         self.laser.activate_pointermode()
 
         # Setup screens and show all windows
@@ -1858,6 +1867,27 @@ class UI(builder.Builder):
         return True
 
 
+    def switch_menu(self, gaction, target):
+        """ Toggle menu bar visibility.
+
+        Returns:
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            target (:class:`~GLib.Variant`): the parameter as a variant, or None
+
+        Returns:
+            `bool`: whether the mode has been toggled.
+        """
+        self.hide_menu = not self.hide_menu
+        self.config.set('presenter', 'hide_menu', 'on' if self.hide_menu else 'off')
+
+        self.p_win.set_show_menubar(not self.hide_menu)
+        GLib.idle_add(self.redraw_panes)
+
+        gaction.change_state(GLib.Variant.new_boolean(self.hide_menu))
+
+        return True
+
+
     def switch_compact_mode(self, gaction, target):
         """ Toggle compact mode.
 
@@ -1869,9 +1899,19 @@ class UI(builder.Builder):
             `bool`: whether the mode has been toggled.
         """
         self.compact_mode = not self.compact_mode
-
         self.config.set('presenter', 'compact_mode', 'on' if self.compact_mode else 'off')
 
+        self.adjust_margins()
+        self.adjust_bottom_bar_font()
+        GLib.idle_add(self.redraw_panes)
+
+        gaction.change_state(GLib.Variant.new_boolean(self.compact_mode))
+
+        return True
+
+
+    def adjust_margins(self):
+        """ Adjust all presenter window margins and visibilities according to compact mode. """
         for frame_next in self.p_frames_next:
             frame_next.get_label_widget().set_visible(not self.compact_mode)
 
@@ -1882,43 +1922,30 @@ class UI(builder.Builder):
         for handle in self.pane_handle_pos:
             handle.set_wide_handle(not self.compact_mode)
 
-        self.adjust_margins()
-        self.adjust_bottom_bar_font()
-
-        self.p_win.set_show_menubar(not self.compact_mode)
-
-        GLib.idle_add(self.redraw_panes)
-
-        gaction.change_state(GLib.Variant.new_boolean(self.compact_mode))
-
-        return True
-
-    def adjust_margins(self):
-        queue: list[Gtk.Container] = [self.p_central]
-        while len(queue) != 0:
-            children = queue.pop().get_children()
+        queue = collections.deque([self.p_central])
+        while queue:
+            children = queue.popleft().get_children()
             for child in children:
-                id = child.get_name()
-                if self.compact_mode:
-                    saved_margin = (
-                        child.get_margin_top(),
-                        child.get_margin_bottom(),
-                        child.get_margin_start(),
-                        child.get_margin_end(),
-                    )
-                    self.margin_buffer[id] = saved_margin
-                    margin = (0,0,0,0)
+                try:
+                    if self.compact_mode:
+                        self.widget_margins[child] = (
+                            child.get_margin_top(),
+                            child.get_margin_bottom(),
+                            child.get_margin_start(),
+                            child.get_margin_end(),
+                        )
+                        top, bot, start, end = 0, 0, 0, 0
+                    else:
+                        top, bot, start, end = self.widget_margins.pop(child)
+                except KeyError:
+                    pass
                 else:
-                    margin = self.margin_buffer.get(id)
+                    child.set_margin_top(top)
+                    child.set_margin_bottom(bot)
+                    child.set_margin_start(start)
+                    child.set_margin_end(end)
 
-                if margin is not None:
-                    (t,b,s,e) = margin
-                    child.set_margin_top(t)
-                    child.set_margin_bottom(b)
-                    child.set_margin_start(s)
-                    child.set_margin_end(e)
-
-                if issubclass(type(child), Gtk.Container):
+                if isinstance(child, Gtk.Container):
                     queue.append(child)
 
 

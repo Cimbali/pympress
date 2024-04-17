@@ -47,29 +47,79 @@
 			<attribute name="action">app.edit-talk-time</attribute>
 		</item>
 		<item>
+			<attribute name="label" translatable="yes">_Notes mode</attribute>
+			<attribute name="action">app.notes-mode</attribute>
+		</item>
+		<submenu>
+			<attribute name="label" translatable="yes">Notes position</attribute>
+			<item>
+				<attribute name="label" translatable="yes">_Right half of slide</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">right</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">_Bottom half of slide</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">bottom</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">_Left half of slide</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">left</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">_Top half of slide</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">top</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">_After slide pages</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">after</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">_Every second page</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">odd</attribute>
+			</item>
+			<item>
+				<attribute name="label" translatable="yes">_Prefixed labels</attribute>
+				<attribute name="action">app.notes-pos</attribute>
+				<attribute name="target">map</attribute>
+			</item>
+		</submenu>
+
+		<item>
+			<attribute name="label" translatable="yes">Timing breakdown</attribute>
+			<attribute name="action">app.timing-report</attribute>
+		</item>
+    </submenu>
+
+    <submenu>
+        <attribute name="label" translatable="yes">_View</attribute>
+		<section>
+		<item>
 			<attribute name="label" translatable="yes">_Fullscreen</attribute>
 			<attribute name="action">app.content-fullscreen</attribute>
 		</item>
 		<item>
-			<attribute name="label" translatable="yes">_Swap screens</attribute>
-			<attribute name="action">app.swap-screens</attribute>
+			<attribute name="label" translatable="yes">_Highlight</attribute>
+			<attribute name="action">app.highlight</attribute>
 		</item>
 		<item>
-			<attribute name="label" translatable="yes">_Notes mode</attribute>
-			<attribute name="action">app.notes-mode</attribute>
+			<attribute name="label" translatable="yes">_Deck overview</attribute>
+			<attribute name="action">app.deck-overview</attribute>
 		</item>
 		<item>
-			<attribute name="label" translatable="yes">_Blank screen</attribute>
-			<attribute name="action">app.blank-screen</attribute>
+			<attribute name="label" translatable="yes">_Zoom in</attribute>
+			<attribute name="action">app.zoom</attribute>
 		</item>
 		<item>
-			<attribute name="label" translatable="yes">Align _content</attribute>
-			<attribute name="action">app.align-content</attribute>
+			<attribute name="label" translatable="yes">_Undo zoom</attribute>
+			<attribute name="action">app.unzoom</attribute>
 		</item>
-		<item>
-			<attribute name="label" translatable="yes">_Compact mode</attribute>
-			<attribute name="action">app.compact-mode</attribute>
-		</item>
+		</section>
+		<section>
 		<item>
 			<attribute name="label" translatable="yes">_Annotations</attribute>
 			<attribute name="action">app.annotations</attribute>
@@ -79,12 +129,24 @@
 			<attribute name="action">app.big-buttons</attribute>
 		</item>
 		<item>
-			<attribute name="label" translatable="yes">_Highlight</attribute>
-			<attribute name="action">app.highlight</attribute>
+			<attribute name="label" translatable="yes">_Compact mode</attribute>
+			<attribute name="action">app.compact-mode</attribute>
 		</item>
 		<item>
-			<attribute name="label" translatable="yes">_Deck overview</attribute>
-			<attribute name="action">app.deck-overview</attribute>
+			<attribute name="label" translatable="yes">_Hide menu</attribute>
+			<attribute name="action">app.hide-menu</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Blank screen</attribute>
+			<attribute name="action">app.blank-screen</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">_Swap screens</attribute>
+			<attribute name="action">app.swap-screens</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">Align _content</attribute>
+			<attribute name="action">app.align-content</attribute>
 		</item>
 		<submenu>
 			<attribute name="label" translatable="yes">_Pointer</attribute>
@@ -154,59 +216,7 @@
 				</item>
 			</section>
 		</submenu>
-
-		<item>
-			<attribute name="label" translatable="yes">_Zoom in</attribute>
-			<attribute name="action">app.zoom</attribute>
-		</item>
-		<item>
-			<attribute name="label" translatable="yes">_Undo zoom</attribute>
-			<attribute name="action">app.unzoom</attribute>
-		</item>
-
-		<submenu>
-			<attribute name="label" translatable="yes">Notes position</attribute>
-			<item>
-				<attribute name="label" translatable="yes">_Right half of slide</attribute>
-				<attribute name="action">app.notes-pos</attribute>
-				<attribute name="target">right</attribute>
-			</item>
-			<item>
-				<attribute name="label" translatable="yes">_Bottom half of slide</attribute>
-				<attribute name="action">app.notes-pos</attribute>
-				<attribute name="target">bottom</attribute>
-			</item>
-			<item>
-				<attribute name="label" translatable="yes">_Left half of slide</attribute>
-				<attribute name="action">app.notes-pos</attribute>
-				<attribute name="target">left</attribute>
-			</item>
-			<item>
-				<attribute name="label" translatable="yes">_Top half of slide</attribute>
-				<attribute name="action">app.notes-pos</attribute>
-				<attribute name="target">top</attribute>
-			</item>
-			<item>
-				<attribute name="label" translatable="yes">_After slide pages</attribute>
-				<attribute name="action">app.notes-pos</attribute>
-				<attribute name="target">after</attribute>
-			</item>
-			<item>
-				<attribute name="label" translatable="yes">_Every second page</attribute>
-				<attribute name="action">app.notes-pos</attribute>
-				<attribute name="target">odd</attribute>
-			</item>
-			<item>
-				<attribute name="label" translatable="yes">_Prefixed labels</attribute>
-				<attribute name="action">app.notes-pos</attribute>
-				<attribute name="target">map</attribute>
-			</item>
-		</submenu>
-
-		<item>
-			<attribute name="label" translatable="yes">Timing breakdown</attribute>
-			<attribute name="action">app.timing-report</attribute>
-		</item>
+		</section>
     </submenu>
 
 	<submenu>
