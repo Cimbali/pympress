@@ -3,7 +3,7 @@ name: Update docs and translatable strings
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   strings:
@@ -47,7 +47,7 @@ jobs:
         poeditor_api_token: ${{ secrets.POEDITOR_API_TOKEN }}
       run: |
         ./scripts/poedit.sh contributors
-        python3 -m sphinx -bhtml docs/ build/sphinx/html
+        python3 -m sphinx -bhtml docs/ build/sphinx/html -t api_doc -t install_instructions
         tar czf pympress-docs.tar.gz -C build/sphinx/html/ .
     - name: Upload
       uses: actions/upload-artifact@v3

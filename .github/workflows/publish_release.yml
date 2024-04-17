@@ -217,8 +217,10 @@ jobs:
 
     steps:
     - name: Install dependencies
+      continue-on-error: true
       run: |
         brew update
+        brew upgrade
         brew install pipgrip
 
     - name: Configure brew repo

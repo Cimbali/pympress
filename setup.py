@@ -125,6 +125,7 @@ def gtk_resources():
         pathlib.Path('lib', 'gdk-pixbuf-2.0'),
         pathlib.Path('share', 'poppler'),
         pathlib.Path('share', 'themes'),
+        pathlib.Path('share', 'fonts'),
         pathlib.Path('share', 'icons'),
         pathlib.Path('share', 'glib-2.0'),
         pathlib.Path('share', 'xml')

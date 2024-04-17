@@ -266,7 +266,7 @@ class UI(builder.Builder):
 
         self.zoom = extras.Zoom(self)
         self.scribbler = scribble.Scribbler(self.config, self, self.notes_mode)
-        self.deck = deck.Overview(self.config, self, self.notes_mode)
+        self.deck = deck.Overview(self.config, self)
         self.annotations = extras.Annotations(self)
         self.medias = extras.Media(self, self.config)
         self.laser = pointer.Pointer(self.config, self)
@@ -698,6 +698,8 @@ class UI(builder.Builder):
             self.p_da_notes.queue_draw()
         if self.redraw_timeout:
             self.redraw_timeout = 0
+        if self.show_annotations:
+            self.annotations.rewrap_annotations()
 
         self.config.update_layout_from_widgets(self.layout_name(self.notes_mode), self.p_central.get_children()[0],
                                                self.pane_handle_pos)
@@ -1839,6 +1841,7 @@ class UI(builder.Builder):
         self.cache.set_widget_type('p_da_cur_zoomed', page_type)
         self.cache.set_widget_type('scribble_p_da', page_type)
         self.cache.set_widget_type('p_da_notes', self.notes_mode)
+        self.cache.set_widget_type('deck', page_type)
 
         if self.notes_mode:
             self.cache.enable_prerender('p_da_notes')
@@ -1942,6 +1945,7 @@ class UI(builder.Builder):
                 else:
                     size = parent.get_allocated_height()
                 parent.set_position(self.pane_handle_pos[parent] * size)
+            self.annotations.rewrap_annotations()
 
         GLib.idle_add(self.redraw_panes)
 

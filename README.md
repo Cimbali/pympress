@@ -196,13 +196,13 @@ A few of the fancier functionalities are listed here:
 
 -  `-h, --help`: Shows a list of all command line arguments.
 - `-t mm[:ss], --talk-time=mm[:ss]`: The estimated (intended) talk time in minutes and optionally seconds.
-- `-n position, --notes=position`: Set the position of notes on the pdf page (none, left, right, top, or bottom). Overrides the detection from the file.
+- `-n position, --notes=position`: Set the position of notes on the pdf page (none, left, right, top, bottom, or after). Overrides the detection from the file.
 - `--log=level`: Set level of verbosity in log file (DEBUG, INFO, WARNING, ERROR).
 
 ## Media and autoplay
 
 To enable media playback, you need to have either:
-- Gstreamer installed (enabled by default), with plugins gstreamer-good/-bad/-ugly based on which codecs you need, or
+- Gstreamer installed (enabled by default), with its gtk plugin (`libgstgtk`) which is sometimes packaged separately (e.g. as `gst-plugin-gtk` or `gstreamer1.0-gtk3`), and plugins gstreamer-good/-bad/-ugly based on which codecs you need, or
 - VLC installed (and the python-vlc module), with `enabled = on` under the `[vlc]` section of your config file.
 
 On macOS, issues with the gstreamer brew formula may require users to set `GST_PLUGIN_SYSTEM_PATH` manually. For default homebrew configurations the value should be `/opt/homebrew/lib/gstreamer-1.0/`. Make sure to set this environmental variable globally, or pympress might not pick it up.
@@ -310,14 +310,14 @@ Alternately, in order to install from pypi or from source on windows, there are 
   - Get GTK+3, Poppler and their python bindings by executing [the PyGi installer](https://sourceforge.net/projects/pygobjectwin32/).  Be sure to tick all the necessary dependencies in the installer (Poppler, Cairo, Gdk-Pixbuf).
 
 Alternately, you can build your Gtk+3 stack from source using MSVC, see [the Gnome wiki](https://wiki.gnome.org/Projects/GTK+/Win32/MSVCCompilationOfGTKStack) and [this python script that compiles the whole Gtk+3 stack](https://github.com/wingtk/gvsbuild/).
-This strategy has not been used successfully yet, due to problems building Poppler with its introspection bidings (i.e. typelib) − see [#109](https://github.com/Cimbali/pympress/issues/109).
+This strategy has not been used successfully yet, due to problems building Poppler with its introspection bindings (i.e. typelib) − see [#109](https://github.com/Cimbali/pympress/issues/109).
 
 # Contributing
 
 Feel free to clone this repo and use it, modify it, redistribute it, etc, under the GPLv2+.
 A [number of contributors](https://github.com/Cimbali/pympress/graphs/contributors) have taken part in the development of pympress and submitted pull requests to improve it.
 
-**Be respectful of everyone and keep this community friendly, welcoming, and harrasment-free.
+**Be respectful of everyone and keep this community friendly, welcoming, and harassment-free.
 Abusive behaviour will not be tolerated, and can be reported by email at me@cimba.li − wrongdoers may be permanently banned.**
 
 Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.org/en/latest/ext/example_google.html), contains rst syntax), and the [docs generated from it are hosted on the github pages of this repo](https://pympress.github.io/).
@@ -379,7 +379,7 @@ Vulpeculus,
 and <!-- last translator --> Cimbali.
 
 If you also want to add or contribute to a translation, check [pympress’ page on POEditor](https://poeditor.com/join/project/nKfRxeN8pS).
-Note that old strings are kept and tagged `removed`, to give context and keep continuity between translations of succcessive versions.
+Note that old strings are kept and tagged `removed`, to give context and keep continuity between translations of successive versions.
 This means `removed` strings are unused and do not need translating.
 
 ## Packages

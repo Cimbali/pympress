@@ -33,6 +33,7 @@ import importlib
 import gettext
 import os
 import sys
+import ctypes
 import pathlib
 
 if sys.version_info >= (3, 9):
@@ -480,7 +481,7 @@ class Monitor(ScreenArea):
 
         Args:
             display (:class:`~Gdk.Display`):  the current screen
-            *windows (`tuple` of :class:`~Gtk.Window`):  windows for wich to look up the monitor position
+            *windows (`tuple` of :class:`~Gtk.Window`):  windows for which to look up the monitor position
 
         Returns:
             `tuple` of `Monitor`: The monitors for each window, followed by the best monitors for presenter and content
@@ -523,6 +524,17 @@ class Monitor(ScreenArea):
                 prim_area = ScreenArea(mon.get_geometry())
 
         return (*pos, prim_area.most_intersection(all_geom), prim_area.least_intersection(all_geom))
+
+
+def make_windows_dpi_aware():
+    """ Set to avoid blurriness issues on High-DPI resolutions with scaling. """
+    if not IS_WINDOWS:
+        return
+
+    if hasattr(ctypes.windll.shcore, 'SetProcessDpiAwareness'):
+        ctypes.windll.shcore.SetProcessDpiAwareness(2)
+    else:
+        ctypes.windll.user32.SetProcessDPIAware()
 
 ##
 # Local Variables:

@@ -591,16 +591,17 @@ class Page(object):
         return self.annotations
 
 
-    def new_annotation(self, pos, rect=None):
+    def new_annotation(self, pos, rect=None, value=''):
         """ Add an annotation to this page
 
         Args:
             pos (`int`): The position in the list of annotations in which to insert this annotation
             rect (:class:`~Poppler.Rectangle`): A rectangle for the position of this annotation
-
-        Returns:
-            :class:`~Poppler.Annot`: A new annotation on this page
+            value (`str`): The contents of the annotation
         """
+        if self.parent.doc is None:
+            return
+
         if pos < 0:
             pos = 0
         if pos > len(self.annotations):
@@ -615,25 +616,30 @@ class Page(object):
 
         new_annot = Poppler.AnnotText.new(self.parent.doc, rect)
         new_annot.set_icon(Poppler.ANNOT_TEXT_ICON_NOTE)
+        new_annot.set_contents(value)
         self.annotations.insert(pos, new_annot)
         self.parent.made_changes()
-        return new_annot
 
 
     def set_annotation(self, pos, value):
-        """ Add an annotation to this page
+        """ Update an annotation on this page
 
         Args:
             pos (`int`): The number of the annotation
             value (`str`): The new contents of the annotation
         """
-        rect = self.annotations[pos].get_rectangle()
-        self.remove_annotation(pos)
-        self.new_annotation(pos, rect).set_contents(value)
+        try:
+            rect = self.annotations[pos].get_rectangle()
+        except IndexError:
+            # Often because no document is loaded
+            logger.error(_("Pympress can not edit PDF annotation {}").format(pos))
+        else:
+            self.remove_annotation(pos)
+            self.new_annotation(pos, rect, value)
 
 
     def remove_annotation(self, pos):
-        """ Add an annotation to this page
+        """ Remove an annotation from this page
 
         Args:
             pos (`int`): The number of the annotation
@@ -1237,8 +1243,8 @@ class EmptyPage(Page):
     Also, it has no "rendering" capability, and is made harmless by overriding its render function.
     """
 
-    def __init__(self):
-        super(EmptyPage, self).__init__(None, -1, None)
+    def __init__(self, parent):
+        super(EmptyPage, self).__init__(None, -1, parent)
         self.page_label = None
         # by default, anything that will have a 1.3 asapect ratio
         self.pw, self.ph = 1.3, 1.0
@@ -1270,7 +1276,7 @@ class EmptyDocument(Document):
     """
     def __init__(self):
         super(EmptyDocument, self).__init__(None, None, None)
-        self.pages_cache[-1] = EmptyPage()
+        self.pages_cache[-1] = EmptyPage(self)
 
 
     def page(self, number):

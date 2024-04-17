@@ -46,6 +46,10 @@ class Annotations(object):
     annotations_treeview = None
     #: The containing :class:`~Gtk.ListStore` storing the annotations to be displayed
     annotations_liststore = None
+    #: The :class:`~Gtk.TreeViewColumn` where the text is rendered
+    annotation_column = None
+    #: The :class:`~Gtk.CellRendererText` defining how text is rendered
+    annotation_renderer = None
     #: The :class:`~Gtk.Entry` in which we are currently editing an annotation, or None
     editing = None
 
@@ -90,6 +94,14 @@ class Annotations(object):
         if rows:
             self.annotations_treeview.set_cursor(rows[0], None, False)
         return True
+
+
+    def rewrap_annotations(self):
+        """ Update the wrap-width of the annotation column to fit its actual width
+        """
+        width = self.annotations_treeview.get_allocated_width()
+        self.annotation_renderer.set_property('wrap-width', width - 4)
+        self.annotation_column.queue_resize()
 
 
     def key_event(self, widget, event):
