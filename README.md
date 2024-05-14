@@ -85,18 +85,51 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 - Other systems, directly from PyPI ![pypi version badge][pypi_version] − requires [python, gtk+3, poppler, and their python bindings](#dependencies):
 
   ```
-  python3 -m pip install "pympress"
+  pipx install --system-site-packages "pympress"
   ```
 
   <details><summary>Troubleshooting</summary>
 
   - Make sure you have all [the dependencies](#dependencies). (These are already included in binary packages or their dependencies.)
-  - Using pip, you may want to install with the `--user` option, or install from github or downloaded sources.
-    See [the python documentation on installing](https://docs.python.org/3.7/installing/index.html).
   - If your python environment lacks the Gobject Introspections module, try
-     1. using `--system-site-packages` for [virtual environments](https://docs.python.org/3.7/library/venv.html),
-     2. installing pygobject from pip (`pip install pygobject`, which requires the correct development/header packages.
+     1. using `--system-site-packages` for [pipx](https://pipx.pypa.io/latest/docs/#pipx-install)
+        or [virtual environments](https://docs.python.org/3.11/library/venv.html),
+     2. installing pygobject and pycairo with pipx (`pipx inject pympress pygobject pycairo`),
+        which requires the correct development/header packages be present on your system.
         See [the PyPI installation instructions of PyGObject for your system](https://pygobject.readthedocs.io/en/latest/getting_started.html)).
+  - As per [the python documentation on installing](https://docs.python.org/3.11/installing/index.html),
+    it is recommended to install packages in virtual environments.
+    Since mid 2022, the [pipx](https://packaging.python.org/en/latest/key_projects/#pipx) tool automates this process.
+    Your distribution (or Homebrew on macOS) should have a version you can install.
+    Alternately, you can get the same effect with the standard venv and pip modules:
+    ```sh
+    # Create virtual environment
+    python3 -m venv --system-site-packages ~/.local/lib/venv/pympress
+    # Install pympress
+    ~/.local/lib/venv/pympress/bin/python3 -m pip install pympress
+    # Link to the executable from a place in your path
+    ln -s ~/.local/lib/venv/pympress/bin/pympress ~/.local/bin/
+    ```
+    Note that:
+    - If you don’t want to use system packages, you can build and install pygobject/pycairo in the virtual environment using
+      `~/.local/lib/venv/bin/pip install pygobject pycairo`
+    - You can adjust the `~/.local/lib/venv/` path to your personal preference.
+  - Unfortunately, installing pympress in a virtual environment means you will not get desktop integration
+    (i.e. installing pympress' desktop and png files to have pympress show up in your menus etc).
+
+    This is [by design](https://discuss.python.org/t/should-there-be-a-new-standard-for-installing-arbitrary-data-files/7853/4),
+    as desktop applications are intended to be installed through system packages (rpm, apt, etc.).
+    You can work around this in 2 ways:
+      1. Manually (note that links/copied files will need to be removed):
+         ```sh
+         cp "`pipx environment -V PIPX_LOCAL_VENVS`/pympress/share/applications/io.github.pympress.desktop" ~/.share/applications/
+         ln -s "`pipx environment -V PIPX_LOCAL_VENVS`/pympress/share/pixmaps/pympress.png" ~/.share/pixmaps/
+         ```
+      2. Relying on the deprecated data_files, that only work [outside of virtual environments](https://peps.python.org/pep-0668/).
+         This means installing with `pip`:
+         ```sh
+         python3 -m pip install --user --break-system-packages pympress
+         ```
 
   </details>
 

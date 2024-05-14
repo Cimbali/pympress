@@ -89,14 +89,19 @@ try:
     import cairo
 except ModuleNotFoundError:
     logger.critical('Gobject Introspections and/or pycairo module is missing', exc_info = True)
-    print('\n' + _('ERROR: Gobject Introspections and/or pycairo module is missing, ' +
-                   'make sure Gtk, pygobject and pycairo are installed on your system.') + '\n')
-    print(_('Try your operating system’s package manager, or try running: pip install pygobject pycairo'))
-    print(_('pip will then download and compile pygobject and pycairo, ' +
-            'for which you need the Gtk and cairo headers (or development packages).') + '\n')
-    print(_('For instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies'))
-    print(_('If using a virtualenv or anaconda, you can also try allowing system site packages.'))
-    print()
+    print(_("""
+ERROR: Gobject Introspections and/or pycairo module is missing. Make sure Gtk, pygobject and pycairo are installed.
+
+Try your operating system’s package manager, and ensure you installed pympress with access to system packages.
+Typically, this means having installed with:
+  pipx install --system-site-packages pympress
+
+Alternately, ask pip to download and compile pygobject and pycairo, for which you may need the Gtk and cairo headers
+(or development packages):
+  pipx inject pympress pygobject pycairo
+
+For further instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies
+"""))
     exit(1)
 
 
