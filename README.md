@@ -96,7 +96,7 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
         or [virtual environments](https://docs.python.org/3.11/library/venv.html),
      2. installing pygobject and pycairo with pipx (`pipx inject pympress pygobject pycairo`),
         which requires the correct development/header packages be present on your system.
-        See [the PyPI installation instructions of PyGObject for your system](https://pygobject.readthedocs.io/en/latest/getting_started.html)).
+        See [the PyPI installation instructions of PyGObject for your system](https://pygobject.readthedocs.io/en/latest/getting_started.html).
   - As per [the python documentation on installing](https://docs.python.org/3.11/installing/index.html),
     it is recommended to install packages in virtual environments.
     Since mid 2022, the [pipx](https://packaging.python.org/en/latest/key_projects/#pipx) tool automates this process.
