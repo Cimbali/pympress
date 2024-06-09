@@ -279,7 +279,9 @@ if __name__ == '__main__':
         if setuptools_version >= (30, 5):
             options['data_files'] = [
                 ('share/pixmaps/', ['pympress/share/pixmaps/pympress.png']),
+                ('share/icons/hicolor/scalable/apps/', ['pympress/share/icons/hicolor/scalable/apps/io.github.pympress.svg']),
                 ('share/applications/', ['pympress/share/applications/io.github.pympress.desktop']),
+                ('share/metainfo/', ['pympress/share/metainfo/io.github.pympress.metainfo.xml']),
             ]
 
         setuptools.setup(**options)

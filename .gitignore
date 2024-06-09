@@ -1,6 +1,9 @@
 *.pyc
 build/
 dist/
+/venv/
+/.flatpak/
+/io.github.pympress.flatpak
 
 pympress.egg-info/
 
