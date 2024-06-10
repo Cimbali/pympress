@@ -59,6 +59,12 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
   brew install pympress
   ```
 
+  Or using [MacPorts](https://www.macports.org) ![macport version badge][macports_version]
+
+  ```sh
+  port install pympress
+  ```
+
 - Windows ![windows logo][windows] with [Chocolatey](https://chocolatey.org/) [![chocolatey version badge][chocolatey_version]][chocolatey_package] (maintained by [@ComFreek](https://github.com/ComFreek))
 
   ```batch
@@ -157,6 +163,7 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 [pypi_version]: https://img.shields.io/pypi/v/pympress?logo=pypi&logoColor=yellow
 [aur_version]: https://img.shields.io/aur/version/python-pympress?logo=arch%20linux
 [homebrew_version]: https://img.shields.io/homebrew/v/pympress?logo=homebrew
+[macports_version]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fports.macports.org%2Fapi%2Fv1%2Fports%2Fpympress%2F&query=%24.version&prefix=v&label=macports
 [ubuntu_version]: https://img.shields.io/ubuntu/v/pympress?logo=ubuntu
 [debian_version]: https://img.shields.io/debian/v/pympress/testing?logo=debian
 [chocolatey_version]: https://img.shields.io/chocolatey/v/pympress?logo=chocolatey
