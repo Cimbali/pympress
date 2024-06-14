@@ -1,3 +1,10 @@
 [build-system]
 requires = ["setuptools>=42", "babel"]
 build-backend = "setuptools.build_meta"
+
+[tool.typos.files]
+extend-exclude = ["pympress/share/locale/*/LC_MESSAGES/pympress.po"]
+[tool.typos.default.extend-identifiers]
+opf = "opf"
+[tool.typos.default.extend-words]
+gir = "gir"

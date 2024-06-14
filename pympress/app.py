@@ -47,7 +47,7 @@ class Pympress(Gtk.Application):
     gui = None
     #: The :class:`~pympress.config.Config` object that holds pympress conferences
     config = None
-    #: `list` of actions to be passsed to the GUI that were queued before GUI was created
+    #: `list` of actions to be passed to the GUI that were queued before GUI was created
     action_startup_queue = []
     #: `bool` to automatically upgrade log level (DEBUG / INFO at init, then ERROR), False if user set log level
     auto_log_level = True
@@ -136,7 +136,7 @@ class Pympress(Gtk.Application):
         """
         self.config = config.Config()
 
-        # prefere X11 on posix systems because Wayland still has some shortcomings for us,
+        # prefer X11 on posix systems because Wayland still has some shortcomings for us,
         # specifically libVLC and the ability to disable screensavers
         if util.IS_POSIX:
             Gdk.set_allowed_backends('x11,*')

@@ -334,7 +334,7 @@ class LayoutEditor(builder.Builder):
 
         Args:
             widget (:class:`~Gtk.ComboBox`):  the widget which has been modified
-            path (`str`):  A string representing the path to the modfied item
+            path (`str`):  A string representing the path to the modified item
         """
         node, tree_it = self.get_info(path)
         value = not node['resizeable']
@@ -348,7 +348,7 @@ class LayoutEditor(builder.Builder):
 
         Args:
             widget (:class:`~Gtk.ComboBox`):  the widget which has been modified
-            path (`str`):  A string representing the path to the modfied item
+            path (`str`):  A string representing the path to the modified item
             orient_it (:class:`~Gtk.TreeIter`): the row of the newly selected value in the orientations liststore model
         """
         value = self.orientations_model.get_value(orient_it, 1)
@@ -366,7 +366,7 @@ class LayoutEditor(builder.Builder):
 
         Args:
             widget (:class:`~Gtk.ComboBox`):  the widget which has been modified
-            path (`str`):  A string representing the path to the modfied item
+            path (`str`):  A string representing the path to the modified item
             value (`int`): the new number of next slides
         """
         node, tree_it = self.get_info(path)

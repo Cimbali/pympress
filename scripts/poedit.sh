@@ -44,7 +44,7 @@ EOF
     sed 's/^FriedrichFroebel$/FriedrichFröbel/;s/^Watanabe$/atsuyaw/' $contributors |
         sed 's/$/,/' | sort -fuo $contributors
 
-    # Udate README from generated list
+    # Update README from generated list
     sed -ni -e '1,/<!-- translator list -->/p;/<!-- last translator -->/,$p' \
         -e '/<!-- translator list -->/r '$contributors README.md
 }

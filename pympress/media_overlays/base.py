@@ -51,7 +51,7 @@ class VideoOverlay(builder.Builder):
     """
     #: :class:`~Gtk.Overlay` that is the parent of the VideoOverlay widget.
     parent = None
-    #: :class:`~Gtk.VBox` that contains all the elements to be overlayed.
+    #: :class:`~Gtk.VBox` that contains all the elements to be overlaid.
     media_overlay = None
     #: A :class:`~Gtk.HBox` containing a toolbar with buttons and :attr:`~progress` the progress bar
     toolbar = None

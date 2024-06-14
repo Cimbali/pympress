@@ -441,7 +441,7 @@ class UI(builder.Builder):
 
 
     def compute_frame_grid(self, grid_ar, n_frames):
-        """ Determine the arragement of frames in a grid to maximise their size given respective aspect ratios
+        """ Determine the arrangement of frames in a grid to maximise their size given respective aspect ratios
 
         Args:
             grid_ar (`float`): aspect ratio of grid containing the slides
@@ -762,7 +762,7 @@ class UI(builder.Builder):
 
 
     ##############################################################################
-    ############################ Document manangement ############################
+    ############################ Document management #############################
     ##############################################################################
 
     def swap_document(self, doc_uri, page=0, reloading=False):

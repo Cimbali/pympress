@@ -88,7 +88,7 @@ class SurfaceCache(object):
     #: Set of active widgets
     active_widgets = set()
 
-    #: maximum number fo pages we keep in cache
+    #: maximum number of pages we keep in cache
     max_pages = 200
 
     def __init__(self, doc, max_pages):

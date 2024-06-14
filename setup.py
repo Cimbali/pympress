@@ -185,7 +185,7 @@ def dlls():
 def check_cli_arg(val):
     """ Check whether an argument was passed, and clear it from sys.argv
 
-    Returns (bool): whether the arguement was present
+    Returns (bool): whether the argument was present
     """
     if val in sys.argv[1:]:
         sys.argv.remove(val)

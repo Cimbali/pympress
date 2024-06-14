@@ -682,7 +682,7 @@ class Page(object):
         # For "regular" pages, there is no problem: just render them.
         # For other pages (i.e. half of a page), the widget already has correct
         # dimensions so we don't need to deal with that. But for right and bottom
-        # halfs we must translate the output in order to only show the correct half.
+        # halves we must translate the output in order to only show the correct half.
         if dtype == PdfPage.RIGHT:
             cr.translate(-pw, 0)
         elif dtype == PdfPage.BOTTOM:

@@ -135,7 +135,7 @@ class Scribbler(builder.Builder):
     #: The :class:`~Gio.Action` that contains the currently selected pen
     pen_action = None
 
-    #: `str` which is the mode for scribbling, one of 3 possile values:
+    #: `str` which is the mode for scribbling, one of 3 possible values:
     # global means one set of scribbles for the whole document
     # single-page means we manage a single page of scribbles, and clear everything on page change (historical behaviour)
     # per-page means we manage a set of scribbles per document page, and clear or restore them on page change
@@ -708,7 +708,7 @@ class Scribbler(builder.Builder):
         w, h = sorted(self.scribble_width_selector.get_size_request(), reverse=self.tools_orientation != 'vertical')
         self.scribble_width_selector.set_size_request(w, h)
 
-        # NB the parent container is layed out perpendicularly to its contents
+        # NB the parent container is laid out perpendicularly to its contents
         self.scribble_overlay.set_orientation(Gtk.Orientation.HORIZONTAL if self.tools_orientation == 'vertical' else
                                               Gtk.Orientation.VERTICAL)
 

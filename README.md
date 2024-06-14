@@ -214,7 +214,7 @@ A few of the fancier functionalities are listed here:
 - **Automatic file reloading**: If the file is modified, pympress will reload it (and preserve the current slide, current time, etc.)
 - **Big button mode**: Add big buttons (duh) for touch displays.
 - **Swap screens**: If Pympress mixed up which screen is the projector and which is not, press `S`
-- **Automatic full screen**: pympress will automatically put the content window fullscreen on your non-primay screen when:
+- **Automatic full screen**: pympress will automatically put the content window fullscreen on your non-primary screen when:
   - connecting a second screen,
   - extending your desktop to a second screen that was mirroring your main screen,
   - when starting pympress on a two-screen display.

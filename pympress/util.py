@@ -79,7 +79,7 @@ def get_pympress_meta():
     # Try and get a git describe output in case we are on a dirty/editable version
     try:
         command = 'git --git-dir={} describe --tags --long --dirty'.split()
-        command[1] = command[1].format(git_dir)  # after spliting in case path has whitespace
+        command[1] = command[1].format(git_dir)  # after splitting in case path has whitespace
 
         git_version = subprocess.check_output(command, stderr = subprocess.DEVNULL)
 

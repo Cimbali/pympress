@@ -123,7 +123,7 @@ class VlcOverlay(base.VideoOverlay):
     def handle_end(self):
         """ End of the stream reached: restart if looping, otherwise hide overlay
 
-        Overrided because, to implement looping, vlc plugin needs to be told to start on stream end, not to seek
+        Overridden because, to implement looping, vlc plugin needs to be told to start on stream end, not to seek
         """
         if self.repeat:
             self.action_map.lookup_action('play').activate()
