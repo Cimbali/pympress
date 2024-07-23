@@ -167,7 +167,7 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 [ubuntu_version]: https://img.shields.io/ubuntu/v/pympress?logo=ubuntu
 [debian_version]: https://img.shields.io/debian/v/pympress/testing?logo=debian
 [chocolatey_version]: https://img.shields.io/chocolatey/v/pympress?logo=chocolatey
-[winget_version]: https://img.shields.io/badge/dynamic/xml?color=blue&label=Winget&query=%2F%2Ftr%5B%40id%3D%27winget%27%5D%2Ftd%5B3%5D%2Fspan%2Fa&url=https%3A%2F%2Frepology.org%2Fproject%2Fpympress%2Fversions
+[winget_version]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmicrosoft%2Fwinget-pkgs%2Fcontents%2Fmanifests%2Fc%2FCimbali%2Fpympress&query=%24%5B-1%3A%5D.name&label=Winget&color=blue
 [github_version]: https://img.shields.io/github/v/release/Cimbali/pympress?label=Latest%20GitHub%20release&logo=github
 
 
