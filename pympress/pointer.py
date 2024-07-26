@@ -159,13 +159,16 @@ class Pointer(object):
             if max(ww, wh) == 1:
                 continue
 
+            pointer_x, pointer_y = -1, -1
             window = slide_widget.get_window()
-            pointer_coordinates = window.get_pointer() if window is not None else (-1, -1)
+            if window is not None:
+                pointer_coords = window.get_pointer()
+                pointer_x, pointer_y = pointer_coords.x, pointer_coords.y
 
-            if 0 < pointer_coordinates.x < ww and 0 < pointer_coordinates.y < wh \
+            if 0 < pointer_x < ww and 0 < pointer_y < wh \
                     and self.pointer_mode == PointerMode.CONTINUOUS:
                 # Laser activated right away
-                self.pointer_pos = (pointer_coordinates.x / ww, pointer_coordinates.y / wh)
+                self.pointer_pos = (pointer_x / ww, pointer_y / wh)
                 self.show_pointer = True
                 extras.Cursor.set_cursor(slide_widget, 'invisible')
             else:
