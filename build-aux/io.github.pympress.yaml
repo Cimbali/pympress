@@ -12,7 +12,6 @@ finish-args:
     - "--filesystem=xdg-documents"
     - "--filesystem=xdg-run/gvfs"
     - "--filesystem=xdg-run/gvfsd"
-    - "--own-name=io.github.pympress.*"
     - "--talk-name=org.gtk.vfs.*"
 build-options:
     build-args:
