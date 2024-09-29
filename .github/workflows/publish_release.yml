@@ -23,7 +23,7 @@ jobs:
 
     steps:
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v7
       with:
         python-version: '3.x'
 
@@ -68,7 +68,7 @@ jobs:
           pandoc --from=markdown --to=markdown --columns=67 | sed -r 's/^(\s+)-/\1*/;s/\#/#/g' | tee -a $GITHUB_OUTPUT
         echo 'EOF' | tee -a $GITHUB_OUTPUT
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         ref: v${{ steps.name.outputs.tag }}
 
