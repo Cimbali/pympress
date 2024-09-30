@@ -1732,7 +1732,7 @@ class UI(builder.Builder):
         if self.scribbler.scribbling_mode:
             return 'highlight'
         elif self.deck.deck_mode:
-            return 'deck'
+            return 'deck-overview'
         elif notes_mode.direction() == 'page number':
             return 'note_pages'
         elif notes_mode:
@@ -1749,7 +1749,7 @@ class UI(builder.Builder):
         """
         if new is None:
             new = self.layout_name(self.notes_mode)
-        else:
+        elif new != 'deck-overview':
             self.layout_editor.set_current_layout(new)
 
         pane_handles = self.replace_layout(self.config.get_layout(new), self.p_central,
