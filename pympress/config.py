@@ -516,6 +516,6 @@ class Config(configparser.ConfigParser, object):  # python 2 fix
             widget (:class:`~Gtk.Widget`): the widget that will contain the layout.
             pane_handle_pos (`dict`): Map of :class:`~Gtk.Paned` to the relative handle position (float in 0..1)
         """
-        if layout_name not in self.static_layout:
+        if layout_name in self.static_layout:
             return
         self.update_layout_tree(layout_name, self.widget_layout_to_tree(widget, pane_handle_pos))
