@@ -360,7 +360,7 @@ A [number of contributors](https://github.com/Cimbali/pympress/graphs/contributo
 **Be respectful of everyone and keep this community friendly, welcoming, and harassment-free.
 Abusive behaviour will not be tolerated, and can be reported by email at me@cimba.li − wrongdoers may be permanently banned.**
 
-Pympress has inline sphinx documentation ([Google style](http://www.sphinx-doc.org/en/latest/ext/example_google.html), contains rst syntax), and the [docs generated from it are hosted on the github pages of this repo](https://pympress.github.io/).
+Pympress has inline sphinx documentation ([Google style](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html), contains rst syntax), and the [docs generated from it are hosted on the github pages of this repo](https://pympress.github.io/).
 
 ## Translations
 
