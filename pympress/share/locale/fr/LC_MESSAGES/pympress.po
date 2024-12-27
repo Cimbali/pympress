@@ -1077,3 +1077,23 @@ msgstr "Vue d’ensemble"
 msgid "Show deck overview"
 msgstr "Afficher la vue d’ensemble"
 
+#: 
+msgid "Pympress can not edit PDF annotation {}"
+msgstr ""
+
+#: 
+msgid "\n"
+"ERROR: Gobject Introspections and/or pycairo module is missing. Make sure Gtk, pygobject and pycairo are installed.\n"
+"\n"
+"Try your operating system’s package manager, and ensure you installed pympress with access to system packages.\n"
+"Typically, this means having installed with:\n"
+"  pipx install --system-site-packages pympress\n"
+"\n"
+"Alternately, ask pip to download and compile pygobject and pycairo, for which you may need the Gtk and cairo headers\n"
+"(or development packages):\n"
+"  pipx inject pympress pygobject pycairo\n"
+"\n"
+"For further instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies\n"
+""
+msgstr ""
+

@@ -18,7 +18,7 @@ msgstr "(in pausa)"
 #: 
 #, fuzzy
 msgid "Adjust alignment of slides in projector screen"
-msgstr "Correggi l'allineamento delle slides nello schermo del proiettore"
+msgstr "Correggi l'allineamento delle diapositive nello schermo del proiettore"
 
 #: 
 msgid "All files"
@@ -29,13 +29,12 @@ msgid "Annotations"
 msgstr "Annotazioni"
 
 #: 
-#, fuzzy
 msgid "Big buttons"
 msgstr "Pulsanti grandi"
 
 #: 
 msgid "Cairo can not draw gif"
-msgstr "Cairo non può creare gif"
+msgstr "Cairo non può creare la gif"
 
 #: 
 msgid "Clock"
@@ -44,7 +43,7 @@ msgstr "Orologio"
 #: 
 #, fuzzy
 msgid "Content and presenter window must not be on the same monitor if you start full screen!"
-msgstr "La finestra di presentazione e di controllo non possono essere sullo stesso schermo in modalità a schermo intero!"
+msgstr "La finestra di presentazione e quella di controllo non possono essere sullo stesso schermo se in modalità Schermo Intero!"
 
 #: 
 #, fuzzy
@@ -69,7 +68,6 @@ msgid "Could not enable DPMS screen blanking: got status "
 msgstr "Impossibile abilitare schermo nero DPMS: ottenuto status "
 
 #: 
-#, fuzzy
 msgid "Could not find the file \"{}\""
 msgstr "Impossibile trovare il file \"{}\""
 
@@ -1080,4 +1078,33 @@ msgstr "_Panoramica del mazzo"
 #: 
 msgid "Show deck overview"
 msgstr "Mostra la panoramica del mazzo"
+
+#: 
+msgid "Pympress can not edit PDF annotation {}"
+msgstr "Pympress non può modificare la seguente annotazione del PDF: {}"
+
+#: 
+msgid "\n"
+"ERROR: Gobject Introspections and/or pycairo module is missing. Make sure Gtk, pygobject and pycairo are installed.\n"
+"\n"
+"Try your operating system’s package manager, and ensure you installed pympress with access to system packages.\n"
+"Typically, this means having installed with:\n"
+"  pipx install --system-site-packages pympress\n"
+"\n"
+"Alternately, ask pip to download and compile pygobject and pycairo, for which you may need the Gtk and cairo headers\n"
+"(or development packages):\n"
+"  pipx inject pympress pygobject pycairo\n"
+"\n"
+"For further instructions, refer to https://github.com/Cimbali/pympress/blob/master/README.md#dependencies\n"
+""
+msgstr "ERRORE: Gobject Introspections e/o il modulo pycairo sono mancanti. Assicurati che Gtk, pygobject e pycairo siano installati.\n"
+"\n"
+"Attraverso il gestore di pacchetti del tuo sistema, assicurati di aver installato pympress con l'accesso ai pacchetti di sistema.\n"
+"Generalmente, questo vuol dire che deve essere installato con:\n"
+"  pipx install --system-site-packages pympress\n"
+"\n"
+"In alternativa, chiedi a pip di scaricare e compilare pygobject e pycairo, per i quali avrai bisogno degli headers (o librerie da sviluppatore) di Gtk e cairo:\n"
+"  pipx inject pympress pygobject pycairo\n"
+"\n"
+"Per maggiori informazioni, visita https://github.com/Cimbali/pympress/blob/master/README.md#dependencies"
 
