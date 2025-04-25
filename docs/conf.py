@@ -265,7 +265,7 @@ intersphinx_mapping = {
     'GdkX11': ('https://lazka.github.io/pgi-docs/GdkX11-3.0', None),
     'Gio': ('https://lazka.github.io/pgi-docs/Gio-2.0', None),
     'python': ('https://docs.python.org/{}.{}'.format(*sys.version_info[:2]), None),
-    'cairo': ('https://www.cairographics.org/documentation/pycairo/3', None),
+    'cairo': ('https://pycairo.readthedocs.io/en/latest', None),
     **load_epydoc_as_intersphinx_v2({'vlc': 'https://www.olivieraubert.net/vlc/python-ctypes/doc/'}),
     # No mapping on https://gstreamer.freedesktop.org/documentation/gstreamer/
     'Gst': ('https://lazka.github.io/pgi-docs/Gst-1.0', None),
@@ -292,9 +292,6 @@ except ImportError:
     html_theme = "alabaster"
 else:
     html_theme = "sphinx_rtd_theme"
-
-    # Add any paths that contain custom themes here, relative to this directory.
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 
 # Theme options are theme-specific and customize the look and feel of a theme
