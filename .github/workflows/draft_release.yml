@@ -27,7 +27,7 @@ jobs:
         echo tag=${tag#v} | tee -a $GITHUB_OUTPUT
 
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: pympress
         ref: ${{ github.event.inputs.tag || github.ref }}
@@ -63,7 +63,7 @@ jobs:
       run: tar czf $basename.tar.gz --exclude-vcs --exclude=.github --transform="s/^pympress/$basename/" pympress/
 
     - name: Archive production artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: tarball
         path: pympress-${{ steps.name.outputs.tag }}.tar.gz
@@ -153,7 +153,7 @@ jobs:
       file: ${{ steps.srpm.outputs.file }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install dependencies
       run: |
@@ -190,7 +190,7 @@ jobs:
       continue-on-error: true
 
     - name: Archive production artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: source-rpm
         path: srpm/${{ steps.name.outputs.file }}
@@ -204,7 +204,7 @@ jobs:
 
     steps:
     - name: Download from GitHub
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: source-rpm
         path: .
@@ -233,7 +233,7 @@ jobs:
       run: zypper install -y rpm-build rpmlint osc
 
     - name: Download tarball
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: tarball
         path: .
@@ -329,7 +329,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -419,7 +419,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist-without-release
           path: |

@@ -10,7 +10,7 @@ jobs:
     name: Upload translatable strings
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -32,7 +32,7 @@ jobs:
     needs: strings
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -50,7 +50,7 @@ jobs:
         python3 -m sphinx -bhtml docs/ build/sphinx/html -t api_doc -t install_instructions
         tar czf pympress-docs.tar.gz -C build/sphinx/html/ .
     - name: Upload
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: pympress-docs.tar.gz
         path: pympress-docs.tar.gz
@@ -60,13 +60,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         repository: pympress/pympress.github.io
         token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
         ref: main
     - name: Download
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: pympress-docs.tar.gz
         path: .
