@@ -211,7 +211,9 @@ jobs:
 
     - name: Install dependencies
       # NB. querying requires on a source rpm should give us build requires
-      run: dnf install -y rpm-build `rpm -qR "${{ needs.srpm.outputs.file }}" | awk '$1 !~ /^rpmlib(.*)/ {print $1}'`
+      run: |
+        dnf install -y rpm-build awk
+        dnf install -y `rpm -qR "${{ needs.srpm.outputs.file }}" | awk '$1 !~ /^rpmlib(.*)/ {print $1}'`
 
     - name: Build binary from source spm
       id: build
