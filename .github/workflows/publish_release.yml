@@ -10,14 +10,6 @@ on:
       tag:
         description: 'Release tag for which to build'
         required: true
-      pypi_upload:
-        description: 'upload to pypi'
-        required: false
-        type: choice
-        options:
-        - upload
-        - skip
-        default: 'upload'
 
 jobs:
   pypi:
@@ -27,21 +19,9 @@ jobs:
       release: ${{ steps.name.outputs.release }}
       url: ${{ steps.info.outputs.url }}
       sha256: ${{ steps.info.outputs.sha256 }}
+      changes: ${{ steps.changes.outputs.changes }}
 
     steps:
-    - name: Define name
-      id: name
-      run: |
-        ref=${{ github.ref }}
-        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
-        if echo ${tag#v} | grep -qxE '[0-9]+(\.[0-9]+)*' ; then release=final; else release=prerelease; fi
-        echo tag=${tag#v} | tee -a $GITHUB_OUTPUT
-        echo release=$release | tee -a $GITHUB_OUTPUT
-
-    - uses: actions/checkout@v4
-      with:
-        ref: v${{ steps.name.outputs.tag }}
-
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -49,8 +29,48 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install setuptools wheel twine babel
+        sudo apt-get update -q
+        sudo apt-get install -qy pandoc
+        python -m pip install --break-system-packages --upgrade pip
+        pip install --break-system-packages setuptools wheel twine babel
+
+    - name: Define name
+      id: name
+      run: |
+        ref=${{ github.ref }}
+        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
+        if echo ${tag#v} | grep -qxE '[0-9]+(\.[0-9]+)*' ; then release=final; else release=prerelease; fi
+        printf '%s\n' "tag=${tag#v}" "release=$release" | tee -a $GITHUB_OUTPUT
+
+    - name: Lookup what is in pypi currently
+      id: prev
+      run: |
+        curl -sL "https://pypi.org/pypi/pympress/json" |
+          jq '.releases | to_entries | map(.key as $version | .value | map(select(.packagetype == "sdist")) | first | .version = $version) | sort_by(.upload_time) | last' \
+          > last.json
+
+        jq -r '"version=\(.version)","url=\(.url)","sha256=\(.digests.sha256)"' last.json | tee -a $GITHUB_OUTPUT
+
+    - name: Extract changes from release
+      id: changes
+      shell:
+        bash
+      env:
+        tag: ${{ steps.name.outputs.tag }}
+        GITHUB_TOKEN: ${{ secrets.PYMPRESS_ACTION_PAT }}
+      run: |
+        curl -s -u "Cimbali:$GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" -H "Accept: application/vnd.github+json" \
+          "https://api.github.com/repos/Cimbali/pympress/releases" -o - |
+          jq ".[] | select(.tag_name == \"v$tag\") | del(.author, .assets[].uploader)" | tee release.json
+
+        echo 'changes<<EOF' | tee -a $GITHUB_OUTPUT
+        jq -r .body release.json | sed '/\(New Contributors\|Full Changelog\)/,/^\s*$/d;s/^- /  &/;1i- Update to v${{ steps.name.outputs.tag }}' |
+          pandoc --from=markdown --to=markdown --columns=67 | sed -r 's/^(\s+)-/\1*/;s/\#/#/g' | tee -a $GITHUB_OUTPUT
+        echo 'EOF' | tee -a $GITHUB_OUTPUT
+
+    - uses: actions/checkout@v4
+      with:
+        ref: v${{ steps.name.outputs.tag }}
 
     - name: Build catalogs and packages
       run: |
@@ -61,159 +81,165 @@ jobs:
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      if: ${{ github.event_name == 'release' || github.event.inputs.pypi_upload == 'upload' }}
+      if: steps.prev.outputs.version != steps.name.outputs.tag
       run: |
         twine upload dist/*
 
-    - name: Get info from pypi
+    - name: Check info from pypi
       id: info
       env:
         tag: ${{ steps.name.outputs.tag }}
       run: |
         # Get releases from pypi, exiting with non-zero if expected version not found
-        jq_script=".releases.\"${tag}\"[]? | select(.python_version == \"source\")"
-        while ! curl -s https://pypi.org/pypi/pympress/json | jq -r -e "$jq_script" > lastsource.json ; do
+        jq_script=".releases.\"${tag}\"[]? | select(.packagetype == \"sdist\")"
+        while ! curl -s https://pypi.org/pypi/pympress/json | jq -r -e "$jq_script" > updated.json ; do
           sleep 60  # be patient with pypi
         done
-        echo url=`jq -r .url lastsource.json` | tee -a $GITHUB_OUTPUT
-        echo sha256=`jq -r .digests.sha256 lastsource.json` | tee -a $GITHUB_OUTPUT
+
+        jq -r '"url=\(.url)","sha256=\(.digests.sha256)"' updated.json | tee -a $GITHUB_OUTPUT
 
     - name: Run a check on the generated file
       run: |
-        if ! jq -r '"\(.digests.sha256) dist/\(.filename)"' lastsource.json | sha256sum -c ; then
+        if ! jq -r '"\(.digests.sha256) dist/\(.filename)"' updated.json | sha256sum -c ; then
           echo '::warning:: Generated sdist file did not match pypi sha256sum'
         fi
 
 
   aur:
     name: Publish to AUR
+    needs: pypi
     runs-on: ubuntu-latest
     steps:
-      - name: Clone repo
-        run: git clone https://github.com/Cimbali/pympress-pkgbuild aur-repo
+    - name: Clone repo
+      run: git clone https://Cimbali@github.com/Cimbali/pympress-pkgbuild aur-repo
 
-      - name: Get info
-        id: info
-        run: |
-          ref=${{ github.ref }}
-          [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
-          tag=${tag#v}
+    - name: Get info
+      id: info
+      env:
+        tag: ${{ needs.pypi.outputs.tag }}
+      run: |
+        version=`awk -F= '$1 == "pkgver" {print $2}' aur-repo/PKGBUILD | tr -d "[()\"']"`
+        if [[ "$version" = "$tag" ]]; then
+          release=`awk -F= '$1 == "pkgrel" {print $2}' aur-repo/PKGBUILD | tr -d "[()\"']"`
+        else
+          release=0
+        fi
 
-          prev_pkgver=`awk -F= '$1 == "pkgver" {print $2}' aur-repo/PKGBUILD | tr -d "[()\"']"`
-          if [[ "$prev_pkgver" = "$tag" ]]; then
-            prev_pkgrel=`awk -F= '$1 == "pkgrel" {print $2}' aur-repo/PKGBUILD | tr -d "[()\"']"`
-          else
-            prev_pkrel=0
-          fi
+        printf '%s\n' "version=$version" "release=$release" | tee -a $GITHUB_OUTPUT
 
-          url="https://github.com/Cimbali/pympress/releases/download/v${tag}/pympress-${tag}.tar.gz"
-          sha256=`curl -sL "$url" | sha256sum | awk '{ print $1 }'`
+    - name: Update info
+      run: |
+        while read param value; do
+          sed -i -r "s,^(\\s*$param ?=[('\" ]*)[A-Za-z0-9\${\}:/._-]+([ '\")]*)$,\1$value\2," aur-repo/.SRCINFO aur-repo/PKGBUILD
+        done <<EOF
+          source ${{ needs.pypi.outputs.url }}
+          sha256sums ${{ needs.pypi.outputs.sha256 }}
+          pkgver ${{ needs.pypi.outputs.tag }}
+          pkgrel $(( ${{ steps.info.outputs.release }} + 1 ))
+        EOF
 
-          printf '%s\n' "tag=$tag" "url=$url" "sha256=$sha256" "prev_pkgver=$prev_pkgver" "prev_pkgrel=$prev_pkgrel" |
-            tee -a $GITHUB_OUTPUT
+        head -n999 aur-repo/.SRCINFO aur-repo/PKGBUILD
 
-      - name: Update info
-        run: |
-          while read param value; do
-            sed -i -r "s,^(\\s*$param ?=[('\" ]*)[A-Za-z0-9\${\}:/._-]+([ '\")]*)$,\1$value\2," aur-repo/.SRCINFO aur-repo/PKGBUILD
-          done <<EOF
-            source ${{ steps.info.outputs.url }}
-            sha256sums ${{ steps.info.outputs.sha256 }}
-            pkgver ${{ steps.info.outputs.tag }}
-            pkgrel $(( ${{ steps.info.outputs.prev_pkgrel }} + 1 ))
-          EOF
+    - name: Push the changes
+      if: steps.info.outputs.version != needs.pypi.outputs.tag
+      run: |
+        cd aur-repo
+        git config user.name Cimbali
+        git config user.email me@cimba.li
+        echo -e "protocol=https\nhost=github.com\nusername=Cimbali\npassword=$PASSWORD" | git credential-store store
 
-      - name: Push the changes
-        if: ${{ steps.info.outputs.prev_pkgver }} != ${{ steps.info.outputs.tag }}
-        run: |
-          cd aur-repo
-          git config user.name Cimbali
-          git config user.email me@cimba.li
-          echo -e "protocol=https\nhost=github.com\nusername=Cimbali\npassword=$PASSWORD" | git credential-store store
+        git commit -am "Update to v${{ needs.pypi.outputs.tag }}"
+        git push origin "main:main"
 
-          git commit -am "Update to v${{ steps.info.outputs.tag }}"
-          git push origin "main:main"
+      env:
+        PASSWORD: ${{ secrets.PYMPRESS_ACTION_PAT }}
 
-        env:
-          AUR_PRIVATE_KEY: ${{ secrets.PYMPRESS_ACTION_PAT }}
+
+  obs:
+    name: Upload to OpenBuildService
+    needs: pypi
+    runs-on: ubuntu-latest
+    container: opensuse/tumbleweed
+
+    steps:
+    - name: Install dependencies
+      run: zypper install -y curl jq awk osc
+
+    - name: Fetch info from OpenBuildService
+      id: info
+      run: |
+        trap 'rm -f ./osc-config' EXIT && echo "$OPENBUILDSERVICE_TOKEN_SECRET" > ./osc-config
+        osc="osc --config $GITHUB_WORKSPACE/osc-config"
+
+        $osc co -o osc home:cimbali python-pympress
+        version=`awk -F: '$1 == "Version" { print $2 }' osc/pympress.spec | tr -d ' '`
+
+        echo version=$version | tee -a $GITHUB_OUTPUT
+
+        if ! grep -qFe "- *Update to v${version//./\\.}" osc/pympress.changes; then
+          echo '::warning:: Last version missing from changelog'
+        fi
+      env:
+        OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
+
+    - name: Upload to OpenBuildService
+      if: needs.pypi.outputs.tag != steps.info.outputs.version
+      run: |
+        trap 'rm -f ./osc-config' EXIT && echo "$OPENBUILDSERVICE_TOKEN_SECRET" > ./osc-config
+        osc="osc --config $GITHUB_WORKSPACE/osc-config"
+        cd osc
+
+        $osc vc -m "$changes"
+        sed -i "2s/Cimba Li <me@cimba.li>/me@cimba.li/" pympress.changes
+        $osc ci -m "Release $tag"
+
+        $osc sr --yes -m "Version $tag" 'X11:Utilities' pympress
+      env:
+        OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
+        tag: ${{ needs.pypi.outputs.tag }}
+        changes: ${{ needs.pypi.outputs.changes }}
 
 
   copr:
-    name: Download source RPM from release and upload to COPR and OpenBuildService
+    name: Upload to COPR
+    needs: pypi
     runs-on: ubuntu-latest
 
     steps:
     - name: Install dependencies
       run: |
         sudo apt-get update -q
-        sudo apt-get install -qy osc cpio rpm2cpio pandoc python3-m2crypto
-        python3 -m pip install copr-cli
+        sudo apt-get install -qy cpio rpm2cpio python3-m2crypto
+        python3 -m pip install --break-system-packages copr-cli
 
-    - name: Get info
+    - name: Fetch info from COPR
       id: info
       run: |
-        ref=${{ github.ref }}
-        [ "${ref::10}" = 'refs/tags/' ] && tag=${ref:10} || tag=${{ github.event.inputs.tag }}
-        tag=${tag#v}
-
-        url="https://github.com/Cimbali/pympress/releases/download/v${tag}/pympress-${tag}.tar.gz"
-        sha256=`curl -sL "$url" | sha256sum | awk '{ print $1 }'`
-
-        printf '%s\n' "tag=$tag" "url=$url" "sha256=$sha256" | tee -a $GITHUB_OUTPUT
-
-    - name: Extract changes from release
-      shell:
-        bash
+        trap 'rm -f ./copr-config' EXIT && echo "$COPR_TOKEN_CONFIG" > ./copr-config
+        copr-cli --config ./copr-config get-package --name=python3-pympress --output-format=json cimbali/pympress |
+          jq -r '"version=\(.latest_build.source_package.version | sub("-[0-9]*$"; ""))"' | tee -a $GITHUB_OUTPUT
       env:
-        tag: ${{ steps.info.outputs.tag }}
-        GITHUB_TOKEN: ${{ secrets.PYMPRESS_ACTION_PAT }}
-      run: |
-        curl -s -u "Cimbali:$GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" -H "Accept: application/vnd.github+json" \
-          "https://api.github.com/repos/Cimbali/pympress/releases" -o - |
-          jq ".[] | select(.tag_name == \"v$tag\") | del(.author, .assets[].uploader)" | tee release.json
-
-        jq -r .body release.json | sed '/\(New Contributors\|Full Changelog\)/,/^\s*$/d;s/^- /  &/;1i- Update to v${{ steps.info.outputs.tag }}' |
-          pandoc --from=markdown --to=markdown --columns=67 | sed -r 's/^(\s+)-/\1*/;s/\#/#/g' | tee changes
-
-    - name: Upload to OpenBuildService
-      continue-on-error: true
-      run: |
-        trap 'rm -f ./osc-config' EXIT && echo "$OPENBUILDSERVICE_TOKEN_SECRET" > ./osc-config
-        osc="osc --config $GITHUB_WORKSPACE/osc-config"
-
-        $osc co -o osc home:cimbali python-pympress
-        cd osc/
-
-        if grep -qxFe '- Update to v${{ steps.info.outputs.tag }}' pympress.changes; then
-          echo "Version already in changelog ; skipping request"
-        else
-          $osc vc -F ../changes
-          sed -i "2s/Cimba Li <me@cimba.li>/me@cimba.li/" pympress.changes
-          $osc ci -m "Release ${{ steps.info.outputs.tag }}"
-
-          $osc sr --yes -m "Version ${{ steps.info.outputs.tag }}" 'X11:Utilities' pympress
-        fi
-      env:
-        OPENBUILDSERVICE_TOKEN_SECRET: ${{ secrets.OPENBUILDSERVICE_TOKEN_SECRET }}
+        COPR_TOKEN_CONFIG: ${{ secrets.COPR_TOKEN_CONFIG }}
 
     - name: Get SRPM URL from GitHub Release and download
       env:
-        tag: ${{ steps.info.outputs.tag }}
+        tag: ${{ needs.pypi.outputs.tag }}
       run: |
         url="https://github.com/Cimbali/pympress/releases/download/v${tag}/python3-pympress-${tag}-1.src.rpm"
         curl -L "$url" -o "python3-pympress-${tag}-1.src.rpm"
 
     - name: Upload to COPR
-      continue-on-error: true
+      if: needs.pypi.outputs.tag != steps.info.outputs.version
       run: |
         trap 'rm -f ./copr-config' EXIT && echo "$COPR_TOKEN_CONFIG" > ./copr-config
-        copr-cli --config ./copr-config build --nowait cimbali/pympress "python3-pympress-${{ steps.info.outputs.tag }}-1.src.rpm"
+        copr-cli --config ./copr-config build --nowait cimbali/pympress "python3-pympress-${tag}-1.src.rpm"
       env:
+        tag: ${{ needs.pypi.outputs.tag }}
         COPR_TOKEN_CONFIG: ${{ secrets.COPR_TOKEN_CONFIG }}
 
 
   brew:
-    name: Request new pypi package be pulled into Homebrew
+    name: Request Homebrew pull new version
     needs: pypi
     runs-on: macos-latest
 
@@ -223,7 +249,7 @@ jobs:
       run: |
         brew update
         brew upgrade
-        brew install pipgrip
+        brew install pipgrip gnu-sed
 
     - name: Configure brew repo
       run: |
@@ -244,10 +270,32 @@ jobs:
       env:
         PASSWORD: ${{ secrets.PYMPRESS_ACTION_PAT }}
 
+    - name: Get info from repo
+      id: info
+      run: |
+        cd "`brew --repo homebrew/core`"
+
+        version=`gsed -rn 's,^\s*url "[a-z]+://([a-z0-9_.-]+/)*pympress-(.*)\.tar\.gz"$,\2,p' Formula/p/pympress.rb`
+        echo version=$version | tee -a $GITHUB_OUTPUT
+
+        curl -sL -u "Cimbali:$GITHUB_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" -H "Accept: application/vnd.github+json" -o - \
+          'https://api.github.com/repos/Homebrew/homebrew-core/pulls?state=open&per_page=100' > pulls.json
+          jq -r '.[] | [.number, .title] | join(",")'  > pulls.csv
+
+        pr=`jq -r "map(select(.title == \"pympress $tag\")) | first.number? " pulls.json`
+        echo pr=$pr | tee -a $GITHUB_OUTPUT
+
+        if [ "$pr" != "null" ]; then
+          echo "::warning:: Pull request already open at https://github.com/Homebrew/homebrew-core/pull/$pr"
+        fi
+
+      env:
+        tag: ${{ needs.pypi.outputs.tag }}
+
     - name: Make a brew PR from pypi’s metadata
-      if: ${{ needs.pypi.outputs.release == 'final' }}
+      if: needs.pypi.outputs.release == 'final' && ( steps.info.outputs.version != needs.pypi.outputs.tag ) && ! steps.info.outputs.pr
       run: |
         brew bump-formula-pr --strict --no-browse --url="${{needs.pypi.outputs.url}}" --sha256="${{needs.pypi.outputs.sha256}}" pympress
       env:
-        HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_HOMEBREW_TOKEN }}
+        HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.PYMPRESS_ACTION_PAT }}
         HUB_REMOTE: https://github.com/Cimbali/homebrew-core/
