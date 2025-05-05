@@ -76,7 +76,7 @@ jobs:
         tag_name: v${{ steps.name.outputs.tag }}
         files: pympress-${{ steps.name.outputs.tag }}.tar.gz
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PYMPRESS_ACTION_PAT }}
 
   macos:
     name: Install and run test on mac
@@ -183,7 +183,7 @@ jobs:
         fail_on_unmatched_files: true
         files: srpm/${{ steps.srpm.outputs.file }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PYMPRESS_ACTION_PAT }}
 
     - name: Check built RPM with rpmlint
       run: rpmlint srpm/${{ steps.name.outputs.file }}
@@ -439,4 +439,4 @@ jobs:
             dist/*.zip
             dist/*.msi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PYMPRESS_ACTION_PAT }}
