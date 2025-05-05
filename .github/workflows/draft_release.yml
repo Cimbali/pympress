@@ -326,6 +326,7 @@ jobs:
         include:
           - { arch: x86_64, msystem: MINGW64 }
           - { arch: i686, msystem: MINGW32 }
+      fail-fast: false
 
     steps:
       - name: Checkout code
@@ -347,16 +348,16 @@ jobs:
             mingw-w64-${{ matrix.arch }}-gtk3
             mingw-w64-${{ matrix.arch }}-cairo
             mingw-w64-${{ matrix.arch }}-poppler
-            mingw-w64-${{ matrix.arch }}-python3
-            mingw-w64-${{ matrix.arch }}-python3-pip
-            mingw-w64-${{ matrix.arch }}-python3-gobject
-            mingw-w64-${{ matrix.arch }}-python3-cairo
-            mingw-w64-${{ matrix.arch }}-python3-appdirs
-            mingw-w64-${{ matrix.arch }}-python3-setuptools
-            mingw-w64-${{ matrix.arch }}-python3-packaging
-            mingw-w64-${{ matrix.arch }}-python3-cx_Freeze
-            mingw-w64-${{ matrix.arch }}-python3-babel
-            mingw-w64-${{ matrix.arch }}-python3-watchdog
+            mingw-w64-${{ matrix.arch }}-python
+            mingw-w64-${{ matrix.arch }}-python-pip
+            mingw-w64-${{ matrix.arch }}-python-gobject
+            mingw-w64-${{ matrix.arch }}-python-cairo
+            mingw-w64-${{ matrix.arch }}-python-appdirs
+            mingw-w64-${{ matrix.arch }}-python-setuptools
+            mingw-w64-${{ matrix.arch }}-python-packaging
+            mingw-w64-${{ matrix.arch }}-python-cx-freeze
+            mingw-w64-${{ matrix.arch }}-python-babel
+            mingw-w64-${{ matrix.arch }}-python-watchdog
 
       - name: Install ghostscript "base 35" fonts
         shell: msys2 {0}
@@ -366,8 +367,8 @@ jobs:
 
       - name: Install python-only dependencies
         run: |
-          python3 -m pip install --disable-pip-version-check --upgrade pip
-          python3 -m pip install python-vlc
+          python3 -m pip install --break-system-packages --disable-pip-version-check --upgrade pip
+          python3 -m pip install --break-system-packages python-vlc
 
       - name: Compile translations
         run: python3 setup.py compile_catalog
