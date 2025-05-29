@@ -1072,6 +1072,8 @@ class Document(object):
         for page, label in enumerate(self.page_labels):
             if label != last:
                 pages.append(page)
+            else:
+                pages[-1] = page
             last = label
         return pages
 
