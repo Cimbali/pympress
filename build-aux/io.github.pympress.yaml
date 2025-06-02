@@ -1,0 +1,53 @@
+id: io.github.pympress
+runtime: org.gnome.Platform
+runtime-version: "46"
+sdk: org.gnome.Sdk
+command: pympress
+finish-args:
+    - "--socket=wayland"
+    - "--socket=fallback-x11"
+    - "--socket=pulseaudio"
+    - "--device=dri"
+    - "--share=ipc"
+    - "--filesystem=xdg-documents"
+    - "--filesystem=xdg-run/gvfs"
+    - "--filesystem=xdg-run/gvfsd"
+    - "--talk-name=org.gtk.vfs.*"
+build-options:
+    build-args:
+        - "--share=network"
+    test-args:
+        - "--socket=x11"
+        - "--share=network"
+modules:
+    - name: poppler
+      buildsystem: cmake-ninja
+      config-opts:
+          - "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
+          - "-DCMAKE_INSTALL_LIBDIR=/app/lib"
+          - "-DCMAKE_INSTALL_INCLUDEDIR=/app/include"
+          - "-DENABLE_BOOST=OFF"
+          - "-DENABLE_LIBOPENJPEG=none"
+          - "-DENABLE_QT5=OFF"
+          - "-DENABLE_QT6=OFF"
+          - "-DENABLE_CPP=OFF"
+          - "-DENABLE_UTILS=OFF"
+      sources:
+          - type: archive
+            url: "https://poppler.freedesktop.org/poppler-24.04.0.tar.xz"
+            sha256: 1e804ec565acf7126eb2e9bb3b56422ab2039f7e05863a5dfabdd1ffd1bb77a7
+    - name: poppler-data
+      buildsystem: cmake-ninja
+      config-opts:
+          - "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+      sources:
+          - type: archive
+            url: "https://poppler.freedesktop.org/poppler-data-0.4.12.tar.gz"
+            sha256: c835b640a40ce357e1b83666aabd95edffa24ddddd49b8daff63adb851cdab74
+    - name: pympress
+      buildsystem: simple
+      build-commands:
+        - pip3 install --prefix=/app .
+      sources:
+          - type: dir
+            path: ../
