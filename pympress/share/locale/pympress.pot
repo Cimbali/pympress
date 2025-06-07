@@ -505,6 +505,9 @@ msgstr ""
 msgid "_Annotations"
 msgstr ""
 
+msgid "_Compact mode"
+msgstr ""
+
 msgid "_Automatic navigation"
 msgstr ""
 
