@@ -263,6 +263,9 @@ class Media(object):
         """ Remove current media overlays.
         """
         self.remove_media_overlays()
+        for (v_da_c, v_da_p) in self._media_overlays.values():
+            v_da_c.unload()
+            v_da_p.unload()
         self._media_overlays.clear()
 
 

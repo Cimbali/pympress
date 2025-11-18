@@ -46,6 +46,8 @@ class GifOverlay(base.VideoOverlay):
     base_size = None
     #: The :class:`~cairo.Matrix` defining the zoom & shift to scale the gif
     transform = None
+    #: `int` tracking the callback for the next redraw
+    loop = -1
 
     def __init__(self, *args, **kwargs):
         super(GifOverlay, self).__init__(*args, **kwargs)
@@ -58,6 +60,15 @@ class GifOverlay(base.VideoOverlay):
         self.movie_zone.connect('draw', self.draw)
         self.movie_zone.connect('configure-event', self.set_transform)
 
+
+    def unload(self):
+        """ Unload the media file and tear down playback mechanisms.
+        """
+        if self.loop >= 0:
+            GLib.Source.remove(self.loop)
+            self.loop = -1
+        self.anim_iter = None
+        self.anim = None
 
     def _set_file(self, filepath):
         """ Sets the media file to be played by the widget.
@@ -101,12 +112,18 @@ class GifOverlay(base.VideoOverlay):
     def advance_gif(self):
         """ Advance the gif, queue redrawing if the frame changed, and schedule the next frame.
         """
+        if self.anim_iter is None:
+            return False
+
         if self.anim_iter.advance():
             self.movie_zone.queue_draw()
 
         delay = self.anim_iter.get_delay_time()
         if delay >= 0:
-            GLib.timeout_add(delay, self.advance_gif)
+            self.loop = GLib.timeout_add(interval=delay, function=self.advance_gif)
+        else:
+            self.loop = -1
+        return False
 
 
     def do_set_time(self, t):

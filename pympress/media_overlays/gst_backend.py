@@ -195,6 +195,12 @@ class GstOverlay(base.VideoOverlay):
         return False
 
 
+    def unload(self):
+        """ Unload the media file and tear down playback mechanisms.
+        """
+        pass
+
+
     def do_set_time(self, time):
         """ Set the player at time `~time`.
 

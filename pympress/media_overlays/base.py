@@ -236,6 +236,12 @@ class VideoOverlay(builder.Builder):
         raise NotImplementedError
 
 
+    def unload(self):
+        """ Unload the media file and tear down playback mechanisms.
+        """
+        raise NotImplementedError
+
+
     def do_stop(self):
         """ Stops playing in the backend player.
         """

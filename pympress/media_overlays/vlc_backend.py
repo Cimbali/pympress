@@ -202,6 +202,12 @@ class VlcOverlay(base.VideoOverlay):
         self.player.stop()
 
 
+    def unload(self):
+        """ Unload the media file and tear down playback mechanisms.
+        """
+        pass
+
+
     def time_changed(self, event):
         """ Handle time passing
 
