@@ -91,8 +91,7 @@ def get_pympress_meta():
     except subprocess.CalledProcessError:
         logger.debug('Failed to get git describe output', exc_info = True)
 
-    finally:
-        return info
+    return info
 
 
 def __get_resource_path(*path_parts):
