@@ -943,14 +943,15 @@ class UI(builder.Builder):
 
 
     def save_file_as(self, *args):
-        """ Remove the current document.
+        """ Save the current document.
         """
-        # Use a GTK file dialog to choose file
-        dialog = Gtk.FileChooserDialog(title = _('Save as...'), transient_for = self.p_win,
-                                       action = Gtk.FileChooserAction.SAVE)
-        dialog.add_buttons(Gtk.STOCK_SAVE_AS, Gtk.ResponseType.OK)
-        dialog.set_default_response(Gtk.ResponseType.OK)
-        dialog.set_position(Gtk.WindowPosition.CENTER)
+        dialog = Gtk.FileChooserNative(
+            title=_('Save as...'),
+            transient_for=self.p_win,
+            action=Gtk.FileChooserAction.SAVE,
+            accept_label=_('OK'),
+            cancel_label=_('Cancel'),
+        )
 
         file_filter = Gtk.FileFilter()
         file_filter.set_name(_('PDF files'))
@@ -963,42 +964,60 @@ class UI(builder.Builder):
         file_filter.add_pattern('*')
         dialog.add_filter(file_filter)
 
-        response = dialog.run()
+        dialog.connect("response", self.on_file_save_dialog_response)
 
-        if response == Gtk.ResponseType.OK:
-            self.doc.save_changes(dialog.get_uri())
+        dialog.show()
+        
 
-        dialog.destroy()
+    def on_file_save_dialog_response(self, dialog, response_id):
+        """
+        Callback function to handle the result from the Gtk.FileChooserNative save.
+        """
+        if response_id == Gtk.ResponseType.ACCEPT:
+            gfile = dialog.get_file()
+            if gfile:
+                file_uri = gfile.get_uri()
+                self.doc.save_changes(file_uri)
 
 
     def pick_file(self, *args):
         """ Ask the user which file he means to open.
         """
-        # Use a GTK file dialog to choose file
-        dialog = Gtk.FileChooserDialog(title = _('Open...'), transient_for = self.p_win,
-                                       action = Gtk.FileChooserAction.OPEN)
-        dialog.add_buttons(Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
-        dialog.set_default_response(Gtk.ResponseType.OK)
-        dialog.set_position(Gtk.WindowPosition.CENTER)
+        dialog = Gtk.FileChooserNative(
+            title=_('Open...'),
+            transient_for=self.p_win,
+            action=Gtk.FileChooserAction.OPEN,
+            accept_label=_('Open'),
+            cancel_label=_('Cancel'),
+        )
+        
+        file_filter_pdf = Gtk.FileFilter()
+        file_filter_pdf.set_name(_('PDF files'))
+        file_filter_pdf.add_mime_type('application/pdf')
+        file_filter_pdf.add_pattern('*.pdf')
+        dialog.add_filter(file_filter_pdf)
 
-        file_filter = Gtk.FileFilter()
-        file_filter.set_name(_('PDF files'))
-        file_filter.add_mime_type('application/pdf')
-        file_filter.add_pattern('*.pdf')
-        dialog.add_filter(file_filter)
+        file_filter_all = Gtk.FileFilter()
+        file_filter_all.set_name(_('All files'))
+        file_filter_all.add_pattern('*')
+        dialog.add_filter(file_filter_all)
 
-        file_filter = Gtk.FileFilter()
-        file_filter.set_name(_('All files'))
-        file_filter.add_pattern('*')
-        dialog.add_filter(file_filter)
+        dialog.connect("response", self.on_file_dialog_response)
 
-        response = dialog.run()
+        dialog.show()
 
-        if response == Gtk.ResponseType.OK:
-            self.swap_document(dialog.get_uri())
-
-        dialog.destroy()
-
+    def on_file_dialog_response(self, dialog, response_id):
+        """
+        Callback function to handle the result from the Gtk.FileChooserNative open.
+        """
+        # If the user clicked "Open" (or the equivalent accept button)
+        if response_id == Gtk.ResponseType.ACCEPT:
+            # Gtk.FileChooserNative returns a GFile object
+            gfile = dialog.get_file()
+            if gfile:
+                # Get the URI from the GFile object
+                file_uri = gfile.get_uri()
+                self.swap_document(file_uri)
 
     def error_opening_file(self, uri):
         """ Remove the current document.
