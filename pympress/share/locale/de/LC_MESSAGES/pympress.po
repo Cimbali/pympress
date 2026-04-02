@@ -303,6 +303,11 @@ msgstr "Inhalt _ausrichten"
 msgid "_Annotations"
 msgstr "_Anmerkungen"
 
+#:
+msgid "_Compact mode"
+msgstr "_Kompakter Modus"
+
+
 #: 
 msgid "_Blank screen"
 msgstr "_Schwarzer Bildschirm"
