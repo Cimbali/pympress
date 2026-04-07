@@ -48,8 +48,12 @@ from gi.repository import GObject, Gtk, Gdk, GLib, GdkPixbuf, Gio
 
 
 from pympress import (
-    document, surfacecache, util, pointer, scribble, deck, builder, talk_time, dialog, extras, editable_label
+    document, surfacecache, util, pointer, scribble, deck, builder, talk_time, dialog, extras, editable_label,
+    browser,
 )
+
+
+_ = util.get_translation('pympress').gettext
 
 
 class UI(builder.Builder):
@@ -147,6 +151,25 @@ class UI(builder.Builder):
 
     #: Software-implemented laser pointer, :class:`~pympress.pointer.Pointer`
     laser = None
+    #: Browser mirror controller, :class:`~pympress.browser.BrowserMirror`
+    browser = None
+
+    #: Mirrored presenter cursor position on the current slide, as relative coordinates
+    presenter_mirror_cursor_pos = None
+    #: Whether presenter interactions should show a synthetic cursor on the content window
+    presenter_mirror_cursor_visible = False
+    #: Current mirrored cursor style
+    presenter_mirror_cursor_style = 'default'
+    #: Click feedback pulses mirrored from the presenter current-slide box
+    presenter_mirror_click_feedback = None
+    #: Active drag points mirrored from the presenter current-slide box
+    presenter_mirror_active_drag_points = None
+    #: Button kind for the active mirrored drag
+    presenter_mirror_active_drag_button_kind = 'primary'
+    #: Completed drag feedback paths mirrored from the presenter current-slide box
+    presenter_mirror_drag_feedback = None
+    #: GLib timeout id for mirrored presenter feedback animation
+    presenter_mirror_feedback_timeout = 0
 
     #: :class:`~pympress.editable_label.PageNumber` displaying and setting current page numbers
     page_number = None
@@ -186,6 +209,14 @@ class UI(builder.Builder):
         self.config = config
 
         self.blanked = self.config.getboolean('content', 'start_blanked')
+        self.presenter_mirror_cursor_pos = None
+        self.presenter_mirror_cursor_visible = False
+        self.presenter_mirror_cursor_style = 'default'
+        self.presenter_mirror_click_feedback = []
+        self.presenter_mirror_active_drag_points = []
+        self.presenter_mirror_active_drag_button_kind = 'primary'
+        self.presenter_mirror_drag_feedback = []
+        self.presenter_mirror_feedback_timeout = 0
 
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(),
@@ -265,6 +296,7 @@ class UI(builder.Builder):
         self.annotations = extras.Annotations(self)
         self.medias = extras.Media(self, self.config)
         self.laser = pointer.Pointer(self.config, self)
+        self.browser = browser.BrowserMirror(self)
         self.est_time = editable_label.EstimatedTalkTime(self)
         self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))
         self.timing = dialog.TimingReport(self)
@@ -393,6 +425,11 @@ class UI(builder.Builder):
         # Enable dropping files onto the window
         self.p_win.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
         self.p_win.drag_dest_add_text_targets()
+
+        for presenter_widget in [self.p_da_cur, self.scribbler.scribble_p_eb]:
+            presenter_widget.add_events(Gdk.EventMask.ENTER_NOTIFY_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK)
+            presenter_widget.connect('enter-notify-event', self.track_presenter_mouse_mirror)
+            presenter_widget.connect('leave-notify-event', self.track_presenter_mouse_mirror)
 
         self.p_win.insert_action_group('presenter', self.c_win.get_action_group('win'))
         self.p_win.insert_action_group('win', None)
@@ -728,6 +765,8 @@ class UI(builder.Builder):
         """
         self.scribbler.disable_scribbling()
         self.medias.hide_all()
+        self.browser.stop_browser()
+        self.stop_presenter_mouse_mirror()
 
         self.doc.cleanup_media_files()
 
@@ -1189,6 +1228,7 @@ class UI(builder.Builder):
         if not is_preview:
             self.preview_page = self.current_page
             self.app.set_action_state('page', self.current_page + 1)
+            self.stop_presenter_mouse_mirror()
 
         draw_notes = self.notes_mode
         draw_page = draw_notes.complement()
@@ -1211,7 +1251,8 @@ class UI(builder.Builder):
 
         if not is_preview:
             content_pr = page_content.get_aspect_ratio(draw_page)
-            self.c_frame.set_property('ratio', content_pr)
+            if not self.browser.is_mirroring_content():
+                self.c_frame.set_property('ratio', content_pr)
             self.c_da.queue_draw()
 
             self.scribbler.scribble_p_frame.set_property('ratio', content_pr)
@@ -1271,6 +1312,8 @@ class UI(builder.Builder):
         if widget is self.c_da:
             # Current page
             if self.blanked:
+                return
+            if self.browser.draw_mirror(cairo_context, widget.get_allocated_width(), widget.get_allocated_height()):
                 return
             page = self.doc.page(self.current_page)
         elif widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
@@ -1356,6 +1399,9 @@ class UI(builder.Builder):
             # do not use the zoom matrix for the pointer, it is relative to the screen not the slide
             self.laser.render_pointer(cairo_context, ww, wh)
 
+        if widget is self.c_da:
+            self.draw_presenter_mouse_mirror(cairo_context, ww, wh)
+
 
     def clear_zoom_cache(self):
         """ Callback to clear the cache of zoomed widgets.
@@ -1371,6 +1417,272 @@ class UI(builder.Builder):
         self.c_da.queue_draw()
         self.p_da_cur.queue_draw()
         self.scribbler.scribble_p_da.queue_draw()
+
+
+    @staticmethod
+    def _presenter_event_buttons(event):
+        buttons = 0
+        state = event.get_state()
+        if state & Gdk.ModifierType.BUTTON1_MASK:
+            buttons |= 1
+        if state & Gdk.ModifierType.BUTTON2_MASK:
+            buttons |= 4
+        if state & Gdk.ModifierType.BUTTON3_MASK:
+            buttons |= 2
+        return buttons
+
+
+    @staticmethod
+    def _infer_presenter_button_kind(button, buttons, reported_kind=None):
+        if buttons & 2:
+            return 'secondary'
+        elif buttons & 4:
+            return 'auxiliary'
+        elif buttons & 1:
+            return 'primary'
+        elif reported_kind in {'primary', 'secondary', 'auxiliary'}:
+            return reported_kind
+        elif button == 3:
+            return 'secondary'
+        elif button == 2:
+            return 'auxiliary'
+        elif button == 1:
+            return 'primary'
+        return 'primary'
+
+
+    def _is_presenter_mouse_mirror_widget(self, widget):
+        return widget is self.p_da_cur or widget is self.scribbler.scribble_p_eb
+
+
+    def _get_presenter_mouse_mirror_style(self, widget, x, y):
+        if not self._is_presenter_mouse_mirror_widget(widget):
+            return 'default'
+
+        page = self.doc.page(self.preview_page)
+        if page is None:
+            return 'default'
+
+        if page.get_link_at(x, y, self.notes_mode.complement()):
+            return 'pointer'
+        return 'default'
+
+
+    def _append_presenter_mouse_mirror_point(self, x, y):
+        now = GLib.get_monotonic_time() / 1000000.0
+        if not self.presenter_mirror_active_drag_points:
+            self.presenter_mirror_active_drag_points = [(x, y, now)]
+            return
+
+        self._prune_presenter_mouse_mirror_points(now)
+
+        last_x, last_y, _last_t = self.presenter_mirror_active_drag_points[-1]
+        if abs(last_x - x) < browser.BrowserMirror.DRAG_POINT_EPSILON \
+                and abs(last_y - y) < browser.BrowserMirror.DRAG_POINT_EPSILON:
+            return
+
+        self.presenter_mirror_active_drag_points.append((x, y, now))
+
+
+    def _prune_presenter_mouse_mirror_points(self, now=None):
+        if not self.presenter_mirror_active_drag_points:
+            return
+
+        now = GLib.get_monotonic_time() / 1000000.0 if now is None else now
+        cutoff = now - browser.BrowserMirror.ACTIVE_DRAG_TTL
+        kept_points = []
+        previous_point = None
+
+        for point in self.presenter_mirror_active_drag_points:
+            if point[2] < cutoff:
+                previous_point = point
+                continue
+
+            if previous_point is not None and not kept_points:
+                kept_points.append(previous_point)
+                previous_point = None
+
+            kept_points.append(point)
+
+        self.presenter_mirror_active_drag_points = kept_points or self.presenter_mirror_active_drag_points[-1:]
+
+
+    def _finish_presenter_mouse_mirror_drag(self):
+        if len(self.presenter_mirror_active_drag_points) > 1:
+            self.presenter_mirror_drag_feedback.append({
+                'points': [(point_x, point_y) for point_x, point_y, _point_t in self.presenter_mirror_active_drag_points],
+                'button_kind': self.presenter_mirror_active_drag_button_kind,
+                'time': GLib.get_monotonic_time() / 1000000.0,
+            })
+            if not self.presenter_mirror_feedback_timeout:
+                self.presenter_mirror_feedback_timeout = GLib.timeout_add(16, self.animate_presenter_mouse_mirror)
+
+        self.presenter_mirror_active_drag_points = []
+        self.presenter_mirror_active_drag_button_kind = 'primary'
+
+
+    def stop_presenter_mouse_mirror(self):
+        if self.presenter_mirror_feedback_timeout:
+            GLib.Source.remove(self.presenter_mirror_feedback_timeout)
+            self.presenter_mirror_feedback_timeout = 0
+
+        self.presenter_mirror_cursor_pos = None
+        self.presenter_mirror_cursor_visible = False
+        self.presenter_mirror_cursor_style = 'default'
+        self.presenter_mirror_click_feedback = []
+        self.presenter_mirror_active_drag_points = []
+        self.presenter_mirror_active_drag_button_kind = 'primary'
+        self.presenter_mirror_drag_feedback = []
+        self.c_da.queue_draw()
+        return False
+
+
+    def animate_presenter_mouse_mirror(self):
+        now = GLib.get_monotonic_time() / 1000000.0
+        self.presenter_mirror_click_feedback = [
+            pulse for pulse in self.presenter_mirror_click_feedback
+            if now - pulse['time'] < browser.BrowserMirror.CLICK_FEEDBACK_TTL
+        ]
+        self.presenter_mirror_drag_feedback = [
+            trail for trail in self.presenter_mirror_drag_feedback
+            if now - trail['time'] < browser.BrowserMirror.DRAG_FEEDBACK_TTL
+        ]
+        self._prune_presenter_mouse_mirror_points(now)
+
+        if not self.browser.is_mirroring_content():
+            self.c_da.queue_draw()
+
+        if self.presenter_mirror_click_feedback or self.presenter_mirror_drag_feedback or self.presenter_mirror_active_drag_points:
+            return True
+
+        self.presenter_mirror_feedback_timeout = 0
+        return False
+
+
+    def track_presenter_mouse_mirror(self, widget, event):
+        if not self._is_presenter_mouse_mirror_widget(widget):
+            return False
+
+        if event.type == Gdk.EventType.LEAVE_NOTIFY:
+            self.presenter_mirror_cursor_visible = False
+            self._finish_presenter_mouse_mirror_drag()
+            if not self.browser.is_mirroring_content():
+                self.c_da.queue_draw()
+            return False
+
+        if event.type != Gdk.EventType.ENTER_NOTIFY:
+            return False
+
+        x, y = self.zoom.get_slide_point(widget, event)
+        x = min(max(x, 0.0), 1.0)
+        y = min(max(y, 0.0), 1.0)
+        self.presenter_mirror_cursor_visible = True
+        self.presenter_mirror_cursor_pos = (x, y)
+        self.presenter_mirror_cursor_style = self._get_presenter_mouse_mirror_style(widget, x, y)
+        if not self.browser.is_mirroring_content():
+            self.c_da.queue_draw()
+        return False
+
+
+    def update_presenter_mouse_mirror_motion(self, widget, event):
+        if event.type != Gdk.EventType.MOTION_NOTIFY or not self._is_presenter_mouse_mirror_widget(widget):
+            return False
+
+        x, y = self.zoom.get_slide_point(widget, event)
+        x = min(max(x, 0.0), 1.0)
+        y = min(max(y, 0.0), 1.0)
+        buttons = self._presenter_event_buttons(event)
+
+        self.presenter_mirror_cursor_visible = True
+        self.presenter_mirror_cursor_pos = (x, y)
+        self.presenter_mirror_cursor_style = self._get_presenter_mouse_mirror_style(widget, x, y)
+
+        if buttons:
+            self.presenter_mirror_active_drag_button_kind = self._infer_presenter_button_kind(
+                0, buttons, self.presenter_mirror_active_drag_button_kind
+            )
+            self._append_presenter_mouse_mirror_point(x, y)
+
+        if not self.browser.is_mirroring_content():
+            self.c_da.queue_draw()
+        return False
+
+
+    def update_presenter_mouse_mirror_click(self, widget, event):
+        if not self._is_presenter_mouse_mirror_widget(widget):
+            return False
+        if event.type not in {Gdk.EventType.BUTTON_PRESS, Gdk.EventType.BUTTON_RELEASE}:
+            return False
+
+        x, y = self.zoom.get_slide_point(widget, event)
+        x = min(max(x, 0.0), 1.0)
+        y = min(max(y, 0.0), 1.0)
+        _has_button, button = event.get_button()
+        buttons = self._presenter_event_buttons(event)
+        button_kind = self._infer_presenter_button_kind(button, buttons, None)
+
+        self.presenter_mirror_cursor_visible = True
+        self.presenter_mirror_cursor_pos = (x, y)
+        self.presenter_mirror_cursor_style = self._get_presenter_mouse_mirror_style(widget, x, y)
+
+        if event.type == Gdk.EventType.BUTTON_PRESS:
+            self.presenter_mirror_active_drag_points = [(x, y, GLib.get_monotonic_time() / 1000000.0)]
+            self.presenter_mirror_active_drag_button_kind = button_kind
+        else:
+            self._append_presenter_mouse_mirror_point(x, y)
+            self._finish_presenter_mouse_mirror_drag()
+
+        self.presenter_mirror_click_feedback.append({'x': x, 'y': y, 'time': GLib.get_monotonic_time() / 1000000.0,
+                                                     'button_kind': button_kind})
+        if not self.presenter_mirror_feedback_timeout:
+            self.presenter_mirror_feedback_timeout = GLib.timeout_add(16, self.animate_presenter_mouse_mirror)
+
+        if not self.browser.is_mirroring_content():
+            self.c_da.queue_draw()
+        return False
+
+
+    def draw_presenter_mouse_mirror(self, cairo_context, ww, wh):
+        if self.presenter_mirror_drag_feedback:
+            now = GLib.get_monotonic_time() / 1000000.0
+            for trail in self.presenter_mirror_drag_feedback:
+                age = now - trail['time']
+                if age >= browser.BrowserMirror.DRAG_FEEDBACK_TTL:
+                    continue
+                browser.BrowserMirror._draw_drag_path(
+                    cairo_context,
+                    ww,
+                    wh,
+                    trail['points'],
+                    1 - age / browser.BrowserMirror.DRAG_FEEDBACK_TTL,
+                    trail.get('button_kind', 'primary'),
+                )
+
+        if self.presenter_mirror_active_drag_points:
+            browser.BrowserMirror._draw_active_drag_path(
+                cairo_context,
+                ww,
+                wh,
+                self.presenter_mirror_active_drag_points,
+                self.presenter_mirror_active_drag_button_kind,
+            )
+
+        if self.presenter_mirror_cursor_visible and self.presenter_mirror_cursor_pos is not None:
+            browser.BrowserMirror.draw_cursor_feedback(
+                cairo_context,
+                ww,
+                wh,
+                self.presenter_mirror_cursor_pos,
+                self.presenter_mirror_cursor_style,
+            )
+
+        browser.BrowserMirror.draw_click_feedback_items(
+            cairo_context,
+            ww,
+            wh,
+            self.presenter_mirror_click_feedback,
+            browser.BrowserMirror.CLICK_FEEDBACK_TTL,
+        )
 
 
     ##############################################################################
@@ -1464,6 +1776,9 @@ class UI(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
+        self.update_presenter_mouse_mirror_motion(widget, event)
+        if widget is self.c_da and self.browser.is_mirroring_content():
+            return True
         if self.zoom.track_zoom_target(widget, event):
             return True
         elif self.scribbler.track_scribble(widget, event):
@@ -1486,6 +1801,9 @@ class UI(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
+        self.update_presenter_mouse_mirror_click(widget, event)
+        if widget is self.c_da and self.browser.is_mirroring_content():
+            return True
         if self.zoom.toggle_zoom_target(widget, event):
             return True
         elif self.scribbler.toggle_scribble(widget, event):

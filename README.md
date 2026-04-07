@@ -212,6 +212,7 @@ A few of the fancier functionalities are listed here:
 - **Software pointer**: Clicking on the slide (in either window) while holding `ctrl` down will display a software laser pointer on the slide. Or press `L` to permanently switch on the laser pointer.
 - **Talk time breakdown**: The `Presentation > Timing Breakdown` menu item displays a breakdown of how much time was spent on each slide, with a hierarchical breakdown per chapters/sections/etc. if available in the PDF.
 - **Automatic file reloading**: If the file is modified, pympress will reload it (and preserve the current slide, current time, etc.)
+- **Browser mirror mode**: Launches an isolated Chromium window and can mirror that browser session into the content window, with a synthetic cursor and click feedback drawn by pympress.
 - **Big button mode**: Add big buttons (duh) for touch displays.
 - **Swap screens**: If Pympress mixed up which screen is the projector and which is not, press `S`
 - **Automatic full screen**: pympress will automatically put the content window fullscreen on your non-primary screen when:
@@ -246,6 +247,12 @@ To enable media playback, you need to have either:
 - VLC installed (and the python-vlc module), with `enabled = on` under the `[vlc]` section of your config file.
 
 On macOS, issues with the gstreamer brew formula may require users to set `GST_PLUGIN_SYSTEM_PATH` manually. For default homebrew configurations the value should be `/opt/homebrew/lib/gstreamer-1.0/`. Make sure to set this environmental variable globally, or pympress might not pick it up.
+
+## Browser mirror mode
+
+Browser mirror mode requires a Chromium-compatible browser that exposes the Chrome DevTools Protocol, and the Python package `websocket-client`.
+
+Use `Presentation > Open browser window` to launch an isolated browser session with its own temporary profile. If desired, enable `Presentation > Browser mirror` to display that browser session in the content window while keeping the Chromium window interactive on the other screen.
 
 To produce PDFs with media inclusion, the ideal method is to use beamer’s multimedia package, always with `\movie`:
 

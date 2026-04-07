@@ -203,6 +203,18 @@
 			<attribute name="label" translatable="yes">Timing breakdown</attribute>
 			<attribute name="action">app.timing-report</attribute>
 		</item>
+		<item>
+			<attribute name="label" translatable="yes">Open browser window</attribute>
+			<attribute name="action">app.browser-open</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">Browser mirror</attribute>
+			<attribute name="action">app.browser-mirror</attribute>
+		</item>
+		<item>
+			<attribute name="label" translatable="yes">Close browser window</attribute>
+			<attribute name="action">app.browser-stop</attribute>
+		</item>
     </submenu>
 
 	<submenu>
