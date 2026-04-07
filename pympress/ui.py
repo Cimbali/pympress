@@ -48,7 +48,8 @@ from gi.repository import GObject, Gtk, Gdk, GLib, GdkPixbuf, Gio
 
 
 from pympress import (
-    document, surfacecache, util, pointer, scribble, deck, builder, talk_time, dialog, extras, editable_label
+    document, surfacecache, util, pointer, scribble, deck, builder, talk_time, dialog, extras, editable_label,
+    browser,
 )
 
 
@@ -147,6 +148,8 @@ class UI(builder.Builder):
 
     #: Software-implemented laser pointer, :class:`~pympress.pointer.Pointer`
     laser = None
+    #: Browser mirror controller, :class:`~pympress.browser.BrowserMirror`
+    browser = None
 
     #: :class:`~pympress.editable_label.PageNumber` displaying and setting current page numbers
     page_number = None
@@ -265,6 +268,7 @@ class UI(builder.Builder):
         self.annotations = extras.Annotations(self)
         self.medias = extras.Media(self, self.config)
         self.laser = pointer.Pointer(self.config, self)
+        self.browser = browser.BrowserMirror(self)
         self.est_time = editable_label.EstimatedTalkTime(self)
         self.page_number = editable_label.PageNumber(self, self.config.getboolean('presenter', 'scroll_number'))
         self.timing = dialog.TimingReport(self)
@@ -728,6 +732,7 @@ class UI(builder.Builder):
         """
         self.scribbler.disable_scribbling()
         self.medias.hide_all()
+        self.browser.stop_browser()
 
         self.doc.cleanup_media_files()
 
@@ -1211,7 +1216,8 @@ class UI(builder.Builder):
 
         if not is_preview:
             content_pr = page_content.get_aspect_ratio(draw_page)
-            self.c_frame.set_property('ratio', content_pr)
+            if not self.browser.is_mirroring_content():
+                self.c_frame.set_property('ratio', content_pr)
             self.c_da.queue_draw()
 
             self.scribbler.scribble_p_frame.set_property('ratio', content_pr)
@@ -1271,6 +1277,8 @@ class UI(builder.Builder):
         if widget is self.c_da:
             # Current page
             if self.blanked:
+                return
+            if self.browser.draw_mirror(cairo_context, widget.get_allocated_width(), widget.get_allocated_height()):
                 return
             page = self.doc.page(self.current_page)
         elif widget is self.p_da_cur or widget is self.scribbler.scribble_p_da:
@@ -1464,6 +1472,8 @@ class UI(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
+        if widget is self.c_da and self.browser.is_mirroring_content():
+            return True
         if self.zoom.track_zoom_target(widget, event):
             return True
         elif self.scribbler.track_scribble(widget, event):
@@ -1486,6 +1496,8 @@ class UI(builder.Builder):
         Returns:
             `bool`: whether the event was consumed
         """
+        if widget is self.c_da and self.browser.is_mirroring_content():
+            return True
         if self.zoom.toggle_zoom_target(widget, event):
             return True
         elif self.scribbler.toggle_scribble(widget, event):
