@@ -907,25 +907,26 @@ class BrowserMirror(object):
         return True
 
 
-    def _draw_cursor(self, cairo_context, ww, wh):
-        if not self.cursor_visible or self.cursor_pos is None:
+    @staticmethod
+    def draw_cursor_feedback(cairo_context, ww, wh, cursor_pos, cursor_style='default'):
+        if cursor_pos is None:
             return
 
-        x = ww * self.cursor_pos[0]
-        y = wh * self.cursor_pos[1]
+        x = ww * cursor_pos[0]
+        y = wh * cursor_pos[1]
         size = max(18, min(36, min(ww, wh) * 0.035))
 
-        if self.cursor_style in {'ew-resize', 'col-resize', 'e-resize', 'w-resize'}:
-            self._draw_resize_cursor(cairo_context, x, y, size, horizontal=True)
+        if cursor_style in {'ew-resize', 'col-resize', 'e-resize', 'w-resize'}:
+            BrowserMirror._draw_resize_cursor(cairo_context, x, y, size, horizontal=True)
             return
-        elif self.cursor_style in {'ns-resize', 'row-resize', 'n-resize', 's-resize'}:
-            self._draw_resize_cursor(cairo_context, x, y, size, horizontal=False)
+        elif cursor_style in {'ns-resize', 'row-resize', 'n-resize', 's-resize'}:
+            BrowserMirror._draw_resize_cursor(cairo_context, x, y, size, horizontal=False)
             return
-        elif self.cursor_style in {'text', 'vertical-text'}:
-            self._draw_text_cursor(cairo_context, x, y, size, vertical=(self.cursor_style == 'vertical-text'))
+        elif cursor_style in {'text', 'vertical-text'}:
+            BrowserMirror._draw_text_cursor(cairo_context, x, y, size, vertical=(cursor_style == 'vertical-text'))
             return
-        elif self.cursor_style == 'pointer':
-            self._draw_hand_cursor(cairo_context, x, y, size)
+        elif cursor_style == 'pointer':
+            BrowserMirror._draw_hand_cursor(cairo_context, x, y, size)
             return
 
         cairo_context.save()
@@ -944,6 +945,13 @@ class BrowserMirror(object):
         cairo_context.set_line_width(max(1.5, size * 0.08))
         cairo_context.stroke()
         cairo_context.restore()
+
+
+    def _draw_cursor(self, cairo_context, ww, wh):
+        if not self.cursor_visible or self.cursor_pos is None:
+            return
+
+        self.draw_cursor_feedback(cairo_context, ww, wh, self.cursor_pos, self.cursor_style)
 
 
     @staticmethod
@@ -1052,18 +1060,23 @@ class BrowserMirror(object):
 
 
     def _draw_click_feedback(self, cairo_context, ww, wh):
+        self.draw_click_feedback_items(cairo_context, ww, wh, self.click_feedback, self.CLICK_FEEDBACK_TTL)
+
+
+    @staticmethod
+    def draw_click_feedback_items(cairo_context, ww, wh, click_feedback, ttl):
         now = time.monotonic()
-        for pulse in self.click_feedback:
+        for pulse in click_feedback:
             age = now - pulse['time']
-            if age >= self.CLICK_FEEDBACK_TTL:
+            if age >= ttl:
                 continue
 
-            progress = age / self.CLICK_FEEDBACK_TTL
+            progress = age / ttl
             radius = max(10, min(44, min(ww, wh) * (0.015 + 0.03 * progress)))
             alpha = 0.85 * (1 - progress)
             x = ww * pulse['x']
             y = wh * pulse['y']
-            color = self._feedback_color(pulse.get('button_kind', 'primary'))
+            color = BrowserMirror._feedback_color(pulse.get('button_kind', 'primary'))
 
             cairo_context.save()
             cairo_context.arc(x, y, radius, 0, 2 * 3.141592653589793)
