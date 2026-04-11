@@ -245,6 +245,7 @@ class UI(builder.Builder):
             'close-file':        dict(activate=self.close_file),
             'save-file':         dict(activate=self.save_file),
             'save-file-as':      dict(activate=self.save_file_as),
+            'save-scribbles-json': dict(activate=self.save_scribbles_json),
             'pick-file':         dict(activate=self.pick_file),
             'list-recent-files': dict(change_state=self.populate_recent_menu, state=False),
             'page':              dict(activate=lambda gaction, param: self.goto_page(param.get_int64()),
@@ -726,6 +727,11 @@ class UI(builder.Builder):
     def cleanup(self, *args):
         """ Save configuration and exit the main loop.
         """
+        if self.doc is not None and self.doc.doc is not None:
+            cp = self.doc.page(self.preview_page)
+            cl = cp.label() if cp else ''
+            self.scribbler.save_scribbles_sidecar(self.doc.get_uri(), self.preview_page, cl or '')
+
         self.scribbler.disable_scribbling()
         self.medias.hide_all()
 
@@ -783,6 +789,11 @@ class UI(builder.Builder):
                 self.file_watcher.stop_watching()
             return
 
+        if self.doc is not None and self.doc.doc is not None:
+            old_preview = self.doc.page(self.preview_page)
+            old_label = old_preview.label() if old_preview else ''
+            self.scribbler.save_scribbles_sidecar(self.doc.get_uri(), self.preview_page, old_label or '')
+
         run_gc = self.doc.doc is not None
         try:
             self.doc = document.Document.create(self, doc_uri)
@@ -803,6 +814,10 @@ class UI(builder.Builder):
             self.file_watcher.stop_watching()
 
         self.current_page = self.preview_page = self.doc.goto(page)
+
+        load_preview = self.doc.page(self.preview_page)
+        load_label = load_preview.label() if load_preview else ''
+        self.scribbler.load_scribbles_sidecar(self.doc.get_uri(), self.preview_page, load_label or '')
 
         # Guess notes mode by default if the document has notes
         if not reloading:
@@ -977,7 +992,10 @@ class UI(builder.Builder):
         # Use a GTK file dialog to choose file
         dialog = Gtk.FileChooserDialog(title = _('Open...'), transient_for = self.p_win,
                                        action = Gtk.FileChooserAction.OPEN)
-        dialog.add_buttons(Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
+        )
         dialog.set_default_response(Gtk.ResponseType.OK)
         dialog.set_position(Gtk.WindowPosition.CENTER)
 
@@ -992,12 +1010,14 @@ class UI(builder.Builder):
         file_filter.add_pattern('*')
         dialog.add_filter(file_filter)
 
-        response = dialog.run()
-
-        if response == Gtk.ResponseType.OK:
-            self.swap_document(dialog.get_uri())
-
-        dialog.destroy()
+        try:
+            response = dialog.run()
+            if response == Gtk.ResponseType.OK:
+                uri = dialog.get_uri()
+                if uri:
+                    self.swap_document(uri)
+        finally:
+            dialog.destroy()
 
 
     def error_opening_file(self, uri):
@@ -1025,6 +1045,27 @@ class UI(builder.Builder):
         """ Remove the current document.
         """
         self.swap_document(None)
+
+
+    def get_preview_page_number(self):
+        """ Slide index used for highlight storage. """
+        return self.preview_page
+
+
+    def get_preview_page_label(self):
+        """ Page label for the previewed slide (per-label highlight mode). """
+        page = self.doc.page(self.preview_page) if self.doc else None
+        return (page.label() or '') if page else ''
+
+
+    def save_scribbles_json(self, *args):
+        """ Write scribble data to the PDF sidecar JSON (.pdf.json). """
+        if self.doc is None or self.doc.doc is None:
+            return
+        page = self.doc.page(self.preview_page)
+        label = (page.label() or '') if page else ''
+        self.scribbler.sync_per_page_from_list()
+        self.scribbler.save_scribbles_sidecar(self.doc.get_uri(), self.preview_page, label)
 
 
     def save_file(self, *args):

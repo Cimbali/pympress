@@ -1203,6 +1203,25 @@ class Document(object):
         return self.uri
 
 
+    @staticmethod
+    def scribble_data_path(uri):
+        """ Path to the JSON file used to save scribbles for a PDF (.pdf.json)."""
+        if not uri:
+            return None
+        uri_parts = urlsplit(uri)
+        if uri_parts.scheme != 'file':
+            return None
+        path_s = url2pathname(uri_parts.path)
+        if len(path_s) >= 3 and path_s[0] in '/\\' and path_s[2] == ':':
+            path_s = path_s.lstrip('/\\')
+        p = pathlib.Path(path_s)
+        try:
+            p = p.resolve()
+        except OSError:
+            pass
+        return p.parent / (p.name + '.json')
+
+
     def get_full_path(self, filename):
         """ Returns full path, extrapolated from a path relative to this document or to the current directory.
 

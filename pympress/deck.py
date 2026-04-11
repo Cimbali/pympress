@@ -142,40 +142,48 @@ class Overview(builder.Builder):
         """
         pages = self.get_last_label_pages() if not self.all_pages and self.has_labels() else range(self.pages_number())
         self.grid_size = (len(pages), 1)
+        for child in self.deck_grid.get_children():
+            self.deck_grid.remove(child)
 
-        # Always keep the first drawing area as it is used to provide surfaces in the cache
-        for row in range(1, self.grid_size[0]):
-            self.deck_grid.remove_row(row)
-        for col in range(1, self.grid_size[1]):
-            self.deck_grid.remove_row(col)
+        if not hasattr(self, 'deck_da_list') or not self.deck_da_list:
+            self.deck_da_list = [self.deck0]
+        else:
+            self.deck_da_list = [self.deck_da_list[0]]
 
-        # Set drawing areas
-        for num, da in enumerate(self.deck_da_list[1:], 1):
-            self.deck_grid.attach(da.get_parent(), 1, num, 1, 1)
+        for num in range(len(pages)):
+            if num == 0:
+                da = self.deck0
+            else:
+                da = Gtk.DrawingArea()
+                da.add_events(Gdk.EventMask.TOUCH_MASK | Gdk.EventMask.ENTER_NOTIFY_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK |
+                              Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK)
+                da.connect('draw', self.on_deck_draw)
+                da.connect('button-release-event', self.on_deck_click)
+                da.connect('touch-event', self.on_deck_click)
+                da.connect('enter-notify-event', self.on_deck_hover)
+                da.connect('leave-notify-event', self.on_deck_hover)
+                self.deck_da_list.append(da)
 
-        for num in range(len(self.deck_da_list), len(pages)):
-            da = Gtk.DrawingArea()
-            da.add_events(Gdk.EventMask.TOUCH_MASK | Gdk.EventMask.ENTER_NOTIFY_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK |
-                          Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK)
-            da.connect('draw', self.on_deck_draw)
-            da.connect('button-release-event', self.on_deck_click)
-            da.connect('touch-event', self.on_deck_click)
-            da.connect('enter-notify-event', self.on_deck_hover)
-            da.connect('leave-notify-event', self.on_deck_hover)
-            self.deck_da_list.append(da)
+            current_parent = da.get_parent()
+            if current_parent is not None:
+                current_parent.remove(da)
 
             frame = Gtk.AspectFrame()
             frame.get_style_context().add_class('grid-frame')
             frame.set_shadow_type(Gtk.ShadowType.NONE)
             frame.add(da)
 
-            self.deck_grid.attach(frame, 1, num, 1, 1)
+            self.deck_grid.attach(frame, 0, num, 1, 1)
 
-        ratio = self.c_da.get_allocated_width() / self.c_da.get_allocated_height()
-        for page, da in zip(pages, self.deck_da_list):
-            da.get_parent().set(.5, .5, ratio, False)
-            da.set_name('deck{}'.format(page))
+        alloc = self.c_da.get_allocated_width(), self.c_da.get_allocated_height()
+        ratio = alloc[0] / alloc[1] if alloc[1] > 0 else 1.3
 
+        for page_idx, da in zip(pages, self.deck_da_list):
+            p = da.get_parent()
+            if p:
+                p.set(.5, .5, ratio, False)
+            da.set_name('deck{}'.format(page_idx))
+            
 
     def reset_grid(self, *args):
         """ Set the slides configuration and size in the grid
