@@ -730,6 +730,8 @@ class Document(object):
     temp_files = set()
     #: History of pages we have visited, using note-aware page numbers
     history = []
+    #: `set` of slide document page numbers that have been visited at least once
+    visited_pages = set()
     #: Our position in the history
     hist_pos = -1
     #: `list` of slide page labels, indexed on note-aware page numbers
@@ -777,6 +779,7 @@ class Document(object):
 
         # Pages cache
         self.pages_cache = {}
+        self.visited_pages = set()
 
 
     def get_structure(self, index_iter = None):
@@ -1078,6 +1081,25 @@ class Document(object):
         return pages
 
 
+    def get_last_visited_label_pages(self):
+        """ Return one page per consecutively distinct label, preferring visited subslides.
+
+        For each run of identical consecutive labels, returns the highest visited page in that run.
+        If no page in the run has been visited yet, returns the first page in the run.
+        """
+        last = None
+        pages = []
+        for page, label in enumerate(self.page_labels):
+            page_num = self.notes_mapping[page][0] if self.notes_mapping is not None else page
+            if label != last:
+                # Start each label group at its first page, then advance if we visited later subslides.
+                pages.append(page)
+            elif page_num in self.visited_pages:
+                pages[-1] = page
+            last = label
+        return pages
+
+
     def lookup_label(self, label, prefix_unique=True):
         """ Find a page from its label.
 
@@ -1127,6 +1149,9 @@ class Document(object):
         if number >= self.pages_number():
             number = self.pages_number() - 1
 
+        page_num = self.notes_mapping[number][0] if self.notes_mapping is not None else number
+        self.visited_pages.add(page_num)
+
         if 0 <= self.hist_pos < len(self.history) and self.history[self.hist_pos] == number:
             return number
 
@@ -1138,11 +1163,22 @@ class Document(object):
         return number
 
 
-    def label_after(self, page):
+    def label_after(self, page, use_last_visited_subslide=False):
         """ Switch to the next page with different label.
 
         If we're within a set of pages with the same label we want to go to the last one.
+
+        Args:
+            page (`int`): the current page
+            use_last_visited_subslide (`bool`): whether to jump by representatives from
+                :meth:`~pympress.document.Document.get_last_visited_label_pages`
         """
+        if use_last_visited_subslide:
+            try:
+                return next(p for p in self.get_last_visited_label_pages() if p > page)
+            except StopIteration:
+                return page
+
         labels_after = enumerate(self.page_labels[page + 1:], page + 1)
 
         try:
@@ -1161,11 +1197,24 @@ class Document(object):
         return next_page
 
 
-    def label_before(self, page):
+    def label_before(self, page, use_last_visited_subslide=False):
         """ Switch to the previous page with different label.
 
         If we're within a set of pages with the same label we want to go *before* the first one.
+
+        Args:
+            page (`int`): the current page
+            use_last_visited_subslide (`bool`): whether to jump by representatives from
+                :meth:`~pympress.document.Document.get_last_visited_label_pages`
         """
+        if use_last_visited_subslide:
+            previous = 0
+            for jump_page in self.get_last_visited_label_pages():
+                if jump_page >= page:
+                    break
+                previous = jump_page
+            return previous
+
         # will stop as soon as we find a different label or due to end of iterator
         for prev_page, prev_label in enumerate(reversed(self.page_labels[:page])):
             if prev_label != self.page_labels[page]:

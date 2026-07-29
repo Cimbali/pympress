@@ -74,6 +74,8 @@ class Overview(builder.Builder):
     all_pages = False
     #: `int` How large (at most) to make rows
     max_row_size = 6
+    #: `bool` whether to prefer last visited subslides in grouped labels
+    use_last_visited_subslide = True
 
     #: The :class:`~Gtk.DrawingArea` in the content window
     c_da = None
@@ -97,6 +99,7 @@ class Overview(builder.Builder):
         self.max_row_size = config.getint('deck-overview', 'max-slides-per-row')
         # Whether to show all pages or only distinctly labeled pages (useful for latex)
         self.all_pages = not config.get('deck-overview', 'distinct-labels-only')
+        self.use_last_visited_subslide = config.getboolean('deck-overview', 'use-last-visited-subslide', fallback=False)
 
         self.setup_actions({
             'deck-overview': dict(activate=self.switch_deck_overview, state=False),
@@ -120,8 +123,20 @@ class Overview(builder.Builder):
         self.pages_number         = doc.pages_number
         self.has_labels           = doc.has_labels
         self.get_last_label_pages = doc.get_last_label_pages
+        self.get_last_visited_label_pages = doc.get_last_visited_label_pages
 
         self.create_drawing_areas()
+
+
+    def get_deck_pages(self):
+        """Return page numbers represented in deck overview according to current mode."""
+        if self.all_pages or not self.has_labels():
+            return list(range(self.pages_number()))
+
+        if self.use_last_visited_subslide:
+            return self.get_last_visited_label_pages()
+
+        return self.get_last_label_pages()
 
 
     def try_cancel(self):
@@ -140,7 +155,7 @@ class Overview(builder.Builder):
     def create_drawing_areas(self):
         """ Build DrawingArea and AspectFrame elements to display later on
         """
-        pages = self.get_last_label_pages() if not self.all_pages and self.has_labels() else range(self.pages_number())
+        pages = self.get_deck_pages()
         self.grid_size = (len(pages), 1)
 
         # Always keep the first drawing area as it is used to provide surfaces in the cache
@@ -181,8 +196,12 @@ class Overview(builder.Builder):
         """ Set the slides configuration and size in the grid
         """
         # Gather info about slides to display
-        num_pages = self.pages_number() if self.all_pages or not self.has_labels() else len(self.get_last_label_pages())
+        pages = self.get_deck_pages()
+        num_pages = len(pages)
         ratio = self.c_da.get_allocated_width() / self.c_da.get_allocated_height()
+
+        for page, da in zip(pages, self.deck_da_list):
+            da.set_name('deck{}'.format(page))
 
         ww, wh = self.deck_grid.get_allocated_width(), self.deck_grid.get_allocated_height()
         sw, sh = self.deck_grid.get_row_spacing(), self.deck_grid.get_column_spacing()
