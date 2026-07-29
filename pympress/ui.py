@@ -1117,7 +1117,16 @@ class UI(builder.Builder):
             gaction (:class:`~Gio.Action`): the action triggering the call
             param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
-        self.goto_page(self.doc.label_after(self.preview_page))
+        use_last_visited_subslide = self.config.getboolean(
+            'deck-overview', 
+            'use-last-visited-subslide', 
+            fallback=False,
+        )
+        page = self.doc.label_after(
+            self.preview_page, 
+            use_last_visited_subslide=use_last_visited_subslide,
+        )
+        self.goto_page(page)
 
 
     def doc_label_prev(self, gaction=None, param=None):
@@ -1127,7 +1136,16 @@ class UI(builder.Builder):
             gaction (:class:`~Gio.Action`): the action triggering the call
             param (:class:`~GLib.Variant`): the parameter as a variant, or None
         """
-        self.goto_page(self.doc.label_before(self.preview_page))
+        use_last_visited_subslide = self.config.getboolean(
+            'deck-overview', 
+            'use-last-visited-subslide', 
+            fallback=False,
+        )
+        page = self.doc.label_before(
+            self.preview_page, 
+            use_last_visited_subslide=use_last_visited_subslide,
+        )
+        self.goto_page(page)
 
 
     def doc_hist_prev(self, gaction=None, param=None):
