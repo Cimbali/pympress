@@ -49,11 +49,10 @@ IS_MAC_OS = sys.platform == 'darwin'
 IS_WINDOWS = os.name == 'nt'
 
 
-if IS_WINDOWS:
-    try:
-        import winreg
-    except ImportError:
-        import _winreg as winreg
+#: Flags for SetThreadExecutionState on Windows, see :func:`~pympress.util.hard_set_screensaver`
+ES_CONTINUOUS = 0x80000000
+ES_SYSTEM_REQUIRED = 0x00000001
+ES_DISPLAY_REQUIRED = 0x00000002
 
 
 #: A :class:`~contextlib.ExitStack` containing all entered importlib context managers for used resources
@@ -288,7 +287,7 @@ def introspect_flag_value(flags_class, nick, fallback):
 
 
 def hard_set_screensaver(disabled):
-    """ Enable or disable the screensaver.
+    """ Enable or disable the screensaver. On Windows, this also prevents or allows the computer going to sleep.
 
     Args:
         disabled (`bool`):  if `True`, indicates that the screensaver must be disabled; otherwise it will be enabled
@@ -305,19 +304,18 @@ def hard_set_screensaver(disabled):
                 hard_set_screensaver.caffeinate_process = None
 
     elif IS_WINDOWS:
-        try:
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Control Panel\Desktop', 0,
-                                winreg.KEY_QUERY_VALUE | winreg.KEY_SET_VALUE) as key:
-                if disabled:
-                    value, regtype = winreg.QueryValueEx(key, "ScreenSaveActive")
-                    assert regtype == winreg.REG_SZ, 'Unexpected RegType when modifying ScreenSaveActive'
-                    hard_set_screensaver.dpms_was_enabled = (value == "1")
-                    if hard_set_screensaver.dpms_was_enabled:
-                        winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "0")
-                elif hard_set_screensaver.dpms_was_enabled:
-                    winreg.SetValueEx(key, "ScreenSaveActive", 0, winreg.REG_SZ, "1")
-        except (OSError, PermissionError, AssertionError):
-            logger.exception(_("access denied when trying to access screen saver settings in registry!"))
+        # Tell the power manager that the display and system are in use, which keeps the screensaver, display
+        # power-off, and idle sleep/standby at bay. The request is tied to the calling thread (always the Gtk main
+        # thread here) and is dropped by Windows when the process exits, so nothing can be left disabled after a crash.
+        state = ES_CONTINUOUS
+        if disabled:
+            state |= ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED
+
+        set_state = ctypes.windll.kernel32.SetThreadExecutionState
+        set_state.argtypes = [ctypes.c_uint]
+        set_state.restype = ctypes.c_uint
+        if not set_state(state):
+            logger.warning(_("Failed to change the execution state: can't enable/disable screensaver and sleep"))
 
     elif IS_POSIX:
         logger.warning(_("Should not require hard enable/disable screensaver on Linux"))
@@ -326,8 +324,6 @@ def hard_set_screensaver(disabled):
         logger.warning(_("Unsupported OS: can't enable/disable screensaver"))
 
 
-#: remember DPMS setting before we change it
-hard_set_screensaver.dpms_was_enabled = None
 #: A :class:`~subprocess.Popen` object to track the child caffeinate process
 hard_set_screensaver.caffeinate_process = None
 
