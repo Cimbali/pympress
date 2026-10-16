@@ -55,6 +55,11 @@ if IS_WINDOWS:
     except ImportError:
         import _winreg as winreg
 
+#: Flags for SetThreadExecutionState on Windows, see :func:`~pympress.util.set_windows_keep_awake`
+ES_CONTINUOUS = 0x80000000
+ES_SYSTEM_REQUIRED = 0x00000001
+ES_DISPLAY_REQUIRED = 0x00000002
+
 
 #: A :class:`~contextlib.ExitStack` containing all entered importlib context managers for used resources
 _opened_resources = contextlib.ExitStack()
@@ -285,6 +290,26 @@ def introspect_flag_value(flags_class, nick, fallback):
             return value
     else:
         return fallback
+
+
+def set_windows_keep_awake(keep_awake):
+    """ Prevent or allow display power-off and idle sleep on Windows, as presentation applications should.
+
+    This uses SetThreadExecutionState, whose request is tied to the calling thread and dropped when the process exits.
+    It does not prevent the screensaver from starting, see :func:`~pympress.util.hard_set_screensaver`.
+
+    Args:
+        keep_awake (`bool`):  if `True`, keep the display and system awake; otherwise release that request
+    """
+    flags = ES_CONTINUOUS
+    if keep_awake:
+        flags |= ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED
+
+    set_state = ctypes.windll.kernel32.SetThreadExecutionState
+    set_state.argtypes = [ctypes.c_uint]
+    set_state.restype = ctypes.c_uint
+    if not set_state(flags):
+        logger.warning(_("Failed to change the thread execution state: can't prevent or allow display off and sleep"))
 
 
 def hard_set_screensaver(disabled):
