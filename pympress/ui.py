@@ -1621,10 +1621,10 @@ class UI(builder.Builder):
             disabled (`bool`): `True` if the screensaver should be disabled, otherwise enabled.
         """
         if util.IS_WINDOWS:
-            # Gtk.Application.inhibit does not prevent the screensaver or sleep on Windows
-            util.hard_set_screensaver(disabled=disabled)
+            # Gtk.Application.inhibit does not prevent display power-off or idle sleep on Windows
+            util.set_windows_keep_awake(disabled)
 
-        elif not disabled:
+        if not disabled:
             if self.inhibit_cookie:
                 self.app.uninhibit(self.inhibit_cookie)
                 logger.debug(f"Screensaver uninhibited. cookie={self.inhibit_cookie}")
