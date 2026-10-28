@@ -69,6 +69,10 @@ class VlcOverlay(base.VideoOverlay):
 
     #: A single vlc.Instance() to be shared by (possible) multiple players.
     _instance = None
+    #: `pathlib.Path` of the media, kept to open it again with or without audio
+    _media_path = None
+    #: `bool` whether this player's media is opened without audio
+    _no_audio = False
 
     def __init__(self, *args, **kwargs):
         self.player = self._instance.media_player_new()  # before loading UI, needed to connect "map" signal
@@ -117,7 +121,17 @@ class VlcOverlay(base.VideoOverlay):
         Args:
             filepath (`pathlib.Path`): The path to the media file path
         """
-        self.player.set_media(self._instance.media_new(filepath.resolve().as_uri()))
+        self._media_path = filepath
+        self._open_media()
+
+
+    def _open_media(self):
+        """ Give the player a new media for the file, with VLC's ``:no-audio`` option if this player is muted.
+        """
+        media = self._instance.media_new(self._media_path.resolve().as_uri())
+        if self._no_audio:
+            media.add_option(':no-audio')
+        self.player.set_media(media)
 
 
     def handle_end(self):
@@ -137,7 +151,25 @@ class VlcOverlay(base.VideoOverlay):
         Args:
             value (`bool`): `True` iff this player should be muted
         """
-        GLib.idle_add(self.player.audio_set_volume, 0 if value else 100)
+        # Not through the volume: on Windows, libVLC's volume is the volume of the process's audio session (its entry in
+        # the Windows volume mixer, which Windows remembers across runs), shared by every player, so muting one player
+        # mutes all of them. A muted player gets its media without an audio track instead, from its next start.
+        if value != self._no_audio:
+            self._no_audio = value
+            GLib.idle_add(self.do_reopen_media)
+        return False
+
+
+    def do_reopen_media(self):
+        """ Open the media again with or without audio.
+
+        Does nothing while the player is playing. Needs to be called via :func:`~GLib.idle_add`.
+
+        Returns:
+            `bool`: `False` (:func:`~GLib.idle_add` convention)
+        """
+        if self.player.get_state() not in {vlc.State.Playing, vlc.State.Opening, vlc.State.Buffering}:
+            self._open_media()
         return False
 
 
