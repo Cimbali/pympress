@@ -1365,12 +1365,36 @@ class UI(builder.Builder):
         self.cache.clear_cache(self.scribbler.scribble_p_da.get_name() + '_zoomed')
 
 
-    def redraw_current_slide(self):
-        """ Callback to queue a redraw of the current slides (in both winows).
+    def redraw_current_slide(self, dirty_rect=None):
+        """Queue a redraw of the current slides, optionally limited to a slide rect.
+
+        ``dirty_rect`` is normalized to the slide (x, y, width, height).  A
+        local repaint is important while scribbling: the PDF cache and live
+        stroke are otherwise composited over the entire window for every
+        motion event.  Zoom uses a transformed coordinate system, so retain a
+        full repaint there until the rectangle is mapped explicitly.
         """
-        self.c_da.queue_draw()
-        self.p_da_cur.queue_draw()
-        self.scribbler.scribble_p_da.queue_draw()
+        widgets = (self.c_da, self.p_da_cur, self.scribbler.scribble_p_da)
+        if dirty_rect is None or self.zoom.scale != 1.:
+            for widget in widgets:
+                widget.queue_draw()
+            return
+
+        x, y, width, height = dirty_rect
+        for widget in widgets:
+            # In highlight mode one of the presenter drawing areas is often
+            # hidden behind the overlay.  Queueing it still adds work to the
+            # GTK main loop but cannot improve what the user sees.
+            if not widget.get_mapped():
+                continue
+            ww = widget.get_allocated_width()
+            wh = widget.get_allocated_height()
+            left = max(0, min(ww, int(math.floor(x * ww))))
+            top = max(0, min(wh, int(math.floor(y * wh))))
+            right = max(left, min(ww, int(math.ceil((x + width) * ww))))
+            bottom = max(top, min(wh, int(math.ceil((y + height) * wh))))
+            if right > left and bottom > top:
+                widget.queue_draw_area(left, top, right - left, bottom - top)
 
 
     ##############################################################################

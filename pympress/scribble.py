@@ -82,6 +82,11 @@ class Scribbler(builder.Builder):
     mouse_pos = None
     #: A :class:`~cairo.Surface` to hold drawn highlights
     scribble_cache = None
+    #: Incremental surface for the active pen stroke, shared by all draw areas
+    scribble_live_cache = None
+    scribble_live_context = None
+    scribble_redraw_pending = False
+    scribble_pending_rect = None
     #: The next scribble to render (i.e. that is not rendered in cache)
     next_render = 0
 
@@ -284,6 +289,30 @@ class Scribbler(builder.Builder):
         return color
 
 
+    def queue_scribble_redraw(self, dirty_rect=None):
+        """Coalesce redraws and union dirty rectangles without dropping points."""
+        if dirty_rect is not None:
+            if self.scribble_pending_rect is None:
+                self.scribble_pending_rect = dirty_rect
+            else:
+                x1, y1, w1, h1 = self.scribble_pending_rect
+                x2, y2, w2, h2 = dirty_rect
+                left, top = min(x1, x2), min(y1, y2)
+                right, bottom = max(x1 + w1, x2 + w2), max(y1 + h1, y2 + h2)
+                self.scribble_pending_rect = left, top, right - left, bottom - top
+        if not self.scribble_redraw_pending:
+            self.scribble_redraw_pending = True
+            GLib.idle_add(self._redraw_scribble_frame)
+
+
+    def _redraw_scribble_frame(self):
+        dirty_rect = self.scribble_pending_rect
+        self.scribble_pending_rect = None
+        self.scribble_redraw_pending = False
+        self.redraw_current_slide(dirty_rect)
+        return False
+
+
     def points_to_curves(self, points):
         """ Transform a list of points from scribbles to bezier curves
 
@@ -318,16 +347,25 @@ class Scribbler(builder.Builder):
         """
         pos = self.get_slide_point(widget, event) + ()
 
+        dirty_rect = None
         if self.scribble_drawing:
-            self.scribble_list[-1][-2].append(pos)
+            stroke = self.scribble_list[-1]
+            previous = stroke[2][-1] if stroke[2] else pos
+            stroke[2].append(pos)
             pressure = event.get_axis(Gdk.AxisUse.PRESSURE)
-            self.scribble_list[-1][-1].append(1. if pressure is None else pressure)
+            stroke[3].append(1. if pressure is None else pressure)
             self.scribble_redo_list.clear()
-
             self.adjust_buttons()
+            self.render_live_point()
+
+            margin = max(self.scribble_width / 900., .004)
+            dirty_rect = (min(previous[0], pos[0]) - margin,
+                          min(previous[1], pos[1]) - margin,
+                          abs(pos[0] - previous[0]) + 2 * margin,
+                          abs(pos[1] - previous[1]) + 2 * margin)
 
         self.mouse_pos = pos
-        self.redraw_current_slide()
+        self.queue_scribble_redraw(dirty_rect)
         return self.scribble_drawing
 
 
@@ -385,11 +423,13 @@ class Scribbler(builder.Builder):
 
             self.scribble_list.append((self.scribble_color, self.scribble_width, [], []))
             self.scribble_drawing = True
+            self.clear_live_cache()
 
             return self.track_scribble(widget, event)
         elif event.get_event_type() == Gdk.EventType.BUTTON_RELEASE:
             self.scribble_drawing = False
             self.prerender()
+            self.queue_scribble_redraw()
 
             if not self.active_preset and self.previous_preset and self.toggle_erase_source == 'modifier':
                 self.load_preset(target=self.previous_preset)
@@ -404,6 +444,8 @@ class Scribbler(builder.Builder):
     def reset_scribble_cache(self):
         """ Clear the cached scribbles.
         """
+        self.scribble_live_context = None
+        self.scribble_live_cache = None
         window = self.c_da.get_window()
 
         if window is None:
@@ -432,6 +474,56 @@ class Scribbler(builder.Builder):
         else:
             self.next_render = 0
 
+        if self.scribble_cache is not None:
+            try:
+                self.scribble_live_cache = window.create_similar_image_surface(cairo.Format.ARGB32, ww, wh, scale)
+                self.scribble_live_context = cairo.Context(self.scribble_live_cache)
+            except (ValueError, cairo.Error):
+                logger.exception('Error creating live highlight surface')
+                self.scribble_live_cache = None
+
+
+    def clear_live_cache(self):
+        if self.scribble_live_cache is None:
+            return
+        context = self.scribble_live_context or cairo.Context(self.scribble_live_cache)
+        context.set_operator(cairo.OPERATOR_CLEAR)
+        context.paint()
+        context.set_operator(cairo.OPERATOR_OVER)
+        self.scribble_live_context = context
+
+
+    def render_live_point(self):
+        """Draw only the newest filtered segment on the live surface."""
+        if self.scribble_live_cache is None or not self.scribble_list:
+            return
+        color, width, points, pressures = self.scribble_list[-1][:4]
+        if not points:
+            return
+        scale_x, scale_y = self.scribble_live_cache.get_device_scale()
+        ww = self.scribble_live_cache.get_width() / scale_x
+        wh = self.scribble_live_cache.get_height() / scale_y
+        context = self.scribble_live_context or cairo.Context(self.scribble_live_cache)
+        self.scribble_live_context = context
+        # Xournal++'s fast no-pressure path builds one path and strokes once.
+        # For a live update the path is the newest segment only; the previous
+        # segments already reside in the live surface.
+        context.set_operator(cairo.OPERATOR_SOURCE if color.alpha else cairo.OPERATOR_CLEAR)
+        context.set_source_rgba(*color)
+        context.set_line_cap(cairo.LINE_CAP_ROUND)
+        context.set_line_join(cairo.LINE_JOIN_ROUND)
+        if len(points) == 1:
+            start = end = points[0]
+            relwidth = pressures[0]
+        else:
+            start, end = points[-2], points[-1]
+            relwidth = (pressures[-2] + pressures[-1]) / 2.
+        context.set_line_width(width * max(ww / 900, wh / 900) * relwidth)
+        context.move_to(start[0] * ww, start[1] * wh)
+        context.line_to(end[0] * ww, end[1] * wh)
+        context.stroke()
+        del context
+
 
     def prerender(self):
         """ Commit scribbles to cache so they are faster to draw on the slide
@@ -443,8 +535,9 @@ class Scribbler(builder.Builder):
             self.next_render = 0
             return
 
-        scale = self.c_da.get_window().get_scale_factor()
-        ww, wh = self.scribble_cache.get_width() / scale, self.scribble_cache.get_height() / scale
+        scale_x, scale_y = self.scribble_cache.get_device_scale()
+        ww = self.scribble_cache.get_width() / scale_x
+        wh = self.scribble_cache.get_height() / scale_y
         pen_scale_factor = max(ww / 900, wh / 900)  # or sqrt of product
 
         cairo_context = cairo.Context(self.scribble_cache)
@@ -452,12 +545,15 @@ class Scribbler(builder.Builder):
 
         draw = slice(self.next_render, -1 if self.scribble_drawing else None)
 
-        for color, width, points, pressure in self.scribble_list[draw]:
+        for stroke in self.scribble_list[draw]:
+            color, width, points, pressure = stroke[:4]
             self.render_scribble(cairo_context, color, width * pen_scale_factor, [(x * ww, y * wh) for x, y in points],
                                  pressure)
         del cairo_context
 
         self.next_render = draw.indices(len(self.scribble_list))[1]
+        if not self.scribble_drawing:
+            self.clear_live_cache()
 
 
     def render_scribble(self, cairo_context, color, width, points, pressures):
@@ -509,15 +605,22 @@ class Scribbler(builder.Builder):
             widget (:class:`~Gtk.DrawingArea`): The widget where to draw the scribbles.
             cairo_context (:class:`~cairo.Context`): The canvas on which to render the drawings
         """
-        scale = widget.get_window().get_scale_factor()
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
         cw, ch = self.scribble_cache.get_width(), self.scribble_cache.get_height()
+        cache_scale_x, cache_scale_y = self.scribble_cache.get_device_scale()
 
-        cairo_context.push_group()
+        # Normal pen strokes can be painted directly.  Keep a group only for
+        # the eraser: CLEAR must not erase the PDF surface underneath.
+        group_eraser = self.scribble_drawing and not self.scribble_list[-1][0].alpha
+        if group_eraser:
+            cairo_context.push_group()
 
         cairo_context.save()
 
-        cairo_context.scale(ww * scale / cw, wh * scale / ch)
+        # Convert from the cache's logical dimensions.  The destination
+        # monitor may have a different scale factor, so using its scale here
+        # would place a high-DPI cache in only part of the window.
+        cairo_context.scale(ww / (cw / cache_scale_x), wh / (ch / cache_scale_y))
         cairo_context.set_source_surface(self.scribble_cache)
         cairo_context.paint()
 
@@ -525,13 +628,24 @@ class Scribbler(builder.Builder):
 
         pen_scale_factor = max(ww / 900, wh / 900)  # or sqrt of product
         if self.scribble_drawing:
-            cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
-            color, width, points, pressure = self.scribble_list[-1]
-            self.render_scribble(cairo_context, color, width * pen_scale_factor, [(x * ww, y * wh) for x, y in points],
-                                 pressure)
+            color, width, points, pressure = self.scribble_list[-1][:4]
+            if color.alpha and self.scribble_live_cache is not None:
+                cairo_context.save()
+                scale_x, scale_y = self.scribble_live_cache.get_device_scale()
+                live_width = self.scribble_live_cache.get_width() / scale_x
+                live_height = self.scribble_live_cache.get_height() / scale_y
+                cairo_context.scale(ww / live_width, wh / live_height)
+                cairo_context.set_source_surface(self.scribble_live_cache)
+                cairo_context.paint()
+                cairo_context.restore()
+            else:
+                cairo_context.set_line_cap(cairo.LINE_CAP_ROUND)
+                self.render_scribble(cairo_context, color, width * pen_scale_factor,
+                                     [(x * ww, y * wh) for x, y in points], pressure)
 
-        cairo_context.pop_group_to_source()
-        cairo_context.paint()
+        if group_eraser:
+            cairo_context.pop_group_to_source()
+            cairo_context.paint()
 
 
         if widget.get_name() == 'scribble_p_da' and self.mouse_pos is not None:
