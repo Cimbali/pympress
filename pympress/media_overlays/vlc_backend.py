@@ -61,6 +61,19 @@ def get_window_handle(window):
     return handle_getter(drawingarea_gpointer)
 
 
+#: Keep the movie zone (VLC's video window) hidden until VLC has presented its first frame, and hide it before the
+#: player is stopped and the window destroyed. On Windows this removes the flash (desktop, black or white showing
+#: through the slide for 100-250 ms) when a video slide opens or closes. Not tested on other platforms.
+HIDE_UNTIL_FIRST_FRAME = IS_WINDOWS
+#: Delay (ms) between VLC's first time change event and showing the movie zone
+REVEAL_DELAY_MS = 30
+#: If VLC sends no time change event within this delay (ms), show the movie zone anyway, unless VLC is still starting
+#: (opening, buffering, or playing before its first frame): then check again after the same delay
+REVEAL_TIMEOUT_MS = 1500
+#: Delay (ms) between hiding the movie zone and stopping the player and removing the overlay
+REMOVE_DELAY_MS = 150
+
+
 class VlcOverlay(base.VideoOverlay):
     """ Simple VLC widget.
 
@@ -69,6 +82,12 @@ class VlcOverlay(base.VideoOverlay):
 
     #: A single vlc.Instance() to be shared by (possible) multiple players.
     _instance = None
+    #: `bool` that tracks whether the movie zone is hidden until VLC presents its first frame
+    _reveal_pending = False
+    #: `int` incremented to cancel a scheduled reveal of the movie zone
+    _reveal_gen = 0
+    #: `int` incremented to cancel a scheduled removal of the overlay
+    _remove_gen = 0
 
     def __init__(self, *args, **kwargs):
         self.player = self._instance.media_player_new()  # before loading UI, needed to connect "map" signal
@@ -80,8 +99,9 @@ class VlcOverlay(base.VideoOverlay):
 
         event_manager = self.player.event_manager()
         event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda e: GLib.idle_add(self.handle_end))
+        # VLC calls these handlers from its own threads: anything touching GTK goes through GLib.idle_add
         event_manager.event_attach(vlc.EventType.MediaPlayerLengthChanged,
-                                   lambda e: self.update_range(self.player.get_length() / 1000. or 1.))
+                                   lambda e: GLib.idle_add(self.update_range, self.player.get_length() / 1000. or 1.))
         event_manager.event_attach(vlc.EventType.MediaPlayerTimeChanged, self.time_changed)
 
 
@@ -98,7 +118,39 @@ class VlcOverlay(base.VideoOverlay):
             self.player.set_hwnd(get_window_handle(window))  # get_property('window')
         else:
             self.player.set_xwindow(window.get_xid())
+
+        if HIDE_UNTIL_FIRST_FRAME and not self.media_type.startswith('audio'):
+            # While the zone is hidden, GTK paints the slide (whose first frame matches the video) in its place.
+            # Hiding it through GTK matters: if only the native window is hidden, GTK still leaves that area unpainted.
+            self.movie_zone.set_child_visible(False)
+            self._reveal_pending = True
+            self._reveal_gen += 1
+            GLib.timeout_add(REVEAL_TIMEOUT_MS, self.reveal, self._reveal_gen)
+
         self.movie_zone.queue_draw()
+        return False
+
+
+    def reveal(self, gen):
+        """ Show the movie zone once VLC presents frames in it. Runs on the main thread.
+
+        Args:
+            gen (`int`): the value of :attr:`~_reveal_gen` when the reveal was scheduled
+
+        Returns:
+            `bool`: `False` (:func:`~GLib.timeout_add` convention)
+        """
+        if gen == self._reveal_gen:
+            if self._reveal_pending and self.player.get_state() in {vlc.State.Opening, vlc.State.Buffering,
+                                                                    vlc.State.Playing}:
+                # VLC can take seconds to start (first video after a reboot): showing the zone before VLC presents
+                # its first frame puts the black backdrop over the slide. Keep showing the slide and check again.
+                GLib.timeout_add(REVEAL_TIMEOUT_MS, self.reveal, gen)
+                return False
+            self._reveal_gen += 1
+            self._reveal_pending = False
+            if self.is_shown():
+                self.movie_zone.set_child_visible(True)
         return False
 
 
@@ -154,6 +206,10 @@ class VlcOverlay(base.VideoOverlay):
             self.player.stop()
             play_from_state = vlc.State.Stopped
 
+        if self._reveal_pending:
+            # GTK can map the zone again after handle_embed: hide it before VLC creates its video window
+            self.movie_zone.set_child_visible(False)
+
         self.player.play()
 
         if play_from_state in {vlc.State.NothingSpecial, vlc.State.Stopped}:
@@ -180,6 +236,10 @@ class VlcOverlay(base.VideoOverlay):
     def show(self):
         """ Bring the widget to the top of the overlays if necessary − also force redraw of movie zone
         """
+        if HIDE_UNTIL_FIRST_FRAME:
+            self._remove_gen += 1
+            # do_hide() left the zone child-invisible: it needs its window again for handle_embed()
+            self.movie_zone.set_child_visible(True)
         super(VlcOverlay, self).show()
         self.movie_zone.queue_draw()
 
@@ -196,6 +256,49 @@ class VlcOverlay(base.VideoOverlay):
         return False
 
 
+    def do_hide(self, *args):
+        """ Remove widget from overlays. Needs to be called via :func:`~GLib.idle_add`.
+
+        With :data:`HIDE_UNTIL_FIRST_FRAME`, the movie zone is hidden through GTK first, so that GTK paints the next
+        slide in its place, and the player is stopped and the overlay removed a little later. Removing the zone at
+        once leaves its area without valid pixels until GTK repaints it.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
+        """
+        if not HIDE_UNTIL_FIRST_FRAME or self.media_type.startswith('audio'):
+            return super(VlcOverlay, self).do_hide(*args)
+
+        if self.media_overlay.get_parent() is None:
+            return False
+
+        self._reveal_gen += 1
+        self._reveal_pending = False
+        self.movie_zone.set_child_visible(False)
+        # The slide was usually redrawn before this idle callback ran, skipping the area under the (still mapped) zone.
+        # Repaint that area now: otherwise the previous slide's page shows there until the next frame.
+        window = self.parent.get_window()
+        if window is not None:
+            window.process_updates(True)
+        self._remove_gen += 1
+        GLib.timeout_add(REMOVE_DELAY_MS, self._remove_after_hide, self._remove_gen)
+        return False
+
+
+    def _remove_after_hide(self, gen):
+        """ Stop the player and remove the overlay, unless it was shown again in the meantime.
+
+        Args:
+            gen (`int`): the value of :attr:`~_remove_gen` when the removal was scheduled
+
+        Returns:
+            `bool`: `False` (:func:`~GLib.timeout_add` convention)
+        """
+        if gen == self._remove_gen:
+            super(VlcOverlay, self).do_hide()
+        return False
+
+
     def do_stop(self):
         """ Stops playing in the backend player.
         """
@@ -203,16 +306,36 @@ class VlcOverlay(base.VideoOverlay):
 
 
     def time_changed(self, event):
-        """ Handle time passing
+        """ Handle time passing.
+
+        Called from a VLC thread, so the work is done by :meth:`~do_time_changed` on the main thread: GTK is not
+        thread-safe, and updating the progress bar from here can corrupt memory.
 
         Args:
             event (:class:`~vlc.Event`): The event that triggered the handler
         """
-        time = self.player.get_time() / 1000. or 1.
+        if self._reveal_pending:
+            # VLC thread: frames are being presented, reveal the zone from the main thread
+            self._reveal_pending = False
+            GLib.timeout_add(REVEAL_DELAY_MS, self.reveal, self._reveal_gen)
+
+        GLib.idle_add(self.do_time_changed, self.player.get_time() / 1000. or 1.)
+
+
+    def do_time_changed(self, time):
+        """ Update the progress bar and stop at the end position. Runs on the main thread.
+
+        Args:
+            time (`float`): The current time in the video in s
+
+        Returns:
+            `bool`: `False` (:func:`~GLib.idle_add` convention)
+        """
         if self.last_timestamp <= self.end_pos <= time:
             self.handle_end()
         self.last_timestamp = time
         self.update_progress(time)
+        return False
 
 
     def do_set_time(self, time):
