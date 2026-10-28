@@ -140,20 +140,20 @@ class Overview(builder.Builder):
     def create_drawing_areas(self):
         """ Build DrawingArea and AspectFrame elements to display later on
         """
-        pages = self.get_last_label_pages() if not self.all_pages and self.has_labels() else range(self.pages_number())
+        num_pages = self.pages_number() if self.all_pages or not self.has_labels() else len(self.get_last_label_pages())
+        num_pages = max(0, num_pages)
+        pages = list(self.get_last_label_pages() if not self.all_pages and self.has_labels() else range(num_pages))
         self.grid_size = (len(pages), 1)
 
         # Always keep the first drawing area as it is used to provide surfaces in the cache
-        for row in range(1, self.grid_size[0]):
-            self.deck_grid.remove_row(row)
-        for col in range(1, self.grid_size[1]):
-            self.deck_grid.remove_row(col)
+        deck0_frame = self.deck0.get_parent()
+        for child in list(self.deck_grid.get_children()):
+            if child != deck0_frame:
+                self.deck_grid.remove(child)
 
-        # Set drawing areas
-        for num, da in enumerate(self.deck_da_list[1:], 1):
-            self.deck_grid.attach(da.get_parent(), 1, num, 1, 1)
+        self.deck_da_list = [self.deck0]
 
-        for num in range(len(self.deck_da_list), len(pages)):
+        for num in range(1, len(pages)):
             da = Gtk.DrawingArea()
             da.add_events(Gdk.EventMask.TOUCH_MASK | Gdk.EventMask.ENTER_NOTIFY_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK |
                           Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK)
@@ -171,9 +171,12 @@ class Overview(builder.Builder):
 
             self.deck_grid.attach(frame, 1, num, 1, 1)
 
-        ratio = self.c_da.get_allocated_width() / self.c_da.get_allocated_height()
+        ch = self.c_da.get_allocated_height()
+        ratio = (self.c_da.get_allocated_width() / ch) if ch > 0 else (16. / 9.)
         for page, da in zip(pages, self.deck_da_list):
-            da.get_parent().set(.5, .5, ratio, False)
+            parent = da.get_parent()
+            if parent is not None:
+                parent.set(.5, .5, ratio, False)
             da.set_name('deck{}'.format(page))
 
 
@@ -182,13 +185,17 @@ class Overview(builder.Builder):
         """
         # Gather info about slides to display
         num_pages = self.pages_number() if self.all_pages or not self.has_labels() else len(self.get_last_label_pages())
-        ratio = self.c_da.get_allocated_width() / self.c_da.get_allocated_height()
+        if num_pages <= 0:
+            return
+
+        ch = self.c_da.get_allocated_height()
+        ratio = (self.c_da.get_allocated_width() / ch) if ch > 0 else (16. / 9.)
 
         ww, wh = self.deck_grid.get_allocated_width(), self.deck_grid.get_allocated_height()
         sw, sh = self.deck_grid.get_row_spacing(), self.deck_grid.get_column_spacing()
         rows, cols = self.compute_frame_grid(ww / wh, num_pages)
         window = self.deck_viewport.get_window()
-        scale = window.get_scale_factor()
+        scale = window.get_scale_factor() if window is not None else 1
 
         if not rows or not cols:
             rows, cols = 1, 1
@@ -205,7 +212,7 @@ class Overview(builder.Builder):
 
         self.cache.resize_widget('deck', int(dw * scale), int(dh * scale))
 
-        frames = [da.get_parent() for da in self.deck_da_list]
+        frames = [da.get_parent() for da in self.deck_da_list if da.get_parent() is not None]
         for frame in frames:
             frame.set(.5, .5, ratio, False)
             frame.set_size_request(dw / scale, dh / scale)
@@ -218,7 +225,7 @@ class Overview(builder.Builder):
             for row in range(rows, self.grid_size[0]):
                 self.deck_grid.remove_row(row)
             for col in range(cols, self.grid_size[1]):
-                self.deck_grid.remove_row(col)
+                self.deck_grid.remove_column(col)
 
             for num, frame in enumerate(frames[1:], 1):
                 self.deck_grid.attach(frame, num % cols, num // cols, 1, 1)
