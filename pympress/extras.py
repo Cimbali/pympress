@@ -581,7 +581,11 @@ class Zoom(object):
         ww, wh = widget.get_allocated_width(), widget.get_allocated_height()
         ex, ey = event.get_coords()
 
-        return ((ex / ww - self.shift[0]) / self.scale, (ey / wh - self.shift[1]) / self.scale)
+        ex = max(0.0, min(float(ww), ex))
+        ey = max(0.0, min(float(wh), ey))
+        sx = (ex / ww - self.shift[0]) / self.scale
+        sy = (ey / wh - self.shift[1]) / self.scale
+        return (max(0.0, min(1.0, sx)), max(0.0, min(1.0, sy)))
 
 
     def get_matrix(self, ww, wh):
@@ -644,12 +648,23 @@ class Zoom(object):
             self.zoom_points = None
 
             try:
-                # zoom by dimension less zoomed, to fit box while maintaining aspect ratio
-                self.scale = 1. / max(ymax - ymin, xmax - xmin)
+                # Minimum dimension of 1% to prevent division by near-zero on accidental clicks
+                box_span = max(ymax - ymin, xmax - xmin)
+                if box_span < 0.01:
+                    return True
+
+                # zoom by dimension less zoomed, to fit box while maintaining aspect ratio, capped at 25x
+                self.scale = min(25.0, 1. / box_span)
 
                 # make center of drawn rectangle the center of the zoomed slide
-                self.shift = (.5 - self.scale * (xmin + xmax) / 2,
-                              .5 - self.scale * (ymin + ymax) / 2)
+                shift_x = .5 - self.scale * (xmin + xmax) / 2
+                shift_y = .5 - self.scale * (ymin + ymax) / 2
+
+                # Clamp shift so slide edges never pull away from screen edges (no black void)
+                self.shift = (
+                    min(0.0, max(1.0 - self.scale, shift_x)),
+                    min(0.0, max(1.0 - self.scale, shift_y)),
+                )
             except ZeroDivisionError:
                 self.scale = 1.
                 self.shift = (0, 0)
