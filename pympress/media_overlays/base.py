@@ -51,6 +51,11 @@ class VideoOverlay(builder.Builder):
     """
     #: :class:`~Gtk.Overlay` that is the parent of the VideoOverlay widget.
     parent = None
+    #: `str` what a video does at its end when the PDF does not ask it to repeat: 'hide', 'freeze' or 'loop'
+    #: (`video_end` in the `media` section of the configuration)
+    end_action = 'hide'
+    #: `bool` whether the video reached its end and was left there (`video_end = freeze`): playing it again restarts it
+    ended = False
     #: :class:`~Gtk.VBox` that contains all the elements to be overlaid.
     media_overlay = None
     #: A :class:`~Gtk.HBox` containing a toolbar with buttons and :attr:`~progress` the progress bar
@@ -173,12 +178,19 @@ class VideoOverlay(builder.Builder):
 
 
     def handle_end(self):
-        """ End of the stream reached: restart if looping, otherwise hide overlay
+        """ End of the stream reached.
+
+        Restart if looping, otherwise follow the `video_end` setting: hide the overlay, keep the last frame on screen,
+        or loop.
         """
-        if not self.repeat:
-            self.action_map.lookup_action('stop').activate()
-        else:
+        if self.repeat or self.end_action == 'loop':
             self.action_map.lookup_action('set_time').activate(GLib.Variant.new_double(self.start_pos))
+        elif self.end_action == 'freeze':
+            # leave the player at its end: the video output keeps showing the last frame until the slide changes, or
+            # until it is played again
+            self.ended = True
+        else:
+            self.action_map.lookup_action('stop').activate()
 
 
     def update_margins_for_page(self, page_type):
@@ -242,6 +254,31 @@ class VideoOverlay(builder.Builder):
         raise NotImplementedError
 
 
+    def do_pause(self):
+        """ Pauses the media, keeping its current frame on screen. Does nothing if it is not playing.
+
+        Should run on the main thread to ensure we avoid reentrency problems.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
+        """
+        raise NotImplementedError
+
+
+    def restart_if_ended(self):
+        """ Put a video that was left at its end back at its start, ready to play again.
+
+        Returns:
+            `bool`: `True` iff the video had ended
+        """
+        if not self.ended:
+            return False
+
+        self.ended = False
+        self.do_set_time(self.start_pos)
+        return True
+
+
     def _set_file(self, filepath):
         """ Sets the media file to be played by the widget.
 
@@ -272,6 +309,7 @@ class VideoOverlay(builder.Builder):
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
+        self.ended = False
         self.do_stop()
         self.media_overlay.hide()
 

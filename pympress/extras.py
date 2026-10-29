@@ -218,6 +218,10 @@ class Media(object):
         self._setup_backends()
         builder.load_widgets(self)
 
+        from pympress.media_overlays import base
+        video_end = self.conf.get('media', 'video_end', fallback='hide').lower()
+        base.VideoOverlay.end_action = video_end if video_end in ('hide', 'freeze', 'loop') else 'hide'
+
         builder.setup_actions({
             'use-{}-backend'.format(backend): {
                 'activate': self.toggle,
@@ -293,7 +297,7 @@ class Media(object):
                 action_group = Gio.SimpleActionGroup.new()
                 builder.Builder.setup_actions({
                     'play':     dict(activate=functools.partial(self.play, media_id)),
-                    'stop':     dict(activate=functools.partial(self.hide, media_id)),
+                    'stop':     dict(activate=functools.partial(self.stop, media_id)),
                     'pause':    dict(activate=functools.partial(self.play_pause, media_id)),
                     'set_time': dict(activate=functools.partial(self.set_time, media_id), parameter_type=float)
                 }, action_group)
@@ -344,6 +348,27 @@ class Media(object):
             p.show()
             c.show()
             GLib.idle_add(lambda: any(p.do_play() for p in self._media_overlays[media_id]))
+
+
+    def stop(self, media_id, gaction=None, param=None):
+        """ Stops a media. Used as a callback.
+
+        With `video_end = freeze` the player stays on screen and the media is paused, as the picture it keeps is what
+        the audience looks at. Otherwise the player is hidden.
+
+        Args:
+            media_id (`int`): A unique identifier of the media to stop
+            gaction (:class:`~Gio.Action`): the action triggering the call
+            param (:class:`~GLib.Variant`): the parameter as a variant, or None
+        """
+        if media_id not in self._media_overlays:
+            return
+
+        c, p = self._media_overlays[media_id]
+        if p.end_action == 'freeze':
+            GLib.idle_add(lambda: any(o.do_pause() for o in (c, p)))
+        else:
+            self.hide(media_id, gaction, param)
 
 
     def hide(self, media_id, gaction=None, param=None):

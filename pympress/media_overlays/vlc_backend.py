@@ -37,6 +37,9 @@ from gi.repository import GLib
 from pympress.util import IS_WINDOWS
 from pympress.media_overlays import base
 
+#: How close (ms) to the end of the video a paused player must be, to count as having ended
+PAUSED_AT_END_MS = 300
+
 
 def get_window_handle(window):
     """ Uses ctypes to call gdk_win32_window_get_handle which is not available in python gobject introspection porting.
@@ -117,7 +120,16 @@ class VlcOverlay(base.VideoOverlay):
         Args:
             filepath (`pathlib.Path`): The path to the media file path
         """
-        self.player.set_media(self._instance.media_new(filepath.resolve().as_uri()))
+        media = self._instance.media_new(filepath.resolve().as_uri())
+        if self.end_action == 'loop' and not self.repeat:
+            # VLC repeats the input itself: restarting the player at its end closes and reopens the video output,
+            # which shows black between two loops
+            media.add_option(':input-repeat=65535')
+        elif self.end_action == 'freeze' and not self.repeat:
+            # VLC pauses on the last frame instead of ending: an ended player has no video output left, so playing
+            # it again would close VLC's window and open a new one, which shows black in between
+            media.add_option(':play-and-pause')
+        self.player.set_media(media)
 
 
     def handle_end(self):
@@ -127,6 +139,10 @@ class VlcOverlay(base.VideoOverlay):
         """
         if self.repeat:
             self.action_map.lookup_action('play').activate()
+        elif self.end_action == 'freeze':
+            # VLC pauses on the last frame (:play-and-pause) and keeps showing it until the player is stopped (when
+            # the slide changes) or played again
+            pass
         else:
             self.action_map.lookup_action('stop').activate()
 
@@ -153,6 +169,10 @@ class VlcOverlay(base.VideoOverlay):
         if play_from_state in {vlc.State.Ended, vlc.State.Playing}:
             self.player.stop()
             play_from_state = vlc.State.Stopped
+            self.ended = False
+        else:
+            self.ended = self.ended or self.is_paused_at_end()
+            self.restart_if_ended()
 
         self.player.play()
 
@@ -192,7 +212,34 @@ class VlcOverlay(base.VideoOverlay):
         Returns:
             `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
         """
+        if self.ended or self.is_paused_at_end():
+            return self.do_play()
+
         self.player.pause() if self.player.is_playing() else self.player.play()
+        return False
+
+
+    def is_paused_at_end(self):
+        """ Returns whether the player sits on the last frame of the video, where `:play-and-pause` leaves it.
+
+        VLC sends no end event then, as the input is paused instead of ending.
+
+        Returns:
+            `bool`: `True` iff the player is paused within a fraction of a second of the end of the video.
+        """
+        length = self.player.get_length()
+        return (self.end_action == 'freeze' and self.player.get_state() == vlc.State.Paused and length > 0 and
+                self.player.get_time() >= min(length, self.end_pos * 1000.) - PAUSED_AT_END_MS)
+
+
+    def do_pause(self):
+        """ Pauses the media, keeping its current frame on screen.
+
+        Returns:
+            `bool`: `True` iff this function should be run again (:func:`~GLib.idle_add` convention)
+        """
+        if self.player.is_playing() and not self.ended:
+            self.player.set_pause(1)
         return False
 
 
@@ -228,6 +275,7 @@ class VlcOverlay(base.VideoOverlay):
         """
         # Update last_timestamp first, as seeking should bypass auto stop after duration
         self.last_timestamp = time
+        self.ended = False
         self.player.set_time(int(round(time * 1000.)))
         return False
 
