@@ -231,9 +231,37 @@ if __name__ == '__main__':
     if check_cli_arg('--freeze'):
         print('Using cx_Freeze.setup():', file=sys.stderr)
         from cx_Freeze import setup, Executable
+        from cx_Freeze.command.bdist_msi import bdist_msi
+
+        class BdistMsiOpenWith(bdist_msi):
+            """ Offer pympress in the “Open with” list for PDF files, without registering as the handler of `.pdf`.
+
+            The `extensions` option of cx_Freeze makes Windows Installer own the extension: it sets the default value of
+            the `.pdf` key and its content type, and removes the whole key on uninstall, including the `OpenWithProgids`
+            entries of other programs. Plain registry rows only add a ProgID class and one `OpenWithProgids` value, and
+            only these are removed on uninstall.
+            """
+
+            def finalize_options(self):
+                """ Add the registry rows once cx_Freeze has listed the executables and their components. """
+                super().finalize_options()
+                component = self.separate_components['pympress-gui.exe']
+                progid = re.sub(r'\W', '_', self.product_name) + '.pdf'
+                class_key = rf'Software\Classes\{progid}'
+                rows = [
+                    ('class', class_key, None, 'PDF document (pympress)'),
+                    ('class-name', class_key, 'FriendlyAppName', self.product_name),
+                    ('verb', rf'{class_key}\shell\open', None, 'Open with p&ympress'),
+                    ('command', rf'{class_key}\shell\open\command', None, '"[TARGETDIR]pympress-gui.exe" "%1"'),
+                    ('open-with', r'Software\Classes\.pdf\OpenWithProgids', progid, ''),
+                ]
+                registry = self.data.setdefault('Registry', [])
+                for name, key, value_name, value in rows:
+                    registry.append((f'{progid}-{name}', -1, key, value_name, value, component))
 
         setup(**{
             **options,
+            'cmdclass': {**options['cmdclass'], 'bdist_msi': BdistMsiOpenWith},
             'options': {
                 'build_exe': {
                     'includes': [],
@@ -252,14 +280,6 @@ if __name__ == '__main__':
                     },
                     'upgrade_code': '{5D156784-ED69-49FF-A972-CBAD312187F7}',
                     'install_icon': str(pathlib.Path('pympress', 'share', 'pixmaps', 'pympress.ico')),
-                    'extensions': [{
-                        'extension': 'pdf',
-                        'verb': 'open',
-                        'executable': 'pympress-gui.exe',
-                        'argument': '"%1"',
-                        'mime': 'application/pdf',
-                        'context': 'Open with p&ympress',
-                    }],
                 }
             },
             'executables': [
