@@ -505,8 +505,16 @@ class Zoom(object):
     scale = 1.
     shift = (0, 0)
 
+    #: :class:`~Gtk.ApplicationWindow` Presenter window, used to set cursors.
+    p_win = None
+    #: :class:`~Gtk.ApplicationWindow` Content window, used to set cursors.
+    c_win = None
     #: :class:`~Gtk.Box` in the Presenter window, used to reliably set cursors.
     p_central = None
+    #: :class:`~Gtk.DrawingArea` Slide in the Presenter window, used to reliably set cursors.
+    p_da_cur = None
+    #: :class:`~Gtk.DrawingArea` Slide in the Contents window, used to reliably set cursors.
+    c_da = None
     #: callback, to be connected to :meth:`~pympress.app.Pympress.set_action_enabled`
     set_action_enabled = None
 
@@ -529,6 +537,13 @@ class Zoom(object):
         })
 
 
+    def set_zoom_cursor(self, cursor_name="parent"):
+        """ Set or reset the cursor for all zoom-interactive slide and window widgets. """
+        for w in (self.p_win, self.c_win, self.p_central, self.p_da_cur, self.c_da):
+            if w is not None:
+                Cursor.set_cursor(w, cursor_name)
+
+
     def start_zooming(self, *args):
         """ Setup for the user to select the zooming area.
 
@@ -547,7 +562,7 @@ class Zoom(object):
         Returns:
             `bool`: whether the event was consumed
         """
-        Cursor.set_cursor(self.p_central)
+        self.set_zoom_cursor("parent")
         self.zoom_selecting = False
         self.zoom_points = None
         self.scale = 1.
@@ -569,7 +584,7 @@ class Zoom(object):
         if not self.zoom_selecting:
             return False
 
-        Cursor.set_cursor(self.p_central)
+        self.set_zoom_cursor("parent")
         self.zoom_selecting = False
         self.zoom_points = None
         return True
@@ -655,7 +670,7 @@ class Zoom(object):
                 self.shift = (0, 0)
 
             # stop drawing rectangles and reset cursor (NB don't use window, this bugs)
-            Cursor.set_cursor(self.p_central)
+            self.set_zoom_cursor("parent")
 
             self.zoom_selecting = False
             self.clear_cache()
