@@ -29,6 +29,7 @@ import sys
 import pathlib
 import ctypes
 from ctypes import wintypes
+import cairo
 logger = logging.getLogger(__name__)
 
 import gi
@@ -39,7 +40,6 @@ from gi.repository import GLib, Gst, GstVideo, Gtk  # noqa: E402
 
 
 from pympress import util
-import cairo
 from pympress.media_overlays import base
 
 
@@ -137,14 +137,17 @@ def win32():
 
 
 class POINT(ctypes.Structure):
+    """ Win32 POINT structure for client coordinate mapping. """
     _fields_ = [('x', ctypes.c_long), ('y', ctypes.c_long)]
 
 
 class SIZE(ctypes.Structure):
+    """ Win32 SIZE structure for window dimensions. """
     _fields_ = [('cx', ctypes.c_long), ('cy', ctypes.c_long)]
 
 
 class BLENDFUNCTION(ctypes.Structure):
+    """ Win32 BLENDFUNCTION structure for alpha blending. """
     _fields_ = [
         ('BlendOp', ctypes.c_ubyte),
         ('BlendFlags', ctypes.c_ubyte),
@@ -154,6 +157,7 @@ class BLENDFUNCTION(ctypes.Structure):
 
 
 class BITMAPINFOHEADER(ctypes.Structure):
+    """ Win32 BITMAPINFOHEADER structure for 32-bit ARGB DIB creation. """
     _fields_ = [
         ('biSize', ctypes.c_uint),
         ('biWidth', ctypes.c_long),
@@ -170,6 +174,7 @@ class BITMAPINFOHEADER(ctypes.Structure):
 
 
 class BITMAPINFO(ctypes.Structure):
+    """ Win32 BITMAPINFO structure wrapping header and color table entries. """
     _fields_ = [('bmiHeader', BITMAPINFOHEADER), ('bmiColors', ctypes.c_uint * 3)]
 
 
@@ -377,7 +382,8 @@ class D3D12OverlayPlayer(object):
 
     def ensure_selection_popup(self, owner, vx, vy, vw, vh):
         """ Ensure the native layered selection popup exists and matches geometry. """
-        if self.selection_popup is not None and (owner != self.popup_owner or not self.user32.IsWindow(self.selection_popup)):
+        if self.selection_popup is not None and (owner != self.popup_owner or
+                                                 not self.user32.IsWindow(self.selection_popup)):
             self.user32.DestroyWindow(self.selection_popup)
             self.selection_popup = None
 
