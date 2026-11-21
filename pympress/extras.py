@@ -219,8 +219,8 @@ class Media(object):
         builder.load_widgets(self)
 
         from pympress.media_overlays import base
-        video_end = self.conf.get('media', 'video_end', fallback='hide').lower()
-        base.VideoOverlay.end_action = video_end if video_end in ('hide', 'freeze', 'loop') else 'hide'
+        video_end = self.conf.get('media', 'video_end', fallback='auto').lower()
+        base.VideoOverlay.end_action = video_end if video_end in ('auto', 'hide', 'freeze', 'loop') else 'auto'
 
         builder.setup_actions({
             'use-{}-backend'.format(backend): {

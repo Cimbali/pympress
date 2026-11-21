@@ -51,9 +51,9 @@ class VideoOverlay(builder.Builder):
     """
     #: :class:`~Gtk.Overlay` that is the parent of the VideoOverlay widget.
     parent = None
-    #: `str` what a video does at its end when the PDF does not ask it to repeat: 'hide', 'freeze' or 'loop'
+    #: `str` what a video does at its end: 'auto' (follow PDF), 'hide', 'freeze' or 'loop'
     #: (`video_end` in the `media` section of the configuration)
-    end_action = 'hide'
+    end_action = 'auto'
     #: `bool` whether the video reached its end and was left there (`video_end = freeze`): playing it again restarts it
     ended = False
     #: :class:`~Gtk.VBox` that contains all the elements to be overlaid.
@@ -115,10 +115,12 @@ class VideoOverlay(builder.Builder):
             self.media_type = Gio.content_type_get_mime_type(content_type)
         self.start_pos = media.start_pos
         self.end_pos = float('inf') if media.duration == 0 else media.start_pos + media.duration
+        if self.end_action == 'auto':
+            self.end_action = 'loop' if media.repeat else 'hide'
+        self.repeat = (self.end_action == 'loop')
         self._set_file(media.filename)
 
         self.autoplay = media.autoplay
-        self.repeat = media.repeat
         # TODO: handle poster
 
 
@@ -183,7 +185,7 @@ class VideoOverlay(builder.Builder):
         Restart if looping, otherwise follow the `video_end` setting: hide the overlay, keep the last frame on screen,
         or loop.
         """
-        if self.repeat or self.end_action == 'loop':
+        if self.end_action == 'loop':
             self.action_map.lookup_action('set_time').activate(GLib.Variant.new_double(self.start_pos))
         elif self.end_action == 'freeze':
             # leave the player at its end: the video output keeps showing the last frame until the slide changes, or

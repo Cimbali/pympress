@@ -121,11 +121,11 @@ class VlcOverlay(base.VideoOverlay):
             filepath (`pathlib.Path`): The path to the media file path
         """
         media = self._instance.media_new(filepath.resolve().as_uri())
-        if self.end_action == 'loop' and not self.repeat:
+        if self.end_action == 'loop':
             # VLC repeats the input itself: restarting the player at its end closes and reopens the video output,
             # which shows black between two loops
             media.add_option(':input-repeat=65535')
-        elif self.end_action == 'freeze' and not self.repeat:
+        elif self.end_action == 'freeze':
             # VLC pauses on the last frame instead of ending: an ended player has no video output left, so playing
             # it again would close VLC's window and open a new one, which shows black in between
             media.add_option(':play-and-pause')
@@ -137,7 +137,7 @@ class VlcOverlay(base.VideoOverlay):
 
         Overridden because, to implement looping, vlc plugin needs to be told to start on stream end, not to seek
         """
-        if self.repeat:
+        if self.end_action == 'loop':
             self.action_map.lookup_action('play').activate()
         elif self.end_action == 'freeze':
             # VLC pauses on the last frame (:play-and-pause) and keeps showing it until the player is stopped (when
