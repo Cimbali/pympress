@@ -246,7 +246,7 @@ if __name__ == '__main__':
                 """ Add the registry rows once cx_Freeze has listed the executables and their components. """
                 super().finalize_options()
                 component = self.separate_components['pympress-gui.exe']
-                progid = re.sub(r'\W', '_', self.product_name) + '.pdf'
+                progid = 'pympress.pdf'
                 class_key = rf'Software\Classes\{progid}'
                 rows = [
                     ('class', class_key, None, 'PDF document (pympress)'),
