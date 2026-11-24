@@ -25,7 +25,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Environment (please complete the following information):**
  - OS: [e.g. Ubuntu]
- - Python version: [e.g. 3.9]
+ - Python version: [e.g. 3.10]
  - Pympress version: [e.g. 1.5.0]
  - Installation method: [e.g. source, pip, binary installer, chocolatey, copr, other package manager]
 
