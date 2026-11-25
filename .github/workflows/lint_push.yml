@@ -2,6 +2,9 @@ name: Linting on push
 
 on: [push]
 
+permissions:
+  contents: read
+
 jobs:
   lint:
 

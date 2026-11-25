@@ -11,6 +11,9 @@ on:
         description: 'Release tag for which to build'
         required: true
 
+permissions:
+  contents: read
+
 jobs:
   pypi:
     runs-on: ubuntu-latest

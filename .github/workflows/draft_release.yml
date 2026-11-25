@@ -10,10 +10,16 @@ on:
         description: 'Release tag for which to build'
         required: true
 
+permissions:
+  contents: read
+
 
 jobs:
   checks:
     runs-on: ubuntu-latest
+    permissions:
+      # action-gh-release creates the draft release and uploads to it with the job token
+      contents: write
     outputs:
       tag: ${{ steps.name.outputs.tag }}
       release_id: ${{ steps.release.outputs.release_id }}
@@ -149,6 +155,9 @@ jobs:
     name: Source RPM
     needs: checks
     runs-on: ubuntu-latest
+    permissions:
+      # action-gh-release uploads to the draft release with the job token
+      contents: write
     outputs:
       file: ${{ steps.srpm.outputs.file }}
 
@@ -319,6 +328,9 @@ jobs:
     name: Windows Binaries
     needs: checks
     runs-on: windows-latest
+    permissions:
+      # action-gh-release uploads to the draft release with the job token
+      contents: write
     defaults:
       run:
         shell: msys2 {0}
