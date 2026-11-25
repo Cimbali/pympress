@@ -13,11 +13,11 @@ jobs:
     name: Upload translatable strings
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@v7.0.1
       with:
         persist-credentials: false
     - name: Set up Python
-      uses: actions/setup-python@v7
+      uses: actions/setup-python@v7.1.0
       with:
         python-version: '3.x'
     - name: Install dependencies
@@ -37,11 +37,11 @@ jobs:
     needs: strings
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@v7.0.1
       with:
         persist-credentials: false
     - name: Set up Python
-      uses: actions/setup-python@v7
+      uses: actions/setup-python@v7.1.0
       with:
         python-version: '3.x'
     - name: Install dependencies
@@ -57,7 +57,7 @@ jobs:
         python3 -m sphinx -bhtml docs/ build/sphinx/html -t api_doc -t install_instructions
         tar czf pympress-docs.tar.gz -C build/sphinx/html/ .
     - name: Upload
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@v7.0.2
       with:
         name: pympress-docs.tar.gz
         path: pympress-docs.tar.gz
@@ -67,13 +67,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@v7.0.1
       with:
         repository: pympress/pympress.github.io
         token: ${{ secrets.PYMPRESSDOCS_ACTION_PAT }}
         ref: main
     - name: Download
-      uses: actions/download-artifact@v8
+      uses: actions/download-artifact@v8.0.2
       with:
         name: pympress-docs.tar.gz
         path: .

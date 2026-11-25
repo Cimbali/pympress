@@ -33,7 +33,7 @@ jobs:
         echo tag=${tag#v} | tee -a $GITHUB_OUTPUT
 
     - name: Checkout code
-      uses: actions/checkout@v7
+      uses: actions/checkout@v7.0.1
       with:
         path: pympress
         ref: ${{ github.event.inputs.tag || github.ref }}
@@ -70,14 +70,14 @@ jobs:
       run: tar czf $basename.tar.gz --exclude-vcs --exclude=.github --transform="s/^pympress/$basename/" pympress/
 
     - name: Archive production artifacts
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@v7.0.2
       with:
         name: tarball
         path: pympress-${{ steps.name.outputs.tag }}.tar.gz
 
     - name: Create draft GitHub Release
       id: release
-      uses: softprops/action-gh-release@v3
+      uses: softprops/action-gh-release@v3.0.4
       with:
         draft: true
         tag_name: v${{ steps.name.outputs.tag }}
@@ -161,7 +161,7 @@ jobs:
       file: ${{ steps.srpm.outputs.file }}
 
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@v7.0.1
       with:
         persist-credentials: false
 
@@ -186,7 +186,7 @@ jobs:
         echo file=`find srpm/ -name '*.src.rpm' -printf '%P\n' -quit` | tee -a $GITHUB_OUTPUT
 
     - name: Upload to GitHub Release
-      uses: softprops/action-gh-release@v3
+      uses: softprops/action-gh-release@v3.0.4
       with:
         draft: true
         tag_name: v${{ needs.checks.outputs.tag }}
@@ -198,7 +198,7 @@ jobs:
       continue-on-error: true
 
     - name: Archive production artifacts
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@v7.0.2
       with:
         name: source-rpm
         path: srpm/${{ steps.name.outputs.file }}
@@ -212,7 +212,7 @@ jobs:
 
     steps:
     - name: Download from GitHub
-      uses: actions/download-artifact@v8
+      uses: actions/download-artifact@v8.0.2
       with:
         name: source-rpm
         path: .
@@ -243,7 +243,7 @@ jobs:
       run: zypper install -y rpm-build rpmlint osc
 
     - name: Download tarball
-      uses: actions/download-artifact@v8
+      uses: actions/download-artifact@v8.0.2
       with:
         name: tarball
         path: .
@@ -343,13 +343,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Setup msys and dependencies
-        uses: msys2/setup-msys2@v2
+        uses: msys2/setup-msys2@v2.34.0
         with:
           msystem: ${{ matrix.msystem }}
           update: true
@@ -434,7 +434,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: dist-without-release
           path: |
@@ -442,7 +442,7 @@ jobs:
             dist/*.msi
 
       - name: Upload to GitHub Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v3.0.4
         with:
           draft: true
           tag_name: v${{ needs.checks.outputs.tag }}
