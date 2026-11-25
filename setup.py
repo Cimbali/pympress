@@ -264,10 +264,10 @@ if __name__ == '__main__':
             },
             'executables': [
                 Executable(str(pathlib.Path('pympress', '__main__.py')), target_name='pympress-gui.exe',
-                           base='Win32GUI', shortcut_dir='ProgramMenuFolder', shortcut_name='pympress',
+                           base='gui', shortcut_dir='ProgramMenuFolder', shortcut_name='pympress',
                            icon=str(pathlib.Path('pympress', 'share', 'pixmaps', 'pympress.ico'))),
                 Executable(str(pathlib.Path('pympress', '__main__.py')), target_name='pympress.exe',
-                           base='Console', icon=str(pathlib.Path('pympress', 'share', 'pixmaps', 'pympress.ico'))),
+                           base='console', icon=str(pathlib.Path('pympress', 'share', 'pixmaps', 'pympress.ico'))),
             ]
         })
     else:

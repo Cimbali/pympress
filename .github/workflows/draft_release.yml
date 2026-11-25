@@ -384,7 +384,7 @@ jobs:
           echo file=pympress-${{ needs.checks.outputs.tag }}-${{ matrix.arch }} | tee -a $GITHUB_OUTPUT
 
       - name: Build installer
-        run: python3 setup.py --freeze bdist_msi --target-name ${{ steps.name.outputs.file }}.msi --skip-build
+        run: python3 setup.py --freeze bdist_msi --output-name ${{ steps.name.outputs.file }}.msi --skip-build
 
       - name: Make portable install
         run: |
