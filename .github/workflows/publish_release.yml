@@ -74,6 +74,7 @@ jobs:
     - uses: actions/checkout@v7
       with:
         ref: v${{ steps.name.outputs.tag }}
+        persist-credentials: false
 
     - name: Build catalogs and packages
       run: |
