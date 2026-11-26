@@ -39,7 +39,7 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
   zypper install python3-pympress
   ```
 
-- Arch Linux ![arch linux logo][arch_linux] 
+- Arch Linux ![arch linux logo][arch_linux] [![arch version badge][arch_version]][arch_package]
 
   ```sh
   pacman -Sy python-pympress
@@ -147,11 +147,13 @@ Here is what the 2 screen setup looks like, with a big notes slide next to 2 sma
 [debian_package]: https://packages.debian.org/testing/pympress
 [copr_package]: https://copr.fedorainfracloud.org/coprs/cimbali/pympress/package/python3-pympress/
 [copr_repo]: https://copr.fedorainfracloud.org/coprs/cimbali/pympress/
+[arch_package]: https://archlinux.org/packages/extra/any/python-pympress/
 [chocolatey_package]: https://chocolatey.org/packages/pympress
 [github_release]: https://github.com/Cimbali/pympress/releases/latest
 
 [copr_build_version]: https://img.shields.io/badge/dynamic/json?label=COPR%20build&query=%24.items%5B0%5D.source_package.version&url=https%3A%2F%2Fcopr.fedorainfracloud.org%2Fapi_3%2Fbuild%2Flist%2F%3Fownername%3Dcimbali%26projectname%3Dpympress%26limit%3D1&prefix=v&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNC4zNzU0MjNtbSIgaGVpZ2h0PSIzNC40MTYyMjltbSIgdmlld0JveD0iMCAwIDM0LjM3NTQyMyAzNC40MTYyMjkiIHZlcnNpb249IjEuMSI+CjxlbGxpcHNlIHN0eWxlPSJmaWxsOiNkMzhkNWY7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmU7c3Ryb2tlLXdpZHRoOjEuODUyMDg7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1taXRlcmxpbWl0OjQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjEiIGN4PSIyMy45NTYwNDMiIGN5PSI0LjE1NzQwMiIgcng9IjE3LjIxMTEwMiIgcnk9IjE3LjE4NDcyMSIgdHJhbnNmb3JtPSJtYXRyaXgoMC44MTcyMjcxOSwwLjU3NjMxNTY0LC0wLjU3NDgzNTQ1LDAuODE4MjY5MDMsMCwwKSIgLz4KPGVsbGlwc2Ugc3R5bGU9ImZpbGw6Izc4NDQyMTtmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZTtzdHJva2Utd2lkdGg6MS44NTIwODtzdHJva2UtbGluZWNhcDpyb3VuZDtzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLW1pdGVybGltaXQ6NDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MSIgY3g9IjIzLjkwODM5IiBjeT0iNC4yOTczMjI4IiByeD0iMTIuNzYyMTE2IiByeT0iMTIuNzQzNTE3IiB0cmFuc2Zvcm09Im1hdHJpeCgwLjgyMDU3NzU0LDAuNTcxNTM1MjEsLTAuNTY1NjkzODMsMC44MjQ2MTUzNiwwLDApIiAvPgo8cGF0aCBzdHlsZT0iZmlsbDpub25lO2ZpbGwtcnVsZTpldmVub2RkO3N0cm9rZTojZDM4ZDVmO3N0cm9rZS13aWR0aDoyLjMwNTE4O3N0cm9rZS1saW5lY2FwOmJ1dHQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1taXRlcmxpbWl0OjQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjEiIGQ9Im0gMjYuMTg3Nzg3LDUuMDc3Mzc3MyBjIDAsMCAtMTguNzQxMzc4NiwzLjI5MzI5OCAtMTcuMzE1MDI3OSwyNC4zMDM2MDg3IiAvPgo8cGF0aCBzdHlsZT0iZmlsbDpub25lO2ZpbGwtcnVsZTpldmVub2RkO3N0cm9rZTojZDM4ZDVmO3N0cm9rZS13aWR0aDoyLjMwNTE4O3N0cm9rZS1saW5lY2FwOmJ1dHQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1taXRlcmxpbWl0OjQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjEiIGQ9Im0gMjUuNzE0NTY0LDQuNDQ0OTkwOCBjIDAsMCAzLjAyOTU5MywxOC43NTk5NzMyIC0xNy4zMTUwMjM3LDI0LjMwMzYwNDIiIC8+Cjwvc3ZnPgo=
 [pypi_version]: https://img.shields.io/pypi/v/pympress?logo=pypi&logoColor=yellow
+[arch_version]: https://img.shields.io/archlinux/v/extra/any/python-pympress
 [homebrew_version]: https://img.shields.io/homebrew/v/pympress?logo=homebrew
 [macports_version]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fports.macports.org%2Fapi%2Fv1%2Fports%2Fpympress%2F&query=%24.version&prefix=v&label=macports
 [ubuntu_version]: https://img.shields.io/ubuntu/v/pympress?logo=ubuntu
