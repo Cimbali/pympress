@@ -132,6 +132,7 @@ class GifOverlay(base.VideoOverlay):
     def mute(self, *args): pass
     def is_playing(self): return True
     def do_stop(self): pass
+    def do_pause(self): return False
     def do_play(self): return False
     def do_play_pause(self): return False
 
